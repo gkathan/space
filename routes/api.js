@@ -1,5 +1,5 @@
 /**
-  /upload routes
+  /api routes
 */
 var mongojs = require("mongojs");
 var nodeExcel = require('excel-export');
@@ -12,10 +12,7 @@ var DB="kanbanv2";
 var connection_string = '127.0.0.1:27017/'+DB;
 var db = mongojs(connection_string, [DB]);
 
-
 var BASE = "";
-
-
 
 
 /* GET api listing. */
@@ -35,6 +32,7 @@ var PATH = {
 						REST_PRODUCTCATALOG : BASE+'/kanbanv2/rest/productcatalog',
 						REST_INCIDENTS : BASE+'/kanbanv2/rest/incidents',
 						REST_V1EPICS : BASE+'/kanbanv2/rest/v1epics',
+						REST_LABELS : BASE+'/kanbanv2/rest/labels',
 						
 						REST_INITIATIVES_DIFF_TRAIL : BASE+'/kanbanv2/rest/initiatives_diff_trail',
 						REST_ORG : BASE+'/kanbanv2/rest/org/:date',
@@ -45,11 +43,10 @@ var PATH = {
 						EXPORT_SCRUMTEAMS : BASE+'/kanbanv2/export/xlsx/scrumteams',
 						EXPORT_BOARDS : BASE+'/kanbanv2/export/xlsx/boards',
 						EXPORT_V1EPICS : BASE+'/kanbanv2/export/xlsx/v1epics',
-
+						EXPORT_LABELS : BASE+'/kanbanv2/export/xlsx/labels',
 						CONFIG : BASE+'/kanbanv2/config',
 
 						TRANSCODE_BOARDS : BASE+'/kanbanv2/transcode'
-						
 					};
 
 router.get(PATH.ROOT, function(req, res, next) {res.locals.API_LIST=PATH;res.locals.REQ_PATH=req.baseUrl;res.render("api")});
@@ -83,6 +80,8 @@ router.get(PATH.REST_PRODUCTPORTFOLIO, function(req, res, next) {findAllByName(r
 router.get(PATH.REST_PRODUCTCATALOG, function(req, res, next) {findAllByName(req,res,next);});
 router.get(PATH.REST_INCIDENTS, function(req, res, next) {findAllByName(req,res,next);});
 router.get(PATH.REST_V1EPICS, function(req, res, next) {findAllByName(req,res,next);});
+router.get(PATH.REST_LABELS, function(req, res, next) {findAllByName(req,res,next);});
+
 
 router.get(PATH.REST_ORG, function(req, res, next) {
 	db.collection("org").findOne({oDate:req.params.date} , function(err , success){
@@ -107,6 +106,7 @@ router.get(PATH.EXPORT_INITIATIVES, function(req, res, next) {excelInitiatives(r
 router.get(PATH.EXPORT_BOARDS, function(req, res, next) {excelBoards(req,res,next);});
 router.get(PATH.EXPORT_SCRUMTEAMS, function(req, res, next) {excelScrumTeams(req,res,next);});
 router.get(PATH.EXPORT_V1EPICS, function(req, res, next) {excelV1Epics(req,res,next);});
+router.get(PATH.EXPORT_LABELS, function(req, res, next) {excelLabels(req,res,next);});
 
 router.post(PATH.TRANSCODE_BOARDS, function(req, res, next) {transcode(req,res,next); });
 
@@ -124,8 +124,6 @@ module.exports = router;
 function findAllByName(req, res , next){
 	var path = req.path.split("/");
 	var collection = _.last(path);
-    
-    
     var _filterName = req.query.n;
 	var _filterValue = req.query.v;
 	var _filterOperator = req.query.o;
@@ -137,12 +135,8 @@ function findAllByName(req, res , next){
 	if (_filterName==undefined) _filter = null;
 	
 	// e.g http://localhost:3000/api/kanbanv2/rest/boards?filterName=name&filterOperator=$eq&filterValue=studios
-	
 	console.log("***** filter: "+JSON.stringify(_filter));
 	
-	
-	
-    
     db.collection(collection).find(_filter).sort({id : 1} , function(err , success){
         //console.log("[DEBUG] findAllByName() for: "+_name+", Response success: "+JSON.stringify(success));
         //console.log('Response error '+err);
@@ -154,11 +148,8 @@ function findAllByName(req, res , next){
         }else{
             return next(err);
         }
- 
     });
 }
-
-
 
 
 /**
@@ -166,7 +157,6 @@ function findAllByName(req, res , next){
  */
 function findById(req, res , next){
     var path = req.path.split("/");
-	
 	// format path: /kanbanv2/rest/boards/1
 	// take the last from the set with last stripped ;-)
 	var collection = _.last(_.initial(path));
@@ -203,41 +193,6 @@ function findTrailByNameForId(req, res , next){
     })
 }
 
- 
-
-/**
- * autoinc stuff
- * http://docs.mongodb.org/manual/tutorial/create-an-auto-incrementing-field/
- */
- /* legacy
-function getNextSequence(name,callback) {
-   console.log("[DEBUG] > getNextSequence called for: "+name);
-   db.collection(name+"_counter").findAndModify(
-          {
-            query: { _id: name+"Id" },
-            update: { $inc: { seq: 1 } },
-            new: true
-          }
-   ,function (error,success){
-	  console.log("[DEBUG] > seq= "+success.seq);
-	  
-	  callback(success.seq);   
-   });
-   
-   //return ret.seq;
-}
-*/
-
-/*
- 
- for each item in items
-	series (former asy methd)
-		* check item.create date
-		* try to find existing item (old version)
-		* 
- 
-*/
-
 
 /**
  * async pattern to handle a list of items to be processed
@@ -247,11 +202,8 @@ function getNextSequence(name,callback) {
  * todo: think about using async module: https://github.com/caolan/async
  */
 function save(req, res , next){
-    //var items = JSON.parse(req.params.itemJson);
-    
     console.log("*************[DEBUG] save POST:");
     var items = JSON.parse(req.body.itemJson);
-    
     var path = req.path.split("/");
 	var _collection = _.last(path);
 	
@@ -293,14 +245,7 @@ function save(req, res , next){
 			console.log("************_old: "+JSON.stringify(_old));
 			_diff = jsondiffpatch.diff(_old,item);
 			console.log("************diff: "+JSON.stringify(_diff));
-			/*
-			if (!_old){ 
-				console.log("[DEBUG] > no _old found -> concluding this will be an INSERT, need to get a seq.....");
-				getNextSequence(_collection,restOfTheFunction);
-				return;
-			}
-			else console.log("[DEBUG] ok - old item found ...");
-		*/
+
 		restOfTheFunction();	
 			
 		function restOfTheFunction(seq){	
@@ -330,7 +275,7 @@ function save(req, res , next){
 					if (success.updatedExisting){
 						console.log("[DEBUG] going to insert trail ...");
 						db.collection(_collection+"_diff_trail").insert({timestamp:_timestamp,refId:_old._id,diff:_diff,old:_old}	 , function(err , success){
-							//console.log('Response success '+success);
+							console.log('Response success '+success);
 							console.log('Response error '+err);
 							if(success){
 								callback(success);
@@ -345,21 +290,17 @@ function save(req, res , next){
 					console.log("[DEBUG] ERROR no success returned.. what to do now ????"+JSON.stringify(err));
 					callback(err);
 				}
-				
 				//return next(err);
 			})
 		}
-		
-		});
-		
-	  
+	});
 	}
 
     // Final task 
 	function final() { 
 		console.log('************************************************************************* Done', results);
-		res.send();
-		//return next();;
+		//res.send({});
+		return;
 	}
     
 	
@@ -372,6 +313,7 @@ function save(req, res , next){
 		});
 	  } else {
 		return final();
+		
 	  }
 	}
 	
@@ -409,24 +351,6 @@ function saveNG(req, res , next){
     
 }
 
-/* legacy
-function _getNextSequence(name,callback) {
-   console.log("[DEBUG] > getNextSequence called for: "+name);
-   db.collection(name+"_counter").findAndModify(
-          {
-            query: { _id: name+"Id" },
-            update: { $inc: { seq: 1 } },
-            new: true
-          }
-   ,function (error,success){
-	  console.log("[DEBUG] > seq= "+success.seq);
-	  
-	  callback(success.seq);   
-   });
-   
-   //return ret.seq;
-}
-*/
 
 
 function _checkCreateDate(item){
@@ -445,34 +369,6 @@ function _checkCreateDate(item){
 }
 
 
-/* legacy 
-function _checkExists(item,collectionName){
-	console.log("----------------------------------- _checkExists (item:"+item.name+" called");
-	
-	// get old before update
-	var _old;
-	var _diff;
-
-	db.collection(collectionName).findOne({_id:mongojs.ObjectId(item._id)}, function(err , success){
-		_old=success;
-		console.log("************_old: "+JSON.stringify(_old));
-		_diff = jsondiffpatch.diff(_old,item);
-		console.log("************diff: "+JSON.stringify(_diff));
-		
-		
-		if (!_old){ 
-			console.log("[DEBUG] > no _old found -> concluding this will be an INSERT, need to get a seq.....");
-			getNextSequence(_collection,restOfTheFunction);
-			return;
-		}
-		else console.log("[DEBUG] ok - old item found ...");
-	
-	return item;
-	
-	})
-}
-
-*/
 
 
 /**
@@ -663,6 +559,27 @@ function excelScrumTeams(req, res , next){
     
     _generateAndSendExcel("scrumteams",conf,req,res,next);
 }
+
+
+
+/**
+ * generate scrumteams excel
+ */
+function excelLabels(req, res , next){
+	var conf ={};
+	
+	
+    conf.stylesXmlFile = "views/excel_export/styles.xml";
+    conf.cols = [
+		{caption:'_id',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'market',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'brand',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'label',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell}
+	];
+    
+    _generateAndSendExcel("labels",conf,req,res,next);
+}
+
 
 
 

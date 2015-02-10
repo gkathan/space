@@ -21,7 +21,7 @@ function sendTest () {
 
 	// setup e-mail data with unicode symbols
 	var mailOptions = {
-		from: 'kanbanv2mailer ✔ <mail@kathan.at>', // sender address
+		from: 'kanbanv2mailer ✔ <gerold.kathan@bwinparty.com>', // sender address
 		to: 'gerold.kathan@bwinparty.com', // list of receivers
 		subject: 'Hello from kanbanv2 ✔', // Subject line
 		text: '...started✔', // plaintext body
@@ -31,6 +31,7 @@ function sendTest () {
 	// send mail with defined transport object
 	transporter.sendMail(mailOptions, function(error, info){
 		if(error){
+			//console.log("nodemailer says: "+error+" on trying to send via "+JSON.stringify(mailOptions));
 			console.log(error);
 		}else{
 			console.log('Message sent: ' + info.response);

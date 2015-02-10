@@ -16,6 +16,15 @@
 	 
 	 "transcoder" : {
 		"url" : "http://tomcat.ea.bwinparty.corp/transcode/"
+     },
+      "mailer" : {
+     
+		"host": "smtprelay.icepor.com",
+		"port": 25,
+		"auth": {
+			"user": "u",
+			"pass": "u"
+		}
      }
 
 

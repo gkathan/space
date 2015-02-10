@@ -23,7 +23,9 @@ var config = require('config');
 
 
 var mail = require('./services/mail');
-//mail();
+mail();
+
+
 
 
 var log4js = require('log4js');
@@ -36,12 +38,7 @@ log4js.configure({
   replaceConsole: true
 });
 
-
-
-
-
 var fs = require('fs')
-
 
 var app = express();
 
@@ -85,6 +82,8 @@ app.use(bodyParser.urlencoded({ extended: false ,limit: '50mb'}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+
+
 app.use(session({
   secret: 'keyboard cat',
   resave: false,
@@ -98,6 +97,10 @@ app.use(function(req,res,next){
 	next();
 });
 
+
+// adds config object to all responses
+var addconfig = require('./services/middleware/addconfig.js');
+app.use(addconfig());
 
 console.log("**** ENV: "+app.get('env'));
 

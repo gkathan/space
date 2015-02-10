@@ -1,7 +1,7 @@
 var express = require('express');
 
 var mongojs = require("mongojs");
-
+var config = require('config');
 //test to include stuff
 //var api=require('./api.js');
 
@@ -15,9 +15,10 @@ var DB="kanbanv2";
 var connection_string = '127.0.0.1:27017/'+DB;
 var db = mongojs(connection_string, [DB]);
 
+
+
 /* GET home page. */
 router.get('/', function(req, res) {
-    res.locals.config=require('config');
     res.render('index', { title: 'kanbanv2 - strategy2tactics' });
 });
 
@@ -35,8 +36,7 @@ router.get('/chromeonly', function(req, res) {
 });
 
 router.get('/config', function(req, res) {
-	var config = require('config');
-	res.locals.config=config;
+	
 	res.render('config');
 });
 

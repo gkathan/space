@@ -10,7 +10,16 @@ div.row(style="margin-left:10px;margin-bottom:10px;width:500px")
 			strong excel importer 
 		div.panel-body 
 			p
-				upload excel lists - 	format: {collectionname}_{YYYY}-{MM}-{DD}.xlsx
+				| upload excel lists - 	format: {collectionname}_{YYYY}-{MM}-{DD}.xlsx
+			p(style="font-size:10px;margin-left:20px;font-weight:bold")
+				| currently supported plain import excels:
+			ul(style="font-size:10px;margin-left:20px")
+				li productportfolio
+				li productcatalog
+				li targets
+				li incidents
+				li labels
+				
 
 		div.form-box
 			form(id="uploadForm" enctype="multipart/form-data" action="/upload/process" method="post")

@@ -8,6 +8,10 @@
     "timezone": "UTC",
 
     "locale": "en",
+    
+    "version" : "2.0.0 alpha",
+    
+    "build" : "---should be dynamically assigned",
 
     "v1" : {
 		
@@ -37,12 +41,11 @@
      },
      
      "mailer" : {
-     
-		"host": "mail.netmonic.com",
+		"host": "localhost",
 		"port": 25,
 		"auth": {
-			"user": "mail@kathan.at",
-			"pass": "kakroot"
+			"user": "",
+			"pass": ""
 		}
      }
      

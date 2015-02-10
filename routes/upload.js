@@ -78,7 +78,7 @@ router.use(multer({ dest: __dirname+'/temp_uploads/',
 			
 			if (_collection=="portfoliogate") _function = _handlePortfolioGate;
 			else if (_collection=="org") _function = _handleHR_PI;
-			else if (_collection=="productportfolio" || _collection=="productcatalog" || _collection=="targets" || _collection=="incidents"){
+			else if (_collection=="productportfolio" || _collection=="productcatalog" || _collection=="targets" || _collection=="incidents" || _collection=="labels"){
 				 _function = _handlePlain;
 				 _dropBeforeInsert = true;
 			}
