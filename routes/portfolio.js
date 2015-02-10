@@ -7,7 +7,6 @@ var mongojs = require('mongojs');
 
 var moment = require('moment');
 
-var u = require('underscore');
 
 var DB="kanbanv2";
 
