@@ -5,7 +5,7 @@ var mongojs = require("mongojs");
 var nodeExcel = require('excel-export');
 var express = require('express');
 var router = express.Router();
-var _ = require('underscore');
+var _ = require('lodash');
 
 var DB="kanbanv2";
 
