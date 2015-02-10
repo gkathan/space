@@ -1,0 +1,28 @@
+include kanban_menu
+
+link(rel='stylesheet', href='/stylesheets/material.css')
+
+block content
+div(style="margin-left:100px")
+
+	// ************ material cards ******************
+	.row
+		.col-xs-12.col-sm-6.col-md-6.col-lg-6
+			.box
+				.info
+					h3.text-center CONFIG
+						br
+						br
+					ul(style="text-align:left")
+						li environment: 
+							b #{config.env}
+						li v1.url: 
+							b #{config.v1.url}
+						li v1.proxy: 
+							b #{config.v1.proxy}
+						li v1.syncEpics: <b>#{config.v1.syncEpics.mode}</b> every <b>#{config.v1.syncEpics.intervalMinutes}</b> minutes
+						li transcoder: 
+							b #{config.transcoder.url}
+						li mailer: 
+							b #{config.mailer.host}
+									

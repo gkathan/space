@@ -1,0 +1,31 @@
+
+
+.row
+	hr.divider
+	h3 svg export include
+
+	.col-lg-6
+		.input-group.input-group-xs(style="width:400px")
+			input.form-control(id="input_transcode_url" type="text" placeholder="transcode URL")
+			span.input-group-btn
+				button.btn.btn-primary(id="b99" type="button") URL
+		.input-group
+			button.btn.btn-default.btn-sm(id="save_as_svg" value="")
+				span.glyphicon.glyphicon-export 
+				span export SVG
+			button.btn.btn-primary.btn-sm(id="save_as_pdf" value="")
+				span.glyphicon.glyphicon-export 
+				span export PDF
+			button.btn.btn-primary.btn-sm(id="save_as_png" value="") 
+				span.glyphicon.glyphicon-export 
+				span export PNG
+
+		form(id="svgform" method="post" action="http://tomcat.ea.bwinparty.corp/transcode/")
+			input(type="hidden" id="format" name="format" value="")
+			input(type="hidden" id="data" name="data" value="")
+			input(type="hidden" id="context" name="context" value="")
+			input(type="hidden" id="svg_width" name="svg_width" value="")
+			input(type="hidden" id="svg_height" name="svg_height" value="")
+			input(type="hidden" id="png_scale" name="png_scale" value="")
+
+		script(src="/javascripts/kanban/kanban_svgexport.js")

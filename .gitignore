@@ -1,0 +1,8 @@
+access.log
+build
+dist
+doc
+log
+node_modules
+.git
+

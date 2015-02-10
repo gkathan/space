@@ -1,0 +1,14 @@
+{
+	"env": "bender7-development",
+
+    "v1" : {
+		"url" : "/local/epics",
+		
+		"proxy" : "/local/proxy",
+		
+		"syncEpics": {
+			"mode": "off"
+			}
+	}    
+     
+}

@@ -1,0 +1,91 @@
+include kanban_menu
+
+//link(rel='stylesheet', href='/stylesheets/portfoliogate.css')
+
+script(src="/javascripts/components/moment/min/moment.min.js")
+
+style(type='text/css').
+	.badge 
+	{ 
+		font-size: 10px;
+		font-weight: normal;
+		white-space: nowrap;
+		color: white;
+		background-color: #grey !important;
+		-webkit-border-radius: 5px;
+		-moz-border-radius: 5px;
+		border-radius: 20px;
+		position: relative;
+		top: -15px;
+		right: 0px;
+	}
+	.badge.badge-low
+		{ 
+			top: 0px;
+			font-weight: bold;
+			right:5px;
+			font-size: 18px;
+		}
+
+
+
+block content
+	div.row(style="margin-left:5px;margin-bottom:10px;width:1900px")
+			span(style="color:#999999;font-size:8px") #{pgates.length} [portfolio board] snapshots online | last v1.epics sync #{v1LastUpdate}
+			each _date in pgates
+				div.panel.panel-default
+					div.panel-heading(style="font-size:14px; color:black") 
+						| WEEKLY PORTFOLIO SNAPSHOT 
+						br
+						span(style="font-size:28px;font-weight:bold") #{_date.pDate}
+						br
+						span(style="font-size:11px;font-weight:normal;color:black;text-align:center") CHANGES FROM LAST [portfolio meeting] @ #{_date.pBoardDate}:
+						
+						ul.list-unstyled
+						each _change in _date.changeBucket
+							li.list-unstyled(style="font-size:10px;color:black") 
+								
+								span.glyphicon.glyphicon-star(style="font-size:10px;color:black; ")
+								<b>#{_change.oldState}</b> 
+								span.glyphicon.glyphicon-arrow-right 
+								|  <b>#{_change.Status}</b>   
+								a(href="http://v1.bwinparty.corp/V1-Production/Epic.mvc/Summary?oidToken=Epic%3A"+_change.id target="_new" )
+									| #{_change.EpicRef} <b>#{_change.name}</b>  
+						
+						
+					div.panel-body
+						div.row(style="margin-left:0px;margin-bottom:10px;width:2200px")
+								each status in _date.pItems
+									// no NEW items for now
+									if status[0].Status != "New"
+										div.col-md-2.col-lg4
+											div.panel.panel-default
+												//status header
+												div.panel-heading(style="text-align:center")
+													//span.badge.badge-low #{status[0].Status.charAt(0)} 
+													span(style="font-size:24px;color:#{colors[status[0].Status]};text-align:center") #{status[0].Status.toUpperCase()}
+													span.badge #{status.length}
+												//list epics per tatus	
+												div.panel-body
+													div.row(style="font-size:11px;margin-left:2px")
+														each epic in status
+															div.col 
+																if epic.id
+																	if epic.Status != "Monitoring"
+																		span(style="background-color:#{epic.health}")
+																			| &nbsp;&nbsp;&nbsp;   
+																	| &nbsp;
+																	a(href="http://v1.bwinparty.corp/V1-Production/Epic.mvc/Summary?oidToken=Epic%3A"+epic.id target="_new" )
+																		span(style="font-weight:normal;font-size:8px")
+																			| #{epic.EpicRef} 
+																		| <b>#{epic.name}</b> 
+																	a(href="http://v1.bwinparty.corp/V1-Production/attachment.img/"+epic.id+"/" target="_new" )
+																		| [IP]
+																	
+																	if epic.oldState
+																		span.glyphicon.glyphicon-star(style="font-size:12px;color:black; ")
+																			//span(style="color:orange; font-size:10px") #{epic.oldState}
+																	
+																else
+																	span #{epic.EpicRef} *not synced
+					

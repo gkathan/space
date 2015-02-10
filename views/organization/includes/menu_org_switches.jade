@@ -1,0 +1,56 @@
+.row
+	hr.divider
+	h3 multiselect
+	
+	
+	.btn-group-xs
+		span.glyphicon.glyphicon-filter
+		select.multiselect(id="hierarchy")
+			option(value="bp" selected) BUSINESSPROCESS SUPERVISOR
+			option(value="hr") HR LINE SUPERVISOR
+			
+
+	.btn-group-xs
+		span.glyphicon.glyphicon-filter
+		select.multiselect(id="roletype")
+			option(value="position") POSITION
+			option(value="jobTitle" ) CORPORATE JOB TITLE
+			option(value="job" ) JOB TITLE
+			option(value="function" ) FUNCTION
+			
+		
+		
+	
+	script.
+		$(document).ready(function() {
+			$('#hierarchy').multiselect({
+			buttonClass: 'btn-primary btn-sm',
+			onChange: function(element,checked){
+				console.log("element: "+_val+" checked: "+checked);
+				
+				var _val = $(element).val()
+				HIERARCHY_TYPE = _val;
+				d3.select("svg").remove();
+				render();
+
+				}
+			});
+		});
+
+
+		$(document).ready(function() {
+		$('#roletype').multiselect({
+			buttonClass: 'btn-primary btn-sm',
+			onChange: function(element,checked){
+				console.log("element: "+_val+" checked: "+checked);
+				
+				var _val = $(element).val()
+				ROLE_TYPE = _val;
+				d3.select("svg").remove();
+				render();
+				}
+			});
+		});
+	
+	
+

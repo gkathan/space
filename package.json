@@ -1,0 +1,51 @@
+{
+  "name": "kanbanv2",
+  "version": "2.0.0",
+  "private": true,
+  "scripts": {
+    "startDEV": "nodemon ./bin/www",
+    "start": "node ./bin/www"
+  },
+  "dependencies": {
+    "body-parser": "~1.10.1",
+    "cookie-parser": "~1.3.3",
+    "debug": "~2.1.1",
+    "express": "~4.11.0",
+    "jade": "~1.9.0",
+    "morgan": "~1.5.1",
+    "serve-favicon": "~2.2.0",
+    "multer": "~0.1.6",
+    "mongodb": "~2.0",
+    "mongojs": "*",
+    "sha1": "*",
+    "express-session": "*",
+    "jsondiffpatch": "*",
+    "excel-export": "0.3.11",
+    "xlsx-json": "*",
+    "node-rest-client": "^1.4.4",
+    "node-schedule": "^0.1.15",
+    "passport": "^0.2.1",
+    "npmlog": "^1.0.0",
+    "underscore.nest": "^0.1.1",
+    "moment": "^2.9.0",
+    "log4js": "^0.6.22",
+    "nodemailer": "~1.3.0",
+    "nodemailer-smtp-transport": "~0.1.13",
+    "config": "^1.10.0",
+    "lodash": "^3.1.0"
+  },
+  "devDependencies": {
+    "grunt": "~0.4.5",
+    "grunt-contrib-jshint": "~0.11.0",
+    "grunt-contrib-nodeunit": "~0.4.1",
+    "grunt-contrib-uglify": "~0.5.0",
+    "grunt-contrib-concat": "~0.5.0",
+    "grunt-contrib-cssmin": "~0.11.0",
+    "grunt-contrib-watch": "~0.6.1",
+    "grunt-jslint": "~1.1.12",
+    "grunt-jsdoc": "~0.5.7",
+    "async": "^0.9.0",
+    "grunt-zip": "~0.16.2",
+    "grunt-scp": "~0.1.8"
+  }
+}

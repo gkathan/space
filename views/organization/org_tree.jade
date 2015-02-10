@@ -1,0 +1,40 @@
+include ../kanban_menu
+
+
+script(src="/javascripts/organization/org_util.js")
+script(src="/javascripts/organization/org_tree.js")
+
+
+
+block content
+	h1= title
+	script(type="text/javascript").
+		$(document).ready(function() {
+			$('#kanban_menu').sidr({speed:300});
+		});
+
+	div.notifications.top-left
+	div.row(style="margin-left:10px;margin-bottom:10px")
+		div(id="sidr" style="margin-left:10px;margin-top:10px")
+			include includes/menu_org_switches.jade
+			include ../board/includes/menu_svg_export.jade
+			
+
+			
+		div.row(style="margin-left:10px;margin-bottom:10px")
+		h3 orgtree from <b>#{orgdate}</b>
+
+		div.btn-group-xs
+			button.btn.btn-primary.btn-xs(id="kanban_menu" type="button") 
+				span.glyphicon.glyphicon-off  
+				span  stuff..
+	
+		
+		script(type="text/javascript").
+			var _date = '#{orgdate}'
+			CONTEXT="orgtree";
+			
+			render(_date);
+							
+			
+

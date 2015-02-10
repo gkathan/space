@@ -1,0 +1,55 @@
+.node {
+  cursor: pointer;
+}
+
+.node:hover {
+  stroke: #174D75;
+  stroke-width: 1.5px;
+}
+
+.node--root {
+  stroke: #174D75;
+  stroke-width: 2px;
+}
+
+.node--leaf {
+  fill: white;
+}
+
+.label {
+  font: 11px "Helvetica Neue", Helvetica, Arial, sans-serif;
+  text-anchor: middle;
+  text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, -1px 0 0 #fff, 0 -1px 0 #fff;
+}
+
+.label,
+.node--root,
+.node--leaf {
+  pointer-events: none;
+
+}
+
+.node circle {
+  fill: #fff;
+  stroke: #174D75;
+  stroke-width: 1px;
+}
+
+.node {
+  font: 10px sans-serif;
+}
+
+.link {
+  fill: none;
+  stroke: #ccc;
+  stroke-width: .5px;
+}
+
+
+.dashedLine {
+  fill: none;
+  stroke: red;
+  stroke-width: .5px;
+  stroke-dasharray: 10,5;
+  opacity:0.3
+}

@@ -1,0 +1,112 @@
+<project name="Kanbanv2" default="dist" basedir=".">
+    <description>
+        simple example build file
+    </description>
+  <!-- set global properties for this build -->
+  <property name="src" location="."/>
+  <property name="dist"  location="../dist"/>
+  
+  <property name="mongodb_dev"  location="c:/mongodb"/>
+  <property name="mongodb_dump"  location="data/mongo"/>
+  
+  
+  
+  <tstamp>
+	  <format property="NOW_DATE" pattern="yyyyMMdd"/>
+  </tstamp>
+	  
+  <tstamp>
+	  <format property="NOW_TIME" pattern="kkmmss" locale="de,de"/>
+  </tstamp>
+  
+  <property name="ARCHIVE" value="${dist}/zip/kanbanv2-${NOW_DATE}_${NOW_TIME}.zip"/>
+  <property name="TARGET" value="${dist}/zip/kanbanv2.zip"/>
+  
+  <target name="echo">
+	<echo message="kanban v2 build: ${NOW_DATE}"/>
+  
+  </target>
+  
+  
+  <target name="init">
+    <!-- Create the time stamp -->
+    <tstamp/>
+
+  </target>
+
+  
+  <target name="dist" depends="init"
+        description="generate the distribution" >
+    <!-- Create the distribution directory -->
+   
+	
+	
+	
+
+    <!-- Put everything in ${build} into the MyProject-${DSTAMP}.jar file -->
+    <zip destfile="${ARCHIVE}">
+		<fileset dir="${src}" includes="**"/>
+		
+	</zip>
+	
+	<copy file="${ARCHIVE}" tofile="${TARGET}"/>
+		
+  </target>
+
+  <target name="clean"
+        description="clean up" >
+    <!-- Delete the ${build} and ${dist} directory trees
+    <delete dir="${dist}"/> -->
+  </target>
+  
+
+  <target name="deploy" description="deploy to ea.bwinparty.corp machine" depends="dist">
+
+	<scp file="${TARGET}" todir="gkathan@cloud.ea.bwinparty.corp:/home/gkathan/" password="bwin123" port="22" trust="true"/>
+	<sshexec host="cloud.ea.bwinparty.corp" username="gkathan" password="bwin123" command="./deployv2.sh" trust="true" port="22"/>
+	
+  </target>
+
+  <!-- DB stuff
+  
+  EXPORT
+  ======
+  dump full DB:      mysqldump -u kanban -p kanban > kanban_dump.sql  
+  dump table:		 mysqldump -u kanban -p kanban metrics > kanban_metrics_dump.sql
+ 
+  IMPORT
+  ======
+					mysql -u kanban -p -D kanban < kanban_metrics_dump.sql
+  -->
+  
+  <target name="mongodumpPROD" description="dumps remote PROD mongoDB, scps it to LOCAL and tars + timestamps it">
+	<sshexec host="cloud.ea.bwinparty.corp" username="gkathan" password="bwin123" command="./mongodump.sh" trust="true" port="22"/>
+	<scp file="gkathan@cloud.ea.bwinparty.corp:/home/gkathan/mongodump_PROD.tar" todir="data/mongo" password="bwin123" port="22" trust="true"/>
+	<untar src="data/mongo/mongodump_PROD.tar" dest="data/mongo"/>
+	<move file="data/mongo/mongodump_PROD" tofile="data/mongo/mongodump_PROD_${NOW_DATE}_${NOW_TIME}"/>
+  </target>
+  
+  
+  <target name="mongodumpDEV" description="dumps local DEV mongoDB, tags it with timestamp and zips it">
+	  <exec executable="cmd">
+		<arg value="/c"/>
+		<arg value="mongodump"/>
+		<arg value="-d kanbanv2"/>
+		<arg value="-o ${kanbanv2dump}"/>
+	  </exec>
+	  
+	  <zip destfile="mongodump_DEV_${NOW_DATE}_${NOW_TIME}.zip">
+			<fileset dir="${mongodb_dump}" includes="**"/>
+	  </zip>
+  </target>
+
+
+  <target name="initiativesCsvPROD" description="exports csv remote PROD initiative collection for now">
+	<sshexec host="cloud.ea.bwinparty.corp" username="gkathan" password="bwin123" command="./initiatives_csv_dump.sh" trust="true" port="8080"/>
+	<scp file="gkathan@cloud.ea.bwinparty.corp:/home/gkathan/initiatives.csv" todir="data/mongo/csv_export" password="bwin123" port="8080" trust="true"/>
+	<move file="data/mongo/csv_export/initiatives.csv" tofile="data/mongo/csv_export/initiatives_PROD_${NOW_DATE}_${NOW_TIME}.csv"/>
+  </target>
+
+
+  
+</project>

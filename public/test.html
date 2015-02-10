@@ -1,0 +1,201 @@
+<html>
+    <head>
+     
+     
+     
+     
+     
+     
+        <script type="text/javascript" src="/javascripts/components/jquery/dist/jquery.min.js"></script>
+		
+		 <script type="text/javascript" src="/javascripts/components/moment/min/moment.min.js"></script>
+		
+		<script type="text/javascript" src="/javascripts/components/bootstrap/dist/js/bootstrap.min.js"></script>	
+		 <script type="text/javascript" src="/javascripts/components/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js"></script>   
+		<link rel="stylesheet" href="/javascripts/components/bootstrap/dist/css/bootstrap.min.css" />
+		<link rel="stylesheet" href="/javascripts/components/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css" />
+     
+		<script type="text/javascript" src="/javascripts/components/handlebars/handlebars.js"></script>	   
+
+        <link type="text/css" href="/javascripts/components/alpaca/dist/alpaca/bootstrap/alpaca.min.css" rel="stylesheet" />
+        <script type="text/javascript" src="/javascripts/components/alpaca/dist/alpaca/bootstrap/alpaca.min.js"></script>
+
+
+	
+ 
+		
+     
+     
+  
+    </head>
+    <body>
+        <div id="form" style="width:250px"></div>
+        <script type="text/javascript">
+            $(document).ready(function() {
+                $("#form").alpaca({
+
+   "schema": {
+		"title":"Kanban Board",
+		"description":"a first kanban board alpaca form",
+		"type":"object",
+		"properties": {
+			"name": {
+				"type":"string",
+				"title":"name",
+				"required":true
+			},
+			"vision": {
+				"type":"string",
+				"title":"vision"
+			},
+			"subvision": {
+				"type":"string",
+				"title":"subvision"
+			},
+			"mission": {
+				"type":"string",
+				"title":"mission"
+			},
+			"height": {
+				"type":"number",
+				"title":"height",
+				"required":true
+			},
+			"width": {
+				"type":"number",
+				"title":"width",
+				"required":true
+			},
+			"itemScale": {
+				"type":"number",
+				"title":"itemScale",
+				"required":true
+			},
+			"laneboxRightWidth": {
+				"type":"number",
+				"title":"laneboxRightWidth",
+				"required":true
+			},
+			"startDate": {
+				"title":"startDate",
+				"required":true
+			},
+			"endDate": {
+				"title":"endDate",
+				"required":true
+			},
+			"WIPWindowDays": {
+				"type":"number",
+				"title":"WIPWindowDays",
+				"required":true
+			}
+		}
+	},
+
+		
+		
+	"options": {
+		"form":{
+		"attributes":{
+			"action":"http://httpbin.org/post",
+			"method":"post"
+		},
+		"buttons":{
+			"submit":{
+				"title": "Send Form Data",
+				"click": function() {
+					var val = this.getValue();
+					if (this.isValid(true)) {
+						alert("Valid value: " + JSON.stringify(val, null, "  "));
+						this.ajaxSubmit().done(function() {
+							alert("Posted!");
+						});
+					} else {
+						alert("Invalid value: " + JSON.stringify(val, null, "  "));
+					}
+				}
+			}
+		}
+	},
+		"helper": "lets enter a new kanban board :o)",
+		"fields": {
+
+			"name": {
+				"size": 20,
+				"helper": "Please enter a board name."
+			},
+			"vision": {
+				"type": "textarea",
+				"name": "vision",
+				"rows": 5,
+				"cols": 40,
+				"helper": "Please enter vision statement."
+			},
+			"subvision": {
+				"type": "textarea",
+				"name": "subvision",
+				"rows": 5,
+				"cols": 40,
+				"helper": "Please enter sub-vision statement."
+			},
+			"mission": {
+				"type": "textarea",
+				"name": "mission",
+				"rows": 5,
+				"cols": 40,
+				"helper": "Please enter mission statement."
+			},
+			"height": {
+				"type":"number",
+				"title":"height",
+				"size": 5
+			},
+			"width": {
+				"type":"number",
+				"title":"width",
+				"size": 5
+			},
+			"itemScale": {
+				"type":"number",
+				"title":"itemScale",
+				"size": 5
+			},
+			"laneboxRightWidth": {
+				"type":"number",
+				"title":"laneboxRightWidth",
+				"size": 5
+			},
+			"startDate": {
+				"type":"date",
+				"format":"date",
+				"title":"startDate",
+				"dateFormat": "YYYY-MM-DD",
+				"size": 8
+			},
+			"endDate": {
+				"type":"date",
+				"title":"endDate",
+				"format":"date",
+				"dateFormat": "YYYY-MM-DD",
+				"size": 8
+			},
+			"WIPWindowDays": {
+				"type":"number",
+				"title":"WIPWindowDays",
+				"size": 5
+			}
+		}
+	},
+	
+	"postRender": function(control) {
+                        control.childrenByPropertyId["name"].getFieldEl().css("background-color", "lightgreen");
+                    }
+	    
+	    
+	
+	
+});
+            });
+        </script>
+    </body>
+</html>

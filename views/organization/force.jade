@@ -1,0 +1,47 @@
+include ../kanban_menu
+
+
+script(src="/javascripts/organization/force.js")
+
+
+
+block content
+	script(type="text/javascript").
+		$(document).ready(function() {
+			$('#kanban_menu').sidr({speed:300});
+		});
+
+	
+	div.notifications.top-left
+	div.sidr(style="margin-left:10px;margin-top:10px")
+
+		
+	div.row(style="margin-left:10px;margin-bottom:10px")
+	h3 force map experiement</b>
+
+	div.btn-group-xs
+		button.btn.btn-primary.btn-xs(id="kanban_menu" type="button") 
+			span.glyphicon.glyphicon-off  
+			span  stuff..
+
+	
+	
+	
+	form(id="svgform" method="post" action="http://tomcat.ea.bwinparty.corp/transcode/")
+		input(type="hidden" id="format" name="format" value="")
+		input(type="hidden" id="data" name="data" value="")
+		input(type="hidden" id="context" name="context" value="")
+		input(type="hidden" id="svg_width" name="svg_width" value="")
+		input(type="hidden" id="svg_height" name="svg_height" value="")
+		input(type="hidden" id="png_scale" name="png_scale" value="")
+	
+		
+	
+	script(type="text/javascript").
+		var _date = '#{orgdate}'
+		var _collection = '#{collection}'
+		
+		render(_collection);
+						
+		
+

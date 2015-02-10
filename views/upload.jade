@@ -1,0 +1,22 @@
+include kanban_menu
+
+block content
+	
+	
+div.row(style="margin-left:10px;margin-bottom:10px;width:500px")
+	div.panel.panel-default
+		div.panel-heading 
+			span.glyphicon.glyphicon-floppy-open &nbsp;  
+			strong excel importer 
+		div.panel-body 
+			p
+				upload excel lists - 	format: {collectionname}_{YYYY}-{MM}-{DD}.xlsx
+
+		div.form-box
+			form(id="uploadForm" enctype="multipart/form-data" action="/upload/process" method="post")
+				input.form-control(type="file" name="userFile")
+				input.btn.btn-primary.btn-block(type="submit" value="Upload xlsx" name="submit" data-toggle="tooltip" data-placement="top" title="......explanaotry stuff")
+		div.panel-footer
+			if message
+				.alert.alert-success(role="alert" style="font-size:10px; font-weight:bold")
+					#{message}

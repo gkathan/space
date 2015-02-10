@@ -1,0 +1,331 @@
+// jade bootstrap elemts 
+
+include kanban_menu
+
+link(rel='stylesheet', href='/stylesheets/material.css')
+
+block content
+div(style="margin-left:20px")
+
+	
+	
+	// ************ image ******************
+	.row
+		h3 image
+		//img(src="https://my.bwinparty.com/~/media/651906AE6469400A9A55AD99426BE8FC.ashx?h=30&la=en&w=30" alt="cactus" class="img-circle")
+		
+	
+	
+	// ************ material cards ******************
+	.row
+		hr.divider
+		h3 material cards
+		
+		.row
+			.col-xs-12.col-sm-6.col-md-6.col-lg-2
+				.box
+					.box-icon
+						span.fa.fa-4x.fa-html5
+					.info
+						h4.text-center Title
+						p Lorem ipsum dolor sit amet, consectetur adipisicing elit. Corrupti atque, tenetur quam aspernatur corporis at explicabo nulla dolore necessitatibus doloremque exercitationem sequi dolorem architecto perferendis quas aperiam debitis dolor soluta!</p>
+						a.btn(href="") Link
+
+			.col-xs-12.col-sm-6.col-md-6.col-lg-2
+				.box
+					.box-icon
+						span.fa.fa-4x.fa-html5
+					.info
+						h4.text-center Title
+						p Lorem ipsum dolor sit amet, consectetur adipisicing elit. Corrupti atque, tenetur quam aspernatur corporis at explicabo nulla dolore necessitatibus doloremque exercitationem sequi dolorem architecto perferendis quas aperiam debitis dolor soluta!</p>
+						a.btn(href="") Link
+			
+			.col-xs-12.col-sm-6.col-md-6.col-lg-2
+				.box
+					.box-icon
+						span.fa.fa-4x.fa-html5
+					.info
+						h4.text-center Title
+						p Lorem ipsum dolor sit amet, consectetur adipisicing elit. Corrupti atque, tenetur quam aspernatur corporis at explicabo nulla dolore necessitatibus doloremque exercitationem sequi dolorem architecto perferendis quas aperiam debitis dolor soluta!</p>
+						a.btn(href="") Link				
+			
+			.col-xs-12.col-sm-6.col-md-6.col-lg-2
+				.box
+					.box-icon
+						span.fa.fa-4x.fa-html5
+					.info
+						h4.text-center Title
+						p Lorem ipsum dolor sit amet, consectetur adipisicing elit. Corrupti atque, tenetur quam aspernatur corporis at explicabo nulla dolore necessitatibus doloremque exercitationem sequi dolorem architecto perferendis quas aperiam debitis dolor soluta!</p>
+						a.btn(href="") Link					
+	
+	
+	
+	// ************ dropbdown button ******************
+	.row
+		hr.divider
+		//glyphicon glyphicon-trash
+		h3 dropdown
+		.dropdown
+			button.btn.btn-default.dropdown-toggle(type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true") Dropdown
+				span.caret
+			ul.dropdown-menu(role="menu" aria-labelledby="dropdownMenu1")
+				li(role="presentation")
+					a(role="menuitem" tabindex="-1" href="#") Action
+				li(role="presentation")
+					a(role="menuitem" tabindex="-1" href="#") Another action
+
+
+
+	// ************ pop over ******************
+	
+	.row
+		hr.divider
+		h3 popover
+		button.btn.btn-danger(id="popover" type="button" data-toggle="popover" title="Popover title" data-content="And here's some amazing content. It's very engaging. Right?") Click to toggle popover
+			
+		// must be manually initialized
+		script $('#popover').popover()
+
+
+
+	// ************ collapse ******************
+	.row
+		hr.divider
+		h3 collapse
+		button.btn.btn-primary(type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample") press for collapse
+
+		.collapse(id="collapseExample")
+			.well
+				text inside a well
+	
+
+
+	// ************ small modal  ******************
+	// via javascript => $("#modalbutton").click()
+	.row
+		hr.divider
+		h3 modal small
+		button.btn.btn-info(id="modalbutton" type="button" data-toggle="modal" data-target=".bs-example-modal-sm") Small modal
+
+		.modal.fade.bs-example-modal-sm(tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true")
+			.modal-dialog.modal-sm
+				.modal-content
+					.modal-header
+						button.close(type="button" data-dismiss="modal" aria-label="Close")
+							span(aria-hidden="true") &times;
+						h4.modal-title(id="myModalLabel") Are your sure ??
+					.modal-body
+						p content goes here 
+						p more content
+						
+
+					.modal-footer
+						button.btn.btn-default(type="button") i am scared... 
+					
+						button.btn.btn-danger(type="button") 
+							span.glyphicon.glyphicon-flash 
+							span delete now 
+					
+	// ************ tabbed menu  ******************
+	.row
+		hr.divider
+		h3 tabs
+		div(role="tabpanel")
+			// Nav tabs 
+			ul.nav.nav-tabs(role="tablist")
+				li.active(role="presentation")
+					a(href="#home" aria-controls="home" role="tab" data-toggle="tab") Home
+				li(role="presentation")
+					a(href="#home" aria-controls="profile" role="tab" data-toggle="tab") TAB 1
+				li(role="presentation") 
+					a(href="#home" aria-controls="messages" role="tab" data-toggle="tab") TAB 2
+				li(role="presentation") 
+					a(href="#home" aria-controls="settings" role="tab" data-toggle="tab") TAB 3
+
+		// Tab panes
+			.tab-content
+				.tab-pane.active(role="tabpanel" id="home") UUUU
+					span blabla
+				.tab-pane.active(role="tabpanel" id="profile")
+					span blabla
+				.tab-pane.active(role="tabpanel" id="messages")
+					span blabla
+				.tab-pane.active(role="tabpanel" id="settings")
+					span blabla
+			script.
+				$('#myTab a').click(function (e) {
+					e.preventDefault()
+				  $(this).tab('show')
+				})
+
+	
+	
+	// ************ multiselects ******************
+	.row
+		hr.divider
+		h3 multiselect
+		.btn-group-xs
+			span.glyphicon.glyphicon-filter
+			select.multiselect(id="metricfilter" multiple="multiple")
+				option(value="baseline") baseline
+				option(value="forecast1") forecast-1
+				option(value="forecast2" selected) forecast-2
+				option(value="goal" selected) goal
+				option(value="potentials" selected) potentials
+			
+	
+			script.
+				$(document).ready(function() {
+					$('#metricfilter').multiselect({
+					buttonClass: 'btn-primary btn-sm',
+					onChange: function(element,checked){
+						
+						var _val = $(element).val()
+						if (checked)
+							//hideMetrics([{"name":_val,"hide":true}])
+							console.log("checked");
+						else
+							//hideMetrics([{"name":_val,"hide":false}])
+							console.log("!checked");
+						
+						//drawAll();
+						console.log("element: "+_val+" checked: "+checked);
+						}
+					});
+				});
+
+
+
+
+	// ************ daterange picker ******************
+	.row
+		hr.divider
+		h3 daterange picker
+		div.pull-left(id="kanbanrange" style="margin-left:10px;margin-bottom:10px")
+			span.fa.fa-calendar.fa-lg
+			span(style="font-size:12px;font-weight:bold;margin-left:10px") KANBAN RANGE
+			
+			span(style="font-size:10px")
+	script.
+		
+		
+		
+		$('#kanbanrange').daterangepicker(
+			{
+			  ranges: {
+				 'ALL': [new Date(), new Date()],
+				 'WIP': [moment().subtract('days', 10), moment().add('days', WIP_WINDOW_DAYS+10)],
+				 'History': [moment("2012-01-01"), moment().add("days",10)],
+				 'Last 30 Days': [moment().subtract('days', 29), moment()],
+				 'This Month': [moment().startOf('month'), moment().endOf('month')],
+				 'Last Month': [moment().subtract('month', 1).startOf('month'), moment().subtract('month', 1).endOf('month')]
+			  },
+			  startDate: KANBAN_START,
+			  endDate: KANBAN_END
+			},
+			function(start, end) {
+				$('#kanbanrange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
+				KANBAN_START = new Date(start);
+				KANBAN_END=new Date(end);
+				console.log("..in daterange function");
+			}
+		);
+					
+	// ************ table  ******************
+	.row
+		hr.divider
+		h3 panel with table
+
+		.panel.panel-default(style="width:500px")
+			.panel-heading Panel heading without title
+			.panel-body
+		
+	
+				table.table.table-striped.table-hover.table-condensed
+					thead
+						tr
+							th Item ID
+							th Item Name
+							th Item Price
+
+					tbody
+						tr
+							td 1
+							td 2
+							td 3
+						tr
+							td 122
+							td 2222
+							td 3222
+	include board/includes/menu_svg_export.jade
+	include board/includes/menu_visibility_switches.jade
+
+
+	// ************ 3d flip ******************
+
+	.row
+		hr.divider
+		h3 3 flip
+	
+		//div.container
+		//div.row
+		div.r(id="formContainer" style="background-color:white")
+			form.form-signin(id="login" role="form")
+				|xxxx
+				a.flipLink(href="#" id="flipToRecover")
+					div(id="triangle-topright")
+
+			form.form-signin(id="recover" role="form")
+				|yyyy
+				a.flipLink(href="#" id="flipToRecover")
+					div(id="triangle-topleft")
+
+	script.
+		$(function(){
+
+			// Checking for CSS 3D transformation support
+			$.support.css3d = supportsCSS3D();
+			
+			var formContainer = $('#formContainer');
+			
+			// Listening for clicks on the ribbon links
+			$('.flipLink').click(function(e){
+				
+				// Flipping the forms
+				formContainer.toggleClass('flipped');
+				
+				// If there is no CSS3 3D support, simply
+				// hide the login form (exposing the recover one)
+				if(!$.support.css3d){
+					$('#login').toggle();
+				}
+				e.preventDefault();
+			});
+			
+			formContainer.find('form').submit(function(e){
+				// Preventing form submissions. If you implement
+				// a backend, you might want to remove this code
+				e.preventDefault();
+			});
+			
+			
+			// A helper function that checks for the 
+			// support of the 3D CSS3 transformations.
+			function supportsCSS3D() {
+				var props = [
+					'perspectiveProperty', 'WebkitPerspective', 'MozPerspective'
+				], testDom = document.createElement('a');
+				  
+				for(var i=0; i<props.length; i++){
+					if(props[i] in testDom.style){
+						return true;
+					}
+				}
+				
+				return false;
+			}
+		});	
+		
+		
+		
+		

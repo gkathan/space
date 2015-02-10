@@ -1,0 +1,16 @@
+{
+	"env": "tiny3-development",
+
+    "v1" : {
+		"url" : "data/json/epics.json",
+		"proxy" : "/local/proxy",
+		
+		"syncEpics": {
+			"mode": "off"
+			}
+	},    
+
+     "transcoder" : {
+		"url" : "localhost:8080/transcode"
+     }
+}

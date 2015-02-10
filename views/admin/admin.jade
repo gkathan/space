@@ -1,0 +1,35 @@
+include ../kanban_menu
+include admin_imports
+
+
+block content
+
+
+
+					
+	
+div.notifications.top-left
+
+div.btn-group-xs(style="margin-left:20px")
+	span.glyphicon.glyphicon-indent-left(style="font-size:20px;color:#6896ba") 
+		span(id="admintype" style="font-weight:bold;font-size:30px;color:#6896ba")
+	br
+	br
+	button.btn.btn-primary(id="bsave" type="button" data-toggle="tooltip" data-placement="top" title="Tooltip on top") 
+		span.glyphicon.glyphicon-floppy-save 
+		span  save selected
+		
+	button.btn.btn-danger(id="bremove" type="button" data-toggle="tooltip" data-placement="top" title="Tooltip on top")
+		span.glyphicon.glyphicon-trash 
+		span  remove selected
+		
+	a.btn.btn-info(id="lexcel")
+		span.glyphicon.glyphicon-export 
+		span  export excel
+	div(id="adminGrid")
+
+
+	
+script(src="/javascripts/kanban/admin.js")
+
+

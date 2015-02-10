@@ -1,0 +1,32 @@
+{
+  "name": "kanban",
+  "version": "2.0.0",
+  "dependencies": {
+    "jquery": "latest",
+    "bootstrap": "~3.3.2",
+    "bootstrap-multiselect": "~0.9.10",
+    "bootstrap-notify": "latest",
+    "d3": "latest",
+    "underscore": "latest",
+    "underscore.nest": "latest",
+    "moment": "latest",
+    "daterangepicker": "latest",
+    "mousetrap": "latest",
+    "sidr": "latest",
+    "flippant.js": "latest",
+    "datejs": "latest",
+    "font-awesome": "latest",
+    "eonasdan-bootstrap-datetimepicker": "~4.0.0",
+    "alpaca": "~1.5.7"
+  },
+  "authors": [
+    "cactus <gerold.kathan@gmail.com>"
+  ],
+  "description": "strategic management tooling",
+  "license": "MIT",
+  "private": true,
+  "resolutions": {
+    "bootstrap-multiselect": "~0.9.10",
+    "jquery": "1.11.1"
+  }
+}

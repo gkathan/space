@@ -1,0 +1,14 @@
+include kanban_menu
+
+block content
+
+div
+	h3 API 
+		small endpoints
+		
+	div
+		ul
+			each val in API_LIST
+				li 
+					a(href="api#{val}" target="_new") #{val}
+		

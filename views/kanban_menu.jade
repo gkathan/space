@@ -1,0 +1,168 @@
+
+extends layout
+
+
+// hmmm still not working to recolor the hover boxes...
+style.
+	div.navbar div.navbar-inner ul.nav li.nav a:hover {
+	color: red !important; 
+	}
+	
+	
+
+block content
+	div.row(style="margin-left:10px;margin-bottom:10px;margin-top:10px")
+		img(src='/images/external_elements_logo_bpty.png'  height='20px')
+		if session.AUTH
+			span(style="font-size:10px;margin-left:20px;color:grey")  logged in as: <b> #{session.AUTH} </b> 
+			
+		.div(class='notifications top-left')
+
+	
+	.navbar
+		.navbar-header
+			button.navbar-toggle(type='button', data-toggle='collapse', data-target='.navbar-collapse')
+
+				span.icon-bar
+				span.icon-bar
+				span.icon-bar
+
+			
+			a.navbar-brand(href='/') integrated <b>strategy</b>²<b>tactics</b>
+			
+
+		.collapse.navbar-collapse
+			ul.nav.navbar-nav
+				li.active
+					if !session.AUTH
+						a(href='/login') login
+					
+				li
+					if session.AUTH
+						a(href='/logout') logout
+					
+				
+					if session.AUTH
+						li
+							a(href='/boards') boards
+						
+					
+						
+						ul.nav.navbar-nav
+							li.dropdown(id="fat-menu")
+								a.dropdown-toggle(id="targets" href="#" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false") targets
+									span.caret 
+
+								ul.dropdown-menu(role="menu" aria-labelledby="admin")
+									li(role="presentation") 
+										a(role="menuitem" tabindex="-1" href="/org/circlecontain/targets") targets circle contain map
+									li(role="presentation") 
+										a(role="menuitem" tabindex="-1" href="#") targets flat list
+						
+						
+						
+						
+						ul.nav.navbar-nav
+							li.dropdown(id="fat-menu")
+							
+								a.dropdown-toggle(id="org" href="#" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false") portfolio stuff 
+									span.caret 
+
+								ul.dropdown-menu(role="menu" aria-labelledby="portfolio")
+									li(role="presentation") 
+										a(role="menuitem" tabindex="-1" href="/portfolio") portfolio boards / gates
+									li(role="presentation") 
+										a(role="menuitem" tabindex="-1" href="/#") ....
+
+						
+						
+						ul.nav.navbar-nav
+							li.dropdown(id="fat-menu")
+							
+								a.dropdown-toggle(id="incidents" href="#" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false") incidents
+									span.caret 
+
+								ul.dropdown-menu(role="menu" aria-labelledby="incidents")
+									li(role="presentation") 
+										a(role="menuitem" tabindex="-1" href="/incidents") incidents
+									li(role="presentation") 
+										a(role="menuitem" tabindex="-1" href="/org/circlecontain/incidents") incidents circle contain
+
+						
+						
+						
+						
+						ul.nav.navbar-nav
+							li.dropdown(id="fat-menu")
+								a.dropdown-toggle(id="admin" href="#" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false") products & services 
+									span.caret 
+
+								ul.dropdown-menu(role="menu" aria-labelledby="admin")
+									li(role="presentation") 
+										a(role="menuitem" tabindex="-1" href="/org/circlecontain/productportfolio") product portfolio (pka)
+									li(role="presentation") 
+										a(role="menuitem" tabindex="-1" href="/org/circlecontain/productcatalog") product & service catalog (stg)
+						
+						ul.nav.navbar-nav
+							li.dropdown(id="fat-menu")
+								a.dropdown-toggle(id="org" href="#" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false") organization 
+									span.caret 
+
+								ul.dropdown-menu(role="menu" aria-labelledby="org")
+									li(role="presentation") 
+										a(role="menuitem" tabindex="-1" href="/org/tree/2015-01-15") tree [2015-01-15]
+									li(role="presentation") 
+										a(role="menuitem" tabindex="-1" href="/org/tree/2014-06-26") tree [2014-06-26]
+									li(role="presentation") 
+										a(role="menuitem" tabindex="-1" href="/org/tree/2013-04-11") tree [2013-04-11]
+									li(role="presentation") 
+										a(role="menuitem" tabindex="-1" href="/org/tree/2012-04-29") tree [2012-04-29]
+									li(role="presentation") 
+										a(role="menuitem" tabindex="-1" href="/org/tree/2011-04-29") tree [2011-04-29]
+									li(role="presentation") 
+										a(role="menuitem" tabindex="-1" href="/org/radial") radial
+									li(role="presentation") 
+										a(role="menuitem" tabindex="-1" href="/org/circlecontain/org/2015-01-15") circle contain
+									li(role="presentation") 
+										a(role="menuitem" tabindex="-1" href="/org/force") force map experiments
+						
+						li
+							a(href='/playbooks') playbooks
+						
+						ul.nav.navbar-nav
+							li.dropdown(id="fat-menu")
+								a.dropdown-toggle(id="import" href="#" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false") xlsx import 
+									span.caret 
+
+								ul.dropdown-menu(role="menu" aria-labelledby="import")
+									li(role="presentation") 
+										a(role="menuitem" tabindex="-1" href="/upload") portfolio gate 
+									li(role="presentation") 
+										a(role="menuitem" tabindex="-1" href="/upload") PI HR assignment
+									li(role="presentation") 
+										a(role="menuitem" tabindex="-1" href="/upload") plain **you should know what you do !
+						ul.nav.navbar-nav
+							li.dropdown(id="fat-menu")
+								a.dropdown-toggle(id="admin" href="#" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false") admin 
+									span.caret 
+
+								ul.dropdown-menu(role="menu" aria-labelledby="admin")
+									li(role="presentation") 
+										a(role="menuitem" tabindex="-1" href="/admin?type=initiatives") initiatives
+									li(role="presentation") 
+										a(role="menuitem" tabindex="-1" href="/admin?type=metrics") metrics
+									li(role="presentation") 
+										a(role="menuitem" tabindex="-1" href="/admin?type=boards") boards
+									li(role="presentation") 
+										a(role="menuitem" tabindex="-1" href="/admin?type=targets") targets
+									li(role="presentation") 
+										a(role="menuitem" tabindex="-1" href="/admin?type=v1epics") v1 epics
+									li(role="presentation") 
+										a(role="menuitem" tabindex="-1" href="/admin?type=scrumteams") scrum teams
+									li(role="presentation") 
+										a(role="menuitem" tabindex="-1" href="/config") -- show config --
+						
+						li
+							a(href='/api') API
+							
+						

@@ -1,0 +1,66 @@
+style.
+	#radioBtn .notActive{
+		color: #3276b1;
+		background-color: #fff;
+	}
+
+.row
+	hr.divider
+	h3 switches
+
+	
+	mixin switch(name)
+		.input-group(style="margin-left:10px;")
+			.btn-group(id="radioBtn")
+				a.btn.btn-primary.btn-xs.active(data-toggle=name data-title="off") off
+				a.btn.btn-primary.btn-xs.notActive(data-toggle=name data-title="show") show
+				a.btn.btn-primary.btn-xs.notActive(data-toggle=name data-title="hide") hide
+			input(type="hidden" name=name id="_input_"+name)
+			span(style="margin-left:5px; font-size:10px; font-weight:bold")=name
+
+	
+		
+	// nice mixins :-)
+	+switch('initiatives')
+	+switch('queues')
+	+switch('metrics')
+	+switch('grid')
+	+switch('vision')
+	hr.divider
+	+switch('targets')
+	+switch('lanes')
+	+switch('axes')
+	+switch('releases')
+	+switch('NGR')
+	+switch('SWAG')
+
+		
+		
+		
+	
+	script.
+		$('#radioBtn a').on('click', function(){
+			var sel = $(this).data('title');
+			var tog = $(this).data('toggle');
+			$('#'+tog).prop('value', sel);
+			$('a[data-toggle="'+tog+'"]').not('[data-title="'+sel+'"]').removeClass('active').addClass('notActive');
+			$('a[data-toggle="'+tog+'"][data-title="'+sel+'"]').removeClass('notActive').addClass('active');
+			console.log("* clicked..." +tog+" selected: "+sel);
+			
+			if (sel=="show") show("#"+tog);
+			if (sel=="hide") hide("#"+tog);
+			
+			
+		})
+
+		function hide(group){
+			//d3.select(group).style("visibility","hidden");
+			d3.select(group).transition().duration(500).style("opacity",0);
+		}
+
+		function show(group){
+			//d3.select(group).style("visibility","visible");
+			d3.select(group).transition().duration(500).style("opacity",1);
+			//d3.select(group).transition().duration(500).style("opacity","");
+		}
+		

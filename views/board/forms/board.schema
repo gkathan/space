@@ -1,0 +1,149 @@
+{
+
+   "schema": {
+		"title":"Kanban Board",
+		"description":"a first kanban board alpaca form",
+		"type":"object",
+		"properties": {
+			"id": {
+				"type":"string",
+				"title":"Name",
+				"required":true
+			},
+			"name": {
+				"type":"string",
+				"title":"name",
+				"required":true
+			},
+			"vision": {
+				"type":"string",
+				"title":"vision"
+			},
+			"subvision": {
+				"type":"string",
+				"title":"subvision"
+			},
+			"mission": {
+				"type":"string",
+				"title":"mission"
+			},
+			"height": {
+				"type":"number",
+				"title":"height",
+				"required":true
+			},
+			"width": {
+				"type":"number",
+				"title":"width",
+				"required":true
+			},
+			"itemScale": {
+				"type":"number",
+				"title":"itemScale",
+				"required":true
+			},
+			"laneboxRightWidth": {
+				"type":"number",
+				"title":"laneboxRightWidth",
+				"required":true
+			},
+			"startDate": {
+				"type":"date",
+				"title":"startDate",
+				"required":true
+			},
+			"endDate": {
+				"type":"date",
+				"title":"endDate",
+				"required":true
+			},
+			"WIPWindowDays": {
+				"type":"number",
+				"title":"WIPWindowDays",
+				"required":true
+			}
+			
+		}
+	},
+	
+	
+	
+	
+	
+	
+	"options": {
+		"form":{
+			"attributes":{
+				"action":"http://httpbin.org/post",
+				"method":"post"
+			},
+			"buttons":{
+				"submit":{}
+			}
+		},
+		"helper": "Tell us what you think about Alpaca!",
+		"fields": {
+			"id": {
+				"type":"string",
+				"title":"Name",
+				"required":true
+			},
+			"name": {
+				"size": 20,
+				"helper": "Please enter a board name."
+			},
+			"vision": {
+				"type": "textarea",
+				"name": "vision",
+				"rows": 5,
+				"cols": 40,
+				"helper": "Please enter vision statement."
+			},
+			"subvision": {
+				"type": "textarea",
+				"name": "subvision",
+				"rows": 5,
+				"cols": 40,
+				"helper": "Please enter sub-vision statement."
+			},
+			"mission": {
+				"type": "textarea",
+				"name": "mission",
+				"rows": 5,
+				"cols": 40,
+				"helper": "Please enter mission statement."
+			},
+			"height": {
+				"type":"number",
+				"title":"height"
+			},
+			"width": {
+				"type":"number",
+				"title":"width"
+			},
+			"itemScale": {
+				"type":"number",
+				"title":"itemScale"
+			},
+			"laneboxRightWidth": {
+				"type":"number",
+				"title":"laneboxRightWidth"
+			},
+			"startDate": {
+				"type":"string",
+				"title":"startDate"
+			},
+			"endDate": {
+				"type":"string",
+				"title":"endDate"
+			},
+			"WIPWindowDays": {
+				"type":"number",
+				"title":"WIPWindowDays"
+			}
+			
+			
+		}
+	},
+	"view" : "bootstrap-edit"
+}

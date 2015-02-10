@@ -1,0 +1,90 @@
+
+
+.row
+	hr.divider
+	h3 multiselect
+	
+	.btn-group-xs
+		span.glyphicon.glyphicon-filter
+		select.multiselect(id="metricfilter" multiple="multiple")
+			option(value="baseline") baseline
+			option(value="forecast1") forecast-1
+			option(value="forecast2" selected) forecast-2
+			option(value="goal" selected) goal
+			option(value="potentials" selected) potentials
+
+	.btn-group-xs
+		span.glyphicon.glyphicon-filter
+		select.multiselect(id="metricview")
+			option(value="REVIEW_Q1_2014" selected) REVIEW_Q1_2014
+			option(value="FORECAST_2015") FORECAST_2015-1
+			
+
+	.btn-group-xs
+		span.glyphicon.glyphicon-filter
+		select.multiselect(id="basedate")
+			option(value="2013-10-31") 2013-10-31
+			option(value="2014-03-11" selected) 2014-03-11
+			
+		
+		
+	
+	script.
+		$(document).ready(function() {
+			  $('#metricfilter').multiselect({
+				buttonClass: 'btn-primary btn-sm',
+				onChange: function(element,checked){
+					
+					var _val = $(element).val()
+					if (checked)
+						hideMetrics([{"name":_val,"hide":true}])
+					else
+						hideMetrics([{"name":_val,"hide":false}])
+					
+					drawAll();
+					console.log("element: "+_val+" checked: "+checked);
+				}
+			});
+		  });
+		 
+		 
+		  $(document).ready(function() {
+			  $('#metricview').multiselect({
+				buttonClass: 'btn-primary btn-sm',
+				onChange: function(element,checked){
+					
+					var _val = $(element).val()
+					_setMetricContext(_val);
+					drawAll();
+		//			console.log("element: "+_val+" checked: "+checked);
+				}
+			});
+		  });
+		 
+		 
+		  
+		  //change the configured forecast calculation basedate
+		  $(document).ready(function() {
+			  $('#basedate').multiselect({
+				buttonClass: 'btn-primary btn-sm',
+				onChange: function(element,checked){
+					var _val = $(element).val()
+					console.log("element: "+_val+" checked: "+checked);
+					
+					if (_val=="2013-10-31"){
+						console.log("______val="+_val);
+						if (_getMetricContextByColumn("right1")) _getMetricContextByColumn("right1").forecastDate=[_val];
+						if (_getMetricContextByColumn("right2")) _getMetricContextByColumn("right2").forecastDate=[_val];
+					}
+					else if(_val=="2014-03-11"){
+						if (_getMetricContextByColumn("right1")) _getMetricContextByColumn("right1").forecastDate=["2013-10-31",_val];
+						if (_getMetricContextByColumn("right2")) _getMetricContextByColumn("right2").forecastDate=["2013-10-31",_val];
+
+						//_getDataBy("dimension","forecast1",METRIC_CONTEXT).data.baseDate=["2013-10-31",_val];
+						//_getDataBy("dimension","forecast2",METRIC_CONTEXT).data.baseDate=["2013-10-31",_val];
+					}
+					drawAll();
+				}
+			});
+		  });
+		

@@ -1,0 +1,84 @@
+include kanban_menu
+
+link(rel='stylesheet', href='/stylesheets/login.css')
+
+
+block content
+	div.login-container
+		div(id="output")
+		div.avatar
+		div.form-box
+			form(id="loginform" action="" method=""  )
+				input.form-control(id="uid" name="uid" type="text" placeholder="username")
+				input.form-control(id="pwd" name ="pwd" type="password" placeholder="password")
+				button.btn.btn-primary.btn-block(id="loginsubmit" type="button") Login
+				span(style="font-size:8px;font-family:arial")
+					b Disclaimer:
+					Distribution of this information without authorisation is a breach of the Bwin.Party Code of Conduct and disciplinary action may be taken against you. 
+
+
+
+
+	
+	
+	script(type='text/javascript').
+
+		$(document).keypress(function(e) {
+			if(e.which == 13) {
+				$("#loginsubmit").click();
+			}
+		});
+		
+		$("#loginsubmit").click(function() { submit(); });
+
+		
+		function submit() {
+			
+			var form = document.getElementById("loginform");
+			var _uid = form.uid.value;
+			var _pwd = form.pwd.value;
+			var _url = "/authenticate";
+			
+			
+			//form.ajax call 
+			$.ajax({
+				type: "POST",
+				url: _url,
+				data: { 'uid': _uid, 'pwd':_pwd },
+				cache: false,
+				dataType:"json",
+				success: function(msg)
+					{
+						// and redirect
+						// but to which destination ????
+						
+						sessionStorage.setItem("AUTH",msg.AUTH);
+						
+						
+						var _redirect = "";
+						
+						if (!msg.ORIGINAL_URL) {
+							_redirect="dashboard";
+						}
+						else {
+							_redirect=msg.ORIGINAL_URL;
+						
+						}
+						
+						console.log("***** and now do a client side redirect: "+_redirect);
+						redirect(_redirect);
+						
+					},
+				error: function(msg)
+					{
+						//if (afterHandlerCallback !=undefined)
+						$('.top-left').notify({
+								message: { html: "<span class=\"glyphicon glyphicon-fire\"></span><span style=\"font-size:10px;font-weight:bold\"> ajaxCall.("+_url+") says:</span> <br/><div style=\"font-size:10px;font-weight:normal;margin-left:20px\">"+JSON.stringify(msg)+"</div>" },
+								fadeOut: {enabled:true,delay:2000},
+								type: "danger"
+							  }).show(); // for the ones that aren't closable and don't fade out there is a .hide() function.
+					}
+				});
+			
+			return false;
+		}

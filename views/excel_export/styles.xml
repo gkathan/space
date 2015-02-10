@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<!--http://blogs.msdn.com/b/brian_jones/archive/2007/05/29/simple-spreadsheetml-file-part-3-formatting.aspx-->
+<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+ <fonts count="2">
+  <font />
+  <font>
+	  <sz val="8"></sz>
+	 <!-- <b/> -->
+  </font>
+  <font>
+	  <sz val="8"></sz>
+	  <b/> 
+	  <color indexed="1"/>
+  </font>
+
+ </fonts>
+ <fills count="4">
+  <fill />
+  <fill />
+  <fill>
+   <patternFill patternType="solid">
+		<fgColor rgb="174D75" />
+		<bgColor indexed="64" />
+	</patternFill>
+   </fill>
+ 
+   <fill>
+   <patternFill patternType="solid">
+        <fgColor rgb="eeeeee" />
+        <bgColor indexed="64" />
+   </patternFill>
+  </fill>
+ </fills>
+ 
+ <borders count="1">
+  <border />
+ </borders>
+ 
+ <cellStyleXfs count="1">
+  <xf />
+ </cellStyleXfs>
+ 
+ <cellXfs count="4">
+  <xf />
+  <xf fontId="1"/>
+  <xf fontId="2" fillId="2"/>
+  <xf fontId="1" fillId="3"/>
+  
+ </cellXfs>
+</styleSheet>

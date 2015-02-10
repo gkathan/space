@@ -1,0 +1,49 @@
+{
+	"env" : "default",
+	
+    "debug": true,
+
+    "url": "http://localhost",
+
+    "timezone": "UTC",
+
+    "locale": "en",
+
+    "v1" : {
+		
+		"url" : "http://v1.bwinparty.corp/V1-Production/",
+		
+		"proxy" : "http://knbnprxy.ea.bwinparty.corp/rest/epics",
+		
+		"syncEpics": {
+			"mode": "off",
+			"intervalMinutes" :0,
+			"url" : "localhost/v1sync"
+			}
+	},
+
+    "database": {
+        "type" : "mongo",
+        "db": "kanbanv2",
+        "host" : "localhost:27017"
+     },
+     
+     "api" : {
+		"url" :"/api/kanbanv2/rest/"
+	},
+	
+	"transcoder" : {
+		"url" : ""
+     },
+     
+     "mailer" : {
+     
+		"host": "mail.netmonic.com",
+		"port": 25,
+		"auth": {
+			"user": "mail@kathan.at",
+			"pass": "kakroot"
+		}
+     }
+     
+}
