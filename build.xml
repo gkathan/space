@@ -71,7 +71,7 @@
 	<target name="start" description="deploy to ea.bwinparty.corp machine" >
 
 	
-	<sshexec host="cloud.ea.bwinparty.corp" username="gkathan" password="bwin123" command="nohup ./start.sh" trust="true" port="22"/>
+	<sshexec host="cloud.ea.bwinparty.corp" username="gkathan" password="bwin123" command="./start.sh" trust="true" port="22"/>
 	
   </target>
 
