@@ -64,6 +64,7 @@
 
 	<scp file="${TARGET}" todir="gkathan@cloud.ea.bwinparty.corp:/home/gkathan/" password="bwin123" port="22" trust="true"/>
 	<sshexec host="cloud.ea.bwinparty.corp" username="gkathan" password="bwin123" command="./deployv2.sh" trust="true" port="22"/>
+	<sshexec host="cloud.ea.bwinparty.corp" username="gkathan" password="bwin123" command="./start.sh" trust="true" port="22"/>
 	
   </target>
 
