@@ -3,29 +3,29 @@ include kanban_menu
 block content
 	
 	
-div.row(style="margin-left:10px;margin-bottom:10px;width:500px")
-	div.panel.panel-default
-		div.panel-heading 
-			span.glyphicon.glyphicon-floppy-open &nbsp;  
-			strong excel importer 
-		div.panel-body 
-			p
-				| upload excel lists - 	format: {collectionname}_{YYYY}-{MM}-{DD}.xlsx
-			p(style="font-size:10px;margin-left:20px;font-weight:bold")
-				| currently supported plain import excels:
-			ul(style="font-size:10px;margin-left:20px")
-				li productportfolio
-				li productcatalog
-				li targets
-				li incidents
-				li labels
-				
 
-		div.form-box
-			form(id="uploadForm" enctype="multipart/form-data" action="/upload/process" method="post")
-				input.form-control(type="file" name="userFile")
-				input.btn.btn-primary.btn-block(type="submit" value="Upload xlsx" name="submit" data-toggle="tooltip" data-placement="top" title="......explanaotry stuff")
-		div.panel-footer
-			if message
-				.alert.alert-success(role="alert" style="font-size:10px; font-weight:bold")
-					#{message}
+div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;background-color:white;margin-top: 60px;width:600px;height:400px;text-align: left;margin: 80px auto;")
+	div.panel-heading 
+		span.glyphicon.glyphicon-floppy-open &nbsp;  
+		strong excel importer 
+	div.panel-body 
+		p
+			| upload excel lists - 	format: {collectionname}_{YYYY}-{MM}-{DD}.xlsx
+		p(style="font-size:10px;margin-left:20px;font-weight:bold")
+			| currently supported plain import excels:
+		ul(style="font-size:10px;margin-left:20px")
+			li productportfolio
+			li productcatalog
+			li targets
+			li incidents
+			li labels
+			
+
+	div.form-box
+		form(id="uploadForm" enctype="multipart/form-data" action="/upload/process" method="post")
+			input.form-control(type="file" name="userFile")
+			input.btn.btn-primary.btn-block(type="submit" value="Upload xlsx" name="submit" data-toggle="tooltip" data-placement="top" title="......explanaotry stuff")
+	div.panel-footer
+		if message
+			.alert.alert-success(role="alert" style="font-size:10px; font-weight:bold")
+				#{message}

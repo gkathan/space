@@ -1,6 +1,6 @@
 include kanban_menu
 
-link(rel='stylesheet', href='/stylesheets/material.css')
+//link(rel='stylesheet', href='/stylesheets/material.css')
 
 block content
 div(style="margin-left:100px")
@@ -8,11 +8,11 @@ div(style="margin-left:100px")
 	// ************ material cards ******************
 	.row
 		.col-xs-12.col-sm-6.col-md-6.col-lg-6
-			.box
-				.info
-					h3.text-center CONFIG
-						br
-						br
+			.panel(style="width:300px")
+				.panel-heading
+					h3.panel-title 
+						CONFIG
+				.panel-body	
 					ul(style="text-align:left;font-size:10px")
 						li environment: 
 							b #{config.env}
@@ -25,4 +25,4 @@ div(style="margin-left:100px")
 							b #{config.transcoder.url}
 						li mailer: 
 							b #{config.mailer.host}
-									
+

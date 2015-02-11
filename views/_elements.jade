@@ -9,6 +9,39 @@ div(style="margin-left:20px")
 
 	
 	
+	// ************ toggle ******************
+	.row
+		h3 toggle
+			
+			div(class="well page" id="toggle-button" style="width:500px")
+				h1.header
+					Toggle Button
+					.togglebutton
+						label 
+							| Wi-Fi
+							input(type="checkbox" checked)
+					.togglebutton
+						label 
+							| bluetooth
+							input(type="checkbox") 
+			style.
+				#toggle-button h2 {
+					font-size: 18.7199993133545px;
+					font-weight: bold;
+					margin-bottom: 30px;
+					margin-top: 50px;
+					}
+					#toggle-button .togglebutton label {
+					margin: 20px 10px;
+					width: 200px;
+					}
+					#toggle-button .togglebutton .toggle {
+					float: right;
+				}
+					
+				
+	
+	
 	// ************ image ******************
 	.row
 		h3 image
@@ -326,6 +359,9 @@ div(style="margin-left:20px")
 			}
 		});	
 		
-		
-		
+
+
+	
+	include includes/material
+			
 		

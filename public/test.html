@@ -11,6 +11,9 @@
 		 <script type="text/javascript" src="/javascripts/components/moment/min/moment.min.js"></script>
 		
 		<script type="text/javascript" src="/javascripts/components/bootstrap/dist/js/bootstrap.min.js"></script>	
+		
+		
+		
 		 <script type="text/javascript" src="/javascripts/components/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js"></script>   
 		<link rel="stylesheet" href="/javascripts/components/bootstrap/dist/css/bootstrap.min.css" />
 		<link rel="stylesheet" href="/javascripts/components/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css" />
@@ -18,7 +21,17 @@
 		<script type="text/javascript" src="/javascripts/components/handlebars/handlebars.js"></script>	   
 
         <link type="text/css" href="/javascripts/components/alpaca/dist/alpaca/bootstrap/alpaca.min.css" rel="stylesheet" />
+        
+                
+         <!-- Material Design for Bootstrap -->
+    <link href="/javascripts/components/bootstrap-material-design/dist/css/material-wfont.min.css" rel="stylesheet">
+    <link href="/javascripts/components/bootstrap-material-design/dist/css/ripples.min.css" rel="stylesheet">
+
+        
+        
         <script type="text/javascript" src="/javascripts/components/alpaca/dist/alpaca/bootstrap/alpaca.min.js"></script>
+
+ 
 
 
 	
@@ -188,7 +201,7 @@
 	},
 	
 	"postRender": function(control) {
-                        control.childrenByPropertyId["name"].getFieldEl().css("background-color", "lightgreen");
+                        //control.childrenByPropertyId["name"].getFieldEl().css("background-color", "lightgreen");
                     }
 	    
 	    
@@ -197,5 +210,15 @@
 });
             });
         </script>
+ 
+      <!-- Material Design for Bootstrap -->
+    <script src="/javascripts/components/bootstrap-material-design/dist/js/material.min.js"></script>
+    <script src="/javascripts/components/bootstrap-material-design/dist/js/ripples.min.js"></script>
+    <script>
+     $.material.init();
+    </script>
+
+
+
     </body>
 </html>
