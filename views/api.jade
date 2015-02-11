@@ -2,13 +2,18 @@ include kanban_menu
 
 block content
 
-div
-	h3 API 
+
+
+div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;background-color:white;width:400px;text-align: left;margin: 10px auto;")
+	div.panel-heading 
+		i(style="font-size:20px").mdi-communication-import-export API 
+		br
 		small endpoints
 		
-	div
-		ul
+	div.panel-body 
+		p
+			| REST style, JSON 
+		ul(style="font-size:10px;margin-left:20px")
 			each val in API_LIST
 				li 
 					a(href="api#{val}" target="_new") #{val}
-		
