@@ -1,10 +1,10 @@
-<project name="Kanbanv2" default="dist" basedir=".">
+<project name="strategy2tactics" default="dist" basedir=".">
     <description>
         simple example build file
     </description>
   <!-- set global properties for this build -->
   <property name="src" location="."/>
-  <property name="dist"  location="../dist"/>
+  <property name="dist"  location="C:\Users\gkathan\Dropbox\_work\d3\kanban\dist"/>
   
   <property name="mongodb_dev"  location="c:/mongodb"/>
   <property name="mongodb_dump"  location="data/mongo"/>
@@ -19,11 +19,11 @@
 	  <format property="NOW_TIME" pattern="kkmmss" locale="de,de"/>
   </tstamp>
   
-  <property name="ARCHIVE" value="${dist}/zip/kanbanv2-${NOW_DATE}_${NOW_TIME}.zip"/>
-  <property name="TARGET" value="${dist}/zip/kanbanv2.zip"/>
+  <property name="ARCHIVE" value="${dist}/zip/s2t-${NOW_DATE}_${NOW_TIME}.zip"/>
+  <property name="TARGET" value="${dist}/zip/s2t.zip"/>
   
   <target name="echo">
-	<echo message="kanban v2 build: ${NOW_DATE}"/>
+	<echo message="strategy2tactics build: ${NOW_DATE}"/>
   
   </target>
   
@@ -66,6 +66,14 @@
 	<sshexec host="cloud.ea.bwinparty.corp" username="gkathan" password="bwin123" command="./deployv2.sh" trust="true" port="22"/>
 	
   </target>
+
+	<target name="start" description="deploy to ea.bwinparty.corp machine" >
+
+	
+	<sshexec host="cloud.ea.bwinparty.corp" username="gkathan" password="bwin123" command="nohup ./start.sh" trust="true" port="22"/>
+	
+  </target>
+
 
   <!-- DB stuff
   
