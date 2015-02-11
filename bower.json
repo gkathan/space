@@ -18,9 +18,9 @@
     "font-awesome": "latest",
     "eonasdan-bootstrap-datetimepicker": "~4.0.0",
     "alpaca": "~1.5.7",
-    "slickgrid":"latest",
-    "lodash":"latest"
-    
+    "slickgrid": "latest",
+    "lodash": "latest",
+    "bootstrap-material-design": "~0.2.2"
   },
   "authors": [
     "cactus <gerold.kathan@gmail.com>"

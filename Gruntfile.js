@@ -51,7 +51,9 @@ module.exports = function(grunt) {
         // files to lint
         src: [
           'app.js',
-          'routes/*.js'
+          'routes/*.js',
+          'public/**.js'
+          
         ],
         // files to exclude
         exclude: [
