@@ -6,7 +6,7 @@ var mongo = require('mongodb');
 var mongojs = require('mongojs');
 
 var moment = require('moment');
-
+var _ = require('lodash');
 
 var DB="kanbanv2";
 
@@ -131,6 +131,10 @@ router.get('/', function(req, res) {
 						console.log("array[0]: "+_gates[_date].pItems[_state][0].id);
 						
 						// sort by id
+						
+						//_.map(_.sortByAll(_gates[_date].pItems[_state],['EpicRef']),_.values);
+						
+						
 						_gates[_date].pItems[_state].sort(function(a,b){return b.id - a.id; });
 						
 						// sort by swag
