@@ -9,8 +9,6 @@ var fs = require('fs');
 var path = require('path');
 
 var _ = require('lodash');
-//u.nst = require('underscore.nest');
-
 
 // fileupload + xls2json handling
 var multer  = require('multer');
@@ -58,21 +56,16 @@ router.use(multer({ dest: __dirname+'/temp_uploads/',
 			fs.readFile(_outputFile, 'utf8', function (err, data) {
 			if (err) throw err; // we'll not consider error handling for now
 			var json = JSON.parse(data);
+
 			//console.log("parsed "+_jsonfilename+": "+json);
 			console.log("***and inserting into mongoDB...");
-			
-			
 			console.log("***************** [DEBUG]: _originalFilename: "+_originalFilename);
-			
 			
 			var _check = _validateName(_originalFilename);
 			var _collection = _check.collection;
 			var _date = _check.date;
 			var _boarddate = _check.boarddate;
-			
 			var _fillblanks = _check.fillblanks;
-			
-			
 			var _function ="";
 			var _dropBeforeInsert=false;
 			
@@ -84,7 +77,6 @@ router.use(multer({ dest: __dirname+'/temp_uploads/',
 			}
 			
 			console.log("***************** [DEBUG]: _collection: "+_collection+" _date: "+_date);
-			
 			
 			if (_date){
 				var _data = _function(json,_date,_boarddate,_fillblanks);
@@ -163,7 +155,12 @@ function _handlePortfolioGate(json,date,boarddate){
 		   var array = new Array();        
 			map2[key] = array;
 		}
+		//and fetch the current Health from v1Epics and attach as snapshot data
+		// to see the change of health states over time
+		//map.pItems[i]["health"]=V1EpicService.getEpicbyRef(map.pItems[i].EpicRef);
+
 		map2[key].push(map.pItems[i]);
+		
 	}
 	map.pItems=map2;
 	map.pBoardDate = boarddate;

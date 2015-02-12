@@ -25,6 +25,15 @@ block content
 					if session.AUTH
 						a(href='/logout') logout
 					if session.AUTH
+						ul.nav.navbar-nav
+							li.dropdown(id="fat-menu")
+								a.dropdown-toggle(id="targets" href="#" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false") customers
+									span.caret 
+
+								ul.dropdown-menu(role="menu" aria-labelledby="admin")
+									li(role="presentation") 
+										a(role="menuitem" tabindex="-1" href="/labels") labels
+
 						li
 							a(href='/boards') boards
 						ul.nav.navbar-nav

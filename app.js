@@ -23,7 +23,8 @@ var config = require('config');
 
 
 var mail = require('./services/mail');
-mail();
+//testmail on startup
+//mail();
 
 
 
