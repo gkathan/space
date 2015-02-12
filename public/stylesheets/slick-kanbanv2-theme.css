@@ -6,17 +6,17 @@ classes should alter those!
 */
 
 .slick-header-columns {
-  background: url('images/header-columns-bg.gif') repeat-x center bottom;
+  
   border-bottom: 1px solid silver;
 }
 
 .slick-header-column {
-  background: url('images/header-columns-bg.gif') repeat-x center bottom;
+  
   border-right: 1px solid silver;
 }
 
 .slick-header-column:hover, .slick-header-column-active {
-  background: white url('images/header-columns-over-bg.gif') repeat-x center bottom;
+  background: white 
 }
 
 .slick-headerrow {
@@ -74,7 +74,7 @@ classes should alter those!
 }
 
 .slick-cell.selected {
-  background-color: beige;
+  background-color: #FFECB3;
 }
 
 .slick-cell.active {
@@ -87,7 +87,7 @@ classes should alter those!
 }
 
 .slick-row.odd {
-  background: #fafafa;
+  background: #f3f3f3;
 }
 
 .slick-row.ui-state-active {

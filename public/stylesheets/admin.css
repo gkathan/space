@@ -26,34 +26,7 @@ ul {
 }
 
 
-#myGrid {
-  background: white;
-  outline: 0;
-  border: 1px solid gray;
-  
-}
 
-.grid-header {
-  border: 1px solid gray;
-  border-bottom: 0;
-  border-top: 0;
-  background: url('images/header-bg.gif') repeat-x center top;
-  color: black;
-  height: 24px;
-  line-height: 24px;
-}
-
-.grid-header label {
-  display: inline-block;
-  font-weight: bold;
-  margin: auto auto auto 6px;
-}
-
-.grid-header .ui-icon {
-  margin: 4px 4px auto 6px;
-  background-color: transparent;
-  border-color: transparent;
-}
 
 .grid-header .ui-icon.ui-state-hover {
   background-color: white;
@@ -280,11 +253,11 @@ font-size:11px;
 
 
 .slick-headerrow-column {
-  background: #6896ba;
+  background: #eeeeee;
   text-overflow: clip;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
-  font-size:12px;
+  font-size:11px;
 }
 
 .slick-headerrow-column input {
@@ -294,7 +267,7 @@ font-size:11px;
   height: 100%;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
-  font-size:12px;
+  font-size:11px;
 }
 
 .slick-header *, *:before, *.after {

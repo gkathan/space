@@ -54,7 +54,7 @@ block content
 					each status in _date.pItems
 						// no NEW items for now
 						if status[0].Status != "New"
-							div.col-md-3.col-lg3
+							div.col-md-3.col-lg5
 								div.panel(style="position:relative;padding: 10px 10px 10px;display: block;background-color:white;width:300px;text-align: left;margin: 10px auto;")
 									//status header
 									div.panel-heading(style="text-align:center")
@@ -68,7 +68,7 @@ block content
 												div.col 
 													if epic.id
 														if epic.Status != "Monitoring"
-															span(style="background-color:#{epic.health}")
+															span(style="background-color:#{epic.Health}")
 																| &nbsp;&nbsp;&nbsp;   
 														| &nbsp;
 														a(href="http://v1.bwinparty.corp/V1-Production/Epic.mvc/Summary?oidToken=Epic%3A"+epic.id target="_new" )

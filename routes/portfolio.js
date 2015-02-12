@@ -97,10 +97,11 @@ router.get('/', function(req, res) {
 							// v1 epic.ID comes in format Epic:2783462387
 							if (_item[0]) {_epic["id"] = _item[0].ID.split(":")[1];}
 							if (_item[0]) {
-								_epic["health"] = _item[0].Health;
-								_epic["swag"] = _item[0].Swag;
-								if(_item[0].Health=="Amber") _epic["health"]="gold"; 
-								if(!_item[0].Health) _epic["health"]="lightgrey"; 
+								// we have snapshots of the health + healthComment
+								//_epic["health"] = _item[0].Health;
+								//_epic["swag"] = _item[0].Swag;
+								if(_epic["Health"]=="Amber") _epic["Health"]="gold"; 
+								if(!_epic["Health"]) _epic["Health"]="lightgrey"; 
 							}
 							
 							// and now check whether something changed since last date

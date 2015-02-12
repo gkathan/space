@@ -10,11 +10,18 @@ var path = require('path');
 
 var _ = require('lodash');
 
-var v1Service = require('../services/V1Service');
+
 
 // fileupload + xls2json handling
 var multer  = require('multer');
 var xlsx_json = require('xlsx-to-json')
+
+
+
+
+
+
+
 
 
 module.exports = router;
@@ -63,11 +70,14 @@ router.use(multer({ dest: __dirname+'/temp_uploads/',
 			console.log("***and inserting into mongoDB...");
 			console.log("***************** [DEBUG]: _originalFilename: "+_originalFilename);
 			
+			
+			// check is an object with 4 fields; {data,date,boardDate,fillblanks}
 			var _check = _validateName(_originalFilename);
 			var _collection = _check.collection;
 			var _date = _check.date;
 			var _boarddate = _check.boarddate;
 			var _fillblanks = _check.fillblanks;
+			
 			var _function ="";
 			var _dropBeforeInsert=false;
 			
@@ -80,20 +90,24 @@ router.use(multer({ dest: __dirname+'/temp_uploads/',
 			
 			console.log("***************** [DEBUG]: _collection: "+_collection+" _date: "+_date);
 			
+			// async processing pattern required here too ;-)
 			if (_date){
-				var _data = _function(json,_date,_boarddate,_fillblanks);
+				//var _data = _function(json,_date,_boarddate,_fillblanks);
+				_function(json,_date,_boarddate,_fillblanks,function(_data){
 				
-				console.log("...going to store to mongoDB: collection = "+_collection+" data:"+_data );
-				
-				var DB="kanbanv2";
-				var connection_string = '127.0.0.1:27017/'+DB;
-				var db = mongojs(connection_string, [DB]);
-				
-				// in some cases it would be needed to drop old collection first
-				if (_dropBeforeInsert) db.collection(_collection).drop();
-				
-				db.collection(_collection).insert(_data);
-				done=true;
+					console.log("...going to store to mongoDB: collection = "+_collection+" data:"+_data );
+					
+					var DB="kanbanv2";
+					var connection_string = '127.0.0.1:27017/'+DB;
+					var db = mongojs(connection_string, [DB]);
+					
+					// in some cases it would be needed to drop old collection first
+					if (_dropBeforeInsert) db.collection(_collection).drop();
+					
+					db.collection(_collection).insert(_data);
+					done=true;
+					//return;
+				});
 			}
 			
 			else{
@@ -104,6 +118,9 @@ router.use(multer({ dest: __dirname+'/temp_uploads/',
 			});
 		  }
 		});
+
+	
+
 }
 }));
 
@@ -139,52 +156,125 @@ function _validateName(fileName){
 }
 
 
-/** takes a json object and does some processing before it gets stored
+/** 
+ * pre-process portfolio gate data
+ * takes a json object and does some processing before it gets stored
  */
-function _handlePortfolioGate(json,date,boarddate){
-	//group by Date
-	console.log("######################## _handlePortfolioGate called with date: "+date);
-	
-	var map = _clusterBy(json,"pDate",date,"pItems");
+function _handlePortfolioGate(json,date,boardDate,fillblanks,callback){
 	
 	
-	var map2 = new Object();
-	
-	
-	for(i =0 ; i < map.pItems.length; i++){
-		var key = map.pItems[i].Status;
-		if(!map2[key]){
-		   var array = new Array();        
-			map2[key] = array;
-		}
-		//and fetch the current Health from v1Epics and attach as snapshot data
-		// to see the change of health states over time
-		
-		var _epic = v1Service.findEpicByRef(map.pItems[i].EpicRef);
-		console.log("epic: "+_epic);
-		map.pItems[i]["health"]=_epic.health;
+	var v1Service = require('../services/V1Service');
 
-		map2[key].push(map.pItems[i]);
+	v1Service.findEpics(function(_epics){
 		
-	}
-	map.pItems=map2;
-	map.pBoardDate = boarddate;
+		console.log("*************** epics.length: "+_epics.length);
+		
+		//group by Date
+		console.log("######################## _handlePortfolioGate called with date: "+date);
+		
+		var map = _clusterBy(json,"pDate",date,"pItems");
+		
+		var map2 = new Object();
 			
-	return map;
+		for(i =0 ; i < map.pItems.length; i++){
+			var key = map.pItems[i].Status;
+			if(!map2[key]){
+			   var array = new Array();        
+				map2[key] = array;
+			}
+			var _ref = map.pItems[i].EpicRef;
+			var _e = _.find(_epics, { 'Number': _ref });
 			
+			//enrich with health attribute snapshot from current V1Epics 
+			if (_e != undefined){
+				if (_e.Health != undefined){
+					map.pItems[i]["Health"]=_e.Health;
+				}
+				if (_e.HealthComment != undefined){
+					map.pItems[i]["HealthComment"]=_e.HealthComment;
+				}
+				
+				if (_e.PlannedStart != undefined){
+					map.pItems[i]["PlannedStart"]=_e.PlannedStart;
+				}
+				if (_e.PlannedEnd != undefined){
+					map.pItems[i]["PlannedEnd"]=_e.PlannedEnd;
+				}
+				if (_e.LaunchDate != undefined){
+					map.pItems[i]["LaunchDate"]=_e.LaunchDate;
+				}
+				if (_e.Swag != undefined){
+					map.pItems[i]["Swag"]=_e.Swag;
+				}
+
+
+			 }
+			map2[key].push(map.pItems[i]);
+		}
+		map.pItems=map2;
+		map.pBoardDate = boardDate;
+				
+		callback(map);
+		return;
+	});
 }
 
-function _handleHR_PI(json,date){
+/**
+ * pre-process HR data
+ */
+function _handleHR_PI(json,date,boardDate,fillblanks,callback){
 	//group by Date
 	console.log("######################## _handleHR_PI called with date: "+date);
 	
-	
 	var map = _clusterBy(json,"oDate",date,"oItems");
-	
 			
-	return map;
+	callback(map);
+	return;
 			
 }
+
+
+
+/** 
+ * generic pre-process data 
+ * takes a json object and does some processing before it gets stored
+ */
+function _handlePlain(json,date,boardDate,fillblanks,callback){
+	//group by Date
+	console.log("######################## _handlePlain called with date: "+date);
+	
+	// and fill blank cells 
+	// _length = number of rows
+	
+	
+	if (fillblanks){
+	
+		var _rows = json.length;
+		for (var row=0; row<_rows; row++){
+			//console.log(orgData[i]);
+			var _column=1;
+			var _keys = Object.keys(json[row]);
+			
+			// !!!!!!!!!!!!! NEEDS some REFACTORING as it always fills up blanks now !!!!
+			// also when i do NOT want it ;-)
+			for (var key in json[row]){
+				if (json[row-1]){
+					var _x1_prev = json[row-1][_keys[_column]];
+					var _x1 = json[row][_keys[_column]];if (!_x1 && _x1_prev) {
+						json[row][_keys[_column]] = _x1_prev;
+					} 
+					
+				}
+			_column++;
+			}
+			
+		}
+	}
+	callback(json);
+	return;
+			
+}
+
 
 /**
  * helper to cluster an array by a certain field
@@ -206,66 +296,6 @@ function _clusterBy(inArray,clusterName,clusterValue,itemBucket){
 	return map;
 	
 }
-
-
-/** takes a json object and does some processing before it gets stored
- */
-function _handlePlain(json,date,fillblanks){
-	//group by Date
-	console.log("######################## _handlePlain called with date: "+date);
-	
-	// and fill blank cells 
-	// _length = number of rows
-	
-	
-	if (fillblanks){
-	
-		var _rows = json.length;
-		for (var row=0; row<_rows; row++){
-			//console.log(orgData[i]);
-			var _column=1;
-			var _keys = Object.keys(json[row]);
-			
-			// !!!!!!!!!!!!! NEEDS some REFACTORING as it always fills up blanks now !!!!
-			// also when i do NOT want it ;-)
-			for (var key in json[row]){
-				if (json[row-1]){
-					/*
-					console.log("* row..."+row);
-					console.log("* column..."+_column);
-					console.log("** number of rows: "+json.length);
-					console.log("** number of columns: "+_keys.length);
-					console.log("** column: "+key);
-					console.log("*** value: "+json[row][key]);
-					
-					 
-					
-					var _x1_prev = json[row-1][_keys[_column]];
-					var _x2 = json[row-1][_keys[_column-1]];
-					var _x3 = json[row][_keys[_column-1]];
-					
-					console.log("_x1 = "+_x1);
-					console.log("_x2 = "+_x2);
-					console.log("_x3 = "+_x3);
-					*/
-					
-					var _x1_prev = json[row-1][_keys[_column]];
-					var _x1 = json[row][_keys[_column]];if (!_x1 && _x1_prev) {
-						json[row][_keys[_column]] = _x1_prev;
-					} 
-					
-				}
-			_column++;
-			}
-			
-		}
-	}
-	
-	return json;
-			
-}
-
-
 
 
 
