@@ -10,6 +10,8 @@ var path = require('path');
 
 var _ = require('lodash');
 
+var v1Service = require('../services/V1Service');
+
 // fileupload + xls2json handling
 var multer  = require('multer');
 var xlsx_json = require('xlsx-to-json')
@@ -157,7 +159,10 @@ function _handlePortfolioGate(json,date,boarddate){
 		}
 		//and fetch the current Health from v1Epics and attach as snapshot data
 		// to see the change of health states over time
-		//map.pItems[i]["health"]=V1EpicService.getEpicbyRef(map.pItems[i].EpicRef);
+		
+		var _epic = v1Service.findEpicByRef(map.pItems[i].EpicRef);
+		console.log("epic: "+_epic);
+		map.pItems[i]["health"]=_epic.health;
 
 		map2[key].push(map.pItems[i]);
 		

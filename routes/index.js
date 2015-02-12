@@ -2,8 +2,6 @@ var express = require('express');
 
 var mongojs = require("mongojs");
 var config = require('config');
-//test to include stuff
-//var api=require('./api.js');
 
 //underscore 
 var _ = require('lodash');
@@ -14,7 +12,6 @@ var DB="kanbanv2";
 
 var connection_string = '127.0.0.1:27017/'+DB;
 var db = mongojs(connection_string, [DB]);
-
 
 
 /* GET home page. */
