@@ -19,15 +19,17 @@
 	 "transcoder" : {
 		"url" : "http://tomcat.ea.bwinparty.corp/transcode/"
      },
+      
       "mailer" : {
-     
 		"host": "smtprelay.icepor.com",
-		"port": 25,
-		"auth": {
-			"user": "u",
-			"pass": "u"
-		}
+		"from": "strategy2tactics-mailer@bwinparty.com"
+
+     },
+     
+     "notifications" : {
+		"portfolioupdate": "joachim.baca@bwinparty.com,marc.lange@bwinparty.com,peter.kugler-antony@bwinparty.com,christoph.haas@bwinparty.com,sandeep.tiku@bwinparty.com,steve.guthrie@bwinparty.com,lluis.mora@bwinparty.com,andy.pickard@bwinparty.com,gerold.kathan@bwinparty.com,teja.rangi@bwinparty.com,martin.lindner@bwinparty.com"
      }
+    
 
 
 

@@ -17,27 +17,35 @@ var org = require('./routes/org');
 var incidents = require('./routes/incidents');
 var portfolio = require('./routes/portfolio');
 var upload = require('./routes/upload');
+var fs = require('fs')
+
+
 
 // environment specific configurations
 var config = require('config');
-
-
-var mail = require('./services/mail');
-//testmail on startup
-//mail();
 
 
 var log4js = require('log4js');
 log4js.configure({
   appenders: [
     { type: 'console' },
-    { type: 'file', filename: 'logs/kanbanv2.log', category: 'kanbanv2' }
+    { type: 'file', filename: 'logs/s2t.log', category: 's2t' }
     
   ],
   replaceConsole: true
 });
 
-var fs = require('fs')
+
+
+// load build number
+var build = JSON.parse(fs.readFileSync('./s2t.build', 'utf8'));
+
+
+if (config.env==="PRODUCTION") config.build=build.build;
+//else config.build="---- development ----";
+
+//config.build=build.build;
+
 
 var app = express();
 
@@ -95,6 +103,16 @@ app.use(function(req,res,next){
 	res.locals.session = req.session;
 	next();
 });
+
+
+// get access to URL of running app
+app.use(function(req, res, next) {
+    req.getBaseUrl = function() {
+      return req.protocol + "://" + req.get('host');
+    }
+    return next();
+  });
+
 
 
 // adds config object to all responses

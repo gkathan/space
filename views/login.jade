@@ -10,11 +10,11 @@ block content
 div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;background-color:white;;width:350px;height:400px;text-align: center;margin: 10px auto;")
 	div.avatar
 	div(style="margin: 40px auto;")
-		form(id="loginform" action="" method="" )  
+		form(id="loginform" action="" method="" autocomplete="off" ) 
 			br
 			div(style="margin-left:30px;width:200px")
-				input.form-control.floating-label(id="uid" name="uid" type="text" placeholder="username" style="autocomplete:off" )
-				input.form-control.floating-label(id="pwd" name ="pwd" type="password" placeholder="password" style="autocomplete:off")
+				input.form-control.floating-label(id="uid" name="uid" type="text" placeholder="username" autocomplete="off" )
+				input.form-control.floating-label(id="pwd" name ="pwd" type="password" placeholder="password" autocomplete="off" )
 			br
 		
 			button.btn.btn-primary(id="loginsubmit" type="button") Login

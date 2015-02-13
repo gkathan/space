@@ -46,6 +46,7 @@ router.get('/', function(req, res) {
 		
 		pgates.find().sort({pDate:-1}, function (err, docs){
 			var _gates = docs;
+			
 			// find all initiatives which have ExtNumber set 
 			//initiatives.find({ExtNumber:{$exists:1}},function (err,docs){
 			initiatives.find({},function (err,docs){
@@ -67,13 +68,20 @@ router.get('/', function(req, res) {
 				// pg dates
 				for (var _date in _gates){
 					//collect the changed items per date in a bucket for later display
-					var _changeBucket=[];
-					_gates[_date]["changeBucket"]=_changeBucket;
+					var _stateChangeBucket=[];
+					var _healthChangeBucket=[];
+					
+					_gates[_date]["stateChangeBucket"]=_stateChangeBucket;
+					_gates[_date]["healthChangeBucket"]=_healthChangeBucket;
 					
 					_gates[_date].pDate=moment(_gates[_date].pDate).format('LL');
 					_gates[_date].pBoardDate=moment(_gates[_date].pBoardDate).format('LL');
 					
 					console.log("----------------------------------------------------------------"+_gates[_date].pDate);
+					
+					// sort the states by 
+					// NEW -> UNDERSTANDING -> CONCEPTION -> IMPLEMENTATION -> MONITORING -> CLOSED
+					
 					
 					// pg state
 					for (var _state in _gates[_date].pItems){
@@ -100,29 +108,36 @@ router.get('/', function(req, res) {
 								// we have snapshots of the health + healthComment
 								//_epic["health"] = _item[0].Health;
 								//_epic["swag"] = _item[0].Swag;
-								if(_epic["Health"]=="Amber") _epic["Health"]="gold"; 
-								if(!_epic["Health"]) _epic["Health"]="lightgrey"; 
+								
+								//if(_epic["Health"]=="Amber") _epic["Health"]="gold"; 
+								//if(!_epic["Health"]) _epic["Health"]="lightgrey"; 
 							}
 							
 							// and now check whether something changed since last date
 							// do not check for last date - as there is nothing to check against ;-)
 							if (_date < _gates.length-1){
-								
 								var _dd = parseInt(_date)+1;
-								
-								//console.log("***************** looking in previous: "+_dd);
-								//console.log("***************** looking in previous length: "+_gates[_dd].pItems.length);
-								
+
 								var _compare = _findItemByDateandRef(_gates[_dd].pItems,_epic.EpicRef);
 								
-								// check status change
-								if (_compare !=undefined && _compare.Status != _epic.Status){
-									_epic["oldState"]=_compare.Status;
+								// 1) check status change
+								if (_compare ==undefined || _compare.Status != _epic.Status){
+									if (_compare ==undefined){
+										 _epic["oldState"]="New";
+									 }
+									else{
+										 _epic["oldState"]=_compare.Status;
+									 }
 									// and collect those items in a bucket...
-									_changeBucket.push(_epic);
-									
-									console.log("++++++++++++++++++++++++++++++++++++++++ epic: "+_epic.EpicRef+ " changed its state from: "+_compare.Status);
+									_stateChangeBucket.push(_epic);
 								}
+								// 2) health changes
+								if (_compare != undefined && _compare.Health != _epic.Health){
+									 _epic["oldHealth"]=_compare.Health;
+									// and collect those items in a bucket...
+									_healthChangeBucket.push(_epic);
+								}
+								
 									
 							}
 

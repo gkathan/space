@@ -3,25 +3,43 @@ include kanban_menu
 //link(rel='stylesheet', href='/stylesheets/material.css')
 
 block content
-div(style="margin-left:100px")
 
-	// ************ material cards ******************
-	.row
-		.col-xs-12.col-sm-6.col-md-6.col-lg-6
-			.panel(style="width:300px")
-				.panel-heading
-					h3.panel-title 	CONFIG
-				.panel-body
-					ul(style="text-align:left;font-size:10px")
-						li environment: 
-							b #{config.env}
-						li v1.url: 
-							b #{config.v1.url}
-						li v1.proxy: 
-							b #{config.v1.proxy}
-						li v1.syncEpics: <b>#{config.v1.syncEpics.mode}</b> every <b>#{config.v1.syncEpics.intervalMinutes}</b> minutes
-						li transcoder: 
-							b #{config.transcoder.url}
-						li mailer: 
-							b #{config.mailer.host}
+div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;background-color:white;width:400px;text-align: left;margin: 10px auto;")
+	.panel-heading
+		i(style="font-size:20px").mdi-action-settings 
+		span(style="font-size:20px") CONFIG 
+	.panel-body
+		ul(style="text-align:left;font-size:10px")
+			li version:
+				b #{config.version}-#{config.build}
+			
+			li environment: 
+				b #{config.env}
+			li v1:
+				ul
+					li url: 
+						b #{config.v1.url}
+					li proxy: 
+						b #{config.v1.proxy}
+					li syncEpics: <b>#{config.v1.syncEpics.mode}</b> every <b>#{config.v1.syncEpics.intervalMinutes}</b> minutes
+			li transcoder: 
+				b #{config.transcoder.url}
+			li mailer: 
+				b #{config.mailer.host}
+			li os: 
+				ul 
+					li platform: 
+						b #{os.platform()}
+					li arch: 
+						b #{os.arch()}
+					li release: 
+						b #{os.release()}
+					li uptime: 
+						b #{os.uptime()}
+					li loadavg: 
+						b #{os.loadavg()}
+					li freemem: 
+						b #{os.freemem()}
+					li cpus: 
+						b #{os.cpus().length}
 

@@ -31,17 +31,22 @@
   <target name="init">
     <!-- Create the time stamp -->
     <tstamp/>
+    
+    <delete>
+		<fileset dir="." includes="s2t.build"/>
+	</delete>
+	
+    <touch file="s2t.build"/>
+	
+	<echo file="s2t.build" append="true">{"build":"${NOW_DATE}_${NOW_TIME}"}
+	</echo>
 
   </target>
 
   
   <target name="dist" depends="init"
         description="generate the distribution" >
-    <!-- Create the distribution directory -->
-   
-	
-	
-	
+    
 
     <!-- Put everything in ${build} into the MyProject-${DSTAMP}.jar file -->
     <zip destfile="${ARCHIVE}">

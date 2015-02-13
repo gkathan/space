@@ -40,6 +40,8 @@ router.get('/chromeonly', function(req, res) {
 });
 
 router.get('/config', function(req, res) {
+	var os = require('os');
+	res.locals.os = os;	
 	res.render('config');
 });
 

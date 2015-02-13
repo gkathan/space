@@ -10,19 +10,15 @@ var path = require('path');
 
 var _ = require('lodash');
 
+var config = require('config');
+
 
 
 // fileupload + xls2json handling
 var multer  = require('multer');
 var xlsx_json = require('xlsx-to-json')
 
-
-
-
-
-
-
-
+var baseUrl;
 
 module.exports = router;
 
@@ -35,6 +31,15 @@ router.use(multer({ dest: __dirname+'/temp_uploads/',
 
 	onFileUploadStart: function (file) {
 	  console.log(file.originalname + ' is starting ...')
+	},
+	onParseEnd: function (req, next) {
+		console.log('Form parsing completed at: ', new Date());
+		
+		// get the base URL of running app 
+		baseUrl = req.getBaseUrl();
+	  
+		// call the next middleware
+		next();
 	},
 
 	onFileUploadComplete: function (file) {
@@ -106,6 +111,12 @@ router.use(multer({ dest: __dirname+'/temp_uploads/',
 					
 					db.collection(_collection).insert(_data);
 					done=true;
+					
+					if (_collection=="portfoliogate"){
+						_sendPortfolioUpdate(config.notifications.portfolioupdate);
+					}
+				
+					
 					//return;
 				});
 			}
@@ -118,11 +129,9 @@ router.use(multer({ dest: __dirname+'/temp_uploads/',
 			});
 		  }
 		});
-
-	
-
-}
+	}
 }));
+
 
 /**
  * checks format for portfoliogate xlsx upload
@@ -274,6 +283,35 @@ function _handlePlain(json,date,boardDate,fillblanks,callback){
 	return;
 			
 }
+
+
+/**
+ * notifies when a portfolioupdate was imported
+ */ 
+function _sendPortfolioUpdate(to){
+	var mailer = require('../services/MailService');
+
+	var req = require
+	
+	
+	//var _url = baseUrl+"/portfolio";
+	var _url = "http://kanbanv2.ea.bwinparty.corp/portfolio";
+	
+	
+	var mail = {};
+	mail.to=to;
+	mail.subject="[portfolio gate] update notification";
+	mail.text="hej,\nthere is an updated portfolio gate view available under \n\n"+_url+" \n\ncheerz.";
+	//mail.html="<html><body><h1>this is the html version</h1><p>and some text</p></body></html>";
+
+	//testmail on startup
+	mailer.sendText(mail);
+					
+	
+	
+}
+
+
 
 
 /**

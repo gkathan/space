@@ -43,10 +43,13 @@
      "mailer" : {
 		"host": "localhost",
 		"port": 25,
-		"auth": {
-			"user": "",
-			"pass": ""
-		}
+		"from" : "mailer@localhost"
+	
+     },
+     
+     "notifications" : {
+		"portfolioupdate": "gerold.kathan@bwinparty.com"
+     
      }
      
 }

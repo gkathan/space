@@ -21,9 +21,12 @@
 
       "mailer" : {
 		"host": "smtprelay.icepor.com",
-		"port": 25,
-		"auth": {
-		}
+		"from": "strategy2tactics-mailer@bwinparty.com"
+
+     },
+     
+       "notifications" : {
+		"portfolioupdate": "gerold.kathan@bwinparty.com"
      }
      
     

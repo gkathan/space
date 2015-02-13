@@ -1,9 +1,9 @@
-exports = module.exports = empty;
+
 
 var config = require('config');
 
 
-function empty () {
+exports.empty = function empty () {
 	console.log('i do nothing ;-)');
 }
 
