@@ -1,42 +1,31 @@
 exports = module.exports = sendTest;
 
-var nodemailer = require('nodemailer');
-var smtpTransport = require('nodemailer-smtp-transport');
+var email = require('emailjs');
 var config = require('config');
+
+var server  = email.server.connect({
+	user: config.mailer.auth.user,
+	password: config.mailer.auth.pass
+		host: config.mailer.host,
+   ssl:     true
+});
+
+
 
 
 function sendTest () {
-	// create reusable transporter object using SMTP transport
-	var transporter = nodemailer.createTransport(smtpTransport({
-		host: config.mailer.host,
-		port: config.mailer.port,
-		auth: {
-			user: config.mailer.auth.user,
-			pass: config.mailer.auth.pass
-		}	
-	}));
 
-	// NB! No need to recreate the transporter object. You can use
-	// the same transporter object for all e-mails
+// send the message and get a callback with an error or details of the message that was sent
+server.send({
+   text:    "i hope this works", 
+   from:    "cactus", 
+   to:      "someone <someone@your-email.com>, another <another@your-email.com>",
+   cc:      "else <else@your-email.com>",
+   subject: "testing emailjs"
+}, function(err, message) { console.log(err || message); });
 
-	// setup e-mail data with unicode symbols
-	var mailOptions = {
-		from: 'kanbanv2mailer ✔ <gerold.kathan@bwinparty.com>', // sender address
-		to: 'gerold.kathan@bwinparty.com', // list of receivers
-		subject: 'Hello from kanbanv2 ✔', // Subject line
-		text: '...started✔', // plaintext body
-		html: '<b>kanbanv2 ✔</b> just started ' // html body
-	};
 
-	// send mail with defined transport object
-	transporter.sendMail(mailOptions, function(error, info){
-		if(error){
-			//console.log("nodemailer says: "+error+" on trying to send via "+JSON.stringify(mailOptions));
-			console.log(error);
-		}else{
-			console.log('Message sent: ' + info.response);
-		}
-	});
+
 }
 
 

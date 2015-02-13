@@ -26,19 +26,6 @@ var mail = require('./services/mail');
 //testmail on startup
 //mail();
 
-/*
-var v1Service = require('./services/V1Service');
-
-v1Service.findEpicByRef("E-07820",function(_epic){
-	console.log("*************** health of "+_epic.Name+" is "+_epic.Health);
-});
-
-v1Service.findEpics(function(epics){
-	console.log("*************** epics.length: "+epics.length);
-});
-*/
-
-
 
 var log4js = require('log4js');
 log4js.configure({
