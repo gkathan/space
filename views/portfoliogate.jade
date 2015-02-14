@@ -17,11 +17,11 @@ script(src="/javascripts/components/moment/min/moment.min.js")
 style(type='text/css').
 	.badge 
 	{ 
-		font-size: 10px;
+		font-size: 8px;
 		font-weight: normal;
 		white-space: nowrap;
 		color: white;
-		background-color: #grey !important;
+		background-color: #black !important;
 		-webkit-border-radius: 5px;
 		-moz-border-radius: 5px;
 		border-radius: 20px;
@@ -36,6 +36,38 @@ style(type='text/css').
 			right:5px;
 			font-size: 18px;
 		}
+
+// ------------------ mixin start ----------------------------
+
+mixin renderEpic(epic)
+	div.col 
+		table.table-hover
+			tr
+				if epic.id
+
+					if epic.Status != "Monitoring"
+						td(style="width:15px;vertical-align:middle")
+							span(style="background-color:#{mapHealth2Color(epic.Health)}")
+								| &nbsp;&nbsp;&nbsp;   
+					td(style="font-weight:normal;font-size:8px;width:35px;height:14px;vertical-align:middle")
+						| #{epic.EpicRef} 
+					td(style="font-weight:bold;font-size:9px;width:180px;vertical-align:middle;white-space:nowrap")
+						a(href="http://v1.bwinparty.corp/V1-Production/Epic.mvc/Summary?oidToken=Epic%3A"+epic.id target="_new" )
+							| <b>#{epic.name}</b> 
+					td(style="font-weight:normal;font-size:8px;width:35px;height:14px;vertical-align:middle;text-align:center")
+						a(href="http://v1.bwinparty.corp/V1-Production/attachment.img/"+epic.id+"/" target="_new" )
+							| [IP]
+					td(style="width:15px;vertical-align:middle;text-align:center")
+						if epic.oldState
+							span.glyphicon.glyphicon-star(style="font-size:12px;color:black; ")
+							//span(style="color:orange; font-size:10px") #{epic.oldState}
+					
+				else
+					td(style="width:15px;vertical-align:middle") 
+					td(style="font-weight:normal;font-size:8px;width:250px;height:14px;vertical-align:middle")
+						span  #{epic.EpicRef} * not synced
+					
+// ------------------ mixin end ----------------------------
 
 block content
 	span(style="color:#999999;font-size:8px") #{pgates.length} [portfolio board] snapshots online | last v1.epics sync #{v1LastUpdate}
@@ -85,37 +117,17 @@ block content
 					each status in _date.pItems
 						// no NEW items for now
 						if status[0].Status != "New"
-							div.col-md-3.col-lg5
-								div.panel(style="position:relative;padding: 10px 10px 10px;display: block;background-color:white;width:350px;text-align: left;margin: 10px auto;")
+							div.col-sm-2.col-md-3.col-lg5
+								div.panel(style="background-color:white;width:300px;text-align: left")
 									//status header
-									div.panel-heading(style="text-align:center")
-										//span.badge.badge-low #{status[0].Status.charAt(0)} 
+									div.panel-heading(style="text-align:left")
+										span(style="font-size:20px;color:#{colors[status[0].Status]};margin-left:0px") #{status[0].Status.toUpperCase()}
 										span.badge #{status.length}
-										span(style="font-size:20px;color:#{colors[status[0].Status]};text-align:center") #{status[0].Status.toUpperCase()}
+										
 									//list epics per status	
 									div.panel-body
 										div.row(style="font-size:11px;margin-left:2px")
 											each epic in status
-												div.col 
-													if epic.id
-														if epic.Status != "Monitoring"
-															span(style="background-color:#{mapHealth2Color(epic.Health)}")
-																| &nbsp;&nbsp;&nbsp;   
-														| &nbsp;
-														a(href="http://v1.bwinparty.corp/V1-Production/Epic.mvc/Summary?oidToken=Epic%3A"+epic.id target="_new" )
-															span(style="font-weight:normal;font-size:8px")
-																| #{epic.EpicRef} 
-															| <b>#{epic.name}</b> 
-														a(href="http://v1.bwinparty.corp/V1-Production/attachment.img/"+epic.id+"/" target="_new" )
-															| [IP]
-														
-														if epic.oldState
-															span.glyphicon.glyphicon-star(style="font-size:12px;color:black; ")
-																//span(style="color:orange; font-size:10px") #{epic.oldState}
-														
-													else
-														span #{epic.EpicRef} *not synced
-														
-														
+												+renderEpic(epic)
 
 			

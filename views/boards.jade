@@ -57,7 +57,20 @@ block content
 	div.panel.panel-default
 		div.panel-heading ...select a board
 		div.panel-body
-			div.row
+			
+			// new board
+			div.col-sm-1.col-md-3
+				div.panel(style=" position: relative;padding: 10px 10px 10px;display: block;background-color:white;;width:250px;height:320px;text-align: center;margin: 10px auto;")
+					h4 - new -
+					a(href="/kanban/new")
+						img.img-thumbnail(src="/images/boards/thumbs/new.png"  style=" height:100px"  alt="...")
+					br
+					h4 
+						small - create new board - 
+					br
+					a.btn.btn-info.btn-xs(href="/kanban/create" role="button") Create
+
+
 			each val in boards
 				+board(val)
 
