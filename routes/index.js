@@ -46,18 +46,26 @@ router.get('/config', function(req, res) {
 });
 
 router.get('/labels', function(req, res) {
-	
-	//res.locals.labels = LabelService.getLabels();
-	
+	//res.locals.labels = LabelService.findLabels();
 	var labels =  db.collection('labels');
 		labels.find({}, function (err, docs){
 			//sort
 			docs=_.sortBy(docs, "market")
-			
 			res.locals.labels=docs;
 			res.render('labels')
 	});
-		
+});
+
+
+router.get('/customers', function(req, res) {
+	//res.locals.customers = CustomerService.findCustomers();
+	var customers =  db.collection('customers');
+		customers.find({}, function (err, docs){
+			//sort
+			customers=_.sortBy(docs, "type")
+			res.locals.customers=docs;
+			res.render('customers')
+	});
 });
 
 

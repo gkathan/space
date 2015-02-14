@@ -86,9 +86,13 @@ router.use(multer({ dest: __dirname+'/temp_uploads/',
 			var _function ="";
 			var _dropBeforeInsert=false;
 			
+			var _plainElements =["productportfolio","productcatalog","targets","incidents","labels","customers"];
+			
+
+			
 			if (_collection=="portfoliogate") _function = _handlePortfolioGate;
 			else if (_collection=="org") _function = _handleHR_PI;
-			else if (_collection=="productportfolio" || _collection=="productcatalog" || _collection=="targets" || _collection=="incidents" || _collection=="labels"){
+			else if (_.indexOf(_plainElements,_collection) >-1){
 				 _function = _handlePlain;
 				 _dropBeforeInsert = true;
 			}

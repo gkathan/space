@@ -20,16 +20,16 @@
      
 		<script type="text/javascript" src="/javascripts/components/handlebars/handlebars.js"></script>	   
 
-        <link type="text/css" href="/javascripts/components/alpaca/dist/alpaca/bootstrap/alpaca.min.css" rel="stylesheet" />
         
+        
+        <script type="text/javascript" src="/javascripts/components/alpaca/dist/alpaca/bootstrap/alpaca.min.js"></script>
                 
          <!-- Material Design for Bootstrap -->
     <link href="/javascripts/components/bootstrap-material-design/dist/css/material-wfont.min.css" rel="stylesheet">
     <link href="/javascripts/components/bootstrap-material-design/dist/css/ripples.min.css" rel="stylesheet">
 
         
-        
-        <script type="text/javascript" src="/javascripts/components/alpaca/dist/alpaca/bootstrap/alpaca.min.js"></script>
+        <link type="text/css" href="/javascripts/components/alpaca/dist/alpaca/bootstrap/alpaca.min.css" rel="stylesheet" />
 
  
 
@@ -43,6 +43,11 @@
     </head>
     <body>
         <div id="form" style="width:250px"></div>
+    <script>
+     $.material.init();
+    </script>
+
+
         <script type="text/javascript">
             $(document).ready(function() {
                 $("#form").alpaca({

@@ -3,54 +3,68 @@ include kanban_menu
 link(rel='stylesheet', href='/stylesheets/login.css')
 
 
-block content
-	div.row(style="margin-left:10px;margin-bottom:10px ;width:1200px")
-		div.panel.panel-default
-			div.panel-heading ...select a board
-			div.panel-body
-				div.row
-				each val in boards
-					div.col-sm-3.col-md-3
-						div.thumbnail
-							a(href="/kanban/#{val._id}")
-								img.img-thumbnail(src="/images/boards/thumbs/#{val._id}.png"  style=" height:150px"  alt="...")
-							div.caption
-								h3 #{val.name}
-									br
-									small #{val.vision} 
-								
-								p 
-									a.btn.btn-primary.btn-s(href="/kanban/#{val._id}" role="button") View
-									a.btn.btn-default.btn-s(href="/admin?type=boards" role="button") Edit
-									a.btn.btn-link(id="delete_modal" data-toggle="modal" data-target=".bs-example-modal-sm" role="button") 
-										span(style="color:red;font-size:10px") [Delete]
-								p
-									span(style="font-size:10px; color:#999999") created by: <b>cactus</b> [2015-01-23]
-								
-								
-				// ************ small modal  ******************
+mixin board(board)
+	div.col-sm-1.col-md-3
+		div.panel(style=" position: relative;padding: 10px 10px 10px;display: block;background-color:white;;width:250px;height:320px;text-align: center;margin: 10px auto;")
+			h4 #{board.name}
+			a(href="/kanban/#{board._id}")
+				img.img-thumbnail(src="/images/boards/thumbs/#{board._id}.png"  style=" height:100px"  alt="...")
+			br
+			h4 
+				small #{board.vision} 
+			span(style="font-size:10px; color:#999999") created by: <b>cactus</b> [2015-01-23]
+			br
+			a.btn.btn-primary.btn-xs(href="/kanban/#{board._id}" role="button") View
+			a.btn.btn-default.btn-xs(href="/admin?type=boards" role="button") Edit
+			a.btn.btn-link(id="delete_modal" data-toggle="modal" data-target=".bs-example-modal-sm" role="button") 
+				span(style="color:red;font-size:10px") Delete
+					
+					
+	// ************ small modal  ******************
+	.modal.fade.bs-example-modal-sm(tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true")
+		.modal-dialog.modal-sm
+			.modal-content
+				.modal-header
+					button.close(type="button" data-dismiss="modal" aria-label="Close")
+						span(aria-hidden="true") &times;
+					h4.modal-title(id="myModalLabel") Are your sure ??
+					br
+					span(style="color:red; text-align:center") this will <b>permanently</b> delete 
 
-				.modal.fade.bs-example-modal-sm(tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true")
-					.modal-dialog.modal-sm
-						.modal-content
-							.modal-header
-								button.close(type="button" data-dismiss="modal" aria-label="Close")
-									span(aria-hidden="true") &times;
-								h4.modal-title(id="myModalLabel") Are your sure ??
-							.modal-body
-								p this will permanently delete board 
-								
-								
 
-							.modal-footer
-								
-								button.btn.btn-danger(type="button" href="/kanban/delete/id") 
-									span.glyphicon.glyphicon-flash 
-									span delete now 
-	
-	include includes/material
+				.modal-body
+					div.panel(style=" position: relative;padding: 10px 10px 10px;display: block;background-color:white;;width:250px;text-align: center;margin: 10px auto;")
 
-									
+						
+						h4 #{board.name}
+						a(href="/kanban/#{board._id}")
+							img.img-thumbnail(src="/images/boards/thumbs/#{board._id}.png"  style=" height:100px"  alt="...")
+						br
+						h4 
+							small #{board.vision} 
+						span(style="font-size:10px; color:#999999") created by: <b>cactus</b> [2015-01-23]
+						br
+						button.btn.btn-danger(type="button" href="/kanban/delete/id") 
+							span.glyphicon.glyphicon-flash 
+							span delete now 
 
+					
 		
+
+
+
+block content
+	div.panel.panel-default
+		div.panel-heading ...select a board
+		div.panel-body
+			div.row
+			each val in boards
+				+board(val)
+
+				
+include includes/material
+
+								
+
+	
 
