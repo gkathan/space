@@ -58,6 +58,11 @@ router.get('/labels', function(req, res) {
 
 
 router.get('/customers', function(req, res) {
+	if (!req.session.AUTH){
+		  req.session.ORIGINAL_URL = req.originalUrl;
+		  res.redirect("/login");
+	}
+
 	//res.locals.customers = CustomerService.findCustomers();
 	var customers =  db.collection('customers');
 		customers.find({}, function (err, docs){
