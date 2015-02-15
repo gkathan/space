@@ -48,7 +48,7 @@ mixin renderEpic(epic)
 					if epic.Status != "Monitoring"
 						td(style="width:15px;vertical-align:middle")
 							span(style="background-color:#{mapHealth2Color(epic.Health)}")
-								| &nbsp;&nbsp;&nbsp;   
+								| &nbsp;&nbsp;&nbsp;&nbsp;   
 					td(style="font-weight:normal;font-size:8px;width:35px;height:14px;vertical-align:middle")
 						| #{epic.EpicRef} 
 					td(style="font-weight:bold;font-size:9px;width:180px;vertical-align:middle;white-space:nowrap")
@@ -78,38 +78,48 @@ block content
 				br
 				span(style="font-size:28px;font-weight:bold") #{_date.pDate}
 				ul.list-unstyled
-				span(style="font-size:11px;font-weight:normal;color:black;text-align:center") <b>CHANGES</b> from previous [portfolio meeting] @ #{_date.pBoardDate}:
+
+				if _date.stateChangeBucket.length == 0 && _date.healthChangeBucket.length == 0
+					span(style="font-size:11px;font-weight:normal;color:black;text-align:center") <b>NO CHANGES</b> from previous [portfolio meeting] @ #{_date.pBoardDate}:
+				else
+					span(style="font-size:11px;font-weight:normal;color:black;text-align:center") <b>CHANGES</b> from previous [portfolio meeting] @ #{_date.pBoardDate}:
 				br
-				span(style="font-size:10px;font-weight:normal;color:black;text-align:center") STATUS:
+
+
+				if _date.stateChangeBucket.length > 0
+					span(style="font-size:11px;font-weight:normal;color:black;text-align:center") STATUS:
+					br
+					table(style="width:600px")
+						// state changes
+						each _change in _date.stateChangeBucket
+							if _change.Status !="New"
+								tr
+									td(style="width:150px;font-size:10px;vertical-align:middle;height:14px")
+										span.glyphicon.glyphicon-star(style="font-size:10px;color:black;")
+										<b>#{_change.oldState}</b> 
+										span.glyphicon.glyphicon-arrow-right 
+										|  <b>#{_change.Status}</b>   
+									td(style="width:450px;font-size:10px;vertical-align:middle;height:14px")
+										a(href="http://v1.bwinparty.corp/V1-Production/Epic.mvc/Summary?oidToken=Epic%3A"+_change.id target="_new" )
+											| <span style="font-size:9px">#{_change.EpicRef}</span>  <b>#{_change.name}</b>  
 			
-				// state changes
-				each _change in _date.stateChangeBucket
-					li.list-unstyled(style="font-size:10px;color:black") 
-						// we do not want to see items which went into New status
-						if _change.Status != "New"
+				// health changes
+				if _date.healthChangeBucket.length > 0
+					span(style="font-size:11px;font-weight:normal;color:black;text-align:center") HEALTH:
+					each _change in _date.healthChangeBucket
+						li.list-unstyled(style="font-size:10px;color:black") 
+							
 							span.glyphicon.glyphicon-star(style="font-size:10px;color:black; ")
-							<b>#{_change.oldState}</b> 
+							span(style="background-color:#{mapHealth2Color(_change.oldHealth)}")
+								| &nbsp;&nbsp;&nbsp;   
+							|&nbsp;
 							span.glyphicon.glyphicon-arrow-right 
-							|  <b>#{_change.Status}</b>   
+							
+							span(style="background-color:#{mapHealth2Color(_change.Health)}")
+								| &nbsp;&nbsp;&nbsp;   
+							| &nbsp;
 							a(href="http://v1.bwinparty.corp/V1-Production/Epic.mvc/Summary?oidToken=Epic%3A"+_change.id target="_new" )
 								| #{_change.EpicRef} <b>#{_change.name}</b>  
-
-				// health changes
-				span(style="font-size:10px;font-weight:normal;color:black;text-align:center") HEALTH:
-				each _change in _date.healthChangeBucket
-					li.list-unstyled(style="font-size:10px;color:black") 
-						
-						span.glyphicon.glyphicon-star(style="font-size:10px;color:black; ")
-						span(style="background-color:#{mapHealth2Color(_change.oldHealth)}")
-							| &nbsp;&nbsp;&nbsp;   
-						|&nbsp;
-						span.glyphicon.glyphicon-arrow-right 
-						
-						span(style="background-color:#{mapHealth2Color(_change.Health)}")
-							| &nbsp;&nbsp;&nbsp;   
-						| &nbsp;
-						a(href="http://v1.bwinparty.corp/V1-Production/Epic.mvc/Summary?oidToken=Epic%3A"+_change.id target="_new" )
-							| #{_change.EpicRef} <b>#{_change.name}</b>  
 				
 				
 				

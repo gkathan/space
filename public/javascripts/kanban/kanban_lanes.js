@@ -39,15 +39,9 @@ function drawLanes(){
 	
 	var lanes = svg.append("g").attr("id","lanes");
 
-
-
 //experiment
 	//var drag_item = _registerDragDrop();
 //experiment
-	
-	
-    
-
 
 	var lanesLeft = lanes.append("g").attr("id","lanesLeft");
 	var lanesRight = lanes.append("g").attr("id","lanesRight");	
@@ -126,7 +120,6 @@ function drawLanes(){
 		i++;
 	
 	});
-	
 	
 	// -------------------------------------- drivers WHERE HOW STUFF -----------------------------------
 	var _pillarColumns = [{"name":"ACCESS"},{"name":"APPEAL"},{"name":"USP"}];

@@ -16,38 +16,9 @@ mixin board(board)
 			br
 			a.btn.btn-primary.btn-xs(href="/kanban/#{board._id}" role="button") View
 			a.btn.btn-default.btn-xs(href="/admin?type=boards" role="button") Edit
-			a.btn.btn-link(id="delete_modal" data-toggle="modal" data-target=".bs-example-modal-sm" role="button") 
+			a.btn.btn-link(id="delete_modal" data-toggle="modal" data-board-id="#{board.id}" data-target=".bs-example-modal-sm" role="button") 
 				span(style="color:red;font-size:10px") Delete
 					
-					
-	// ************ small modal  ******************
-	.modal.fade.bs-example-modal-sm(tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true")
-		.modal-dialog.modal-sm
-			.modal-content
-				.modal-header
-					button.close(type="button" data-dismiss="modal" aria-label="Close")
-						span(aria-hidden="true") &times;
-					h4.modal-title(id="myModalLabel") Are your sure ??
-					br
-					span(style="color:red; text-align:center") this will <b>permanently</b> delete 
-
-
-				.modal-body
-					div.panel(style=" position: relative;padding: 10px 10px 10px;display: block;background-color:white;;width:250px;text-align: center;margin: 10px auto;")
-
-						
-						h4 #{board.name}
-						a(href="/kanban/#{board._id}")
-							img.img-thumbnail(src="/images/boards/thumbs/#{board._id}.png"  style=" height:100px"  alt="...")
-						br
-						h4 
-							small #{board.vision} 
-						span(style="font-size:10px; color:#999999") created by: <b>cactus</b> [2015-01-23]
-						br
-						button.btn.btn-danger(type="button" href="/kanban/delete/id") 
-							span.glyphicon.glyphicon-flash 
-							span delete now 
-
 					
 		
 
@@ -73,6 +44,24 @@ block content
 			each val in boards
 				+board(val)
 
+							
+			// ************ remove modal  ******************
+			.modal.fade.bs-example-modal-sm(tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true")
+				.modal-dialog.modal-sm
+					.modal-content
+						.modal-header
+							button.close(type="button" data-dismiss="modal" aria-label="Close")
+								span(aria-hidden="true") &times;
+							h4.modal-title(id="myModalLabel") Are your sure ??
+							br
+							span(style="color:red; text-align:center") this will <b>permanently</b> delete 
+						.modal-body
+							div.panel(style=" position: relative;padding: 10px 10px 10px;display: block;background-color:white;;width:250px;text-align: center;margin: 10px auto;")
+								button.btn.btn-danger(id="removeboardsubmit" type="button" ) 
+									span.glyphicon.glyphicon-flash 
+									span delete now 
+
+			
 
 
 	//Modal
@@ -90,28 +79,43 @@ include includes/material
 
 // some code ;-)
 script(type='text/javascript').
-	$(document).keypress(function(e) {
-		if(e.which == 13) {
-			$("#loginsubmit").click();
-		}
-	});
 	
-	$("#createboardsubmit").click(function() { submit(); });
+	$("#removeboardsubmit").click(function() { console.log("########KCHING");submitRemove(); });
 	
-	function submit() {
+	$("#createboardsubmit").click(function() { submitCreate(); });
+
+	
+	function submitCreate() {
 		var form = document.getElementById("createboardform");
-		var _name = form.name.value;
-		var _vision = form.vision.value;
 		
+
+		var _board = {};
+		_board.name = form.name.value;
+		_board.vision = form.vision.value;
+		_board.subvision = form.subvision.value;
+		_board.mission = form.mission.value;
+		_board.startDate = form.startdate.value;
+		_board.endDate = form.enddate.value;
+		_board.width = form.width.value;
+		_board.height = form.height.value;
+		_board.itemScale = form.itemscale.value;
+		_board.itemFontScale = form.itemfontscale.value;
+		_board.WIPWindowDays = form.wip.value;
+		_board.laneboxRightWidth = form.rightbox.value;
 		
-		var _url = "/board/create";
-		alert ("create board called: "+_name);
+		var _boards = [];
+		_boards.push(_board);
+		
+		var _json = JSON.stringify(_boards);
+		
+		var _url = "/api/kanbanv2/rest/boards";
+		
 		//form.ajax call 
 		$.ajax({
 			type: "POST",
 			url: _url,
-			data: { 'name': _name, 'vision':_vision },
-			cache: false,
+			data: { 'itemJson': _json},
+					cache: false,
 			dataType:"json",
 			success: function(msg)
 				{
@@ -133,6 +137,43 @@ script(type='text/javascript').
 	}
 
 								
+
+	function submitRemove() {
+		alert("remove");
+
+		
+		var form = document.getElementById("removeboardform");
+		
+
+		
+		var _url = "/api/kanbanv2/rest/boards";
+		
+		//form.ajax call 
+		$.ajax({
+			type: "DELETE",
+			url: _url,
+			data: { 'itemJson': _json},
+					cache: false,
+			dataType:"json",
+			success: function(msg)
+				{
+					console.log("***** and now do a client side redirect: "+_redirect);
+
+				},
+			error: function(msg)
+				{
+					//if (afterHandlerCallback !=undefined)
+					$('.top-left').notify({
+							message: { html: "<span class=\"glyphicon glyphicon-fire\"></span><span style=\"font-size:10px;font-weight:bold\"> ajaxCall.("+_url+") says:</span> <br/><div style=\"font-size:10px;font-weight:normal;margin-left:20px\">"+JSON.stringify(msg)+"</div>" },
+							fadeOut: {enabled:true,delay:2000},
+							type: "danger"
+						  }).show(); // for the ones that aren't closable and don't fade out there is a .hide() function.
+				}
+			});
+		
+		return false;
+	}
+
 
 	
 

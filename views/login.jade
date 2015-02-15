@@ -10,8 +10,10 @@ div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;back
 		form(id="loginform" action="" method="" autocomplete="off" ) 
 			br
 			div(style="margin-left:30px;width:200px")
-				input.form-control.floating-label(id="uid" name="uid" type="text" placeholder="username" autocomplete="off" )
-				input.form-control.floating-label(id="pwd" name ="pwd" type="password" placeholder="password" autocomplete="off" )
+				div(style="height:40px")
+					input.form-control.floating-label(id="uid" name="uid" type="text" placeholder="username" autocomplete="off" )
+				div(style="height:40px")
+					input.form-control.floating-label(id="pwd" name ="pwd" type="password" placeholder="password" autocomplete="off"  )
 			br
 		
 			button.btn.btn-primary(id="loginsubmit" type="button") Login

@@ -212,6 +212,7 @@ function init(){
 		.range([height, 0]);
 
 	console.log(">>>>>>>>>>>>>>>>>>>> KANBAN_START: "+KANBAN_START);
+	console.log(">>>>>>>>>>>>>>>>>>>> KANBAN_END: "+KANBAN_END);
 	
 	x = d3.time.scale()
 		.domain([KANBAN_START, KANBAN_END])
@@ -338,12 +339,12 @@ function renderBoard(id){
 
 		var board = getItemByKey(boardsData,"_id",id)
 		
-		HEIGHT= board.height;
-		WIDTH = board.width;
-		ITEM_SCALE = board.itemScale;
-		ITEM_FONTSCALE = board.itemFontScale;
-		setWIP(board.WIPWindowDays);
-		LANE_LABELBOX_RIGHT_WIDTH = board.laneboxRightWidth;
+		HEIGHT= parseInt(board.height);
+		WIDTH = parseInt(board.width);
+		ITEM_SCALE = parseFloat(board.itemScale);
+		ITEM_FONTSCALE = parseFloat(board.itemFontScale);
+		setWIP(parseInt(board.WIPWindowDays));
+		LANE_LABELBOX_RIGHT_WIDTH = parseInt(board.laneboxRightWidth);
 
 		KANBAN_START= new Date(board.startDate);
 		KANBAN_END= new Date(board.endDate);
@@ -386,7 +387,6 @@ function drawCustomPostits(){
 */
 function drawInitiatives(){
 	
-	drawAxes();
 	drawLanes();
 	drawWC2014();
 	drawItems();
@@ -434,6 +434,15 @@ function drawAll(){
 	
 	initiativeData.sort(s);
 	initiativeData.sort(s);
+
+	drawGuides();
+	drawAxes();
+	if (BOARD.viewConfig.queues!="off") drawQueues();
+	if (BOARD.viewConfig.vision!="off") drawVision();
+	drawVersion();
+	drawLegend();
+
+// ------------------------------------------------------------------------------------------------
   
 	var _context = {"yMin":Y_MIN,"yMax":Y_MAX,"name":CONTEXT};
 	itemTree = createLaneHierarchy(initiativeData,ITEMDATA_FILTER,ITEMDATA_NEST,_context);
@@ -441,7 +450,6 @@ function drawAll(){
 	//targetTree = createLaneHierarchy(targetData,ITEMDATA_FILTER,ITEMDATA_NEST,_context);
 	
 	// kanban_items.js
-	if (BOARD.viewConfig.queues!="off") drawQueues();
 	if (BOARD.viewConfig.initiatives!="off") drawInitiatives();
 	// kanban_items.js
 	//if (BOARD.viewConfig.targets!="off") drawTargets();
@@ -449,19 +457,14 @@ function drawAll(){
 	drawOverviewMetaphors(svg);
 	
 	if (BOARD.viewConfig.metrics!="off") drawMetrics();
-	// kanban_grid.gs
-	if (BOARD.viewConfig.vision!="off") drawVision();
 	
 	drawReleases();
-	drawVersion();
-	drawLegend();
 	
 
-	drawGuides();
 	
 	d3.select("#whiteboard").style("visibility","hidden");
 	
-  
+// --------------------------------------------------------------------------------------------------
 }
 
 
