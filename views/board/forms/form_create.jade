@@ -1,0 +1,51 @@
+block content
+	
+div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;background-color:white;;width:500px;text-align: center;margin: 10px auto;")
+	div(style="margin: 10px auto;")
+		form.form-horizontal(id="createboardform" action="" method="" autocomplete="off" ) 
+			div(style="margin-left:5px;width:400px;height:40px")
+				input.form-control.floating-label(id="name" name="name" type="text" placeholder="name" autocomplete="off" data-hint="the name of your board")
+			div(style="margin-left:5px;width:400px;height:40px")
+				input.form-control.floating-label(id="vision" name="vision" type="text" placeholder="vision" autocomplete="off" data-hint="your purpose catch-phrase" )
+			div(style="margin-left:5px;width:400px;height:80px")
+				textarea.form-control.floating-label(id="mission" name ="mission" rows="3" placeholder="mission" autocomplete="off" )
+			div(style="margin-left:5px;width:400px;height:80px")
+				textarea.form-control.floating-label(id="submission" name ="submission" rows="3" placeholder="sub mission" autocomplete="off" )
+			
+			table
+				tr		
+					td(colspan="2" style="margin-left:5px;width:160px;height:50px;vertical-align:bottom")
+						input.form-control.floating-label(id="startdate" name="startdate" type="text" placeholder="start date" autocomplete="off")
+					td(colspan="2" style="margin-left:5px;width:160px;height:50px;vertical-align:bottom")
+						input.form-control.floating-label(id="enddate" name="enddate" type="text" placeholder="end date" autocomplete="off")
+				tr
+					td(style="margin-left:5px;width:80px;height:50px;vertical-align:bottom")
+						input.form-control.floating-label(id="height" name="height" type="text" placeholder="height" autocomplete="off")
+					td(style="margin-left:5px;width:80px;height:50px;vertical-align:bottom")
+						input.form-control.floating-label(id="width" name="width" type="text" placeholder="width" autocomplete="off")
+					td(style="margin-left:5px;width:80px;height:50px;vertical-align:bottom")
+						input.form-control.floating-label(id="itemscale" name="itemscale" type="text" placeholder="item scale" autocomplete="off")
+					td(style="margin-left:5px;width:80px;height:50px;vertical-align:bottom")
+						input.form-control.floating-label(id="itemfontscale" name="itemfontscale" type="text" placeholder="font scale" autocomplete="off")
+				tr		
+					td(colspan="2" style="margin-left:5px;width:160px;height:50px;vertical-align:bottom")
+						input.form-control.floating-label(id="wip" name="wip" type="text" placeholder="wip days" autocomplete="off")
+					td(style="margin-left:5px;width:80px;height:50px;vertical-align:bottom")
+						input.form-control.floating-label(id="rightbox" name="rightbox" type="laneboxrightext" placeholder="rightbox" autocomplete="off")
+					td(style="margin-left:5px;width:160px;height:50px;vertical-align:bottom")
+						input.form-control.floating-label(id="other" name="other" type="text" placeholder="other" autocomplete="off")
+
+			div.checkbox(style="margin-left:5px;width:400px;height:80px")
+				label 
+					input(type="checkbox")
+					text text
+
+			div.togglebutton(style="margin-left:5px;width:400px;height:80px")
+				label 
+					input(type="checkbox")
+					text text
+
+			button.btn.btn-default.btn-xs(type="button" )
+				span Cancel
+			button.btn.btn-info.btn-xs(id="createboardsubmit" type="button")
+				span Create

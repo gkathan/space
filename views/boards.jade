@@ -61,21 +61,76 @@ block content
 			// new board
 			div.col-sm-1.col-md-3
 				div.panel(style=" position: relative;padding: 10px 10px 10px;display: block;background-color:white;;width:250px;height:320px;text-align: center;margin: 10px auto;")
-					h4 - new -
-					a(href="/kanban/new")
-						img.img-thumbnail(src="/images/boards/thumbs/new.png"  style=" height:100px"  alt="...")
+					h4 &nbsp;
+					a(data-toggle="modal" data-target="#createBoardModal")
+						img.img-thumbnail(src="/images/boards/s2t_board_new.png"  style=" height:100px"  alt="...")
 					br
 					h4 
-						small - create new board - 
+						small &nbsp;
 					br
-					a.btn.btn-info.btn-xs(href="/kanban/create" role="button") Create
-
-
+					button.btn.btn-info.btn-xs(type="button" data-toggle="modal" data-target="#createBoardModal")
+						span create
 			each val in boards
 				+board(val)
 
-				
+
+
+	//Modal
+	div.modal.fade(id="createBoardModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" )
+		div.modal-dialog
+			div.modal-content(style="opacity:1;")
+				div.modal-header
+					button.close(type="button" data-dismiss="modal" aria-label="Close")
+						span(aria-hidden="true") &times
+					img.img-thumbnail(src="/images/boards/s2t_board_new.png"  style=" height:60px" )
+				div.modal-body
+					include ./board/forms/form_create
+			
 include includes/material
+
+// some code ;-)
+script(type='text/javascript').
+	$(document).keypress(function(e) {
+		if(e.which == 13) {
+			$("#loginsubmit").click();
+		}
+	});
+	
+	$("#createboardsubmit").click(function() { submit(); });
+	
+	function submit() {
+		var form = document.getElementById("createboardform");
+		var _name = form.name.value;
+		var _vision = form.vision.value;
+		
+		
+		var _url = "/board/create";
+		alert ("create board called: "+_name);
+		//form.ajax call 
+		$.ajax({
+			type: "POST",
+			url: _url,
+			data: { 'name': _name, 'vision':_vision },
+			cache: false,
+			dataType:"json",
+			success: function(msg)
+				{
+					console.log("***** and now do a client side redirect: "+_redirect);
+
+				},
+			error: function(msg)
+				{
+					//if (afterHandlerCallback !=undefined)
+					$('.top-left').notify({
+							message: { html: "<span class=\"glyphicon glyphicon-fire\"></span><span style=\"font-size:10px;font-weight:bold\"> ajaxCall.("+_url+") says:</span> <br/><div style=\"font-size:10px;font-weight:normal;margin-left:20px\">"+JSON.stringify(msg)+"</div>" },
+							fadeOut: {enabled:true,delay:2000},
+							type: "danger"
+						  }).show(); // for the ones that aren't closable and don't fade out there is a .hide() function.
+				}
+			});
+		
+		return false;
+	}
 
 								
 

@@ -294,7 +294,7 @@ function renderAdminGrid(data,conf){
 
 	var options = {
 		editable: _editable,
-		enableAddRow: _editable,
+		enableAddRow: false,
 		enableCellNavigation: true,
 		asyncEditorLoading: false,
 		cellHighlightCssClass: "changed",
