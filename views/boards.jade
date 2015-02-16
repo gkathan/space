@@ -2,7 +2,7 @@ include kanban_menu
 
 link(rel='stylesheet', href='/stylesheets/login.css')
 
-
+// board detail card
 mixin board(board)
 	div.col-sm-1.col-md-3
 		div.panel(style=" position: relative;padding: 10px 10px 10px;display: block;background-color:white;;width:250px;height:320px;text-align: center;margin: 10px auto;")
@@ -19,10 +19,6 @@ mixin board(board)
 			a.btn.btn-link(id="delete_modal" data-toggle="modal" data-board-id="#{board.id}" data-target=".bs-example-modal-sm" role="button") 
 				span(style="color:red;font-size:10px") Delete
 					
-					
-		
-
-
 
 block content
 	div.panel.panel-default
@@ -90,6 +86,18 @@ script(type='text/javascript').
 		
 
 		var _board = {};
+		
+		// default viewconfig
+		var _viewconfig ={};
+		_viewconfig.vision="show";
+		_viewconfig.metrics="off";
+		_viewconfig.queues="show";
+		_viewconfig.targets="off";
+		_viewconfig.initiatives="off";
+		_viewconfig.guides="show";
+		
+		
+		
 		_board.name = form.name.value;
 		_board.vision = form.vision.value;
 		_board.subvision = form.subvision.value;
@@ -102,7 +110,7 @@ script(type='text/javascript').
 		_board.itemFontScale = form.itemfontscale.value;
 		_board.WIPWindowDays = form.wip.value;
 		_board.laneboxRightWidth = form.rightbox.value;
-		
+		_board.viewConfig = _viewconfig;
 		var _boards = [];
 		_boards.push(_board);
 		
@@ -120,6 +128,7 @@ script(type='text/javascript').
 			success: function(msg)
 				{
 					console.log("***** and now do a client side redirect: "+_redirect);
+					window.location="/kanban/"+_id;
 
 				},
 			error: function(msg)

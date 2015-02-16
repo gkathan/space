@@ -418,45 +418,59 @@ function joinInitiatives2LanesSort(){
 function drawAll(){
 	init();
 	
-	/** multi column sort
-	 * https://github.com/Teun/thenBy.js
-	 */
-	var firstBy=(function(){function e(f){f.thenBy=t;return f}function t(y,x){x=this;return e(function(a,b){return x(a,b)||y(a,b)})}return e})();
-
-	joinInitiatives2LanesSort();
-	
-	//sorting hook
-	//var s = firstBy(function (v1, v2) { return v1.lane < v2.lane ? -1 : (v1.lane > v2.lane ? 1 : 0); }).thenBy(function (v1, v2) { return v1.sublane < v2.sublane ? -1 : (v1.sublane > v2.sublane ? 1 : 0); });
-	var s = firstBy(function (v1, v2) { return v1.laneSort - v2.laneSort})
-			.thenBy(function (v1, v2) { return v1.sublaneSort - v2.sublaneSort });
-	
-	//initiativeData.sort(function(a,b){return (b.lane>a.lane) ?1 :-1});
-	
-	initiativeData.sort(s);
-	initiativeData.sort(s);
-
-	drawGuides();
+		
+	// 1) draw static stuff
+	if (BOARD.viewConfig.queues!="off") drawGuides();
 	drawAxes();
+	
 	if (BOARD.viewConfig.queues!="off") drawQueues();
 	if (BOARD.viewConfig.vision!="off") drawVision();
 	drawVersion();
 	drawLegend();
 
-// ------------------------------------------------------------------------------------------------
-  
-	var _context = {"yMin":Y_MIN,"yMax":Y_MAX,"name":CONTEXT};
-	itemTree = createLaneHierarchy(initiativeData,ITEMDATA_FILTER,ITEMDATA_NEST,_context);
+	// 2) check if board empty 
 	
-	//targetTree = createLaneHierarchy(targetData,ITEMDATA_FILTER,ITEMDATA_NEST,_context);
+	if (initiativeData.length>0){
+
+		/** multi column sort
+		 * https://github.com/Teun/thenBy.js
+		 */
+		var firstBy=(function(){function e(f){f.thenBy=t;return f}function t(y,x){x=this;return e(function(a,b){return x(a,b)||y(a,b)})}return e})();
+
+		joinInitiatives2LanesSort();
+
+		//sorting hook
+		//var s = firstBy(function (v1, v2) { return v1.lane < v2.lane ? -1 : (v1.lane > v2.lane ? 1 : 0); }).thenBy(function (v1, v2) { return v1.sublane < v2.sublane ? -1 : (v1.sublane > v2.sublane ? 1 : 0); });
+		var s = firstBy(function (v1, v2) { return v1.laneSort - v2.laneSort})
+				.thenBy(function (v1, v2) { return v1.sublaneSort - v2.sublaneSort });
+
+		//initiativeData.sort(function(a,b){return (b.lane>a.lane) ?1 :-1});
+
+		initiativeData.sort(s);
+		initiativeData.sort(s);
+
+
+		// ------------------------------------------------------------------------------------------------
+
+
+
+		var _context = {"yMin":Y_MIN,"yMax":Y_MAX,"name":CONTEXT};
+		itemTree = createLaneHierarchy(initiativeData,ITEMDATA_FILTER,ITEMDATA_NEST,_context);
+
+		//targetTree = createLaneHierarchy(targetData,ITEMDATA_FILTER,ITEMDATA_NEST,_context);
+
+		// kanban_items.js
+		if (BOARD.viewConfig.initiatives!="off") drawInitiatives();
+		// kanban_items.js
+		//if (BOARD.viewConfig.targets!="off") drawTargets();
 	
-	// kanban_items.js
-	if (BOARD.viewConfig.initiatives!="off") drawInitiatives();
-	// kanban_items.js
-	//if (BOARD.viewConfig.targets!="off") drawTargets();
+		if (BOARD.viewConfig.metrics!="off") drawMetrics();
 	
-	drawOverviewMetaphors(svg);
+	}
 	
-	if (BOARD.viewConfig.metrics!="off") drawMetrics();
+	
+	//drawOverviewMetaphors(svg);
+	
 	
 	drawReleases();
 	

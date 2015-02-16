@@ -303,7 +303,7 @@ function save(req, res , next){
     // Final task 
 	function final() { 
 		console.log('************************************************************************* Done', results);
-		//res.send({});
+		res.send({});
 		return;
 	}
     
