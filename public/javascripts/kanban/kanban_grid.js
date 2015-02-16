@@ -103,7 +103,7 @@ function drawAxes(){
 	//_drawLine(gAxes,-LANE_LABELBOX_LEFT_WIDTH,-TIMELINE_HEIGHT,x(KANBAN_END)+LANE_LABELBOX_RIGHT_WIDTH+TARGETS_COL_WIDTH,-TIMELINE_HEIGHT,"gridTop");
 	//_drawLine(gAxes,-LANE_LABELBOX_LEFT_WIDTH,height+TIMELINE_HEIGHT,x(KANBAN_END)+LANE_LABELBOX_RIGHT_WIDTH+TARGETS_COL_WIDTH,height+TIMELINE_HEIGHT,"gridTop");
 
-//################# AND SOME TIME GUIDES
+//################# AND SOME TIME GUIDES 
 
 	var _monthGuides = d3.time.month.range(KANBAN_START,KANBAN_END,1);
 	var _yearGuides = d3.time.month.range(KANBAN_START,KANBAN_END,12);
