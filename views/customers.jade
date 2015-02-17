@@ -3,32 +3,36 @@ include kanban_menu
 
 block content
 
-	div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;background-color:white;;width:1100px;text-align: center;margin: 10px auto;")
+	div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;background-color:white;;width:1400px;text-align: center;margin: 10px auto;")
 		.panel-heading
 			h3.panel-title CUSTOMERS
 		.panel-body
 		table.table.table-striped.table-hover.table-condensed
 			thead
 				tr
-					th 
+					th(style="width:150px") 
 					th name
-					th type
-					th scope
+					th product
+					th(style="width:80px") type
+					th market
 					th status
-					th description
+					th(style="width:250px")  description
 					th contact
 					th key account
 			tbody
 				each c in customers
 					tr
-					td(style="text-align:left") 
-						img(src="/images/customers/#{c.name}.png"  height="25px") 
-					td(style="vertical-align:top;text-align:left") #{c.name} 
-					td(style="vertical-align:top;text-align:left") #{c.type} 
-					td(style="vertical-align:top;text-align:left") #{c.scope} 
-					td(style="vertical-align:top;text-align:left") #{c.status} 
-					td(style="vertical-align:top;text-align:left") #{c.description} 
-					td(style="vertical-align:top;text-align:left") #{c.contact} 
-					td(style="vertical-align:top;text-align:left") #{c.keyaccounter} 
+					td(style="text-align:left;vertical-align:middle") 
+						a(href="#{c.url}" target="_new")
+							img(src="/images/customers/#{c.name}.png"  height="25px") 
+					td(style="vertical-align:top;text-align:left;vertical-align:middle") 
+						a(href="#{c.url}" target="_new") #{c.name} 
+					td(style="vertical-align:top;text-align:left;font-size:11px;vertical-align:middle") #{c.scope} 
+					td(style="vertical-align:top;text-align:left;font-size:11px;vertical-align:middle") #{c.type} 
+					td(style="vertical-align:top;text-align:left;font-size:11px;vertical-align:middle") #{c.market} 
+					td(style="vertical-align:top;text-align:left;font-size:11px;vertical-align:middle") #{c.status} 
+					td(style="vertical-align:top;text-align:left;vertical-align:middle;font-size:11px") #{c.description} 
+					td(style="vertical-align:top;text-align:left;font-size:11px;vertical-align:middle") #{c.contact} 
+					td(style="vertical-align:top;text-align:left;font-size:11px;vertical-align:middle") #{c.keyaccounter} 
 
 

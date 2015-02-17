@@ -58,11 +58,6 @@ router.get('/labels', function(req, res) {
 
 
 router.get('/customers', function(req, res) {
-	if (!req.session.AUTH){
-		  req.session.ORIGINAL_URL = req.originalUrl;
-		  res.redirect("/login");
-	}
-
 	//res.locals.customers = CustomerService.findCustomers();
 	var customers =  db.collection('customers');
 		customers.find({}, function (err, docs){
@@ -70,6 +65,18 @@ router.get('/customers', function(req, res) {
 			customers=_.sortBy(docs, "type")
 			res.locals.customers=docs;
 			res.render('customers')
+	});
+});
+
+
+router.get('/competitors', function(req, res) {
+	//res.locals.customers = CustomerService.findCustomers();
+	var competitors =  db.collection('competitors');
+		competitors.find({}, function (err, docs){
+			//sort
+			customers=_.sortBy(docs, "type")
+			res.locals.competitors=docs;
+			res.render('competitors')
 	});
 });
 

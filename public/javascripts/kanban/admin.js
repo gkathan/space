@@ -56,6 +56,8 @@ function getConfig(collection){
 		case "v1epics": return getV1EpicsConfig();
 		case "incidents": return getIncidentsConfig();
 		case "labels": return getLabelsConfig();
+		case "customers": return getCustomersConfig();
+		case "competitors": return getCompetitorsConfig();
 	}
 }
 
@@ -275,6 +277,42 @@ function getLabelsConfig(){
 	_config.fields = _labels;
 	return _config;
 }
+
+
+function getCustomersConfig(){
+	var _customers =[
+        { id:"id", name: "id", field: "_id",sortable:true,width:30,cssClass:"onKanbanImmutable" },
+        { id:"name", name: "name", field: "name",sortable:true,width:150, editor: Slick.Editors.Text, cssClass: "cell-title"},
+        { id: "type", name: "type", field: "type", editor: Slick.Editors.Text ,width:150,sortable:true, cssClass: "cell-standard"},
+        { id: "status", name: "status",  field: "status", editor: Slick.Editors.Text ,sortable:true,width:150 ,cssClass: "cell-standard"},
+        { id: "description", name: "description",  field: "description", editor: Slick.Editors.Text ,width:150 ,cssClass: "cell-standard"},
+        { id: "scope", name: "scope",  field: "scope", editor: Slick.Editors.Text ,sortable:true,width:150 ,cssClass: "cell-standard"},
+        { id: "market", name: "market",  field: "market", editor: Slick.Editors.Text ,width:150 ,cssClass: "cell-standard"},
+        { id: "contact", name: "contact",  field: "contact", editor: Slick.Editors.Text ,width:150 ,cssClass: "cell-title"},
+        { id: "keyaccounter", name: "keyaccounter",  field: "keyaccounter", editor: Slick.Editors.Text ,width:150 ,cssClass: "cell-standard"},
+        { id: "url", name: "url",  field: "url", editor: Slick.Editors.Text ,width:150 ,cssClass: "cell-standard"}];
+	var _config ={};
+	_config.mode="editable";
+	_config.fields = _customers;
+	return _config;
+}
+
+
+function getCompetitorsConfig(){
+	var _competitors =[
+        { id:"id", name: "id", field: "_id",sortable:true,width:30,cssClass:"onKanbanImmutable" },
+        { id:"name", name: "name", field: "name",sortable:true,width:150, editor: Slick.Editors.Text, cssClass: "cell-title"},
+        { id: "type", name: "type", field: "type", editor: Slick.Editors.Text ,width:150,sortable:true, cssClass: "cell-standard"},
+        { id: "description", name: "description",  field: "description", editor: Slick.Editors.Text ,width:150 ,cssClass: "cell-standard"},
+        { id: "products", name: "scope",  field: "scope", editor: Slick.Editors.Text ,sortable:true,width:150 ,cssClass: "cell-standard"},
+        { id: "market", name: "market",  field: "market", editor: Slick.Editors.Text ,width:150 ,cssClass: "cell-standard"},
+        { id: "url", name: "url",  field: "url", editor: Slick.Editors.Text ,width:150 ,cssClass: "cell-standard"}];
+	var _config ={};
+	_config.mode="editable";
+	_config.fields = _competitors;
+	return _config;
+}
+
 
 
 function renderAdminGrid(data,conf){

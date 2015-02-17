@@ -34,6 +34,7 @@ var PATH = {
 						REST_V1EPICS : BASE+'/kanbanv2/rest/v1epics',
 						REST_LABELS : BASE+'/kanbanv2/rest/labels',
 						REST_CUSTOMERS : BASE+'/kanbanv2/rest/customers',
+						REST_COMPETITORS : BASE+'/kanbanv2/rest/competitors',
 						
 						REST_INITIATIVES_DIFF_TRAIL : BASE+'/kanbanv2/rest/initiatives_diff_trail',
 						REST_ORG : BASE+'/kanbanv2/rest/org/:date',
@@ -46,6 +47,8 @@ var PATH = {
 						EXPORT_V1EPICS : BASE+'/kanbanv2/export/xlsx/v1epics',
 						EXPORT_LABELS : BASE+'/kanbanv2/export/xlsx/labels',
 						EXPORT_CUSTOMERS : BASE+'/kanbanv2/export/xlsx/customers',
+						EXPORT_COMPETITORS : BASE+'/kanbanv2/export/xlsx/competitors',
+						
 						CONFIG : BASE+'/kanbanv2/config',
 
 						TRANSCODE_BOARDS : BASE+'/kanbanv2/transcode'
@@ -82,8 +85,18 @@ router.get(PATH.REST_PRODUCTPORTFOLIO, function(req, res, next) {findAllByName(r
 router.get(PATH.REST_PRODUCTCATALOG, function(req, res, next) {findAllByName(req,res,next);});
 router.get(PATH.REST_INCIDENTS, function(req, res, next) {findAllByName(req,res,next);});
 router.get(PATH.REST_V1EPICS, function(req, res, next) {findAllByName(req,res,next);});
+
 router.get(PATH.REST_LABELS, function(req, res, next) {findAllByName(req,res,next);});
+router.post(PATH.REST_LABELS, function(req, res, next) {save(req,res,next); });
+router.delete(PATH.REST_LABELS, function(req, res, next) {remove(req,res,next); });
+
 router.get(PATH.REST_CUSTOMERS, function(req, res, next) {findAllByName(req,res,next);});
+router.post(PATH.REST_CUSTOMERS, function(req, res, next) {save(req,res,next); });
+router.delete(PATH.REST_CUSTOMERS, function(req, res, next) {remove(req,res,next); });
+
+router.get(PATH.REST_COMPETITORS, function(req, res, next) {findAllByName(req,res,next);});
+router.post(PATH.REST_COMPETITORS, function(req, res, next) {save(req,res,next); });
+router.delete(PATH.REST_COMPETITORS, function(req, res, next) {remove(req,res,next); });
 
 
 router.get(PATH.REST_ORG, function(req, res, next) {
@@ -111,6 +124,7 @@ router.get(PATH.EXPORT_SCRUMTEAMS, function(req, res, next) {excelScrumTeams(req
 router.get(PATH.EXPORT_V1EPICS, function(req, res, next) {excelV1Epics(req,res,next);});
 router.get(PATH.EXPORT_LABELS, function(req, res, next) {excelLabels(req,res,next);});
 router.get(PATH.EXPORT_CUSTOMERS, function(req, res, next) {excelCustomers(req,res,next);});
+router.get(PATH.EXPORT_COMPETITORS, function(req, res, next) {excelCompetitors(req,res,next);});
 
 router.post(PATH.TRANSCODE_BOARDS, function(req, res, next) {transcode(req,res,next); });
 
@@ -587,7 +601,7 @@ function excelLabels(req, res , next){
 /**
  * generate customers excel
  */
-function excelLabels(req, res , next){
+function excelCustomers(req, res , next){
 	var conf ={};
     conf.stylesXmlFile = "views/excel_export/styles.xml";
     conf.cols = [
@@ -597,13 +611,33 @@ function excelLabels(req, res , next){
 		{caption:'status',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'description',type:'string',width:50,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'scope',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'market',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'contact',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
-		{caption:'key accounter',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell}
+		{caption:'key accounter',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'url',type:'string',width:40,captionStyleIndex:2,beforeCellWrite:_formatCell}
 	];
     
     _generateAndSendExcel("customers",conf,req,res,next);
 }
 
+/**
+ * generate competitors excel
+ */
+function excelCompetitors(req, res , next){
+	var conf ={};
+    conf.stylesXmlFile = "views/excel_export/styles.xml";
+    conf.cols = [
+		{caption:'_id',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'name',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'type',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'description',type:'string',width:50,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'products',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'market',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'url',type:'string',width:40,captionStyleIndex:2,beforeCellWrite:_formatCell}
+	];
+    
+    _generateAndSendExcel("competitors",conf,req,res,next);
+}
 
 
         

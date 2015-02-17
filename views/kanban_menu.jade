@@ -28,12 +28,14 @@ block content
 					
 					ul.nav.navbar-nav
 						li.dropdown(id="fat-menu")
-							a.dropdown-toggle(id="targets" href="#" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false") customers
+							a.dropdown-toggle(id="targets" href="#" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false") environment
 								span.caret 
 
 							ul.dropdown-menu(role="menu" aria-labelledby="admin")
 								li(role="presentation") 
 									a(role="menuitem" tabindex="-1" href="/customers") customers
+								li(role="presentation") 
+									a(role="menuitem" tabindex="-1" href="/competitors") competitors
 								li(role="presentation") 
 									a(role="menuitem" tabindex="-1" href="/labels") labels
 								li
@@ -137,6 +139,10 @@ block content
 									a(role="menuitem" tabindex="-1" href="/admin?type=scrumteams") scrum teams
 								li(role="presentation") 
 									a(role="menuitem" tabindex="-1" href="/admin?type=labels") labels
+								li(role="presentation") 
+									a(role="menuitem" tabindex="-1" href="/admin?type=customers") customers
+								li(role="presentation") 
+									a(role="menuitem" tabindex="-1" href="/admin?type=competitors") competitors
 								li(role="presentation") 
 									a(role="menuitem" tabindex="-1" href="/admin?type=incidents") incidents (very large..)
 								li

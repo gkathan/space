@@ -86,7 +86,7 @@ router.use(multer({ dest: __dirname+'/temp_uploads/',
 			var _function ="";
 			var _dropBeforeInsert=false;
 			
-			var _plainElements =["productportfolio","productcatalog","targets","incidents","labels","customers"];
+			var _plainElements =["productportfolio","productcatalog","targets","incidents","labels","customers","competitors"];
 			
 
 			

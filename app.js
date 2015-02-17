@@ -51,15 +51,15 @@ var app = express();
 
 
 // log4js
-var logger = log4js.getLogger('kanbanv2');
+var logger = log4js.getLogger('strategy2tactics');
 logger.setLevel('TRACE');
 
-logger.trace('**** Entering kanbanv2 log4js testing');
-logger.debug('* kanbanv2 [debug] test');
-logger.info('* kanbanv2 [info] test');
-logger.warn('* kanbanv2 [warn] test');
-logger.error('* kanbanv2 [error] test');
-logger.fatal('* kanbanv2 [fatal] test');
+logger.trace('**** Entering strategy2tactics log4js testing');
+logger.debug('* strategy2tactics [debug] test');
+logger.info('* strategy2tactics [info] test');
+logger.warn('* strategy2tactics [warn] test');
+logger.error('* strategy2tactics [error] test');
+logger.fatal('* strategy2tactics [fatal] test');
 
 
 
@@ -72,7 +72,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
 
-app.locals.title="kanbanv2 | strategy2tactics";
+app.locals.title="strategy2tactics";
 
 
 app.use(favicon(path.join(__dirname,'public','images','favicon.ico')));
@@ -159,6 +159,7 @@ app.use('/incidents', incidents);
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
     var err = new Error('Not Found');
+    logger.error("[not found] ");
     err.status = 404;
     next(err);
 });
@@ -171,6 +172,7 @@ if (app.get('env') === 'development') {
     app.use(function(err, req, res, next) {
         res.status(err.status || 500);
         res.render('error', {
+            //logger.error("[message] "+err.message);
             message: err.message,
             error: err
         });

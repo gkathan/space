@@ -16,7 +16,8 @@ mixin board(board)
 			br
 			a.btn.btn-primary.btn-xs(href="/kanban/#{board._id}" role="button") View
 			a.btn.btn-default.btn-xs(href="/admin?type=boards" role="button") Edit
-			a.btn.btn-link(id="delete_modal" data-toggle="modal" data-board-id="#{board.id}" data-target=".bs-example-modal-sm" role="button") 
+			a.delete_board.btn.btn-link(id="delete_modal" data-id="#{board._id}" data-name="#{board.name}" href="#deleteBoard" role="button") 
+			
 				span(style="color:red;font-size:10px") Delete
 					
 
@@ -42,7 +43,7 @@ block content
 
 							
 			// ************ remove modal  ******************
-			.modal.fade.bs-example-modal-sm(tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true")
+			.modal.fade.bs-example-modal-sm(id="deleteBoard" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true")
 				.modal-dialog.modal-sm
 					.modal-content
 						.modal-header
@@ -51,8 +52,15 @@ block content
 							h4.modal-title(id="myModalLabel") Are your sure ??
 							br
 							span(style="color:red; text-align:center") this will <b>permanently</b> delete 
+							br
+							|board: 
+							span(id="boardName" style="font-weight:bold")
+							br
+							|id: 
+							span(id="boardId" style="font-size:10px;color:grey;font-style:italic")
 						.modal-body
 							div.panel(style=" position: relative;padding: 10px 10px 10px;display: block;background-color:white;;width:250px;text-align: center;margin: 10px auto;")
+								input(type="hidden" id="deleteBoardId" name="deleteBoardId" value="")
 								button.btn.btn-danger(id="removeboardsubmit" type="button" ) 
 									span.glyphicon.glyphicon-flash 
 									span delete now 
@@ -80,6 +88,32 @@ script(type='text/javascript').
 	
 	$("#createboardsubmit").click(function() { submitCreate(); });
 
+
+	/**
+	* passing parameters to my modal
+	* http://stackoverflow.com/questions/20723111/passing-data-to-bootstrap-3-modal
+	*/
+	$(document).on("click", ".delete_board", function (e) {
+
+		console.log("**************** delete called *************************");
+		e.preventDefault();
+
+		var _self = $(this);
+
+		var _id = _self.data('id');
+		var _name = _self.data('name');
+		
+		
+		console.log("**************** id: "+_id+" *************************");
+		
+		$(".modal-header #boardId").text(_id);
+		$(".modal-header #boardName").text(_name);
+		$(".modal-body #removeboardsubmit").val(_id);
+		
+
+		$(_self.attr('href')).modal('show');
+	});
+	
 	
 	function submitCreate() {
 		var form = document.getElementById("createboardform");
@@ -148,12 +182,18 @@ script(type='text/javascript').
 								
 
 	function submitRemove() {
-		alert("remove");
-
 		
-		var form = document.getElementById("removeboardform");
 		
-
+		
+		var _id = $(".modal-body #removeboardsubmit").val();
+		
+		console.log("------------------- and now lets remove : _id = "+_id);
+		
+		
+		var _ids = [];
+		_ids.push(_id);
+		var _json = JSON.stringify(_ids);
+		
 		
 		var _url = "/api/kanbanv2/rest/boards";
 		
@@ -166,7 +206,7 @@ script(type='text/javascript').
 			dataType:"json",
 			success: function(msg)
 				{
-					console.log("***** and now do a client side redirect: "+_redirect);
+					console.log("***** and now do a client side redirect: ");
 
 				},
 			error: function(msg)

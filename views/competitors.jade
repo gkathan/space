@@ -1,0 +1,35 @@
+include kanban_menu
+
+
+block content
+
+	div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;background-color:white;;width:1400px;text-align: center;margin: 10px auto;")
+		.panel-heading
+			h3.panel-title COMPETITORS
+		.panel-body
+		table.table.table-striped.table-hover.table-condensed
+			thead
+				tr
+					th(style="width:150px") 
+					th(style="width:150px") name
+					th(style="width:500px")  description
+					th products
+					th(style="width:80px") type
+					th market
+			tbody
+				each c in competitors
+					tr
+					td(style="text-align:left;vertical-align:middle") 
+						a(href="#{c.url}" target="_new")
+							img(src="/images/competitors/#{c.name}.png"  height="25px") 
+					td(style="vertical-align:top;text-align:left;vertical-align:middle") 
+						a(href="#{c.url}" target="_new") #{c.name} 
+					td(style="vertical-align:top;text-align:left;vertical-align:middle;font-size:11px") #{c.description} 
+						
+							
+						
+					td(style="vertical-align:top;text-align:left;font-size:11px;vertical-align:middle") #{c.scope} 
+					td(style="vertical-align:top;text-align:left;font-size:11px;vertical-align:middle") #{c.type} 
+					td(style="vertical-align:top;text-align:left;font-size:11px;vertical-align:middle") #{c.market} 
+
+
