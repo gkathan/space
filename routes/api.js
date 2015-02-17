@@ -317,7 +317,17 @@ function save(req, res , next){
     // Final task 
 	function final() { 
 		console.log('************************************************************************* Done', results);
-		res.send({});
+		
+		var _id;
+		if (results[0]){
+			if(results[0].updatedExisting==false){
+				_id = results[0].upserted[0]._id;
+			}
+		}
+				
+		console.log("_id: "+_id+ JSON.stringify(results[0].upserted));
+		
+		res.send({_id:_id});
 		return;
 	}
     

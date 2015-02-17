@@ -161,8 +161,8 @@ script(type='text/javascript').
 			dataType:"json",
 			success: function(msg)
 				{
-					console.log("***** and now do a client side redirect: ");
-					window.location="/kanban/"+_id;
+					console.log("***** and now do a client side redirect: "+msg._id);
+					window.location="/kanban/"+msg._id;
 
 				},
 			error: function(msg)
@@ -207,6 +207,7 @@ script(type='text/javascript').
 			success: function(msg)
 				{
 					console.log("***** and now do a client side redirect: ");
+					window.location="/boards";
 
 				},
 			error: function(msg)
