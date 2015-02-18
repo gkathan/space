@@ -213,8 +213,15 @@ router.get('/kanban/:id', function(req, res) {
 		res.redirect("/login");
 	}
     var id = req.params.id;
-    res.locals.kanbanId = id;
-    res.render('kanban', { title: 'kanban' })
+	var v1epics =  db.collection('v1epics');
+		v1epics.find({}, function (err, docs){
+		res.locals.kanbanId = id;
+		res.locals.epics = docs[0].epics;
+		res.render('kanban', { title: 'kanban' })	
+	});
+			
+		
+    
 });
 
 

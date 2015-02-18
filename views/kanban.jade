@@ -18,7 +18,10 @@ block content
 		
 		// Button trigger modal
 		button.btn.btn-primary.btn-xs(type="button" data-toggle="modal" data-target="#myModal")
-			span Launch demo modal
+			span demo modal
+		// Button trigger modal
+		button.btn.btn-success.btn-xs(type="button" data-toggle="modal" data-target="#v1EpicsModal")
+			span v1 epics
 
 		// Button trigger whiteboard
 		button.btn.btn-warning.btn-xs(type="button" onclick="renderWhiteboard()")
@@ -47,6 +50,24 @@ block content
 							span Close
 						button.btn.btn-primary.btn-xs(type="button")
 							span Save changes
+		
+		//v1EpicSeletc Modal
+		div.modal.fade(id="v1EpicsModal" tabindex="-1" role="dialog" aria-labelledby="v1EpicsModal" aria-hidden="true" )
+			div.modal-dialog
+				div.modal-content(style="opacity:1")
+					div.modal-header
+						button.close(type="button" data-dismiss="modal" aria-label="Close")
+							span(aria-hidden="true") &times
+						h4.modal-title(id="myModalLabel")
+							
+							|  v1 epics
+					div.modal-body
+						each e in epics
+							br
+							img(src="/images/v1/epic.gif" height="10px")
+							span(style="font-size:10px") &nbsp; #{e.Number} - #{e.Name} 
+					
+		
 		div.btn-group-xs
 			button.btn.btn-primary.btn-xs(id="kanban_menu" type="button") 
 				span.glyphicon.glyphicon-off  

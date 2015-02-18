@@ -104,7 +104,7 @@ router.use(multer({ dest: __dirname+'/temp_uploads/',
 				//var _data = _function(json,_date,_boarddate,_fillblanks);
 				_function(json,_date,_boarddate,_fillblanks,function(_data){
 				
-					console.log("...going to store to mongoDB: collection = "+_collection+" data:"+_data );
+					console.log("...going to store to mongoDB: collection = "+_collection+" data:"+_data.oDate+" number of records: "+_data.oItems.length );
 					
 					var DB="kanbanv2";
 					var connection_string = '127.0.0.1:27017/'+DB;
@@ -113,13 +113,16 @@ router.use(multer({ dest: __dirname+'/temp_uploads/',
 					// in some cases it would be needed to drop old collection first
 					if (_dropBeforeInsert) db.collection(_collection).drop();
 					
-					db.collection(_collection).insert(_data);
+					var result = db.collection(_collection).insert(_data);
+					
+					console.log("****** result: "+JSON.stringify(result));
+					
 					done=true;
 					
 					if (_collection=="portfoliogate"){
 						_sendPortfolioUpdate(config.notifications.portfolioupdate);
 					}
-				
+					console.log("...stored ");
 					
 					//return;
 				});

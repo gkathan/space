@@ -145,7 +145,7 @@ function render(collection){
 	}
 	else if (collection=="targets"){
 	// productcatalog
-		root = _.nest(orgData,["cluster","group","target","outcome"]);
+		root = _.nest(orgData,["cluster","group","target"]);
 	}
 	else if (collection=="organization"){
 	// productcatalog

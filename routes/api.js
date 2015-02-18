@@ -454,7 +454,11 @@ function excelTargets(req, res , next){
 		{caption:'link',type:'string',width:15,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'owner',type:'string',width:7,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'responsible',type:'string',width:10,captionStyleIndex:2,beforeCellWrite:_formatCell},
-		{caption:'comments',type:'string',width:10,captionStyleIndex:2,beforeCellWrite:_formatCell}
+		{caption:'comments',type:'string',width:10,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'contributors',type:'string',width:10,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'sponsor',type:'string',width:10,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'start',type:'string',width:10,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'end',type:'string',width:10,captionStyleIndex:2,beforeCellWrite:_formatCell}
 		
 	];
     
@@ -639,16 +643,19 @@ function excelCompetitors(req, res , next){
     conf.cols = [
 		{caption:'_id',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'name',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
-		{caption:'type',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'offer',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'description',type:'string',width:50,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'type',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'marketcap',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'stock',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'stocklink',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'products',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
-		{caption:'market',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'markets',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'url',type:'string',width:40,captionStyleIndex:2,beforeCellWrite:_formatCell}
 	];
     
     _generateAndSendExcel("competitors",conf,req,res,next);
 }
-
 
         
 /**

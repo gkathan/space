@@ -159,7 +159,7 @@ app.use('/incidents', incidents);
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
     var err = new Error('Not Found');
-    logger.error("[not found] ");
+    logger.error("[not found] "+err);
     err.status = 404;
     next(err);
 });

@@ -11,11 +11,15 @@ block content
 			thead
 				tr
 					th(style="width:150px") 
-					th(style="width:150px") name
-					th(style="width:500px")  description
+					th(style="width:100px") name
+					th offer
+					th(style="width:500px") description
 					th products
 					th(style="width:80px") type
-					th market
+					th markets
+					th marketcap
+					th stock
+					
 			tbody
 				each c in competitors
 					tr
@@ -24,12 +28,15 @@ block content
 							img(src="/images/competitors/#{c.name}.png"  height="25px") 
 					td(style="vertical-align:top;text-align:left;vertical-align:middle") 
 						a(href="#{c.url}" target="_new") #{c.name} 
+					td(style="vertical-align:top;text-align:left;vertical-align:middle;font-size:11px") #{c.offer} 
+					
 					td(style="vertical-align:top;text-align:left;vertical-align:middle;font-size:11px") #{c.description} 
 						
 							
 						
-					td(style="vertical-align:top;text-align:left;font-size:11px;vertical-align:middle") #{c.scope} 
+					td(style="vertical-align:top;text-align:left;font-size:11px;vertical-align:middle") #{c.products} 
 					td(style="vertical-align:top;text-align:left;font-size:11px;vertical-align:middle") #{c.type} 
-					td(style="vertical-align:top;text-align:left;font-size:11px;vertical-align:middle") #{c.market} 
-
-
+					td(style="vertical-align:top;text-align:left;font-size:11px;vertical-align:middle") #{c.markets} 
+					td(style="vertical-align:top;text-align:left;font-size:11px;vertical-align:middle") #{c.marketcap} 
+					td(style="vertical-align:top;text-align:left;font-size:11px;vertical-align:middle") 
+						a(href="#{c.stocklink}" target="_new") #{c.stock} 

@@ -185,10 +185,16 @@ function getTargetConfig(){
 	    { id: "target", name: "target", field: "target", editor: Slick.Editors.LongText,width:150, cssClass: "cell-standard" },
 	    { id: "outcome", name: "outcome", field: "outcome", editor: Slick.Editors.LongText ,width:150, cssClass: "cell-standard"},
 		{ id: "description", name: "description", field: "description", editor: Slick.Editors.LongText,width:200, cssClass: "cell-standard" },
+	    { id: "baseline", name: "baseline", field: "baseline", editor: Slick.Editors.LongText,width:150 , cssClass: "cell-standard"},
 	    { id: "measure", name: "measure", field: "measure", editor: Slick.Editors.LongText,width:150 , cssClass: "cell-standard"},
 	    { id: "by when", name: "by when", field: "by when", editor: Slick.Editors.LongText,width:150, cssClass: "cell-standard" },
 	    { id: "link", name: "link", field: "link", editor: Slick.Editors.Text,width:150, cssClass: "cell-standard"},
-        { id: "comments", name: "comments",  field: "comments", editor: Slick.Editors.Text,width:150, cssClass: "cell-standard" }];
+        { id: "comments", name: "comments",  field: "comments", editor: Slick.Editors.Text,width:150, cssClass: "cell-standard" },
+        { id: "contributors", name: "contributors",  field: "contributors", editor: Slick.Editors.Text,width:150, cssClass: "cell-standard" },
+        { id: "sponsor", name: "sponsor",  field: "sponsor", editor: Slick.Editors.Text,width:150, cssClass: "cell-standard" },
+        { id: "start", name: "start",  field: "start", editor: Slick.Editors.Date,width:150, cssClass: "cell-standard" },
+        { id: "end", name: "end",  field: "end", editor: Slick.Editors.Date,width:150, cssClass: "cell-standard" }
+        ];
 	var _config ={};
 	_config.mode="editable";
 	_config.fields = _target;
@@ -300,12 +306,16 @@ function getCustomersConfig(){
 
 function getCompetitorsConfig(){
 	var _competitors =[
-        { id:"id", name: "id", field: "_id",sortable:true,width:30,cssClass:"onKanbanImmutable" },
-        { id:"name", name: "name", field: "name",sortable:true,width:150, editor: Slick.Editors.Text, cssClass: "cell-title"},
+        { id: "id", name: "id", field: "_id",sortable:true,width:30,cssClass:"onKanbanImmutable" },
+        { id: "name", name: "name", field: "name",sortable:true,width:150, editor: Slick.Editors.Text, cssClass: "cell-title"},
+        { id: "offer", name: "offer", field: "offer", editor: Slick.Editors.Text ,width:150,sortable:true, cssClass: "cell-standard"},
+        { id: "description", name: "description",  field: "description", editor: Slick.Editors.LongText ,width:150 ,cssClass: "cell-standard"},
         { id: "type", name: "type", field: "type", editor: Slick.Editors.Text ,width:150,sortable:true, cssClass: "cell-standard"},
-        { id: "description", name: "description",  field: "description", editor: Slick.Editors.Text ,width:150 ,cssClass: "cell-standard"},
-        { id: "products", name: "scope",  field: "scope", editor: Slick.Editors.Text ,sortable:true,width:150 ,cssClass: "cell-standard"},
-        { id: "market", name: "market",  field: "market", editor: Slick.Editors.Text ,width:150 ,cssClass: "cell-standard"},
+        { id: "marketcap", name: "marketcap", field: "marketcap", editor: Slick.Editors.Text ,width:150,sortable:true, cssClass: "cell-standard"},
+        { id: "stock", name: "stock", field: "stock", editor: Slick.Editors.Text ,width:150,sortable:true, cssClass: "cell-standard"},
+        { id: "stocklink", name: "stocklink", field: "stocklink", editor: Slick.Editors.Text ,width:150,sortable:true, cssClass: "cell-standard"},
+        { id: "products", name: "products",  field: "products", editor: Slick.Editors.Text ,sortable:true,width:150 ,cssClass: "cell-standard"},
+        { id: "markets", name: "markets",  field: "markets", editor: Slick.Editors.Text ,width:150 ,cssClass: "cell-standard"},
         { id: "url", name: "url",  field: "url", editor: Slick.Editors.Text ,width:150 ,cssClass: "cell-standard"}];
 	var _config ={};
 	_config.mode="editable";
