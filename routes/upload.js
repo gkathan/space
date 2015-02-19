@@ -13,6 +13,21 @@ var _ = require('lodash');
 var config = require('config');
 
 
+var log4js = require('log4js');
+log4js.configure({
+  appenders: [
+    { type: 'console'},
+    { type: 'file', filename: 'logs/s2t_upload.log', category: 's2t_upload' }
+    
+  ],
+  replaceConsole: true
+});
+
+// log4js
+var logger = log4js.getLogger('s2t_upload');
+logger.setLevel('DEBUG');
+
+
 
 // fileupload + xls2json handling
 var multer  = require('multer');
@@ -27,6 +42,10 @@ router.use(multer({ dest: __dirname+'/temp_uploads/',
 
 	rename: function (fieldname, filename) {
 		return filename+Date.now();
+	  },
+	  
+	  onError:function(error,next){
+		  console.log("***************SHIT ERROR HAPPENED" +err);
 	  },
 
 	onFileUploadStart: function (file) {
@@ -43,98 +62,111 @@ router.use(multer({ dest: __dirname+'/temp_uploads/',
 	},
 
 	onFileUploadComplete: function (file) {
-	  console.log(file.fieldname + ' uploaded to  ' + file.path)
-	  
-	  done=true;
-	  
-	  var _filename = file.originalname;
-	  console.log("+++++++++++++++++ [OK] our original filename is: "+_filename);
-	  
-	  
-	  // here we can do our processing
-	  var _originalFilename = file.originalname;
-	  var _jsonfilename = file.name+".json";
-	  var _outputFile =  __dirname + '/temp_uploads/'+_jsonfilename;
-	  
-	  console.log("******************** output: "+_outputFile);
-	  //1) convert xlsx2json
-	  
+		console.log(file.fieldname + ' uploaded to  ' + file.path)
+		done=true;
+		var _filename = file.originalname;
+		console.log("+++++++++++++++++ [OK] our original filename is: "+_filename);
+
+		// here we can do our processing
+		var _originalFilename = file.originalname;
+		var _jsonfilename = file.name+".json";
+		var _outputFile =  __dirname + '/temp_uploads/'+_jsonfilename;
+
+		console.log("******************** output: "+_outputFile);
+		//1) convert xlsx2json
+		
 		xlsx_json({
-		  input: file.path,
-		  output: _outputFile
+			input: file.path,
+			output: _outputFile
 		}, function(err, result) {
-		  if(err) {
-			console.error(err);
-		  }else {
-			//console.log(result);
-			fs.readFile(_outputFile, 'utf8', function (err, data) {
-			if (err) throw err; // we'll not consider error handling for now
-			var json = JSON.parse(data);
-
-			//console.log("parsed "+_jsonfilename+": "+json);
-			console.log("***and inserting into mongoDB...");
-			console.log("***************** [DEBUG]: _originalFilename: "+_originalFilename);
-			
-			
-			// check is an object with 4 fields; {data,date,boardDate,fillblanks}
-			var _check = _validateName(_originalFilename);
-			var _collection = _check.collection;
-			var _date = _check.date;
-			var _boarddate = _check.boarddate;
-			var _fillblanks = _check.fillblanks;
-			
-			var _function ="";
-			var _dropBeforeInsert=false;
-			
-			var _plainElements =["productportfolio","productcatalog","targets","incidents","labels","customers","competitors"];
-			
-
-			
-			if (_collection=="portfoliogate") _function = _handlePortfolioGate;
-			else if (_collection=="org") _function = _handleHR_PI;
-			else if (_.indexOf(_plainElements,_collection) >-1){
-				 _function = _handlePlain;
-				 _dropBeforeInsert = true;
+			if(err) {
+				logger.error(err);
 			}
-			
-			console.log("***************** [DEBUG]: _collection: "+_collection+" _date: "+_date);
-			
-			// async processing pattern required here too ;-)
-			if (_date){
-				//var _data = _function(json,_date,_boarddate,_fillblanks);
-				_function(json,_date,_boarddate,_fillblanks,function(_data){
+			else{
+				//console.log(result);
 				
-					console.log("...going to store to mongoDB: collection = "+_collection+" data:"+_data.oDate+" number of records: "+_data.oItems.length );
-					
-					var DB="kanbanv2";
-					var connection_string = '127.0.0.1:27017/'+DB;
-					var db = mongojs(connection_string, [DB]);
-					
-					// in some cases it would be needed to drop old collection first
-					if (_dropBeforeInsert) db.collection(_collection).drop();
-					
-					var result = db.collection(_collection).insert(_data);
-					
-					console.log("****** result: "+JSON.stringify(result));
-					
-					done=true;
-					
-					if (_collection=="portfoliogate"){
-						_sendPortfolioUpdate(config.notifications.portfolioupdate);
+				
+				fs.readFile(_outputFile, 'utf8', function (err, data) {
+					if (err){
+						 logger.error("********************* CRASHED !!!!!"+ err);
+						 throw err; // we'll not consider error handling for now
 					}
-					console.log("...stored ");
 					
-					//return;
+					
+					//logger.info("data read:" +data);	
+					
+					// crashes - looks like we hava an async issue with "data" not being ready ;-)
+					var json = JSON.parse(data);
+					
+					
+					//var json = require(_outputFile);
+					
+					//var json = JSON.parse(fs.readFileSync(_outputFile, 'utf8'));
+					
+
+					//console.log("parsed "+_jsonfilename+": "+json);
+					logger.info("***and inserting into mongoDB...");
+					logger.info("***************** [DEBUG]: _originalFilename: "+_originalFilename);
+					
+					
+					// check is an object with 4 fields; {data,date,boardDate,fillblanks}
+					var _check = _validateName(_originalFilename);
+					var _collection = _check.collection;
+					var _date = _check.date;
+					var _boarddate = _check.boarddate;
+					var _fillblanks = _check.fillblanks;
+					
+					var _function ="";
+					var _dropBeforeInsert=false;
+					
+					var _plainElements =["productportfolio","productcatalog","targets","incidents","labels","customers","competitors"];
+					
+
+					
+					if (_collection=="portfoliogate") _function = _handlePortfolioGate;
+					else if (_collection=="org") _function = _handleHR_PI;
+					else if (_.indexOf(_plainElements,_collection) >-1){
+						 _function = _handlePlain;
+						 _dropBeforeInsert = true;
+					}
+					
+					logger.info("***************** [DEBUG]: _collection: "+_collection+" _date: "+_date);
+					
+					// async processing pattern required here too ;-)
+					if (_date){
+						//var _data = _function(json,_date,_boarddate,_fillblanks);
+						_function(json,_date,_boarddate,_fillblanks,function(_data){
+						
+							//console.log("...going to store to mongoDB: collection = "+_collection+" data:"+_data.oDate+" number of records: "+_data.oItems.length );
+							
+							var DB="kanbanv2";
+							var connection_string = '127.0.0.1:27017/'+DB;
+							var db = mongojs(connection_string, [DB]);
+							
+							// in some cases it would be needed to drop old collection first
+							if (_dropBeforeInsert) db.collection(_collection).drop();
+							
+							var result = db.collection(_collection).insert(_data);
+							
+							console.log("****** result: "+JSON.stringify(result));
+							
+							done=true;
+							
+							if (_collection=="portfoliogate"){
+								_sendPortfolioUpdate(config.notifications.portfolioupdate);
+							}
+							console.log("...stored ");
+							
+							//return;
+						});
+					}
+					
+					else{
+						console.log("NONO - wrong file and name!!!");
+						done = false;
+					}
 				});
 			}
-			
-			else{
-				console.log("NONO - wrong file and name!!!");
-				done = false;
-			}
-			
-			});
-		  }
 		});
 	}
 }));
@@ -360,8 +392,9 @@ router.post('/process',function(req,res){
     //res.end("File uploaded, converted to json and imported to mongoDB.collection(imported)");
     
     // [TODO]and put some message in the locals....
-    res.locals.message="[SUCCESS] File uploaded, converted to json and imported to mongoDB";
-    res.render("upload");
+    //res.locals.message="[SUCCESS] File uploaded, converted to json and imported to mongoDB";
+    //res.send({msg:"[SUCCESS] File uploaded, converted to json and imported to mongoDB"});
+    res.redirect("/upload");//,{msg:"[SUCCESS] File uploaded, converted to json and imported to mongoDB"});
   }
   else{
 	res.end("File upload failed ....");

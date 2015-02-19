@@ -19,6 +19,7 @@ block content
 					th markets
 					th marketcap
 					th stock
+					th
 					
 			tbody
 				each c in competitors
@@ -27,7 +28,7 @@ block content
 						a(href="#{c.url}" target="_new")
 							img(src="/images/competitors/#{c.name}.png"  height="25px") 
 					td(style="vertical-align:top;text-align:left;vertical-align:middle") 
-						a(href="#{c.url}" target="_new") #{c.name} 
+						a(href="#{c.url}" target="_new") <b>#{c.name} </b>
 					td(style="vertical-align:top;text-align:left;vertical-align:middle;font-size:11px") #{c.offer} 
 					
 					td(style="vertical-align:top;text-align:left;vertical-align:middle;font-size:11px") #{c.description} 
@@ -40,3 +41,12 @@ block content
 					td(style="vertical-align:top;text-align:left;font-size:11px;vertical-align:middle") #{c.marketcap} 
 					td(style="vertical-align:top;text-align:left;font-size:11px;vertical-align:middle") 
 						a(href="#{c.stocklink}" target="_new") #{c.stock} 
+					td(style="vertical-align:top;text-align:left;vertical-align:middle") 
+						if c.igamingurl
+							a(href="#{c.igamingurl}" target="_new" data-toggle="tooltip" data-placement="top" title="info about #{c.name} on igaming suppliers site") 
+								img(src="/images/competitors/igamingsuppliers.png"  height="15px") 
+						
+	script.
+		$(function () {
+			$('[data-toggle="tooltip"]').tooltip()
+		})

@@ -51,7 +51,7 @@ block content
 						button.btn.btn-primary.btn-xs(type="button")
 							span Save changes
 		
-		//v1EpicSeletc Modal
+		//v1EpicSelect Modal
 		div.modal.fade(id="v1EpicsModal" tabindex="-1" role="dialog" aria-labelledby="v1EpicsModal" aria-hidden="true" )
 			div.modal-dialog
 				div.modal-content(style="opacity:1")
@@ -62,11 +62,12 @@ block content
 							
 							|  v1 epics
 					div.modal-body
-						each e in epics
-							br
-							img(src="/images/v1/epic.gif" height="10px")
-							span(style="font-size:10px") &nbsp; #{e.Number} - #{e.Name} 
-					
+						ul(id="v1epics")
+							each e in epics
+								li
+									img(src="/images/v1/epic.gif" height="10px")
+									span(style="font-size:10px") &nbsp; #{e.Number} - #{e.Name} 
+						
 		
 		div.btn-group-xs
 			button.btn.btn-primary.btn-xs(id="kanban_menu" type="button") 
@@ -77,6 +78,9 @@ block content
 	script(type="text/javascript").
 		
 		render("/images/svg/external.svg");
+		
+		var el = document.getElementById('v1epics');
+		var sortable = Sortable.create(el,{});
 		
 		
 		

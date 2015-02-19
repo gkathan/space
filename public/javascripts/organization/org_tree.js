@@ -69,11 +69,12 @@ var pack;
 var nodes;
 
 
+var org_date;
 
 
 
 function render(date){
-	
+	org_date = date;
 	//d3.xml("data/external_org.svg", function(xml) {
 	//	document.body.appendChild(document.importNode(xml.documentElement, true));
 
@@ -212,6 +213,8 @@ function _renderBackground(source){
 
 function _render(source){
 	var i = 0;
+	
+	
 
   // Compute the new tree layout.
 	//var nodes = tree.nodes(root).reverse(),
@@ -402,7 +405,7 @@ function click(d) {
   HEIGHT = 500+d.overallReports*3;
   
   d3.select("svg").remove();
-  render();
+  render(org_date);
   return;
   
   

@@ -4,10 +4,10 @@ block content
 
 div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;background-color:white;margin-top: 60px;width:400px;text-align: left;margin: 10px auto;")
 	div.panel-heading 
-		i(style="font-size:20px").mdi-file-file-upload 
-		span(style="font-size:20px") DATA IMPORT 
+		i.glyphicon.glyphicon-floppy-open(style="font-size:15px")
+		span(style="font-size:20px")&nbsp;DATA IMPORT 
 		br
-		small xlsx uploader
+		small direct excel upload and import
 		
 	div.panel-body 
 		
@@ -22,11 +22,27 @@ div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;back
 			li incidents
 			li labels
 			li customers
+			li competitors
+			
 			
 
 	div.form-box
 		form(id="uploadForm" enctype="multipart/form-data" action="/upload/process" method="post")
-			input.form-control(type="file" name="userFile")
+			
+			
+			.fileinput.fileinput-new.input-group(data-provides="fileinput")
+				.form-control(data-trigger="fileinput")
+					i.glyphicon.glyphicon-file.fileinput-exists
+						span.fileinput-filename(style="width:190px;font-size:12px;font-family:arial")
+				span.input-group-addon.btn.btn-info.btn-file
+					span.fileinput-new Select file
+					span.fileinput-exists(style="width:190px") Change
+					input(type="file" name="userFile")
+				a.input-group-addon.btn.btn-default.fileinput-exists(href="#" data-dismiss="fileinput")
+						Remove
+			
+			
+			
 			input.btn.btn-primary.btn-block(type="submit" value="Upload xlsx" name="submit" data-toggle="tooltip" data-placement="top" title="......explanaotry stuff")
 	div.panel-footer
 		if message

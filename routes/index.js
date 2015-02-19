@@ -16,7 +16,7 @@ var db = mongojs(connection_string, [DB]);
 
 /* GET home page. */
 router.get('/', function(req, res) {
-    res.render('index', { title: 'kanbanv2 - strategy2tactics' });
+    res.render('index', { title: 'strategy²tactics' });
 });
 
 module.exports = router;
