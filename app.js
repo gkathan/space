@@ -25,30 +25,20 @@ var fs = require('fs')
 var config = require('config');
 
 
-var log4js = require('log4js');
-log4js.configure({
-  appenders: [
-    { type: 'console'},
-    { type: 'file', filename: 'logs/s2t.log', category: 's2t' }
-    
-  ],
-  replaceConsole: true
-});
+var logger = require('winston');
+
+logger.add(logger.transports.File, { filename: 'logs/s2t.log' });
 
 
 
-// log4js
-var logger = log4js.getLogger('s2t');
-logger.setLevel('DEBUG');
+logger.level='debug';
 
-logger.trace('**** Entering strategy2tactics log4js testing');
 logger.debug('* strategy2tactics [debug] test');
 logger.info('* strategy2tactics [info] test');
 logger.warn('* strategy2tactics [warn] test');
 logger.error('* strategy2tactics [error] test');
-logger.fatal('* strategy2tactics [fatal] test');
 
-logger.info("***** und ?????");
+logger.log("***** und ?????");
 
 
 
