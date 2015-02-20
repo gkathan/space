@@ -5,12 +5,12 @@
 		
 		"url" : "http://v1.bwinparty.corp/V1-Production/",
 		
-		"proxy" : "http://knbnprxy.ea.bwinparty.corp/rest/epics",
+		"proxy" : "http://localhost:8585/rest/epics",
 		
 		"syncEpics": {
 			"mode": "on",
 			"intervalMinutes" :60,
-			"url" : "http://knbnprxy.ea.bwinparty.corp/rest/epics"
+			"url" : "http://localhost:8585/rest/epics"
 			}	
 	},
 	

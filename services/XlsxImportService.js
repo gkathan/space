@@ -1,127 +1,120 @@
-
-
 var config = require('config');
-var xlsx_json = require('xlsx-to-json')
+var xlsx_json = require('xlsx-to-json');
 
-exports.empty = function empty () {
-	console.log('i do nothing ;-)');
-}
+var fs = require('fs');
+var path = require('path');
+
+var mongo = require('mongodb');
+var mongojs = require('mongojs');
+
+var _ = require('lodash');
 
 
+var winston = require('winston');
+var logger = new (winston.Logger)({
+    transports: [
+      new (winston.transports.Console)({colorize:true, prettyPrint:true,showLevel:true,timestamp:true}),
+      new (winston.transports.File)({ filename: 'logs/s2t_xlsximport.log' , prettyPrint:true,showLevel:true})
+    ]
+  });
+logger.level='debug';
 
+var appRoot = require('app-root-path');
 
+/**
+ * 
+ * converts xlsx to json
+ */
+exports.convertXlsx2Json = function convertXlsx2Json (filename) {
+	// here we can do our processing
+	var _originalFilename = filename;
+	var _jsonfilename = filename+".json";
+	var _base = appRoot+ '/temp/';
+	
+	//var _outputFile =  __dirname + '/temp_uploads/'+_jsonfilename;
+	var _outputFile =  _base +_jsonfilename;
+	var _inputFile = _base+filename;
 
-		// here we can do our processing
-		var _originalFilename = file.originalname;
-		var _jsonfilename = file.name+".json";
-		var _outputFile =  __dirname + '/temp_uploads/'+_jsonfilename;
-
-		console.log("******************** output: "+_outputFile);
-		//1) convert xlsx2json
-		
-		xlsx_json({
-			input: file.path,
-			output: _outputFile
-		}, function(err, result) {
-			if(err) {
-				logger.error(err);
+	console.log("******************** output: "+_outputFile);
+	//1) convert xlsx2json
+	
+	xlsx_json({
+		input: _inputFile ,
+		output: _outputFile
+	}, function(err, json) {
+		if(err) {
+			logger.error(err);
+		}
+		else{
+			//console.log("parsed "+_jsonfilename+": "+json);
+			logger.info("***and inserting into mongoDB...");
+			logger.info("***************** [DEBUG]: _originalFilename: "+_originalFilename);
+			// check is an object with 4 fields; {data,date,boardDate,fillblanks}
+			var _check = _validateName(_originalFilename);
+			var _collection = _check.collection;
+			var _date = _check.date;
+			var _boarddate = _check.boarddate;
+			var _fillblanks = _check.fillblanks;
+			
+			var _function ="";
+			var _dropBeforeInsert=false;
+			
+			var _plainElements =["productportfolio","productcatalog","targets","incidents","labels","customers","competitors"];
+			
+			if (_collection=="portfoliogate") _function = _handlePortfolioGate;
+			else if (_collection=="org") _function = _handleHR_PI;
+			else if (_.indexOf(_plainElements,_collection) >-1){
+				 _function = _handlePlain;
+				 _dropBeforeInsert = true;
 			}
-			else{
-				//console.log(result);
+			
+			logger.info("***************** [DEBUG]: _collection: "+_collection+" _date: "+_date);
+			
+			// async processing pattern required here too ;-)
+			if (_date){
+				//var _data = _function(json,_date,_boarddate,_fillblanks);
+				_function(json,_date,_boarddate,_fillblanks,function(_data){
 				
-				
-				fs.readFile(_outputFile, 'utf8', function (err, data) {
-					if (err){
-						 logger.error("********************* CRASHED !!!!!"+ err);
-						 throw err; // we'll not consider error handling for now
+					//console.log("...going to store to mongoDB: collection = "+_collection+" data:"+_data.oDate+" number of records: "+_data.oItems.length );
+					
+					var DB="kanbanv2";
+					var connection_string = '127.0.0.1:27017/'+DB;
+					var db = mongojs(connection_string, [DB]);
+					
+					// in some cases it would be needed to drop old collection first
+					if (_dropBeforeInsert) db.collection(_collection).drop();
+					
+					var result = db.collection(_collection).insert(_data);
+					
+					console.log("****** result: "+JSON.stringify(result));
+					
+					done=true;
+					
+					if (_collection=="portfoliogate"){
+						_sendPortfolioUpdate(config.notifications.portfolioupdate);
 					}
+					console.log("...stored ");
 					
 					
-					//logger.info("data read:" +data);	
-					
-					// crashes - looks like we hava an async issue with "data" not being ready ;-)
-					var json = JSON.parse(data);
-					
-					
-					//var json = require(_outputFile);
-					
-					//var json = JSON.parse(fs.readFileSync(_outputFile, 'utf8'));
-					
-
-					//console.log("parsed "+_jsonfilename+": "+json);
-					logger.info("***and inserting into mongoDB...");
-					logger.info("***************** [DEBUG]: _originalFilename: "+_originalFilename);
+					// and delete the temp file stuff
+					fs.unlink(_inputFile,function(err,succes){
+						fs.unlink(_outputFile);
+					});
 					
 					
-					// check is an object with 4 fields; {data,date,boardDate,fillblanks}
-					var _check = _validateName(_originalFilename);
-					var _collection = _check.collection;
-					var _date = _check.date;
-					var _boarddate = _check.boarddate;
-					var _fillblanks = _check.fillblanks;
 					
-					var _function ="";
-					var _dropBeforeInsert=false;
-					
-					var _plainElements =["productportfolio","productcatalog","targets","incidents","labels","customers","competitors"];
-					
-
-					
-					if (_collection=="portfoliogate") _function = _handlePortfolioGate;
-					else if (_collection=="org") _function = _handleHR_PI;
-					else if (_.indexOf(_plainElements,_collection) >-1){
-						 _function = _handlePlain;
-						 _dropBeforeInsert = true;
-					}
-					
-					logger.info("***************** [DEBUG]: _collection: "+_collection+" _date: "+_date);
-					
-					// async processing pattern required here too ;-)
-					if (_date){
-						//var _data = _function(json,_date,_boarddate,_fillblanks);
-						_function(json,_date,_boarddate,_fillblanks,function(_data){
-						
-							//console.log("...going to store to mongoDB: collection = "+_collection+" data:"+_data.oDate+" number of records: "+_data.oItems.length );
-							
-							var DB="kanbanv2";
-							var connection_string = '127.0.0.1:27017/'+DB;
-							var db = mongojs(connection_string, [DB]);
-							
-							// in some cases it would be needed to drop old collection first
-							if (_dropBeforeInsert) db.collection(_collection).drop();
-							
-							var result = db.collection(_collection).insert(_data);
-							
-							console.log("****** result: "+JSON.stringify(result));
-							
-							done=true;
-							
-							if (_collection=="portfoliogate"){
-								_sendPortfolioUpdate(config.notifications.portfolioupdate);
-							}
-							console.log("...stored ");
-							
-							//return;
-						});
-					}
-					
-					else{
-						console.log("NONO - wrong file and name!!!");
-						done = false;
-					}
+					//return;
 				});
 			}
-		});
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
+			
+			else{
+				console.log("NONO - wrong file and name!!!");
+				done = false;
+			}
+		}
+	});
+}
+
 		
 /**
  * checks format for portfoliogate xlsx upload

@@ -25,20 +25,15 @@ var fs = require('fs')
 var config = require('config');
 
 
-var logger = require('winston');
-
-logger.add(logger.transports.File, { filename: 'logs/s2t.log' });
-
-
-
+var winston = require('winston');
+var logger = new (winston.Logger)({
+    transports: [
+      new (winston.transports.Console)({colorize:true, prettyPrint:true,showLevel:true,timestamp:true}),
+      new (winston.transports.File)({ filename: 'logs/s2t.log' , prettyPrint:true,showLevel:true})
+    ]
+  });
 logger.level='debug';
 
-logger.debug('* strategy2tactics [debug] test');
-logger.info('* strategy2tactics [info] test');
-logger.warn('* strategy2tactics [warn] test');
-logger.error('* strategy2tactics [error] test');
-
-logger.log("***** und ?????");
 
 
 
@@ -113,7 +108,7 @@ app.use(function(req, res, next) {
 var addconfig = require('./services/middleware/addconfig.js');
 app.use(addconfig());
 
-console.log("**** ENV: "+app.get('env'));
+logger.debug("**** ENV: "+app.get('env'));
 
 logger.info(path.join(__dirname,'public','images','favicon.ico'));
 
@@ -121,7 +116,7 @@ logger.info(path.join(__dirname,'public','images','favicon.ico'));
 
 
 
-console.log("[CONFIG] "+JSON.stringify(config));
+logger.debug("[CONFIG] "+JSON.stringify(config));
 
 
 // schedule v1sync
@@ -133,7 +128,7 @@ rule.minute = new schedule.Range(0, 59, config.v1.syncEpics.intervalMinutes);
 
 if (config.v1.syncEpics.mode!="off"){
 	var j = schedule.scheduleJob(rule, function(){
-		console.log('...going to sync V1 ....');
+		logger.debug('...going to sync V1 ....');
 		_syncV1(config.v1.syncEpics.url);
 	});
 }
@@ -213,9 +208,9 @@ function _syncV1(url){
 				v1epics.drop();
 				v1epics.insert({createDate:new Date(),epics:JSON.parse(data)}	 , function(err , success){
 					//console.log('Response success '+success);
-					console.log('Response error '+err);
+					logger.debug('Response error '+err);
 					if(success){
-						console.log("syncv1 [DONE]");
+						logger.info("syncv1 [DONE]");
 						
 					}
 					//return next(err);

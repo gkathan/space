@@ -1,5 +1,5 @@
 /**
- * miling service
+ * mailing service
  */
 
 

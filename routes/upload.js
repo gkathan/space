@@ -5,20 +5,20 @@ var router = express.Router();
 var mongo = require('mongodb');
 var mongojs = require('mongojs');
 
-var fs = require('fs');
-var path = require('path');
 
 var _ = require('lodash');
 
 var config = require('config');
 
 
-var logger = require('winston');
-
-//logger.add(logger.transports.File, { filename: 'logs/s2t_upload.log' });
+var winston = require('winston');
+var logger = new (winston.Logger)({
+    transports: [
+      new (winston.transports.Console)({colorize:true, prettyPrint:true,showLevel:true,timestamp:true}),
+      new (winston.transports.File)({ filename: 'logs/s2t_upload.log' , prettyPrint:true,showLevel:true})
+    ]
+  });
 logger.level='debug';
-
-logger.debug("***************************");
 
 
 // fileupload + xls2json handling
@@ -27,27 +27,27 @@ var multer  = require('multer');
 
 var baseUrl;
 
-logger.debug("*********?????????");
+var appRoot = require('app-root-path');
 
 
 module.exports = router;
 
 // => has to be moved out of app.js !!!!!!!!!!!!!
-router.use(multer({ dest: __dirname+'/temp_uploads/',
+router.use(multer({ dest: appRoot+'/temp/',
 
 	rename: function (fieldname, filename) {
-		return filename+Date.now();
+		return filename;//+Date.now();
 	  },
 	  
 	  onError:function(error,next){
-		  logger.debug("***************SHIT ERROR HAPPENED" +err);
+		  console.log("***************SHIT ERROR HAPPENED" +err);
 	  },
 
 	onFileUploadStart: function (file) {
-	  logger.debug(file.originalname + ' is starting ...')
+	  console.log(file.originalname + ' is starting ...')
 	},
 	onParseEnd: function (req, next) {
-		logger.debug('Form parsing completed at: ', new Date());
+		console.log('Form parsing completed at: ', new Date());
 		
 		// get the base URL of running app 
 		baseUrl = req.getBaseUrl();
@@ -57,18 +57,10 @@ router.use(multer({ dest: __dirname+'/temp_uploads/',
 	},
 
 	onFileUploadComplete: function (file) {
-		logger.debug(file.fieldname + ' uploaded to  ' + file.path)
-		done=true;
+		console.log(file.fieldname + ' uploaded to  ' + file.path)
+		//done=true;
 		var _filename = file.originalname;
-		logger.debug("+++++++++++++++++ [OK] our original filename is: "+_filename);
-
-
-
-		// upload done
-		
-
-
-
+		console.log("+++++++++++++++++ [OK] our original filename is: "+_filename);
 	}
 }));
 
@@ -87,19 +79,34 @@ router.get('/', function(req, res) {
 
 
 router.post('/process',function(req,res){
-  if(done==true){
-    //console.log(req.files);
-    //res.end("File uploaded, converted to json and imported to mongoDB.collection(imported)");
+  if(req.files){
+    
+    
+    logger.debug(req.files);
     
     // [TODO]and put some message in the locals....
     //res.locals.message="[SUCCESS] File uploaded, converted to json and imported to mongoDB";
     //res.send({msg:"[SUCCESS] File uploaded, converted to json and imported to mongoDB"});
+    logger.info("...........upload done: now we should process the shit ....: "+req.files);
     
-    logger.info("...........upload done: now we should process the shit ....");
+    var _filename;
     
-    //res.redirect("/upload");//,{msg:"[SUCCESS] File uploaded, converted to json and imported to mongoDB"});
+    for (var f in req.files){
+		_filename = req.files[f].name;
+		logger.info("  ** file: : "+_filename);
+	}
+    
+    // lets take the first 
+    // and do the json 
+    var xlsximport = require('../services/XlsxImportService');
+    xlsximport.convertXlsx2Json(_filename);
+    
+    res.locals.success=true;
+    res.locals.uploadfilename= _filename;
+    res.render("upload");
   }
   else{
-	res.end("File upload failed ....");
+	 res.redirect("/upload");//,{msg:"[SUCCESS] File uploaded, converted to json and imported to mongoDB"});
+	
   }
 });

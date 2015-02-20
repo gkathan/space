@@ -19,6 +19,16 @@ table {border: none;}
   background: white;
   outline: 0;
   border: 0px solid gray;
+  
+  width:3000px;
+  min-width:700px;
+  /*width:3000px;*/
+  margin-left:10px;
+  
+     -webkit-box-flex: 1;
+     -moz-box-flex: 1;
+      box-flex: 1; 
+  
 }
 
 .grid-header {

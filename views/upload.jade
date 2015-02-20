@@ -43,11 +43,22 @@ div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;back
 			
 			
 			
-			input.btn.btn-primary.btn-block(type="submit" value="Upload xlsx" name="submit" data-toggle="tooltip" data-placement="top" title="......explanaotry stuff")
-	div.panel-footer
-		if message
-			.alert.alert-success(role="alert" style="font-size:10px; font-weight:bold")
-				#{message}
-
+			input.btn.btn-primary.btn-block(id="uploadxlsxsubmit" type="submit" value="Upload xlsx" data-loading-text="...processing..." name="submit" data-toggle="tooltip" data-placement="top" title="......explanaotry stuff")
+	
+			if success && uploadfilename
+				.alert.alert-success(role="alert" style="font-size:10px; font-weight:normal")
+					|[SUCCESS] File: #{uploadfilename} uploaded, converted and imported to DB
+			else if !success && uploadfilename
+				.alert.alert-warning(role="alert" style="font-size:10px; font-weight:normal")
+					|[ERROR] File upload failed !
 
 include includes/material
+
+
+	script.
+		$('#uploadxlsxsubmit').on('click', function () {
+			//alert("holy crap");
+			var $btn = $(this).button('loading')
+			// business logic...
+			//$btn.button('reset')
+		})
