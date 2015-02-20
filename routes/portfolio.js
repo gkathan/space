@@ -102,6 +102,9 @@ router.get('/', function(req, res) {
 							
 							if (_item[0]) {_epic["name"] = _item[0].Name;}
 							else _epic["name"] = "<not synced>";
+							
+							if (_item[0]) {_epic["attachment"] = _attachmentParse(_item[0].EpicAttachments);}
+							
 							// v1 epic.ID comes in format Epic:2783462387
 							if (_item[0]) {_epic["id"] = _item[0].ID.split(":")[1];}
 							if (_item[0]) {
@@ -181,6 +184,29 @@ router.get('/', function(req, res) {
 			});
 		});
 });
+
+/**
+ * "[{_oid=Attachment:5074253},{_oid=Attachment:5099999}]"
+ */
+function _attachmentParse(_attachmentName){
+	
+	
+	var _ids = [];
+	
+	if (_attachmentName != undefined){
+		var _split1 = _attachmentName.split(",");
+		
+		for (var i in _split1){
+			var _split2 = _split1[i].split(":");
+				
+				if (_split2[1] != undefined){
+					var _id = _split2[1].split("}")[0];
+					_ids.push(_id);
+				}
+		}
+	}
+	return _ids;
+}
 
 
 /**

@@ -55,8 +55,9 @@ mixin renderEpic(epic)
 						a(href="http://v1.bwinparty.corp/V1-Production/Epic.mvc/Summary?oidToken=Epic%3A"+epic.id target="_new" )
 							| <b>#{epic.name}</b> 
 					td(style="font-weight:normal;font-size:8px;width:35px;height:14px;vertical-align:middle;text-align:center")
-						a(href="http://v1.bwinparty.corp/V1-Production/attachment.img/"+epic.id+"/" target="_new" )
-							| [IP]
+						if epic.attachment[0]
+							a(href="http://v1.bwinparty.corp/V1-Production/attachment.img/"+epic.attachment[0]+"/" target="_new" )
+								| [IP] 
 					td(style="width:15px;vertical-align:middle;text-align:center")
 						if epic.oldState
 							span.glyphicon.glyphicon-star(style="font-size:12px;color:black; ")
