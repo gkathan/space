@@ -22,25 +22,26 @@ block content
 				if !session.AUTH
 					li.active
 						a(href='/login') login
+					
 				if session.AUTH
 					li.active
 						a(href='/logout') logout
-					
-					ul.nav.navbar-nav
-						li.dropdown(id="fat-menu")
-							a.dropdown-toggle(id="targets" href="#" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false") environment
-								span.caret 
+				
+				ul.nav.navbar-nav
+					li.dropdown(id="fat-menu")
+						a.dropdown-toggle(id="targets" href="#" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false") environment
+							span.caret 
 
-							ul.dropdown-menu(role="menu" aria-labelledby="admin")
-								li(role="presentation") 
-									a(role="menuitem" tabindex="-1" href="/customers") customers
-								li(role="presentation") 
-									a(role="menuitem" tabindex="-1" href="/competitors") competitors
-								li(role="presentation") 
-									a(role="menuitem" tabindex="-1" href="/labels") labels
-								li
-									a(href='/playbooks') playbooks
-
+						ul.dropdown-menu(role="menu" aria-labelledby="admin")
+							li(role="presentation") 
+								a(role="menuitem" tabindex="-1" href="/customers") customers
+							li(role="presentation") 
+								a(role="menuitem" tabindex="-1" href="/competitors") competitors
+							li(role="presentation") 
+								a(role="menuitem" tabindex="-1" href="/labels") labels
+							li
+								a(href='/playbooks') playbooks
+				if session.AUTH
 					li
 						a(href='/boards') boards
 					ul.nav.navbar-nav
@@ -53,24 +54,17 @@ block content
 									a(role="menuitem" tabindex="-1" href="/org/circlecontain/targets") targets circle contain map
 								li(role="presentation") 
 									a(role="menuitem" tabindex="-1" href="#") targets flat list
-					ul.nav.navbar-nav
-						li.dropdown(id="fat-menu")
-						
-							a.dropdown-toggle(id="org" href="#" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false") portfolio stuff 
-								span.caret 
-
-							ul.dropdown-menu(role="menu" aria-labelledby="portfolio")
-								li(role="presentation") 
-									a(role="menuitem" tabindex="-1" href="/portfolio") portfolio boards / gates
-								li(role="presentation") 
-									a(role="menuitem" tabindex="-1" href="/#") ....
+				ul.nav.navbar-nav
+					li.dropdown(id="fat-menu")
+						a.dropdown-toggle(id="org" href="#" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false") initiatives & portfolio
+							span.caret 
+						ul.dropdown-menu(role="menu" aria-labelledby="portfolio")
+							li(role="presentation") 
+								a(role="menuitem" tabindex="-1" href="/portfolio") [portfolio meeting] list
 
 					
 					
-					
-					
-					
-					
+				if session.AUTH
 					ul.nav.navbar-nav
 						li.dropdown(id="fat-menu")
 							a.dropdown-toggle(id="admin" href="#" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false") products & services 
@@ -146,6 +140,9 @@ block content
 									a(role="menuitem" tabindex="-1" href="/admin?type=customers") customers
 								li(role="presentation") 
 									a(role="menuitem" tabindex="-1" href="/admin?type=competitors") competitors
+								li(role="presentation") 
+									a(role="menuitem" tabindex="-1" href="/admin?type=organization") organization
+								
 								li(role="presentation") 
 									a(role="menuitem" tabindex="-1" href="/admin?type=incidents") incidents (very large..)
 								li

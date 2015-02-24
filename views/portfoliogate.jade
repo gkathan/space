@@ -54,10 +54,15 @@ mixin renderEpic(epic)
 					td(style="font-weight:bold;font-size:9px;width:180px;vertical-align:middle;white-space:nowrap")
 						a(href="http://v1.bwinparty.corp/V1-Production/Epic.mvc/Summary?oidToken=Epic%3A"+epic.id target="_new" )
 							| <b>#{epic.name}</b> 
-					td(style="font-weight:normal;font-size:8px;width:35px;height:14px;vertical-align:middle;text-align:center")
-						if epic.attachment[0]
-							a(href="http://v1.bwinparty.corp/V1-Production/attachment.img/"+epic.attachment[0]+"/" target="_new" )
+					td(style="font-weight:normal;font-size:8px;width:35px;height:14px;vertical-align:middle;text-align:left")
+						&nbsp;&nbsp;
+						if epic.attachmentProposal
+							a(href="http://v1.bwinparty.corp/V1-Production/attachment.img/"+epic.attachmentProposal.oid+"/" target="_new" )
 								| [IP] 
+						if epic.attachmentClosing
+							a(href="http://v1.bwinparty.corp/V1-Production/attachment.img/"+epic.attachmentClosing.oid+"/" target="_new" )
+								| [CD] 
+								
 					td(style="width:15px;vertical-align:middle;text-align:center")
 						if epic.oldState
 							span.glyphicon.glyphicon-star(style="font-size:12px;color:black; ")
@@ -125,20 +130,20 @@ block content
 				
 				
 			div.panel-body
-					each status in _date.pItems
-						// no NEW items for now
-						if status[0].Status != "New"
-							div.col-sm-2.col-md-3.col-lg5
-								div.panel(style="background-color:white;width:300px;text-align: left")
-									//status header
-									div.panel-heading(style="text-align:left")
-										span(style="font-size:20px;color:#{colors[status[0].Status]};margin-left:0px") #{status[0].Status.toUpperCase()}
-										span.badge #{status.length}
-										
-									//list epics per status	
-									div.panel-body
-										div.row(style="font-size:11px;margin-left:2px")
-											each epic in status
-												+renderEpic(epic)
+				each status in _date.pItems
+					// no NEW items for now
+					if status[0].Status != "New"
+						div.col-sm-2.col-md-3.col-lg5
+							div.panel(style="background-color:white;width:300px;text-align: left")
+								//status header
+								div.panel-heading(style="text-align:center")
+									span(style="font-size:20px;color:#{colors[status[0].Status]};margin-left:0px") #{status[0].Status.toUpperCase()}
+									span.badge #{status.length}
+									
+								//list epics per status	
+								div.panel-body
+									div.row(style="font-size:11px;margin-left:2px")
+										each epic in status
+											+renderEpic(epic)
 
 			

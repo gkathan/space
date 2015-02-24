@@ -7,12 +7,25 @@ var express = require('express');
 var router = express.Router();
 var _ = require('lodash');
 
+
+var winston = require('winston');
+var logger = new (winston.Logger)({
+    transports: [
+      new (winston.transports.Console)({colorize:true, prettyPrint:true,showLevel:true,timestamp:true}),
+      new (winston.transports.File)({ filename: 'logs/s2t_api.log' , prettyPrint:true,showLevel:true})
+    ]
+  });
+logger.level='debug';
+
+
 var DB="kanbanv2";
 
 var connection_string = '127.0.0.1:27017/'+DB;
 var db = mongojs(connection_string, [DB]);
 
 var BASE = "";
+
+
 
 
 /* GET api listing. */
@@ -35,6 +48,7 @@ var PATH = {
 						REST_LABELS : BASE+'/kanbanv2/rest/labels',
 						REST_CUSTOMERS : BASE+'/kanbanv2/rest/customers',
 						REST_COMPETITORS : BASE+'/kanbanv2/rest/competitors',
+						REST_ORGANIZATION : BASE+'/kanbanv2/rest/organization',
 						
 						REST_INITIATIVES_DIFF_TRAIL : BASE+'/kanbanv2/rest/initiatives_diff_trail',
 						REST_ORG : BASE+'/kanbanv2/rest/org/:date',
@@ -48,6 +62,7 @@ var PATH = {
 						EXPORT_LABELS : BASE+'/kanbanv2/export/xlsx/labels',
 						EXPORT_CUSTOMERS : BASE+'/kanbanv2/export/xlsx/customers',
 						EXPORT_COMPETITORS : BASE+'/kanbanv2/export/xlsx/competitors',
+						EXPORT_ORGANIZATION : BASE+'/kanbanv2/export/xlsx/organization',
 						
 						CONFIG : BASE+'/kanbanv2/config',
 
@@ -85,6 +100,8 @@ router.get(PATH.REST_PRODUCTPORTFOLIO, function(req, res, next) {findAllByName(r
 router.get(PATH.REST_PRODUCTCATALOG, function(req, res, next) {findAllByName(req,res,next);});
 router.get(PATH.REST_INCIDENTS, function(req, res, next) {findAllByName(req,res,next);});
 router.get(PATH.REST_V1EPICS, function(req, res, next) {findAllByName(req,res,next);});
+router.get(PATH.REST_ORGANIZATION, function(req, res, next) {findAllByName(req,res,next);});
+
 
 router.get(PATH.REST_LABELS, function(req, res, next) {findAllByName(req,res,next);});
 router.post(PATH.REST_LABELS, function(req, res, next) {save(req,res,next); });
@@ -101,8 +118,8 @@ router.delete(PATH.REST_COMPETITORS, function(req, res, next) {remove(req,res,ne
 
 router.get(PATH.REST_ORG, function(req, res, next) {
 	db.collection("org").findOne({oDate:req.params.date} , function(err , success){
-        console.log('Response success '+success);
-        console.log('Response error '+err);
+        logger.debug('Response success '+success);
+        logger.debug('Response error '+err);
         if(success){
             res.send(success);
             return;
@@ -153,13 +170,13 @@ function findAllByName(req, res , next){
 	if (_filterName==undefined) _filter = null;
 	
 	// e.g http://localhost:3000/api/kanbanv2/rest/boards?filterName=name&filterOperator=$eq&filterValue=studios
-	console.log("***** filter: "+JSON.stringify(_filter));
+	logger.debug("***** filter: "+JSON.stringify(_filter));
 	
     db.collection(collection).find(_filter).sort({id : 1} , function(err , success){
         //console.log("[DEBUG] findAllByName() for: "+_name+", Response success: "+JSON.stringify(success));
         //console.log('Response error '+err);
         if(success){
-            console.log("******************* success: "+success);
+            logger.debug("******************* success: "+success);
             
             res.send(success);
             return ;//next();
@@ -180,8 +197,8 @@ function findById(req, res , next){
 	var collection = _.last(_.initial(path));
 	
     db.collection(collection).findOne({id:req.params.id} , function(err , success){
-        console.log('Response success '+success);
-        console.log('Response error '+err);
+        logger.debug('Response success '+success);
+        logger.debug('Response error '+err);
         if(success){
             res.send(success);
             return;
@@ -196,13 +213,13 @@ function findById(req, res , next){
  * slected by refID which is the id of the changed entity
  */
 function findTrailByNameForId(req, res , next){
-    console.log("*** find Trail for :"+req.params.initiativeId);
+    logger.debug("*** find Trail for :"+req.params.initiativeId);
     var path = req.path.split("/");
 	var collection = _.last(_.initial(path));
 	
     db.collection(collection).find({refId:mongojs.ObjectId(req.params.initiativeId)} , function(err , success){
-        console.log('Response success '+success);
-        console.log('Response error '+err);
+        logger.debug('Response success '+success);
+        logger.debug('Response error '+err);
         if(success){
             res.send(success);
             return;
@@ -231,14 +248,14 @@ function save(req, res , next){
     var results = [];
     var _timestamp = new Date();
 
-    console.log("*************[DEBUG] save POST: collection= "+_collection+" itemJson: "+JSON.stringify(items));
+    logger.debug("*************[DEBUG] save POST: collection= "+_collection+" itemJson: "+JSON.stringify(items));
 
 
 	// Async task 
 	function async(item, callback) {
-	    console.log("----------------------------------- async(item:"+item.name+" called");
+	    logger.debug("----------------------------------- async(item:"+item.name+" called");
 
-	    console.log("[DEBUG] save POST: collection= "+_collection+" itemJson: "+JSON.stringify(item));
+	    logger.debug("[DEBUG] save POST: collection= "+_collection+" itemJson: "+JSON.stringify(item));
 		if (!(item.createDate)){
 			item.createDate=_timestamp;
 			//TODO refactor to ASYNC handling !!!!
@@ -250,7 +267,7 @@ function save(req, res , next){
 		
 		item.changeDate=_timestamp;
 
-		console.log("************_item: "+item.ExtId);
+		logger.debug("************_item: "+item.ExtId);
 		
 		// get old before update
 		var _old;
@@ -260,22 +277,22 @@ function save(req, res , next){
 			//console.log('FindOne() Response success '+success);
 			//console.log('FindOne() Response error '+err);
 			_old=success;
-			console.log("************_old: "+JSON.stringify(_old));
+			logger.debug("************_old: "+JSON.stringify(_old));
 			_diff = jsondiffpatch.diff(_old,item);
-			console.log("************diff: "+JSON.stringify(_diff));
+			logger.debug("************diff: "+JSON.stringify(_diff));
 
 		restOfTheFunction();	
 			
 		function restOfTheFunction(seq){	
-			console.log("++++++++++++++++++++++ restOfTheFunction() called +++++++++++++++++++++++++++");
+			logger.debug("++++++++++++++++++++++ restOfTheFunction() called +++++++++++++++++++++++++++");
 			if (seq){
-				console.log("[DEBUG] > restOfTheFunction() called with seq ="+seq);
+				logger.debug("[DEBUG] > restOfTheFunction() called with seq ="+seq);
 				item.id=seq;
 			}
 			
 			// http://stackoverflow.com/questions/13031541/mongoerror-cannot-change-id-of-a-document
 			if ( item._id && ( typeof(item._id) === 'string' ) ) {
-				console.log("[DEBUG] fixing mongDB _id issue....");
+				logger.debug("[DEBUG] fixing mongDB _id issue....");
 			    item._id = mongojs.ObjectId.createFromHexString(item._id)
 			}
 
@@ -285,16 +302,16 @@ function save(req, res , next){
 			db.collection(_collection).update({_id:mongojs.ObjectId(item._id)},item,{upsert:true} , function(err , success){
 				//console.log('Response success '+success);
 				//console.log('Response error '+err);
-				console.log("[DEBUG] updated collection ...");
+				logger.debug("[DEBUG] updated collection ...");
 				if(success){
-					console.log("[DEBUG] SUCCESS updatedExisting: "+success.updatedExisting);
+					logger.debug("[DEBUG] SUCCESS updatedExisting: "+success.updatedExisting);
 					
 					//insert trail (in case of update)
 					if (success.updatedExisting){
-						console.log("[DEBUG] going to insert trail ...");
+						logger.debug("[DEBUG] going to insert trail ...");
 						db.collection(_collection+"_diff_trail").insert({timestamp:_timestamp,refId:_old._id,diff:_diff,old:_old}	 , function(err , success){
-							console.log('Response success '+success);
-							console.log('Response error '+err);
+							logger.debug('Response success '+success);
+							logger.debug('Response error '+err);
 							if(success){
 								callback(success);
 							}
@@ -305,7 +322,7 @@ function save(req, res , next){
 					callback(success);
 				}
 				else {
-					console.log("[DEBUG] ERROR no success returned.. what to do now ????"+JSON.stringify(err));
+					logger.debug("[DEBUG] ERROR no success returned.. what to do now ????"+JSON.stringify(err));
 					callback(err);
 				}
 				//return next(err);
@@ -316,7 +333,7 @@ function save(req, res , next){
 
     // Final task 
 	function final() { 
-		console.log('************************************************************************* Done', results);
+		logger.debug('************************************************************************* Done', results);
 		
 		var _id;
 		if (results[0]){
@@ -325,7 +342,7 @@ function save(req, res , next){
 			}
 		}
 				
-		console.log("_id: "+_id+ JSON.stringify(results[0].upserted));
+		logger.debug("_id: "+_id+ JSON.stringify(results[0].upserted));
 		
 		res.send({_id:_id});
 		return;
@@ -333,7 +350,7 @@ function save(req, res , next){
     
 	
 	function series(item) {
-	  console.log(".series()...");
+	 logger.debug(".series()...");
 	  if(item) {
 		async( item, function(result) {
 		  results.push(result);
@@ -354,7 +371,7 @@ function save(req, res , next){
  */
 function saveNG(req, res , next){
     
-    console.log("*********************** save POST: action= "+req.body.action);
+    logger.debug("*********************** save POST: action= "+req.body.action);
     var path = req.path.split("/");
 	var collection = _.last(path);
 
@@ -365,14 +382,14 @@ function saveNG(req, res , next){
     // now lets iterate over the array 
     var async = require('async');
 	async.each(items, function (item, callback){ 
-		console.log("*item: "+item); // print the key
+		logger.debug("*item: "+item); // print the key
 		
 		db.collection(collection).remove({_id:mongojs.ObjectId(item)} , function(err , success){if (success) {console.log("--- remove: id:"+item+" [SUCCESS]");}})
 		
 		callback(); // tell async that the iterator has completed
 
 	}, function(err) {
-		console.log('iterating done');
+		logger.debug('iterating done');
 		res.send({});
 		return;
 	});  
@@ -382,14 +399,14 @@ function saveNG(req, res , next){
 
 
 function _checkCreateDate(item){
-	console.log("----------------------------------- _checkCreateDate (item:"+item.name+" called");
+	logger.debug("----------------------------------- _checkCreateDate (item:"+item.name+" called");
 	
 	if (!(item.createDate)){
 		item.createDate=_timestamp;
-		console.log("--->>>>>>>>>>no create date found: "+item.createDate);
+		logger.debug("--->>>>>>>>>>no create date found: "+item.createDate);
 	}
 	else {
-		console.log("[DEBUG] createDate: "+item.createDate);
+		logger.debug("[DEBUG] createDate: "+item.createDate);
 		item.changeDate=_timestamp;
 	}
 	
@@ -404,25 +421,25 @@ function _checkCreateDate(item){
  */
 function remove(req, res , next){
     
-    console.log("*********************** remove DELETE: action= "+req.body.action);
+    logger.debug("*********************** remove DELETE: action= "+req.body.action);
     var path = req.path.split("/");
 	var collection = _.last(path);
 
     
     var items = JSON.parse(req.body.itemJson);
-    console.log("*********************** itemJson= "+items[0]);
+    logger.debug("*********************** itemJson= "+items[0]);
     
     // now lets iterate over the array 
     var async = require('async');
 	async.each(items, function (item, callback){ 
-		console.log("*item: "+item); // print the key
+		logger.debug("*item: "+item); // print the key
 		
 		db.collection(collection).remove({_id:mongojs.ObjectId(item)} , function(err , success){if (success) {console.log("--- remove: id:"+item+" [SUCCESS]");}})
 		
 		callback(); // tell async that the iterator has completed
 
 	}, function(err) {
-		console.log('iterating done');
+		logger.debug('iterating done');
 		res.send({});
 		return;
 	});  
