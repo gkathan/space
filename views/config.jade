@@ -26,6 +26,14 @@ div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;back
 				b #{config.transcoder.url}
 			li mailer: 
 				b #{config.mailer.host}
+				br
+				b notifications:
+				ul
+					li portfolioupdate: 
+						b #{config.notifications.portfolioupdate}
+					li mailertest: 
+						b #{config.notifications.mailertest}
+
 			li os: 
 				ul 
 					li platform: 
@@ -42,4 +50,35 @@ div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;back
 						b #{os.freemem()}
 					li cpus: 
 						b #{os.cpus().length}
+						
+		br
+		a.btn.btn-xs.btn-warning(id="sendtestnotification" href="#" ) send testmail
+		
+	include includes/material
+	
+	script.
+		$('#sendtestnotification').on('click', function () {
+			
+			console.log("trying to send mail: ");
+			
+			var content = {};
 
+			content.from = "strategy2tactics@bwinparty.com";
+			content.to = "gerold.kathan@bwinparty.com";
+			content.subject = "[testmail]";
+			content.text="hello testmail";
+			console.log("trying to send mail: "+JSON.stringify(content));
+
+			$.ajax({
+			  url: '/api/kanbanv2/rest/mail',
+			  type: 'POST',
+			  data: { 
+					  mail: JSON.stringify(content)
+					  
+					}
+			});
+
+		});
+
+			
+		

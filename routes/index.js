@@ -16,6 +16,8 @@ var db = mongojs(connection_string, [DB]);
 
 /* GET home page. */
 router.get('/', function(req, res) {
+    
+    
     res.render('index', { title: 'strategy²tactics' });
 });
 

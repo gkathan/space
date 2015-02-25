@@ -17,6 +17,7 @@ var logger = new (winston.Logger)({
   });
 logger.level='debug';
 
+var config = require('config');
 
 var DB="kanbanv2";
 
@@ -48,10 +49,13 @@ var PATH = {
 						REST_LABELS : BASE+'/kanbanv2/rest/labels',
 						REST_CUSTOMERS : BASE+'/kanbanv2/rest/customers',
 						REST_COMPETITORS : BASE+'/kanbanv2/rest/competitors',
-						REST_ORGANIZATION : BASE+'/kanbanv2/rest/organization',
+						
 						
 						REST_INITIATIVES_DIFF_TRAIL : BASE+'/kanbanv2/rest/initiatives_diff_trail',
-						REST_ORG : BASE+'/kanbanv2/rest/org/:date',
+						REST_ORGANIZATION : BASE+'/kanbanv2/rest/organization/:date',
+						
+						REST_MAIL : BASE+'/kanbanv2/rest/mail',
+						
 						
 						EXPORT_TARGETS : BASE+'/kanbanv2/export/xlsx/targets',
 						EXPORT_METRICS : BASE+'/kanbanv2/export/xlsx/metrics',
@@ -63,6 +67,9 @@ var PATH = {
 						EXPORT_CUSTOMERS : BASE+'/kanbanv2/export/xlsx/customers',
 						EXPORT_COMPETITORS : BASE+'/kanbanv2/export/xlsx/competitors',
 						EXPORT_ORGANIZATION : BASE+'/kanbanv2/export/xlsx/organization',
+						
+						
+						
 						
 						CONFIG : BASE+'/kanbanv2/config',
 
@@ -116,8 +123,11 @@ router.post(PATH.REST_COMPETITORS, function(req, res, next) {save(req,res,next);
 router.delete(PATH.REST_COMPETITORS, function(req, res, next) {remove(req,res,next); });
 
 
-router.get(PATH.REST_ORG, function(req, res, next) {
-	db.collection("org").findOne({oDate:req.params.date} , function(err , success){
+router.post(PATH.REST_MAIL, function(req, res, next) {mail(req,res,next); });
+
+
+router.get(PATH.REST_ORGANIZATION, function(req, res, next) {
+	db.collection("organization").findOne({oDate:req.params.date} , function(err , success){
         logger.debug('Response success '+success);
         logger.debug('Response error '+err);
         if(success){
@@ -396,6 +406,29 @@ function saveNG(req, res , next){
     
 }
 
+
+/**
+ * generic mail handler
+ *  text:    mail.text+signatureText, 
+    from:    config.mailer.from, 
+    to:      mail.to,
+    cc:      mail.cc,
+    subject: subjectPrefix+mail.subject,
+
+ */
+function mail(req, res , next){
+    console.log("*********************** mail: "+req.body.mail);
+    
+    var mail = JSON.parse(req.body.mail);
+    
+    var mailer = require('../services/MailService');
+
+	mailer.sendText(mail);
+	
+	res.send({});
+	return;
+    
+}
 
 
 function _checkCreateDate(item){

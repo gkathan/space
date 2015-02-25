@@ -64,6 +64,14 @@ app.set('view engine', 'jade');
 app.locals.title="strategy2tactics";
 
 
+// get all org instance dates for the menu
+_getOrgDates(function(data){
+	app.locals.organizationDates=data;
+	console.log("** data: "+data);
+});
+
+
+
 app.use(favicon(path.join(__dirname,'public','images','favicon.ico')));
 
 
@@ -181,6 +189,28 @@ app.use(function(err, req, res, next) {
     });
 });
 
+
+/**
+ * organization snapsho dates
+ * => should be moved in a service class ;-)
+ */
+function _getOrgDates(callback){
+	
+    var mongojs = require("mongojs");
+
+	var DB="kanbanv2";
+
+	var connection_string = '127.0.0.1:27017/'+DB;
+	var db = mongojs(connection_string, [DB]);
+
+	db.collection("organization").find({},{oDate:1}).sort({oDate:-1},function(err,data){
+			callback(data);
+	});
+	
+		
+		
+	
+}
 
 function _syncV1(url){
 	// call v1 rest service

@@ -28,6 +28,10 @@ function refresh(collection){
 				if (collection=="v1epics"){
 					 _data = data[0].epics;
 				}
+				else if (collection=="organization"){
+					 _data = data[0].oItems;
+				}
+				
 				// check for "_id" field
 				if (_data[0]._id == undefined){
 					 // slickgrid needs an _id field.....

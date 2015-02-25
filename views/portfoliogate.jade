@@ -57,10 +57,10 @@ mixin renderEpic(epic)
 					td(style="font-weight:normal;font-size:8px;width:35px;height:14px;vertical-align:middle;text-align:left")
 						&nbsp;&nbsp;
 						if epic.attachmentProposal
-							a(href="http://v1.bwinparty.corp/V1-Production/attachment.img/"+epic.attachmentProposal.oid+"/" target="_new" )
+							a(href="http://v1.bwinparty.corp/V1-Production/attachment.img/"+epic.attachmentProposal.oid+"/" target="_new" data-toggle="tooltip" data-placement="top" title="download #{epic.attachmentProposal.type} for #{epic.name}")
 								| [IP] 
 						if epic.attachmentClosing
-							a(href="http://v1.bwinparty.corp/V1-Production/attachment.img/"+epic.attachmentClosing.oid+"/" target="_new" )
+							a(href="http://v1.bwinparty.corp/V1-Production/attachment.img/"+epic.attachmentClosing.oid+"/" target="_new" data-toggle="tooltip" data-placement="top" title="download #{epic.attachmentClosing.type} for #{epic.name}" )
 								| [CD] 
 								
 					td(style="width:15px;vertical-align:middle;text-align:center")
@@ -146,4 +146,7 @@ block content
 										each epic in status
 											+renderEpic(epic)
 
-			
+	javascript.
+			$(function () {
+			  $('[data-toggle="tooltip"]').tooltip()
+			})

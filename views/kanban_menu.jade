@@ -21,7 +21,7 @@ block content
 				
 				if !session.AUTH
 					li.active
-						a(href='/login') login
+						a(href='/login') login 
 					
 				if session.AUTH
 					li.active
@@ -82,26 +82,16 @@ block content
 								span.caret 
 
 							ul.dropdown-menu(role="menu" aria-labelledby="org")
-								li(role="presentation") 
-									a(role="menuitem" tabindex="-1" href="/org/tree/2015-02-17") tree [2015-02-17]
-
-								li(role="presentation") 
-									a(role="menuitem" tabindex="-1" href="/org/tree/2015-01-15") tree [2015-01-15]
-								li(role="presentation") 
-									a(role="menuitem" tabindex="-1" href="/org/tree/2014-06-26") tree [2014-06-26]
-								li(role="presentation") 
-									a(role="menuitem" tabindex="-1" href="/org/tree/2013-04-11") tree [2013-04-11]
-								li(role="presentation") 
-									a(role="menuitem" tabindex="-1" href="/org/tree/2012-04-29") tree [2012-04-29]
-								li(role="presentation") 
-									a(role="menuitem" tabindex="-1" href="/org/tree/2011-04-29") tree [2011-04-29]
+								each _date in organizationDates
+									li(role="presentation") 
+										a(role="menuitem" tabindex="-1" href="/org/tree/#{_date.oDate}") tree [#{_date.oDate}]
 								li(role="presentation") 
 									a(role="menuitem" tabindex="-1" href="/org/radial") radial
 								li(role="presentation") 
 									a(role="menuitem" tabindex="-1" href="/org/circlecontain/org/2015-01-15") circle contain
 								li(role="presentation") 
 									a(role="menuitem" tabindex="-1" href="/org/force") force map experiments
-					
+
 					
 					
 					ul.nav.navbar-nav

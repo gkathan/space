@@ -62,7 +62,7 @@ exports.convertXlsx2Json = function convertXlsx2Json (filename) {
 			var _plainElements =["productportfolio","productcatalog","targets","incidents","labels","customers","competitors"];
 			
 			if (_collection=="portfoliogate") _function = _handlePortfolioGate;
-			else if (_collection=="org") _function = _handleHR_PI;
+			else if (_collection=="organization") _function = _handleHR_PI;
 			else if (_.indexOf(_plainElements,_collection) >-1){
 				 _function = _handlePlain;
 				 _dropBeforeInsert = true;
@@ -274,12 +274,8 @@ function _handlePlain(json,date,boardDate,fillblanks,callback){
 function _sendPortfolioUpdate(to){
 	var mailer = require('../services/MailService');
 
-	var req = require
-	
-	
 	//var _url = baseUrl+"/portfolio";
-	var _url = "http://kanbanv2.ea.bwinparty.corp/portfolio";
-	
+	var _url = "http://strategy2tactics.ea.bwinparty.corp/portfolio";
 	
 	var mail = {};
 	mail.to=to;
@@ -289,8 +285,6 @@ function _sendPortfolioUpdate(to){
 
 	//testmail on startup
 	mailer.sendText(mail);
-					
-	
 	
 }
 

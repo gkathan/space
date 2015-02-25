@@ -26,7 +26,8 @@
      },
      
        "notifications" : {
-		"portfolioupdate": "gerold.kathan@bwinparty.com"
+		"portfolioupdate": "gerold.kathan@bwinparty.com",
+		"mailertest":"gerold.kathan@bwinparty.com"
      }
      
     
