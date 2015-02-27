@@ -125,25 +125,31 @@ exports.convertXlsx2Json = function convertXlsx2Json (filename) {
  */
 function _validateName(fileName){
 	
+	var _check={};
+	
 	console.log("[DEBUG] validateName(filename): "+fileName);
 	var _parts=_.first(fileName.split('.')).split('_');
 	//if (_parts[0]!="portfoliogate") return false;
 	
 	var _date = new Date(_parts[1]);
-	if ( Object.prototype.toString.call(_date) !== "[object Date]" ) return false;
+	if ( Object.prototype.toString.call(_date) !== "[object Date]" ) _date = null;
 
 	var _boarddate = new Date(_parts[2]);
-	if ( Object.prototype.toString.call(_boarddate) !== "[object Date]" ) return false;
+	if ( Object.prototype.toString.call(_boarddate) !== "[object Date]" ) _boarddate = null;
 
 	
-	if (_parts[3]=="fillblanks"){
-		return {"collection":_parts[0],"date":_parts[1],"boarddate":_parts[2],"fillblanks":true};
+	_check.collection=_parts[0];
+	if (_parts.indexOf("fillblanks")>=0){
+		_check.fillblanks=true;
 	}
 	else {
-		
-		return {"collection":_parts[0],"date":_parts[1],"boarddate":_parts[2],"fillblanks":false};
+		_check.fillblanks=false;
 	}
+		
+	if (_date) _check.date= _parts[1];
+	if (_boarddate) _check.boarddate = _boarddate;
 	
+	return _check;
 	
 }
 

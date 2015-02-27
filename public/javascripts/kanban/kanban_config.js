@@ -55,6 +55,27 @@ var JSON_CONFIG =
 
 
 var COLOR_BPTY="#174D75";
+// hsl(206,67%,27%)
+
+/*
+#00b8e4 türkis
+hsl(192,100%,45%)
+
+#f99d1c orange
+hsl(35,95%,54%)
+
+#82cec1 lind
+hsl(170,44%,66%)
+
+#ffcd03 yellow
+hsl(48,100%,51%)
+
+#b0acd5 pink 
+hsl(246,33%,75%)
+*/
+// http://highintegritydesign.com/tools/tinter-shader/
+
+// 174D75 00b8e4 f99d1c 82cec1 ffcd03 b0acd5
 var FQ_DELIMITER="/";
 
 

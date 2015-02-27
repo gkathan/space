@@ -1,6 +1,6 @@
 include kanban_menu
 
-//link(rel='stylesheet', href='/stylesheets/portfoliogate.css')
+link(rel='stylesheet', href='/stylesheets/portfoliogate.css')
 
 script(src="/javascripts/components/moment/min/moment.min.js")
 
@@ -41,38 +41,36 @@ style(type='text/css').
 
 mixin renderEpic(epic)
 	div.col 
-		table.table-hover
-			tr
-				if epic.id
-
+		tr
+			if epic.id
+				td(style="width:15px;vertical-align:middle")
 					if epic.Status != "Monitoring"
-						td(style="width:15px;vertical-align:middle")
-							span(style="background-color:#{mapHealth2Color(epic.Health)}")
-								| &nbsp;&nbsp;&nbsp;&nbsp;   
-					td(style="font-weight:normal;font-size:8px;width:35px;height:14px;vertical-align:middle")
-						| #{epic.EpicRef} 
-					td(style="font-weight:bold;font-size:9px;width:180px;vertical-align:middle;white-space:nowrap")
-						a(href="http://v1.bwinparty.corp/V1-Production/Epic.mvc/Summary?oidToken=Epic%3A"+epic.id target="_new" )
-							| <b>#{epic.name}</b> 
-					td(style="font-weight:normal;font-size:8px;width:35px;height:14px;vertical-align:middle;text-align:left")
-						&nbsp;&nbsp;
-						if epic.attachmentProposal
-							a(href="http://v1.bwinparty.corp/V1-Production/attachment.img/"+epic.attachmentProposal.oid+"/" target="_new" data-toggle="tooltip" data-placement="top" title="download #{epic.attachmentProposal.type} for #{epic.name}")
-								| [IP] 
-						if epic.attachmentClosing
-							a(href="http://v1.bwinparty.corp/V1-Production/attachment.img/"+epic.attachmentClosing.oid+"/" target="_new" data-toggle="tooltip" data-placement="top" title="download #{epic.attachmentClosing.type} for #{epic.name}" )
-								| [CD] 
-								
-					td(style="width:15px;vertical-align:middle;text-align:center")
-						if epic.oldState
-							span.glyphicon.glyphicon-star(style="font-size:12px;color:black; ")
-							//span(style="color:orange; font-size:10px") #{epic.oldState}
-					
-				else
-					td(style="width:15px;vertical-align:middle") 
-					td(style="font-weight:normal;font-size:8px;width:250px;height:14px;vertical-align:middle")
-						span  #{epic.EpicRef} * not synced
-					
+						span(style="background-color:#{mapHealth2Color(epic.Health)}")
+							| &nbsp;&nbsp;&nbsp;&nbsp;   
+				td(style="font-weight:normal;font-size:8px;width:35px;height:14px;vertical-align:middle")
+					| #{epic.EpicRef} 
+				td(style="font-weight:bold;font-size:9px;width:180px;vertical-align:middle;white-space:nowrap")
+					a(href="http://v1.bwinparty.corp/V1-Production/Epic.mvc/Summary?oidToken=Epic%3A"+epic.id target="_new" data-toggle="tooltip" data-placement="top" title="health comment: #{epic.HealthComment}" )
+						| <b>#{epic.name}</b> 
+				td(style="font-weight:normal;font-size:8px;width:35px;height:14px;vertical-align:middle;text-align:left")
+					&nbsp;&nbsp;
+					if epic.attachmentProposal
+						a(href="http://v1.bwinparty.corp/V1-Production/attachment.img/"+epic.attachmentProposal.oid+"/" target="_new" data-toggle="tooltip" data-placement="top" title="download #{epic.attachmentProposal.type} for #{epic.name}")
+							| [IP] 
+					if epic.attachmentClosing
+						a(href="http://v1.bwinparty.corp/V1-Production/attachment.img/"+epic.attachmentClosing.oid+"/" target="_new" data-toggle="tooltip" data-placement="top" title="download #{epic.attachmentClosing.type} for #{epic.name}" )
+							| [CD] 
+							
+				td(style="width:15px;vertical-align:middle;text-align:center")
+					if epic.oldState
+						span.glyphicon.glyphicon-star(style="font-size:12px;color:black; ")
+						//span(style="color:orange; font-size:10px") #{epic.oldState}
+				
+			else
+				td(style="width:15px;vertical-align:middle") 
+				td(style="font-weight:normal;font-size:8px;width:250px;height:14px;vertical-align:middle")
+					span  #{epic.EpicRef} * not synced
+				
 // ------------------ mixin end ----------------------------
 
 block content
@@ -115,7 +113,7 @@ block content
 					each _change in _date.healthChangeBucket
 						li.list-unstyled(style="font-size:10px;color:black") 
 							
-							span.glyphicon.glyphicon-star(style="font-size:10px;color:black; ")
+							
 							span(style="background-color:#{mapHealth2Color(_change.oldHealth)}")
 								| &nbsp;&nbsp;&nbsp;   
 							|&nbsp;
@@ -134,7 +132,7 @@ block content
 					// no NEW items for now
 					if status[0].Status != "New"
 						div.col-sm-2.col-md-3.col-lg5
-							div.panel(style="background-color:white;width:300px;text-align: left")
+							div.panel(style="background-color:white;width:330px;text-align: left")
 								//status header
 								div.panel-heading(style="text-align:center")
 									span(style="font-size:20px;color:#{colors[status[0].Status]};margin-left:0px") #{status[0].Status.toUpperCase()}
@@ -143,10 +141,37 @@ block content
 								//list epics per status	
 								div.panel-body
 									div.row(style="font-size:11px;margin-left:2px")
-										each epic in status
-											+renderEpic(epic)
+										table.table-hover.tablsesorter(id="table_#{_date._id}_#{status[0].Status}")
+											thead
+												tr(style="height:15px")
+													th(style="width:25px;text-align:left;font-size:8px;vertical-align:top") 
+														a(href="#" title="sort by health" onClick="alert('[TODO] sort by health')") 
+															
+															//span.glyphicon.glyphicon-triangle-bottom(style="font-size:8px;color:black;")
+													th(style="width:35px;text-align:left;font-size:8px;vertical-align:top") 
+														a(href="#" title="sort by id" onClick="alert('[TODO] sort by id')") 
+															
+															//span.glyphicon.glyphicon-triangle-bottom(style="font-size:8px;color:black;")
+													th(style="width:180px;text-align:left;font-size:8px;vertical-align:top")
+														a(href="#" title="sort by name" onClick="alert('[TODO] sort by name')") 
+															
+															//span.glyphicon.glyphicon-triangle-bottom(style="font-size:8px;color:black;")
+													th(style="width:35px;text-align:left;font-size:8px;vertical-align:top")
+														a(href="#" title="sort by ref" onClick="alert('[TODO] sort by ref')")
+															
+													th(style="width:30px;text-align:left;font-size:8px;vertical-align:top") 
+														a(href="#" title="sort by changed from last time" onClick="alert('[TODO] sort by change')")
+															
+															//span.glyphicon.glyphicon-triangle-bottom(style="font-size:8px;color:black;")
+											tbody
+												each epic in status
+													+renderEpic(epic)
+										script $("#table_#{_date._id}_#{status[0].Status}").tablesorter();
 
-	javascript.
-			$(function () {
-			  $('[data-toggle="tooltip"]').tooltip()
-			})
+	script.
+		$(function () {
+			//$('[data-toggle="tooltip"]').tooltip({html:true})
+		})
+		
+		
+

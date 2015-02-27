@@ -3,13 +3,14 @@
 }
 
 .node:hover {
-  stroke: #174D75;
-  stroke-width: 1.5px;
+  stroke: #ffcd03;
+  stroke-width: 5px;
+  
+  
 }
 
 .node--root {
-  stroke: #174D75;
-  stroke-width: 2px;
+  
 }
 
 .node--leaf {
@@ -17,9 +18,12 @@
 }
 
 .label {
-  font: 11px "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font: 12px "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-weight:bold;
   text-anchor: middle;
-  text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, -1px 0 0 #fff, 0 -1px 0 #fff;
+  
+  fill: black;
+  
 }
 
 .label,
@@ -30,7 +34,7 @@
 }
 
 .node circle {
-  fill: #fff;
+  fill: red;
   stroke: #174D75;
   stroke-width: 1px;
 }

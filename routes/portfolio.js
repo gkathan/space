@@ -85,6 +85,14 @@ router.get('/', function(req, res) {
 				if (_item[0]) {
 					_epic["name"] = _item[0].Name;
 					
+					// stuff needed for sorting
+					if (_epic.Health=="Green") _epic["HealthRank"]=1;
+					else if (_epic.Health=="Amber") _epic["HealthRank"]=2;
+					else if (_epic.Health=="Red") _epic["HealthRank"]=3;
+					else if (_epic.Health==undefined) _epic["HealthRank"]=0;
+					
+					
+					
 					
 					var _attachments = _parseAttachments(_item[0].EpicAttachments,_item[0].EpicAttachmentNames);
 					
@@ -130,24 +138,32 @@ router.get('/', function(req, res) {
 			logger.debug("array[0]: "+_gates[_date].pItems[_state][0].id);
 			// sort by id
 			//_.map(_.sortByAll(_gates[_date].pItems[_state],['EpicRef']),_.values);
-			_gates[_date].pItems[_state].sort(function(a,b){return b.id - a.id; });
+			
+			
+			
+			//_gates[_date].pItems[_state].sort(function(a,b){return b.id - a.id; });
+			
+			
+			
 			// sort by swag
 			//_gates[_date].pItems[_state].sort(function(a,b){return b.swag - a.swag; });
 			// sort by health
-			/*
+			
 			_gates[_date].pItems[_state].sort(function(a,b){
-				if (a.health<b.health) return 1;
-				else if (a.healht>b.health) return -1;
+				console.log("-------------------- sorting by health: a.health: "+a.Health+" b.health: "+b.Health);
+				if (a.HealthRank<b.HealthRank) return 1;
+				else if (a.HealthRank>b.HealthRank) return -1;
 				else return 0
 				
 				});
-			*/
+			
 			//_gates[_date].pItems[_state].sort();
 			}
 		}
 		res.locals.pgates=_gates;
 		res.locals.colors=_color;
 		res.locals.v1LastUpdate=_V1lastUpdate;
+		
 
 		res.render('portfoliogate'), {title:"portfoliogate"}
 		});

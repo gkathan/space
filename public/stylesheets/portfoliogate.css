@@ -1,0 +1,18 @@
+th.headerSortUp { 
+    background-image: url(/images/sort_asc.gif); 
+    background-color: #eeeeee; 
+} 
+
+th.headerSortDown { 
+    background-image: url(/images/sort_desc.gif); 
+    background-color: #eeeeee; 
+} 
+
+th.header { 
+    background-image: url(/images/small.gif); 
+    cursor: pointer; 
+    font-weight: bold; 
+    background-repeat: no-repeat; 
+    background-position:  left; 
+    
+} 

@@ -51,6 +51,10 @@ function drawQueues(){
 	var _yMetricBracketOffset = height+METRIC_BRACKET_Y_OFFSET;
 	var gQueue = svg.append("g").attr("id","queues");
 	
+	//---------------- METRICS --------------------
+	var gQueueMetrics = gQueue.append("g").attr("id","qmetrics");
+
+	
 	//---------------- DONE queue --------------------
 	var gQueueDone = gQueue.append("g").attr("id","done");
 
@@ -59,10 +63,10 @@ function drawQueues(){
 
 	// --------------- DONE METRICS ---------------------
 	var _metric = {"text":"DONE" ,"items":ITEMS_DONE ,"swag": SIZING_DONE}
-	_drawQueueMetric(gQueueDone,_metric,x(KANBAN_START),_yMetricBracketOffset,_xWIPStart,_xWIPStart/2,_yMetricBase,_yMetricDetailsOffset,null,"bottom");
+	_drawQueueMetric(gQueueMetrics,_metric,x(KANBAN_START),_yMetricBracketOffset,_xWIPStart,_xWIPStart/2,_yMetricBase,_yMetricDetailsOffset,null,"bottom");
 	
 	_metric = {"text":"FINISH RATE" ,"finishrate":Math.ceil(((ITEMS_INRANGE_DONE/ITEMS_PLANNED_TOBEDONE)*100)) ,"finished": ITEMS_INRANGE_DONE,"planned":ITEMS_PLANNED_TOBEDONE}
-	_drawDoneMetric(gQueueDone,_metric,x(KANBAN_START),-40,_xWIPStart,_xWIPStart/2,-65,_yMetricDetailsOffset,null,"top");
+	_drawDoneMetric(gQueueMetrics,_metric,x(KANBAN_START),-40,_xWIPStart,_xWIPStart/2,-65,_yMetricDetailsOffset,null,"top");
 
 
 	//_drawDoneMetrics(gQueueDone,x(KANBAN_START)+150,-40);
@@ -82,7 +86,7 @@ function drawQueues(){
 		// --------------- WIP METRICS ---------------------
 		if (WIP_END<KANBAN_END){
 			_metric = {"text":"WIP" ,"items":ITEMS_WIP ,"swag": SIZING_WIP}
-			_drawQueueMetric(gQueueWip,_metric,_xWIPStart,_yMetricBracketOffset,_xWIPWidth,(_xWIPWidth/2+x(WIP_START)),_yMetricBase,_yMetricDetailsOffset,null,"bottom");
+			_drawQueueMetric(gQueueMetrics,_metric,_xWIPStart,_yMetricBracketOffset,_xWIPWidth,(_xWIPWidth/2+x(WIP_START)),_yMetricBase,_yMetricDetailsOffset,null,"bottom");
 		}
 		//-------------- TODAY markerlines ----------------
 		_drawQueueMarker(gQueueWip,WIP_START,"today",x(WIP_START),-TIMELINE_HEIGHT);
@@ -98,14 +102,14 @@ function drawQueues(){
 		//---------------- FUTURE METRICS --------------------
 		if (WIP_END<KANBAN_END){
 			_metric = {"text":"FUTURE" ,"items":ITEMS_FUTURE ,"swag": SIZING_FUTURE}
-			_drawQueueMetric(gQueueFuture,_metric,_xFutureX,_yMetricBracketOffset,_xFutureWidth,(_xFutureWidth/2+x(WIP_END)),_yMetricBase,_yMetricDetailsOffset,null,"bottom");
+			_drawQueueMetric(gQueueMetrics,_metric,_xFutureX,_yMetricBracketOffset,_xFutureWidth,(_xFutureWidth/2+x(WIP_END)),_yMetricBase,_yMetricDetailsOffset,null,"bottom");
 			//---------------- TOTAL METRICS --------------------
 			_metric = {"text":"TOTAL" ,"items":ITEMS_TOTAL ,"swag": SIZING_TOTAL}
-			_drawQueueMetric(gQueue,_metric,null,null,null,(_xFutureX+_xFutureWidth),_yMetricBase,_yMetricDetailsOffset,null,"bottom");
+			_drawQueueMetric(gQueueMetrics,_metric,null,null,null,(_xFutureX+_xFutureWidth),_yMetricBase,_yMetricDetailsOffset,null,"bottom");
 			//---------------- TOTAL DELAYED METRICS --------------------
 			_metric = {"text":"DELAY" ,"items":ITEMS_DELAYED ,"swag": DAYS_DELAYED}
 			if (ITEMS_DELAYED){
-				_drawQueueMetric(gQueue,_metric,null,null,null,(_xFutureX+_xFutureWidth)+80,_yMetricBase,_yMetricDetailsOffset,"red","bottom");
+				_drawQueueMetric(gQueueMetrics,_metric,null,null,null,(_xFutureX+_xFutureWidth)+80,_yMetricBase,_yMetricDetailsOffset,"red","bottom");
 			}
 		}
 	}
@@ -171,17 +175,7 @@ function drawQueues(){
 			_drawText(svg,"FINISHED: "+metric.finished+" / PLANNED: "+metric.planned,metricX,(metricY+space+(space-2)),{"size":"7px","css":"metricItems","color":color,"anchor":"middle"});
 		}
 		
-		
-		/*function _drawDoneMetrics(svg,x,y){
-			_drawText(svg,"INRANGE: ",x,y,{"size":"8px","color":COLOR_BPTY,"anchor":"start"});
-			_drawText(svg,ITEMS_INRANGE_DONE,x+40,y,{"weight":"bold","size":"10px","color":COLOR_BPTY,"anchor":"start"});
-			_drawText(svg,"PLANNED: ",x,y+9,{"size":"8px","color":COLOR_BPTY,"anchor":"start"});
-			_drawText(svg,ITEMS_PLANNED_TOBEDONE,x+40,y+9,{"weight":"bold","size":"10px","color":COLOR_BPTY,"anchor":"start"});
-			
-			_drawText(svg,"FINISH RATE: "+((ITEMS_INRANGE_DONE/ITEMS_PLANNED_TOBEDONE)*100)+"%",x-100,y-15,{"weight":"bold","size":"18px","color":COLOR_BPTY,"anchor":"start"});
-			
-		}
-*/
+
 /* ------------------------------------------------- END drawQueues() helper functions ----------------------------------------------------------- */
 
 
