@@ -182,7 +182,7 @@ function render(collection){
 		.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
 		.style("fill-opacity", function(d) { return d.parent === root ? 1 : 0; })
 		.style("display", function(d) { return d.parent === root ? null : "none"; })
-		.text(function(d) { if (d.children && d.depth<=depth) {return d.name +" ("+d.overallReports+")";} else {
+		.text(function(d) { if (d.children && d.depth<=depth) {return d.name ;} else {
 			var _leafText="";
 			for (var i in _leafTextFields){
 				_leafText+=_leafTextFields[i]+": "+d[_leafTextFields[i]];
