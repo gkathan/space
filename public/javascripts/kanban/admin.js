@@ -63,6 +63,7 @@ function getConfig(collection){
 		case "customers": return getCustomersConfig();
 		case "competitors": return getCompetitorsConfig();
 		case "organization": return getOrganizationConfig();
+		case "productcatalog": return getProductCatalogConfig();
 	}
 }
 
@@ -154,6 +155,26 @@ function getMetricConfig(){
 		_config.fields = _metrics;
 	return _config;
 }
+
+function getProductCatalogConfig(){
+	var _productcatalog = [
+        { id:"id", name: "id", field: "_id",sortable:true,cssClass:"onKanbanImmutable" },
+        { id: "type", name: "type",  field: "Type",sortable:true, cssClass: "cell-standard" },
+        { id: "offering", name: "offering",  field: "Offering" ,width:200,sortable:true, editor: Slick.Editors.Text, cssClass: "cell-standard"},
+		{ id: "family", name: "family",  field: "Family" ,sortable:true,width:200, editor: Slick.Editors.Text, cssClass: "cell-standard"},
+		{ id: "name", name: "name",  field: "Name",sortable:true,width:200, editor: Slick.Editors.Text, cssClass: "cell-standard" },
+		{ id: "description", name: "description",  field: "Description",width:200,sortable:true,editor:Slick.Editors.Text, cssClass: "cell-standard"},
+		{ id: "version", name: "version",  field: "Version",sortable:true,editor:Slick.Editors.Text, cssClass: "cell-standard" },
+		{ id: "owner", name: "owner",  field: "Owner",sortable:true,editor:Slick.Editors.Text , cssClass: "cell-standard"},
+		{ id: "comments", name: "comments",  field: "Comments",sortable:true,editor:Slick.Editors.Text, cssClass: "cell-standard" },
+		{ id: "dependsOn", name: "dependsOn",  field: "DependsOn",sortable:true,editor:Slick.Editors.Text, cssClass: "cell-standard" },
+		{ id: "consumedBy", name: "consumedBy",  field: "ConsumedBy",sortable:true,editor:Slick.Editors.Text , cssClass: "cell-standard"}];
+	var _config ={};
+		_config.mode="editable";
+		_config.fields = _productcatalog;
+	return _config;
+}
+
 
 function getBoardConfig(){
 	//lanetext

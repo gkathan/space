@@ -49,6 +49,7 @@ var PATH = {
 						REST_LABELS : BASE+'/kanbanv2/rest/labels',
 						REST_CUSTOMERS : BASE+'/kanbanv2/rest/customers',
 						REST_COMPETITORS : BASE+'/kanbanv2/rest/competitors',
+						REST_PRODUCTCATALOG : BASE+'/kanbanv2/rest/productcatalog',
 						
 						
 						REST_INITIATIVES_DIFF_TRAIL : BASE+'/kanbanv2/rest/initiatives_diff_trail',
@@ -67,6 +68,7 @@ var PATH = {
 						EXPORT_CUSTOMERS : BASE+'/kanbanv2/export/xlsx/customers',
 						EXPORT_COMPETITORS : BASE+'/kanbanv2/export/xlsx/competitors',
 						EXPORT_ORGANIZATION : BASE+'/kanbanv2/export/xlsx/organization',
+						EXPORT_PRODUCTCATALOG : BASE+'/kanbanv2/export/xlsx/productcatalog',
 						
 						
 						
@@ -122,6 +124,9 @@ router.get(PATH.REST_COMPETITORS, function(req, res, next) {findAllByName(req,re
 router.post(PATH.REST_COMPETITORS, function(req, res, next) {save(req,res,next); });
 router.delete(PATH.REST_COMPETITORS, function(req, res, next) {remove(req,res,next); });
 
+router.get(PATH.REST_PRODUCTCATALOG, function(req, res, next) {findAllByName(req,res,next);});
+router.post(PATH.REST_PRODUCTCATALOG, function(req, res, next) {save(req,res,next); });
+router.delete(PATH.REST_PRODUCTCATALOG, function(req, res, next) {remove(req,res,next); });
 
 router.post(PATH.REST_MAIL, function(req, res, next) {mail(req,res,next); });
 
@@ -152,6 +157,7 @@ router.get(PATH.EXPORT_V1EPICS, function(req, res, next) {excelV1Epics(req,res,n
 router.get(PATH.EXPORT_LABELS, function(req, res, next) {excelLabels(req,res,next);});
 router.get(PATH.EXPORT_CUSTOMERS, function(req, res, next) {excelCustomers(req,res,next);});
 router.get(PATH.EXPORT_COMPETITORS, function(req, res, next) {excelCompetitors(req,res,next);});
+router.get(PATH.EXPORT_PRODUCTCATALOG, function(req, res, next) {excelProductCatalog(req,res,next);});
 
 router.post(PATH.TRANSCODE_BOARDS, function(req, res, next) {transcode(req,res,next); });
 
@@ -584,7 +590,7 @@ function excelV1Epics(req, res , next){
     conf.stylesXmlFile = "views/excel_export/styles.xml";
     conf.cols = [
 		{caption:'_id',type:'string',width:8,captionStyleIndex:2,beforeCellWrite:_formatCell},
-		{caption:'Number',type:'sring',width:10,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'Number',type:'string',width:10,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'Name',type:'string',width:40,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'Status',type:'string',width:12,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'Scope',type:'string',width:25,captionStyleIndex:2,beforeCellWrite:_formatCell},
@@ -608,6 +614,34 @@ function excelV1Epics(req, res , next){
     _generateAndSendExcel("v1epics",conf,req,res,next);
 }
 
+/**
+ * generate productcatalog excel
+ */
+function excelProductCatalog(req, res , next){
+	var conf ={};
+	
+	
+    conf.stylesXmlFile = "views/excel_export/styles.xml";
+    conf.cols = [
+		{caption:'_id',type:'string',width:8,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'Type',type:'string',width:10,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'Offering',type:'string',width:40,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'Family',type:'string',width:12,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'Name',type:'string',width:25,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'Description',type:'number',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'Version',type:'string',width:10,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'Owner',type:'string',width:10,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'Comments',type:'string',width:15,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'DependsOn',type:'string',width:8,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'ConsumedBy',type:'string',width:8,captionStyleIndex:2,beforeCellWrite:_formatCell}
+		
+				
+	];
+	
+    _generateAndSendExcel("productcatalog",conf,req,res,next);
+}
+
+   	
    	
 
 /**

@@ -18,9 +18,9 @@ mixin renderTarget(target)
 		.panel-body
 			table(style="")
 				each line in target.children
-					tr(style="line-height:10px;")
-						td(style="width:160px;font-size:9px;height:30px;text-align:justify;vertical-align:middle;border-bottom: 1px solid lightgrey") 
-							|#{line.outcome}
+					tr(style="line-height:12px;")
+						td(style="width:160px;font-size:11px;height:30px;text-align:justify;vertical-align:middle;border-bottom: 1px solid lightgrey") 
+							|#{line.target}
 						td(style="text-align:center;width:70px;font-size:30px;vertical-align:middle;font-weight:bold;;height:30px;border-bottom: 1px solid lightgrey") 
 							|50
 							span(style="font-size:10px;font-weight:normal") %
@@ -34,7 +34,7 @@ mixin renderTargetLane(lane)
 			span(style="font-size:25px") GROW
 			br
 			span(style="font-size:12px") #{lane.name}
-		.panel-body(style="margin-left:70px;margin-top:-50px")
+		.panel-body(style="margin-left:70px;margin-top:-70px;vertical-align:top")
 			div.row(style="font-size:11px;margin-left:2px")
 				each t in lane.children
 					div.col-sm-2.col-md-3.col-lg5
@@ -44,6 +44,7 @@ mixin renderTargetLane(lane)
 
 block content
 div(style="margin-left:20px")
+	span(style="font-family:arial;font-weight:bold;font-size:50px;color:lightgrey") targets
 
 	
 	// ************ target card ******************
