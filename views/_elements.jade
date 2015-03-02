@@ -2,12 +2,95 @@
 
 include kanban_menu
 
-link(rel='stylesheet', href='/stylesheets/material.css')
+//link(rel='stylesheet', href='/stylesheets/material.css')
+
+
+// ------------------ mixin start ----------------------------
+mixin renderTarget(target)
+
+	div.panel(style="position: relative;background-color:white;width:250px;text-align: left;")
+		.panel-heading(style="")
+			table(style="")
+				tr(style="line-height:10px;")
+					td(style=";width:20px;font-size:9px;height:20px;text-align:justify;vertical-align:middle;") 
+						i.glyphicon.glyphicon-record(style="font-size:12px")
+					td(style="width:220px;font-size:15px;vertical-align:middle;font-weight:bold;;height:20px;") 
+						|TARGET TITLE bla bla bla 
+			
+		.panel-body
+			table(style="")
+				tr(style="line-height:10px;")
+					td(style="width:160px;font-size:9px;height:30px;text-align:justify;vertical-align:middle;border-bottom: 1px solid lightgrey") 
+						target1 - blabla long text ipsem lorem blabla and more text and even a third line to see
+					td(style="text-align:center;width:70px;font-size:30px;vertical-align:middle;font-weight:bold;;height:30px;border-bottom: 1px solid lightgrey") 
+						|50
+						span(style="font-size:10px;font-weight:normal") %
+						
+				
+				tr(style="height:18px;border-bottom: 1px solid black;")
+					td(style="width:200px;font-size:12px;vertical-align:middle;height:20px")
+						target2 - bla bla
+					td(style="text-align:center;width:80px;font-size:30px;vertical-align:middle;font-weight:bold;;height:30px") 
+						|50
+						span(style="font-size:10px;font-weight:normal") %
+
 
 block content
 div(style="margin-left:20px")
 
 	
+	// ************ target card ******************
+
+	
+	div.panel
+		.panel-heading(style="-webkit-transform: translateX(-100%) rotate(-90deg);-webkit-transform-origin: right top;-moz-transform: translateX(-100%) rotate(-90deg); width:190px;text-align:center;font-weight:bold ")
+			span(style="font-size:25px") RUN 
+			br
+			span(style="font-size:12px") OPERATIONAL EXCELLENCE
+		.panel-body(style="margin-left:50px;margin-top:-50px")
+			div.row(style="font-size:11px;margin-left:2px")
+				div.col-sm-2.col-md-3.col-lg5
+					+renderTarget(target)
+				div.col-sm-2.col-md-3.col-lg5
+					+renderTarget(target)
+				div.col-sm-2.col-md-3.col-lg5
+					+renderTarget(target)
+				div.col-sm-2.col-md-3.col-lg5
+					+renderTarget(target)
+		
+	div.panel
+		.panel-heading(style="-webkit-transform: translateX(-100%) rotate(-90deg);-webkit-transform-origin: right top;-moz-transform: translateX(-100%) rotate(-90deg); width:190px;text-align:center;font-weight:bold ")
+			span(style="font-size:25px") GROW
+			br
+			span(style="font-size:12px") PRODUCTS & SERVICES
+		.panel-body(style="margin-left:50px;margin-top:-50px")
+			div.row(style="font-size:11px;margin-left:2px")
+				div.col-sm-2.col-md-3.col-lg5
+					+renderTarget(target)
+				div.col-sm-2.col-md-3.col-lg5
+					+renderTarget(target)
+				div.col-sm-2.col-md-3.col-lg5
+					+renderTarget(target)
+				div.col-sm-2.col-md-3.col-lg5
+					+renderTarget(target)
+		
+	div.panel
+		.panel-heading(style="-webkit-transform: translateX(-100%) rotate(-90deg);-webkit-transform-origin: right top;-moz-transform: translateX(-100%) rotate(-90deg); width:190px;text-align:center;font-weight:bold ")
+			span(style="font-size:25px") TRANSFORM
+			br
+			span(style="font-size:12px") B2B stuff
+		.panel-body(style="margin-left:50px;margin-top:-50px")
+			div.row(style="font-size:11px;margin-left:2px")
+				div.col-sm-2.col-md-3.col-lg5
+					+renderTarget(target)
+				div.col-sm-2.col-md-3.col-lg5
+					+renderTarget(target)
+				div.col-sm-2.col-md-3.col-lg5
+					+renderTarget(target)
+				div.col-sm-2.col-md-3.col-lg5
+					+renderTarget(target)
+		
+		
 	
 	// ************ toggle ******************
 	.row
@@ -298,7 +381,7 @@ div(style="margin-left:20px")
 	
 		//div.container
 		//div.row
-		div.r(id="formContainer" style="background-color:white")
+		div(id="formContainer" style="background-color:white")
 			form.form-signin(id="login" role="form")
 				|xxxx
 				a.flipLink(href="#" id="flipToRecover")

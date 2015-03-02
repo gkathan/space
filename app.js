@@ -1,8 +1,5 @@
 var express = require('express');
 
-
-
-
 var path = require('path');
 var favicon = require('serve-favicon');
 var morgan = require('morgan');
@@ -17,13 +14,12 @@ var org = require('./routes/org');
 var incidents = require('./routes/incidents');
 var portfolio = require('./routes/portfolio');
 var upload = require('./routes/upload');
+var targets = require('./routes/targets');
+
 var fs = require('fs')
-
-
 
 // environment specific configurations
 var config = require('config');
-
 
 var winston = require('winston');
 var logger = new (winston.Logger)({
@@ -34,27 +30,15 @@ var logger = new (winston.Logger)({
   });
 logger.level='debug';
 
-
-
-
 // load build number
 var build = JSON.parse(fs.readFileSync('./s2t.build', 'utf8'));
 
-
 if (config.env==="PRODUCTION") config.build=build.build;
-//else config.build="---- development ----";
-
-//config.build=build.build;
-
 
 var app = express();
 
-
-
-
 // create a write stream (in append mode)
 var accessLogStream = fs.createWriteStream(__dirname + '/access.log', {flags: 'a'})
-
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -70,15 +54,7 @@ _getOrgDates(function(data){
 	console.log("** data: "+data);
 });
 
-
-
 app.use(favicon(path.join(__dirname,'public','images','favicon.ico')));
-
-
-//app.use(morgan('dev',{stream: accessLogStream}));
-//app.use(logger('dev'));
-
-
 app.use(bodyParser.json()); 
 
 // limit 50m is for large svg POST data needed for transcoder
@@ -86,21 +62,17 @@ app.use(bodyParser.urlencoded({ extended: false ,limit: '50mb'}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-
-
 app.use(session({
   secret: 'keyboard cat',
   resave: false,
   saveUninitialized: true
 }))
 
-
 // http://thenitai.com/2013/11/25/how-to-access-sessions-in-jade-template/
 app.use(function(req,res,next){
 	res.locals.session = req.session;
 	next();
 });
-
 
 // get access to URL of running app
 app.use(function(req, res, next) {
@@ -117,13 +89,7 @@ var addconfig = require('./services/middleware/addconfig.js');
 app.use(addconfig());
 
 logger.debug("**** ENV: "+app.get('env'));
-
 logger.info(path.join(__dirname,'public','images','favicon.ico'));
-
-
-
-
-
 logger.debug("[CONFIG] "+JSON.stringify(config));
 
 
@@ -149,6 +115,7 @@ app.use('/users', users);
 app.use('/upload', upload);
 app.use('/portfolio', portfolio);
 app.use('/incidents', incidents);
+app.use('/targets', targets);
 
 
 
@@ -156,7 +123,7 @@ app.use('/incidents', incidents);
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
     var err = new Error('Not Found');
-    logger.error("[not found] "+err);
+    logger.error(req.originalUrl+"[not found] "+err);
     err.status = 404;
     next(err);
 });
@@ -180,7 +147,7 @@ if (app.get('env') === 'development') {
 // no stacktraces leaked to user
 app.use(function(err, req, res, next) {
     
-    logger.fatal(err.status+" "+err.messag);
+    logger.error(err.status+" "+err.messag);
     
     res.status(err.status || 500);
     res.render('error', {
@@ -195,62 +162,42 @@ app.use(function(err, req, res, next) {
  * => should be moved in a service class ;-)
  */
 function _getOrgDates(callback){
-	
     var mongojs = require("mongojs");
-
 	var DB="kanbanv2";
-
 	var connection_string = '127.0.0.1:27017/'+DB;
 	var db = mongojs(connection_string, [DB]);
-
 	db.collection("organization").find({},{oDate:1}).sort({oDate:-1},function(err,data){
 			callback(data);
 	});
-	
-		
-		
-	
 }
 
 function _syncV1(url){
 	// call v1 rest service
     var Client = require('node-rest-client').Client;
-    
     var mongojs = require("mongojs");
-
 	var DB="kanbanv2";
-
 	var connection_string = '127.0.0.1:27017/'+DB;
 	var db = mongojs(connection_string, [DB]);
- 
 	client = new Client();
- 
-	
 	// direct way 
 	client.get(url, function(data, response){
-				// parsed response body as js object 
-				console.log(data);
-				// raw response 
-				console.log(response);
+		// parsed response body as js object 
+		console.log(data);
+		// raw response 
+		console.log(response);
+		// and insert 
+		var v1epics =  db.collection('v1epics');
+		v1epics.drop();
+		v1epics.insert({createDate:new Date(),epics:JSON.parse(data)}	 , function(err , success){
+			//console.log('Response success '+success);
+			logger.debug('Response error '+err);
+			if(success){
+				logger.info("syncv1 [DONE]");
 				
-				// and insert 
-				var v1epics =  db.collection('v1epics');
-				v1epics.drop();
-				v1epics.insert({createDate:new Date(),epics:JSON.parse(data)}	 , function(err , success){
-					//console.log('Response success '+success);
-					logger.debug('Response error '+err);
-					if(success){
-						logger.info("syncv1 [DONE]");
-						
-					}
-					//return next(err);
-					
-				})
+			}
+			//return next(err);
+		})
 	});
-
 }
 
-
 module.exports = app;
-
-

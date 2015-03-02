@@ -523,12 +523,3 @@ function hideKanbanboard(){
 function showKanbanboard(){
 	d3.select("#kanban").style("visibility","visible")
 }
-
-
-
-
-
-
-
-	var PACKAGE_VERSION="20150116_1312";
-	

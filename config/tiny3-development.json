@@ -11,6 +11,8 @@
 	},    
 
      "transcoder" : {
-		"url" : "localhost:8080/transcode"
+		//"url" : "/api/kanbanv2/transcode"
+		//"url" : "http://localhost:8080/transcode/"
+		"url" : "http://localhost:8585/rest/transcode"
      }
 }

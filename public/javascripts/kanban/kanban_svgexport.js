@@ -24,11 +24,6 @@ function submit_download_form(output_format,css)
     3) d3.select("#Layer_1").append("style").attr("type","text/css")
     4) inject that 
     
-    
-    
-    
-    
-    
     */
     
     if (!css) css="/stylesheets/kanbanv2.css";
@@ -40,54 +35,48 @@ function submit_download_form(output_format,css)
 		'success':function(data){
 				
 		// 2) wrap into CDATA
-		var _injectCSS ="<![CDATA["+data+"]]>";
+		var _injectCSS ="<style type=\"text/css\"><![CDATA["+data+"]]></style>";
 		console.log("_injectCSS = "+_injectCSS);	
 		
-		// 3) and inject via d3
+		// 3) and inject via jquery
 		
 		//_clone.append("style").attr("type","text/css").append(_injectCSS);
 		//d3.select("svg").append("style").attr("type","text/css").append(_injectCSS);
-	
-		
+		$( _injectCSS).insertAfter( "defs" );
 		
 		console.log("submit downloadform called: format = "+output_format);	
 		
 
 		// Get the d3js SVG element
 		var svg = document.getElementsByTagName("svg")[0];
-		console.log("**********svg: "+svg);
+		
+		
+		//console.log("**********svg: "+svg);
 		
 		//need a clone
-		var _clone = _.clone(svg);
-		console.log("**********_clone: "+_clone);
+		//var _clone = _.clone(svg);
+		//console.log("**********_clone: "+_clone);
 		
 		
 		// Extract the data as SVG text string
 		var svg_xml = (new XMLSerializer).serializeToString(svg);
 		//console.log("**********"+svg_xml);
 		
-		
-		
-		var form = document.getElementById("svgform");
-		
-		//console.log(declaration+svg_xml);
-		form.action=TRANSCODE_URL;
-		form["format"].value = output_format;
-		form["data"].value = svg_xml ;
-		//form["data"].value = svg_xml ;
-		form["context"].value = CONTEXT;
-		form["svg_width"].value = WIDTH ;
-		form["svg_height"].value = HEIGHT ;
-		//high res scale
-		form["png_scale"].value = 3 ;
-		console.log("*going to submit to "+TRANSCODE_URL);
-		
-		form.submit();
+		//var svg_xml="<svg xmlns=\"http://www.w3.org/2000/svg\"  height=\"210\" width=\"500\"><line x1=\"0\" y1=\"0\" x2=\"200\" y2=\"200\" style=\"stroke:rgb(255,0,0);stroke-width:2\" /> </svg>";
+	
+		$.ajax({
+			type: 'POST',
+			data: svg_xml,
+			//contentType: 'text/plain',
+			crossDomain:true,
+			url: TRANSCODE_URL+"?context="+CONTEXT+"&format="+output_format,						
 			
-			}
-});
-
+		});
+		
+		}
+	});
 }
+
 
 // button handlers
 $("#show_svg_code").click(function() { show_svg_code(); });

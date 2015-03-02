@@ -2,16 +2,52 @@ include kanban_menu
 
 
 block content
-	script(type="text/javascript").
-		$(document).ready(function() {
-			$('#kanban_menu').sidr({speed:300});
-		});
+
+// ------------------ mixin start ----------------------------
+mixin renderTarget(target)
+
+	div.panel(style="position: relative;background-color:white;width:250px;text-align: left;")
+		.panel-heading(style="")
+			table(style="")
+				tr(style="line-height:10px;")
+					td(style=";width:20px;font-size:9px;height:20px;text-align:justify;vertical-align:middle;") 
+						i.glyphicon.glyphicon-record(style="font-size:12px")
+					td(style="width:220px;font-size:15px;vertical-align:middle;font-weight:bold;;height:20px;") 
+						|#{target.name}
+			
+		.panel-body
+			table(style="")
+				each line in target.children
+					tr(style="line-height:10px;")
+						td(style="width:160px;font-size:9px;height:30px;text-align:justify;vertical-align:middle;border-bottom: 1px solid lightgrey") 
+							|#{line.outcome}
+						td(style="text-align:center;width:70px;font-size:30px;vertical-align:middle;font-weight:bold;;height:30px;border-bottom: 1px solid lightgrey") 
+							|50
+							span(style="font-size:10px;font-weight:normal") %
+						
+				
+
+
+mixin renderTargetLane(lane)
+	div.panel
+		.panel-heading(style="-webkit-transform: translateX(-100%) rotate(-90deg);-webkit-transform-origin: right top;-moz-transform: translateX(-100%) rotate(-90deg); width:190px;text-align:center;font-weight:bold ")
+			span(style="font-size:25px") GROW
+			br
+			span(style="font-size:12px") #{lane.name}
+		.panel-body(style="margin-left:70px;margin-top:-50px")
+			div.row(style="font-size:11px;margin-left:2px")
+				each t in lane.children
+					div.col-sm-2.col-md-3.col-lg5
+						+renderTarget(t)
+	
+
+
+block content
+div(style="margin-left:20px")
 
 	
-	div.notifications.top-left
-	div.sidr(style="margin-left:10px;margin-top:10px")
+	// ************ target card ******************
 
-	div.row(style="margin-left:10px;margin-bottom:10px")
-		span targets	
-
-
+	each lane in targets
+		+renderTargetLane(lane)
+		

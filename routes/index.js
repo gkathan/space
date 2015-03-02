@@ -109,15 +109,6 @@ router.get('/dashboard', function(req, res) {
 });
 
 
-router.get('/targets', function(req, res) {
-    if (!req.session.AUTH){
-			req.session.ORIGINAL_URL = req.originalUrl;
-			res.redirect("/login");
-		}
-	res.render('targets'), {title:"targets"}
-		
-});
-
 router.get('/playbooks', function(req, res) {
     if (!req.session.AUTH){
 			req.session.ORIGINAL_URL = req.originalUrl;

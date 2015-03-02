@@ -228,7 +228,6 @@ function drawVersion(){
 			{"name":"classification: ","value": "confidential"},
 			{"name":"URL: ","value": document.URL},
 			{"name":"version: ","value": new Date().toString('yyyy-MM-dd_hh:mm:ss')},
-			{"name":"package: ","value":PACKAGE_VERSION},
 			{"name":"author: ","value":"@cactus | twitter.com/gkathan"}
 		];
 
