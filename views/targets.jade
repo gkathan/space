@@ -6,13 +6,13 @@ block content
 // ------------------ mixin start ----------------------------
 mixin renderTarget(target)
 
-	div.panel(style="position: relative;background-color:white;width:250px;text-align: left;height:250px")
+	div.panel(style="position: relative;background-color:white;width:200px;text-align: left;height:250px")
 		.panel-heading(style="")
 			table(style="")
 				tr(style="line-height:12px;")
 					td(style=";width:20px;font-size:10px;height:16px;text-align:justify;vertical-align:middle;") 
 						i.glyphicon.glyphicon-record(style="font-size:16px") 
-					td(style="width:210px;font-size:12px;vertical-align:middle;font-weight:bold;height:16px;") 
+					td(style="width:160px;font-size:12px;vertical-align:middle;font-weight:bold;height:16px;") 
 						|&nbsp;#{target.name.toUpperCase()}
 			
 		.panel-body
@@ -20,11 +20,11 @@ mixin renderTarget(target)
 				each line in target.children
 					tr(style="line-height:11px")
 						if line.directMetric
-							td(style="width:140px;font-size:10px;height:24px;text-align:left;vertical-align:middle;border-bottom: 1px solid lightgrey") 
+							td(style="width:100px;font-size:10px;height:24px;text-align:left;vertical-align:middle;border-bottom: 1px solid lightgrey") 
 								|#{line.target}
 
 						else
-							td(colspan="2"  style="width:220px;font-size:10px;height:30px;text-align:left;vertical-align:middle;border-bottom: 1px solid lightgrey") 
+							td(colspan="2"  style="width:170px;font-size:10px;height:30px;text-align:left;vertical-align:middle;border-bottom: 1px solid lightgrey") 
 								|#{line.target}
 						if line.directMetric
 							td(style="text-align:right;width:80px;font-size:18px;vertical-align:middle;font-weight:bold;;height:24px;border-bottom: 1px solid lightgrey") 
@@ -51,7 +51,7 @@ mixin renderTargetLane(lane)
 //					img(src="/images/triangle.png" height="280px")		
 
 block content
-div(style="margin-left:20px;width:1200px")
+div(style="margin-left:20px;width:1000px")
 	div(style="font-family:arial;font-weight:bold;font-size:24px;color:black;text-align:center") "#{vision}"
 	div(style="font-family:arial;font-weight:normal;font-size:16px;color:black;text-align:center") #{period}
 	br
