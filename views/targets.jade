@@ -30,15 +30,15 @@ mixin renderTarget(target)
 						if line.directMetric
 							td(style="text-align:right;width:80px;font-size:24px;vertical-align:middle;font-weight:bold;;height:30px;border-bottom: 1px solid lightgrey") 
 								|#{line.directMetric}
-								//span(style="font-size:10px;font-weight:normal") %
+								span(style="font-size:10px;font-weight:normal") #{line.directMetricScale}
 						
 				
 
 
 mixin renderTargetLane(lane)
 	div.panel
-		.panel-heading(style="-webkit-transform: translateX(-100%) rotate(-90deg);-webkit-transform-origin: right top;-moz-transform: translateX(-100%) rotate(-90deg); width:300px;text-align:center;font-weight:bold ")
-			span(style="font-size:25px;color:lightgrey") #{lane.name}
+		.panel-heading(style="-webkit-transform: translateX(-100%) rotate(-90deg);-webkit-transform-origin: right top;-moz-transform: translateX(-100%) rotate(-90deg); width:250px;text-align:center;font-weight:bold ")
+			span(style="font-size:32px;color:lightgrey") #{lane.name}
 			br
 			span(style="font-size:18px;color:grey") #{lane.children[0].name}
 		.panel-body(style="margin-left:80px;margin-top:-70px;vertical-align:top")

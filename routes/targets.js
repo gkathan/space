@@ -11,10 +11,12 @@ _.nst = require('underscore.nest');
 
 /* GET targets . */
 router.get('/overview', function(req, res, next) {
+/*
     if (!req.session.AUTH){
 			req.session.ORIGINAL_URL = req.originalUrl;
 			res.redirect("/login");
-		}
+	}
+	*/
 	_getTargets(function(err,data){
 		var targetsClustered = _.nst.nest(data,["theme","cluster","group"]);
 		for (var i in targetsClustered.children){
@@ -27,7 +29,7 @@ router.get('/overview', function(req, res, next) {
 		res.locals.vision=_target.vision;
 		res.locals.start=moment(_target.start).format();
 		res.locals.end=moment(_target.end).format();
-		res.locals.period = "targets :: "+moment(_target.start).format('MMMM').toLowerCase()+" - "+moment(_target.end).format('MMMM').toLowerCase()+" "+moment(_target.start).format('YYYY');
+		res.locals.period = "targets :: "+new moment(_target.start).format('MMMM').toLowerCase()+" - "+new moment(_target.end).format('MMMM').toLowerCase()+" "+new moment(_target.start).format('YYYY');
 		
 	res.render('targets');
 	});
