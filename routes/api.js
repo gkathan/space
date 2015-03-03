@@ -50,6 +50,7 @@ var PATH = {
 						REST_CUSTOMERS : BASE+'/kanbanv2/rest/customers',
 						REST_COMPETITORS : BASE+'/kanbanv2/rest/competitors',
 						REST_PRODUCTCATALOG : BASE+'/kanbanv2/rest/productcatalog',
+						REST_ROADMAPS : BASE+'/kanbanv2/rest/roadmaps',
 						
 						
 						REST_INITIATIVES_DIFF_TRAIL : BASE+'/kanbanv2/rest/initiatives_diff_trail',
@@ -69,6 +70,7 @@ var PATH = {
 						EXPORT_COMPETITORS : BASE+'/kanbanv2/export/xlsx/competitors',
 						EXPORT_ORGANIZATION : BASE+'/kanbanv2/export/xlsx/organization',
 						EXPORT_PRODUCTCATALOG : BASE+'/kanbanv2/export/xlsx/productcatalog',
+						EXPORT_ROADMAPS : BASE+'/kanbanv2/export/xlsx/roadmaps',
 						
 						
 						
@@ -128,6 +130,11 @@ router.get(PATH.REST_PRODUCTCATALOG, function(req, res, next) {findAllByName(req
 router.post(PATH.REST_PRODUCTCATALOG, function(req, res, next) {save(req,res,next); });
 router.delete(PATH.REST_PRODUCTCATALOG, function(req, res, next) {remove(req,res,next); });
 
+
+router.get(PATH.REST_ROADMAPS, function(req, res, next) {findAllByName(req,res,next);});
+router.post(PATH.REST_ROADMAPS, function(req, res, next) {save(req,res,next); });
+router.delete(PATH.REST_ROADMAPS, function(req, res, next) {remove(req,res,next); });
+
 router.post(PATH.REST_MAIL, function(req, res, next) {mail(req,res,next); });
 
 
@@ -158,6 +165,7 @@ router.get(PATH.EXPORT_LABELS, function(req, res, next) {excelLabels(req,res,nex
 router.get(PATH.EXPORT_CUSTOMERS, function(req, res, next) {excelCustomers(req,res,next);});
 router.get(PATH.EXPORT_COMPETITORS, function(req, res, next) {excelCompetitors(req,res,next);});
 router.get(PATH.EXPORT_PRODUCTCATALOG, function(req, res, next) {excelProductCatalog(req,res,next);});
+router.get(PATH.EXPORT_ROADMAPS, function(req, res, next) {excelRoadmaps(req,res,next);});
 
 router.post(PATH.TRANSCODE_BOARDS, function(req, res, next) {transcode(req,res,next); });
 
@@ -524,6 +532,29 @@ function excelTargets(req, res , next){
     
 }
 
+/**
+ * generate targets excel
+ */
+function excelRoadmaps(req, res , next){
+	var conf ={};
+	
+    conf.stylesXmlFile = "views/excel_export/styles.xml";
+    conf.cols = [
+		{caption:'_id',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'area',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'lane',type:'string',width:15,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'name',type:'string',width:10,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'type',type:'string',width:30,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'startDate',type:'string',width:30,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'endDate',type:'string',width:10,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'version',type:'string',width:5,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'description',type:'string',width:30,captionStyleIndex:2,beforeCellWrite:_formatCell}
+		
+	];
+    
+    _generateAndSendExcel("roadmaps",conf,req,res,next);
+    
+}
   
 
 /**

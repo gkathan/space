@@ -64,6 +64,8 @@ function getConfig(collection){
 		case "competitors": return getCompetitorsConfig();
 		case "organization": return getOrganizationConfig();
 		case "productcatalog": return getProductCatalogConfig();
+		case "roadmaps": return getRoadmapConfig();
+		
 	}
 }
 
@@ -228,6 +230,28 @@ function getTargetConfig(){
 	_config.fields = _target;
 	return _config;
 }
+
+function getRoadmapConfig(){
+		//targets
+	var _target =[
+        { id:"id", name: "id", field: "_id",sortable:true,width:20,cssClass:"onKanbanImmutable"},
+        { id:"area", name: "area", field: "area",width:80, editor: Slick.Editors.Text, cssClass: "cell-standard" },
+        { id: "lane", name: "lane", field: "lane",sortable:true, editor: Slick.Editors.Text ,width:80, cssClass: "cell-title"},
+		{ id: "name", name: "name",  field: "name",width:200,sortable:true, editor: Slick.Editors.Text , cssClass: "cell-standard"},		
+		{ id: "type", name: "type",  field: "type",sortable:true,editor: Slick.Editors.Text,width:80, cssClass: "cell-standard"},
+	    { id: "startDate", name: "startDate", field: "startDate", editor: Slick.Editors.LongText,width:100,formatter: Slick.Formatters.SimpleDate, cssClass: "cell-standard" },
+	    { id: "endDate", name: "endDate", field: "endDate", editor: Slick.Editors.Text,width:100,formatter: Slick.Formatters.SimpleDate, cssClass: "cell-standard" },
+	    { id: "version", name: "version", field: "version", editor: Slick.Editors.Text,width:50, cssClass: "cell-standard" },
+	    { id: "description", name: "description", field: "description", editor: Slick.Editors.LongText ,width:150, cssClass: "cell-standard"}
+		
+        ];
+	var _config ={};
+	_config.mode="editable";
+	_config.fields = _target;
+	return _config;
+}
+
+
 
 
 function getTeamConfig(){

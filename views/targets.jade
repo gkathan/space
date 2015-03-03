@@ -6,51 +6,52 @@ block content
 // ------------------ mixin start ----------------------------
 mixin renderTarget(target)
 
-	div.panel(style="position: relative;background-color:white;width:300px;text-align: left;")
+	div.panel(style="position: relative;background-color:white;width:290px;text-align: left;height:280px")
 		.panel-heading(style="")
 			table(style="")
-				tr(style="line-height:10px;")
+				tr(style="line-height:16px;")
 					td(style=";width:20px;font-size:12px;height:20px;text-align:justify;vertical-align:middle;") 
 						i.glyphicon.glyphicon-record(style="font-size:16px") 
-					td(style="width:270px;font-size:18px;vertical-align:middle;font-weight:bold;;height:20px;") 
-						|&nbsp;#{target.name}
+					td(style="width:260px;font-size:16px;vertical-align:middle;font-weight:bold;height:20px;") 
+						|&nbsp;#{target.name.toUpperCase()}
 			
 		.panel-body
 			table(style="")
 				each line in target.children
-					tr(style="line-height:14px;")
-						
+					tr(style="line-height:20px")
 						if line.directMetric
-							td(style="width:190px;font-size:12px;height:30px;text-align:justify;vertical-align:middle;border-bottom: 1px solid lightgrey") 
+							td(style="width:180px;font-size:13px;height:30px;text-align:left;vertical-align:middle;border-bottom: 1px solid lightgrey") 
 								|#{line.target}
 
 						else
-							td(colspan="2"  style="width:260px;font-size:12px;height:30px;text-align:justify;vertical-align:middle;border-bottom: 1px solid lightgrey") 
+							td(colspan="2"  style="width:250px;font-size:13px;height:30px;text-align:left;vertical-align:middle;border-bottom: 1px solid lightgrey") 
 								|#{line.target}
 						if line.directMetric
 							td(style="text-align:right;width:80px;font-size:24px;vertical-align:middle;font-weight:bold;;height:30px;border-bottom: 1px solid lightgrey") 
 								|#{line.directMetric}
 								span(style="font-size:10px;font-weight:normal") #{line.directMetricScale}
-						
+								
+			
 				
 
 
 mixin renderTargetLane(lane)
 	div.panel
-		.panel-heading(style="-webkit-transform: translateX(-100%) rotate(-90deg);-webkit-transform-origin: right top;-moz-transform: translateX(-100%) rotate(-90deg); width:250px;text-align:center;font-weight:bold ")
+		.panel-heading(style="-webkit-transform: translateX(-100%) rotate(-90deg);-webkit-transform-origin: right top;-moz-transform: translateX(-100%) rotate(-90deg); width:348px;text-align:center;font-weight:bold ")
 			span(style="font-size:32px;color:lightgrey") #{lane.name}
 			br
-			span(style="font-size:18px;color:grey") #{lane.children[0].name}
+			span(style="font-size:16px;color:grey") #{lane.children[0].name.toUpperCase()}
 		.panel-body(style="margin-left:80px;margin-top:-70px;vertical-align:top")
 			div.row(style="font-size:11px;margin-left:2px")
 				each t in lane.children[0].children
-					div.col-sm-2.col-md-3.col-lg5
+					div.col-sm-2.col-md-3.col-lg4
 						+renderTarget(t)
 	
-
+//				div.col-sm-2.col-md-3.col-lg4
+//					img(src="/images/triangle.png" height="280px")		
 
 block content
-div(style="margin-left:20px")
+div(style="margin-left:20px;width:1400px")
 	div(style="font-family:arial;font-weight:bold;font-size:40px;color:black;text-align:center") "#{vision}"
 	div(style="font-family:arial;font-weight:bold;font-size:16px;color:black;text-align:center") #{period}
 	br
@@ -60,4 +61,9 @@ div(style="margin-left:20px")
 
 	each lane in targets
 		+renderTargetLane(lane)
+		
+	br
+	br
+	
+	
 		

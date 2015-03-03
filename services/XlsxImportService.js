@@ -59,7 +59,7 @@ exports.convertXlsx2Json = function convertXlsx2Json (filename) {
 			var _function ="";
 			var _dropBeforeInsert=false;
 			
-			var _plainElements =["productportfolio","productcatalog","targets","incidents","labels","customers","competitors"];
+			var _plainElements =["productportfolio","productcatalog","targets","incidents","labels","customers","competitors","roadmaps"];
 			
 			if (_collection=="portfoliogate") _function = _handlePortfolioGate;
 			else if (_collection=="organization") _function = _handleHR_PI;
