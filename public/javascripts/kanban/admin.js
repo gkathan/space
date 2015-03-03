@@ -209,6 +209,7 @@ function getTargetConfig(){
 		{ id: "theme", name: "theme",  field: "theme",sortable:true, editor: Slick.Editors.Text , cssClass: "cell-standard"},		
 		{ id: "group", name: "group",  field: "group",sortable:true,editor: Slick.Editors.Text,width:150, cssClass: "cell-standard"},
 	    { id: "target", name: "target", field: "target", editor: Slick.Editors.LongText,width:150, cssClass: "cell-standard" },
+	    { id: "directMetric", name: "directMetric", field: "directMetric", editor: Slick.Editors.Text,width:100, cssClass: "cell-standard" },
 	    { id: "outcome", name: "outcome", field: "outcome", editor: Slick.Editors.LongText ,width:150, cssClass: "cell-standard"},
 		{ id: "description", name: "description", field: "description", editor: Slick.Editors.LongText,width:200, cssClass: "cell-standard" },
 	    { id: "baseline", name: "baseline", field: "baseline", editor: Slick.Editors.LongText,width:150 , cssClass: "cell-standard"},
