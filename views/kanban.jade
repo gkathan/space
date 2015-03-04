@@ -1,7 +1,5 @@
 include kanban_menu
 
-
-
 block content
 	script(type="text/javascript").
 		$(document).ready(function() {
@@ -34,7 +32,7 @@ block content
 		//Modal
 		div.modal.fade(id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" )
 			div.modal-dialog
-				div.modal-content(style="opacity:0.9")
+				div.modal-content(style="opacity:1")
 					div.modal-header
 						button.close(type="button" data-dismiss="modal" aria-label="Close")
 							span(aria-hidden="true") &times
@@ -44,7 +42,7 @@ block content
 						include board/includes/menu_metrics_multiselects.jade
 						include board/includes/menu_svg_export.jade
 						include board/includes/menu_visibility_switches.jade
-				
+						include organization/includes/menu_org_switches.jade
 					div.modal-footer
 						button.btn.btn-default.btn-xs(type="button" data-dismiss="modal")
 							span Close

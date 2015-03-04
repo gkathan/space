@@ -79,6 +79,22 @@
   }
 
   
+  /** employee profile 
+   * https://my.bwinparty.com/People/S/MassimilianoScorzaE5148.aspx 
+   * firstname
+   * lastname
+   * number
+   * => calculate first char from lastname
+   * 
+   **/
+   http://v1.bwinparty.corp/V1-Production/Epic.mvc/Summary?oidToken=Epic%3A3394319
+  function EmployeeProfileURLFormatter(row, cell, value, columnDef, dataContext) {
+	 
+    return value ? "<a href=\"https://my.bwinparty.com/People/F/fuckingBla+Number+".aspx"\" target=\"_new\">"+value+"</a>" : "";
+  }
+
+  
+  
   
   function RAGFormatter(row, cell, value, columnDef, dataContext) {
     var _color;

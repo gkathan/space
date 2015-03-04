@@ -1,22 +1,24 @@
 
 
-.row
-	hr.divider
-	h3 svg export include
 
-	.col-lg-6
-		.input-group.input-group-xs(style="width:250px")
-			input.form-control(id="input_transcode_url" type="text" placeholder="transcode URL")
-			span.input-group-btn
-				button.btn.btn-primary(id="b99" type="button") URL
+hr.divider
+h4 save as
+
+.col-lg-6
+	.input-group.input-group-xs(style="width:300px")
+		input.form-control(id="input_transcode_url" type="text" placeholder="transcode URL")
+		span.input-group-btn
+			button.btn-flat.btn.btn-primary(id="b99" type="button") set URL
+	
+	div.input-group(style="width:500px")
 		.input-group
-			button.btn.btn-default.btn-sm(id="save_as_svg" value="")
+			button.btn.btn-flat.btn-default.btn-sm(id="save_as_svg" value="")
 				span.glyphicon.glyphicon-export 
 				span export SVG
-			button.btn.btn-primary.btn-sm(id="save_as_pdf" value="")
+			button.btn.btn-flat.btn-success.btn-sm(id="save_as_pdf" value="")
 				span.glyphicon.glyphicon-export 
 				span export PDF
-			button.btn.btn-primary.btn-sm(id="save_as_png" value="") 
+			button.btn.btn-flat.btn-success.btn-sm(id="save_as_png" value="") 
 				span.glyphicon.glyphicon-export 
 				span export PNG
 
@@ -28,4 +30,4 @@
 			input(type="hidden" id="svg_height" name="svg_height" value="")
 			input(type="hidden" id="png_scale" name="png_scale" value="")
 
-		script(src="/javascripts/kanban/kanban_svgexport.js")
+	script(src="/javascripts/kanban/kanban_svgexport.js")

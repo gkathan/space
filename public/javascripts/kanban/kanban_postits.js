@@ -100,7 +100,7 @@ Postit.prototype.save=function(){
 
 	$.ajax({
         type: "POST",
-        url: "/data/insert.php",
+        url: "/api/kanbanv2/rest/postit",
         data: _insert,
         contentType: "application/json; charset=utf-8",
         dataType: "json",
@@ -116,8 +116,8 @@ Postit.prototype.remove=function(){
 	console.log("delete: "+_remove);
 
 	$.ajax({
-        type: "POST",
-        url: "/data/remove.php",
+        type: "DELETE",
+        url: "/api/kanbanv2/rest/postit",
         data: _remove,
         contentType: "application/json; charset=utf-8",
         dataType: "json",
@@ -134,7 +134,7 @@ Postit.prototype.update=function(){
 
 	$.ajax({
         type: "POST",
-        url: "/data/update.php",
+        url: "/api/kanbanv2/rest/postit",
         data: _update,
         contentType: "application/json; charset=utf-8",
         dataType: "json",

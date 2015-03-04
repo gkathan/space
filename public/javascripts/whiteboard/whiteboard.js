@@ -17,32 +17,26 @@ function renderWhiteboard() {
 		.attr("transform", "translate( 20,20)");
 		
 		
- 	$.when(//$.getJSON("/data/data.php?type=initiatives"))
-	  		  $.getJSON(dataSourceFor("initiatives")))
+ 	//$.when($.getJSON(dataSourceFor("initiatives")))
+		//.done(function(initiatives){
+			//initiativeData=initiatives.filter(function(d){return d.state=="todo";});
 			
-			.done(function(initiatives){
-					initiativeData=initiatives.filter(function(d){return d.state=="todo";});
-					d3.select("#kanban").style("visibility","hidden");
+			d3.select("#kanban").style("visibility","hidden");
 
-					d3.select("#whiteboard").style("visibility","visible");
-					
-					_drawXlink(whiteboard,"#whiteboard",20,20,{"scale":3});
+			d3.select("#whiteboard").style("visibility","visible");
+			
+			_drawXlink(whiteboard,"#whiteboard",20,20,{"scale":3});
 
-					//drawWhiteboardPostits();
-					for (var i in initiativeData){
-						// function Postit(id,text,x,y,scale,size,color,textcolor){
-						var d = initiativeData[i];
-						var p = new Postit(d.id,d.name+" "+d.name2,150+(i*15),150+(i*15),4,3,"yellow","black");
-						p.setTitle("::"+d.lane);
-						p.draw(whiteboard)
-						
-					}
-					
-//					drawAll();
-//					drawCustomPostits();
-					//initHandlers();
-					
-				});
+			for (var i in boardData.postits){
+				// function Postit(id,text,x,y,scale,size,color,textcolor){
+				var _postit = boardData.postits[i];
+				
+				console.log("* postit: "+JSON.stringify(_postit));
+				var p = new Postit(_postit.id,_postit.text,150+(i*15),150+(i*15),4,3,_postit.color,"black");
+				p.setTitle("::"+_postit.title);
+				p.draw(whiteboard)
+			}
+		//});
 }
 
 

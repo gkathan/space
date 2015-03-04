@@ -28,8 +28,10 @@ function refresh(collection){
 				if (collection=="v1epics"){
 					 _data = data[0].epics;
 				}
-				else if (collection=="organization"){
-					 _data = data[0].oItems;
+				else if (collection.indexOf("organization")>-1){
+					 
+					 console.log("+++ organization data: "+_data.oDate)
+					 _data = data.oItems;
 				}
 				
 				// check for "_id" field
@@ -62,7 +64,7 @@ function getConfig(collection){
 		case "labels": return getLabelsConfig();
 		case "customers": return getCustomersConfig();
 		case "competitors": return getCompetitorsConfig();
-		case "organization": return getOrganizationConfig();
+		case "organization/2015-02-17": return getOrganizationConfig();
 		case "productcatalog": return getProductCatalogConfig();
 		case "roadmaps": return getRoadmapConfig();
 		
@@ -376,50 +378,54 @@ function getCompetitorsConfig(){
 	return _config;
 }
 
+//,formatter:Slick.Formatters.V1EpicURL
+
 
 function getOrganizationConfig(){
 	var _organization =[
         { id: "id", name: "id", field: "_id",sortable:true,width:30,cssClass:"onKanbanImmutable" },
-        {id: "Employee Number", name:"Employee Number" , field: "Employee Number", editor: Slick.Editors.Text ,width:150,sortable:true, cssClass: cell-standard},
-		{id: "Full Name", name:"Full Name" , field: "Full Name", editor: Slick.Editors.Text ,width:150,sortable:true, cssClass: cell-standard},
-		{id: "Last Name", name:"Last Name" , field: "Last Name", editor: Slick.Editors.Text ,width:150,sortable:true, cssClass: cell-standard},
-		{id: "First Name", name:"First Name" , field: "First Name", editor: Slick.Editors.Text ,width:150,sortable:true, cssClass: cell-standard},
-		{id: "Title", name:"Title" , field: "Title", editor: Slick.Editors.Text ,width:150,sortable:true, cssClass: cell-standard},
-		{id: "Gender", name:"Gender" , field: "Gender", editor: Slick.Editors.Text ,width:150,sortable:true, cssClass: cell-standard},
-		{id: "Email Address", name:"Email Address" , field: "Email Address", editor: Slick.Editors.Text ,width:150,sortable:true, cssClass: cell-standard},
-		{id: "Date First Hired", name:"Date First Hired" , field: "Date First Hired", editor: Slick.Editors.Text ,width:150,sortable:true, cssClass: cell-standard},
-		{id: "Projected Termination Date", name:"Projected Termination Date" , field: "Projected Termination Date", editor: Slick.Editors.Text ,width:150,sortable:true, cssClass: cell-standard},
-		{id: "Actual Termination Date", name:"Actual Termination Date" , field: "Actual Termination Date", editor: Slick.Editors.Text ,width:150,sortable:true, cssClass: cell-standard},
-		{id: "Contract Type", name:"Contract Type" , field: "Contract Type", editor: Slick.Editors.Text ,width:150,sortable:true, cssClass: cell-standard},
-		{id: "Person Type", name:"Person Type" , field: "Person Type", editor: Slick.Editors.Text ,width:150,sortable:true, cssClass: cell-standard},
-		{id: "Assignment Category", name:"Assignment Category" , field: "Assignment Category", editor: Slick.Editors.Text ,width:150,sortable:true, cssClass: cell-standard},
-		{id: "Job", name:"Job" , field: "Job", editor: Slick.Editors.Text ,width:150,sortable:true, cssClass: cell-standard},
-		{id: "Corporate Job Title", name:"Corporate Job Title" , field: "Corporate Job Title", editor: Slick.Editors.Text ,width:150,sortable:true, cssClass: cell-standard},
-		{id: "Local Job Title", name:"Local Job Title" , field: "Local Job Title", editor: Slick.Editors.Text ,width:150,sortable:true, cssClass: cell-standard},
-		{id: "Contractual Job Title", name:"Contractual Job Title" , field: "Contractual Job Title", editor: Slick.Editors.Text ,width:150,sortable:true, cssClass: cell-standard},
-		{id: "Scrum Master Number", name:"Scrum Master Number" , field: "Scrum Master Number", editor: Slick.Editors.Text ,width:150,sortable:true, cssClass: cell-standard},
-		{id: "Scrum Master Name", name:"Scrum Master Name" , field: "Scrum Master Name", editor: Slick.Editors.Text ,width:150,sortable:true, cssClass: cell-standard},
-		{id: "Scrum Team 1", name:"Scrum Team 1" , field: "Scrum Team 1", editor: Slick.Editors.Text ,width:150,sortable:true, cssClass: cell-standard},
-		{id: "Scrum Team 2", name:"Scrum Team 2" , field: "Scrum Team 2", editor: Slick.Editors.Text ,width:150,sortable:true, cssClass: cell-standard},
-		{id: "Scrum Team 3", name:"Scrum Team 3" , field: "Scrum Team 3", editor: Slick.Editors.Text ,width:150,sortable:true, cssClass: cell-standard},
-		{id: "Position", name:"Position" , field: "Position", editor: Slick.Editors.Text ,width:150,sortable:true, cssClass: cell-standard},
-		{id: "Function", name:"Function" , field: "Function", editor: Slick.Editors.Text ,width:150,sortable:true, cssClass: cell-standard},
-		{id: "Vertical", name:"Vertical" , field: "Vertical", editor: Slick.Editors.Text ,width:150,sortable:true, cssClass: cell-standard},
-		{id: "Location", name:"Location" , field: "Location", editor: Slick.Editors.Text ,width:150,sortable:true, cssClass: cell-standard},
-		{id: "Employing Legal Entity", name:"Employing Legal Entity" , field: "Employing Legal Entity", editor: Slick.Editors.Text ,width:150,sortable:true, cssClass: cell-standard},
-		{id: "Organization", name:"Organization" , field: "Organization", editor: Slick.Editors.Text ,width:150,sortable:true, cssClass: cell-standard},
-		{id: "Organization Type", name:"Organization Type" , field: "Organization Type", editor: Slick.Editors.Text ,width:150,sortable:true, cssClass: cell-standard},
-		{id: "Employee is a Supervisor?", name:"Employee is a Supervisor?" , field: "Employee is a Supervisor?", editor: Slick.Editors.Text ,width:150,sortable:true, cssClass: cell-standard},
-		{id: "Supervisor Employee Number", name:"Supervisor Employee Number" , field: "Supervisor Employee Number", editor: Slick.Editors.Text ,width:150,sortable:true, cssClass: cell-standard},
-		{id: "Supervisor Full Name", name:"Supervisor Full Name" , field: "Supervisor Full Name", editor: Slick.Editors.Text ,width:150,sortable:true, cssClass: cell-standard},
-		{id: "Supervisor E-Mail", name:"Supervisor E-Mail" , field: "Supervisor E-Mail", editor: Slick.Editors.Text ,width:150,sortable:true, cssClass: cell-standard},
-		{id: "HRBP Employee Number", name:"HRBP Employee Number" , field: "HRBP Employee Number", editor: Slick.Editors.Text ,width:150,sortable:true, cssClass: cell-standard},
-		{id: "HRBP Full Name", name:"HRBP Full Name" , field: "HRBP Full Name", editor: Slick.Editors.Text ,width:150,sortable:true, cssClass: cell-standard},
-		{id: "Cost Centre", name:"Cost Centre" , field: "Cost Centre", editor: Slick.Editors.Text ,width:150,sortable:true, cssClass: cell-standard},
-		{id: "Assignment Cost Code", name:"Assignment Cost Code" , field: "Assignment Cost Code", editor: Slick.Editors.Text ,width:150,sortable:true, cssClass: cell-standard}
+        {id: "Employee Number", name:"Employee Number" , field: "Employee Number", editor: Slick.Editors.Text ,width:50,sortable:true, cssClass: "cell-standard"},
+		//{id: "Full Name", name:"Full Name" , field: "Full Name", editor: Slick.Editors.Text ,width:150,sortable:true, cssClass: "cell-standard"},
+		{id: "Last Name", name:"Last Name" , field: "Last Name", editor: Slick.Editors.Text ,width:150,sortable:true, cssClass: "cell-standard"},
+		{id: "First Name", name:"First Name" , field: "First Name", editor: Slick.Editors.Text ,width:150,sortable:true, cssClass: "cell-standard"},
+		//{id: "Title", name:"Title" , field: "Title", editor: Slick.Editors.Text ,width:150,sortable:true, cssClass: "cell-standard"},
+		{id: "Gender", name:"Gender" , field: "Gender", editor: Slick.Editors.Text ,width:50,sortable:true, cssClass: "cell-standard"},
+		{id: "Email Address", name:"Email Address" , field: "Email Address", editor: Slick.Editors.Text ,width:150,sortable:true, cssClass: "cell-standard"},
+		{id: "Contract Type", name:"Contract Type" , field: "Contract Type", editor: Slick.Editors.Text ,width:80,sortable:true, cssClass: "cell-standard"},
+		{id: "Person Type", name:"Person Type" , field: "Person Type", editor: Slick.Editors.Text ,width:150,sortable:true, cssClass: "cell-standard"},
+		{id: "Assignment Category", name:"Assignment Category" , field: "Assignment Category", editor: Slick.Editors.Text ,width:150,sortable:true, cssClass: "cell-standard"},
+		{id: "Job", name:"Job" , field: "Job", editor: Slick.Editors.Text ,width:150,sortable:true, cssClass: "cell-standard"},
+		{id: "Corporate Job Title", name:"Corporate Job Title" , field: "Corporate Job Title", editor: Slick.Editors.Text ,width:150,sortable:true, cssClass: "cell-standard"},
+		{id: "Local Job Title", name:"Local Job Title" , field: "Local Job Title", editor: Slick.Editors.Text ,width:150,sortable:true, cssClass: "cell-standard"},
+		{id: "Contractual Job Title", name:"Contractual Job Title" , field: "Contractual Job Title", editor: Slick.Editors.Text ,width:150,sortable:true, cssClass: "cell-standard"},
+		{id: "Position", name:"Position" , field: "Position", editor: Slick.Editors.Text ,width:150,sortable:true, cssClass: "cell-standard"},
+		{id: "Function", name:"Function" , field: "Function", editor: Slick.Editors.Text ,width:150,sortable:true, cssClass: "cell-standard"},
+		{id: "Vertical", name:"Vertical" , field: "Vertical", editor: Slick.Editors.Text ,width:150,sortable:true, cssClass: "cell-standard"},
+		{id: "Location", name:"Location" , field: "Location", editor: Slick.Editors.Text ,width:150,sortable:true, cssClass: "cell-standard"},
+		{id: "Employing Legal Entity", name:"Employing Legal Entity" , field: "Employing Legal Entity", editor: Slick.Editors.Text ,width:150,sortable:true, cssClass: "cell-standard"},
+		{id: "Organization", name:"Organization" , field: "Organization", editor: Slick.Editors.Text ,width:150,sortable:true, cssClass: "cell-standard"},
+		{id: "Organization Type", name:"Organization Type" , field: "Organization Type", editor: Slick.Editors.Text ,width:150,sortable:true, cssClass: "cell-standard"},
+		{id: "Employee is a Supervisor?", name:"Employee is a Supervisor?" , field: "Employee is a Supervisor?", editor: Slick.Editors.Text ,width:150,sortable:true, cssClass: "cell-standard"},
+		{id: "Cost Centre", name:"Cost Centre" , field: "Cost Centre", editor: Slick.Editors.Text ,width:150,sortable:true, cssClass: "cell-standard"},
+		{id: "Assignment Cost Code", name:"Assignment Cost Code" , field: "Assignment Cost Code", editor: Slick.Editors.Text ,width:150,sortable:true, cssClass: "cell-standard"},
+		{id: "Supervisor Employee Number", name:"Supervisor Employee Number" , field: "Supervisor Employee Number", editor: Slick.Editors.Text ,width:150,sortable:true, cssClass: "cell-standard"},
+		{id: "Supervisor Full Name", name:"Supervisor Full Name" , field: "Supervisor Full Name", editor: Slick.Editors.Text ,width:150,sortable:true, cssClass: "cell-standard"},
+		{id: "Supervisor E-Mail", name:"Supervisor E-Mail" , field: "Supervisor E-Mail", editor: Slick.Editors.Text ,width:150,sortable:true, cssClass: "cell-standard"},
+		{id: "HRBP Employee Number", name:"HRBP Employee Number" , field: "HRBP Employee Number", editor: Slick.Editors.Text ,width:150,sortable:true, cssClass: "cell-standard"},
+		{id: "HRBP Full Name", name:"HRBP Full Name" , field: "HRBP Full Name", editor: Slick.Editors.Text ,width:150,sortable:true, cssClass: "cell-standard"},
+		{id: "Scrum Master Number", name:"Scrum Master Number" , field: "Scrum Master Number", editor: Slick.Editors.Text ,width:150,sortable:true, cssClass: "cell-standard"},
+		{id: "Scrum Master Name", name:"Scrum Master Name" , field: "Scrum Master Name", editor: Slick.Editors.Text ,width:150,sortable:true, cssClass: "cell-standard"},
+		{id: "Scrum Team 1", name:"Scrum Team 1" , field: "Scrum Team 1", editor: Slick.Editors.Text ,width:150,sortable:true, cssClass: "cell-standard"},
+		{id: "Scrum Team 2", name:"Scrum Team 2" , field: "Scrum Team 2", editor: Slick.Editors.Text ,width:150,sortable:true, cssClass: "cell-standard"},
+		{id: "Scrum Team 3", name:"Scrum Team 3" , field: "Scrum Team 3", editor: Slick.Editors.Text ,width:150,sortable:true, cssClass: "cell-standard"},
+
+		{id: "Date First Hired", name:"Date First Hired" , field: "Date First Hired", editor: Slick.Editors.Text ,width:150,sortable:true, cssClass: "cell-standard"},
+		{id: "Projected Termination Date", name:"Projected Termination Date" , field: "Projected Termination Date", editor: Slick.Editors.Text ,width:150,sortable:true, cssClass: "cell-standard"},
+		{id: "Actual Termination Date", name:"Actual Termination Date" , field: "Actual Termination Date", editor: Slick.Editors.Text ,width:150,sortable:true, cssClass: "cell-standard"}
+		
 ];
 	var _config ={};
-	_config.mode="editable";
+	_config.mode="readonly";
 	_config.fields = _organization;
 	return _config;
 }

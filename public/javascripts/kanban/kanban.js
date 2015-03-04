@@ -99,7 +99,7 @@ var CONTEXT="CONTEXT";
 var releaseData;
 
 
-var boardsData;
+var boardData;
 // the current "CONTEXT"
 var BOARD;
 
@@ -266,17 +266,23 @@ function render(svgFile){
 	d3.xml(svgFile, function(xml) {
 		document.body.appendChild(document.importNode(xml.documentElement, true));
 	
+		var _boardId;
+		//var _boardId="54bba57720f4764e7e797849";
+		_boardId = _.last(window.location.href.split("/"));
+	
+					
+	
 		$.when($.getJSON(dataSourceFor("lanetext")),
 				$.getJSON(dataSourceFor("initiatives")),
 				$.getJSON(dataSourceFor("metrics")),
 				$.getJSON(dataSourceFor("releases")),
 				$.getJSON(dataSourceFor("postits")),
-				$.getJSON(dataSourceFor("boards")),
+				$.getJSON(dataSourceFor("boards/"+_boardId)),
 				$.getJSON(dataSourceFor("targets")),
 				$.getJSON(dataSourceFor("lanes")),
 				$.getJSON("/data/laneTextTargetPillars.json"))
 
-			.done(function(lanetext,initiatives,metrics,releases,postits,boards,targets,lanes,pillars){
+			.done(function(lanetext,initiatives,metrics,releases,postits,board,targets,lanes,pillars){
 					if (lanetext[1]=="success") laneTextData=lanetext[0];
 					else throw new Exception("error loading lanetext");
 					if (initiatives[1]=="success") initiativeData=initiatives[0];
@@ -287,7 +293,7 @@ function render(svgFile){
 					else throw new Exception("error loading releases");
 					if (postits[1]=="success") postitData=postits[0];
 					else throw new Exception("error loading postits");
-					if (boards[1]=="success") boardsData=boards[0];
+					if (board[1]=="success") boardData=board[0];
 					else throw new Exception("error loading postits");
 					if (targets[1]=="success") targetData=targets[0];
 					else throw new Exception("error loading targets");
@@ -296,10 +302,6 @@ function render(svgFile){
 					if (pillars[1]=="success") pillarData=pillars[0];
 					else throw new Exception("error loading pillars");
 					
-					var _boardId;
-					//var _boardId="54bba57720f4764e7e797849";
-					_boardId = _.last(window.location.href.split("/"));
-	
 					
 					renderBoard(_boardId);
 					
@@ -336,23 +338,21 @@ function joinBoard2Initiatives(board,initiatives){
 /**generic render method for NG board handling
  */
 function renderBoard(id){
-
-		var board = getItemByKey(boardsData,"_id",id)
 		
-		HEIGHT= parseInt(board.height);
-		WIDTH = parseInt(board.width);
-		ITEM_SCALE = parseFloat(board.itemScale);
-		ITEM_FONTSCALE = parseFloat(board.itemFontScale);
-		setWIP(parseInt(board.WIPWindowDays));
-		LANE_LABELBOX_RIGHT_WIDTH = parseInt(board.laneboxRightWidth);
+		HEIGHT= parseInt(boardData.height);
+		WIDTH = parseInt(boardData.width);
+		ITEM_SCALE = parseFloat(boardData.itemScale);
+		ITEM_FONTSCALE = parseFloat(boardData.itemFontScale);
+		setWIP(parseInt(boardData.WIPWindowDays));
+		LANE_LABELBOX_RIGHT_WIDTH = parseInt(boardData.laneboxRightWidth);
 
-		KANBAN_START= new Date(board.startDate);
-		KANBAN_END= new Date(board.endDate);
+		KANBAN_START= new Date(boardData.startDate);
+		KANBAN_END= new Date(boardData.endDate);
 		
-		BOARD = board;
-		CONTEXT = board.name;
-		// we have to now join boardsData and initiative Data
-		boardItems =joinBoard2Initiatives(board,initiativeData);
+		BOARD = boardData;
+		CONTEXT = boardData.name;
+		// we have to now join boardData and initiative Data
+		boardItems =joinBoard2Initiatives(boardData,initiativeData);
 		
 		// with drawAll() refresh without postback possible ;-)
 		

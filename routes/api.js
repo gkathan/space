@@ -37,6 +37,8 @@ var PATH = {
 						REST_METRICS : BASE+'/kanbanv2/rest/metrics',
 						REST_TARGETS : BASE+'/kanbanv2/rest/targets',
 						REST_BOARDS : BASE+'/kanbanv2/rest/boards',
+						
+						
 						REST_RELEASES : BASE+'/kanbanv2/rest/releases',
 						REST_LANETEXT : BASE+'/kanbanv2/rest/lanetext',
 						REST_POSTITS : BASE+'/kanbanv2/rest/postits',
@@ -98,7 +100,7 @@ router.delete(PATH.REST_TARGETS, function(req, res, next) {remove(req,res,next);
 
 
 router.get(PATH.REST_BOARDS, function(req, res, next) {findAllByName(req,res,next);});
-router.get(PATH.REST_BOARDS+'/:id', function(req, res, next) {findById(req,res,next);});
+router.get(PATH.REST_BOARDS+'/:_id', function(req, res, next) {findBy_id(req,res,next);});
 router.post(PATH.REST_BOARDS, function(req, res, next) {save(req,res,next); });
 router.delete(PATH.REST_BOARDS, function(req, res, next) {remove(req,res,next); });
 
@@ -111,7 +113,7 @@ router.get(PATH.REST_PRODUCTPORTFOLIO, function(req, res, next) {findAllByName(r
 router.get(PATH.REST_PRODUCTCATALOG, function(req, res, next) {findAllByName(req,res,next);});
 router.get(PATH.REST_INCIDENTS, function(req, res, next) {findAllByName(req,res,next);});
 router.get(PATH.REST_V1EPICS, function(req, res, next) {findAllByName(req,res,next);});
-router.get(PATH.REST_ORGANIZATION, function(req, res, next) {findAllByName(req,res,next);});
+//
 
 
 router.get(PATH.REST_LABELS, function(req, res, next) {findAllByName(req,res,next);});
@@ -230,6 +232,36 @@ function findById(req, res , next){
         return next(err);
     })
 }
+
+
+/**
+ * find single object by _id
+ */
+function findBy_id(req, res , next){
+    console.log("...path: "+req.path);
+	
+    
+    var path = req.path.split("/");
+	// format path: /kanbanv2/rest/boards/1
+	// take the last from the set with last stripped ;-)
+	var collection = _.last(_.initial(path));
+	// a string
+	var _id = req.params._id;
+	
+	console.log("...looking for collection: "+collection+ "_id: "+req.params._id);
+	
+    db.collection(collection).findOne({_id:mongojs.ObjectId(_id)}, function(err , success){
+        logger.debug('Response success '+success);
+        logger.debug('Response error '+err);
+        if(success){
+            res.send(success);
+            return;
+        }
+        return next(err);
+    })
+}
+
+
 
 
 /**

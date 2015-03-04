@@ -19,9 +19,36 @@ block content
 			include ../board/includes/menu_svg_export.jade
 			
 
-			
+		// Button trigger modal
+		button.btn.btn-primary.btn-xs(type="button" data-toggle="modal" data-target="#myModal")
+			span demo modal
+				
 		div.row(style="margin-left:10px;margin-bottom:10px")
-		h3 orgtree from <b>#{orgdate}</b>
+		h4 orgtree from <b>#{orgdate}</b>
+
+		//Modal
+		div.modal.fade(id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" )
+			div.modal-dialog
+				div.modal-content(style="opacity:1")
+					div.modal-header
+						button.close(type="button" data-dismiss="modal" aria-label="Close")
+							span(aria-hidden="true") &times
+						h3.modal-title(id="myModalLabel")
+							| orgchart options
+					div.modal-body
+						include includes/menu_org_switches.jade
+						
+						include ../board/includes/menu_svg_export.jade
+						
+					div.modal-footer
+						button.btn.btn-default.btn-xs(type="button" data-dismiss="modal")
+							span Close
+						button.btn.btn-primary.btn-xs(type="button")
+							span Save changes
+		
+		
+
+
 
 		div.btn-group-xs
 			button.btn.btn-primary.btn-xs(id="kanban_menu" type="button") 
@@ -35,5 +62,6 @@ block content
 			
 			render(_date);
 							
-			
+	include ../includes/material					
+	
 
