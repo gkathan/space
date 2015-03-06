@@ -1,5 +1,5 @@
-# strategy2tactics
-integrated strategy²tactics corpkanban, organization, roadmapping, targets, organization, product catalogs, playbooks, incidents and stuff....
+# space
+strategy::performance::and:change::explorer
 
 clean install
 -------------
