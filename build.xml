@@ -1,10 +1,10 @@
-<project name="strategy2tactics" default="dist" basedir=".">
+<project name="space" default="dist" basedir=".">
     <description>
         simple example build file
     </description>
   <!-- set global properties for this build -->
   <property name="src" location="."/>
-  <property name="dist"  location="C:\Users\gkathan\Dropbox\_work\d3\kanban\dist"/>
+  <property name="dist"  location="C:\Users\gkathan\Dropbox\_work\space\dist"/>
   
   <property name="mongodb_dev"  location="c:/mongodb"/>
   <property name="mongodb_dump"  location="data/mongo"/>
@@ -19,11 +19,11 @@
 	  <format property="NOW_TIME" pattern="kkmmss" locale="de,de"/>
   </tstamp>
   
-  <property name="ARCHIVE" value="${dist}/zip/s2t-${NOW_DATE}_${NOW_TIME}.zip"/>
-  <property name="TARGET" value="${dist}/zip/s2t.zip"/>
+  <property name="ARCHIVE" value="${dist}/zip/space-${NOW_DATE}_${NOW_TIME}.zip"/>
+  <property name="TARGET" value="${dist}/zip/space.zip"/>
   
   <target name="echo">
-	<echo message="strategy2tactics build: ${NOW_DATE}"/>
+	<echo message="space build: ${NOW_DATE}"/>
   
   </target>
   
@@ -33,12 +33,12 @@
     <tstamp/>
     
     <delete>
-		<fileset dir="." includes="s2t.build"/>
+		<fileset dir="." includes="space.build"/>
 	</delete>
 	
-    <touch file="s2t.build"/>
+    <touch file="space.build"/>
 	
-	<echo file="s2t.build" append="true">{"build":"${NOW_DATE}_${NOW_TIME}"}
+	<echo file="space.build" append="true">{"build":"${NOW_DATE}_${NOW_TIME}"}
 	</echo>
 
   </target>
@@ -81,23 +81,12 @@
   </target>
 
 
-  <!-- DB stuff
-  
-  EXPORT
-  ======
-  dump full DB:      mysqldump -u kanban -p kanban > kanban_dump.sql  
-  dump table:		 mysqldump -u kanban -p kanban metrics > kanban_metrics_dump.sql
- 
-  IMPORT
-  ======
-					mysql -u kanban -p -D kanban < kanban_metrics_dump.sql
-  -->
   
   <target name="mongodumpPROD" description="dumps remote PROD mongoDB, scps it to LOCAL and tars + timestamps it">
 	<sshexec host="cloud.ea.bwinparty.corp" username="gkathan" password="bwin123" command="./mongodump.sh" trust="true" port="22"/>
-	<scp file="gkathan@cloud.ea.bwinparty.corp:/home/gkathan/mongodump_PROD.tar" todir="data/mongo" password="bwin123" port="22" trust="true"/>
-	<untar src="data/mongo/mongodump_PROD.tar" dest="data/mongo"/>
-	<move file="data/mongo/mongodump_PROD" tofile="data/mongo/mongodump_PROD_${NOW_DATE}_${NOW_TIME}"/>
+	<scp file="gkathan@cloud.ea.bwinparty.corp:/home/gkathan/mongodump_spacePROD.tar" todir="${dist}/data/mongo" password="bwin123" port="22" trust="true"/>
+	<untar src="${dist}/data/mongo/mongodump_spacePROD.tar" dest="${dist}/data/mongo"/>
+	<move file="${dist}/data/mongo/mongodump_spacePROD" tofile="${dist}/data/mongo/mongodump_spacePROD_${NOW_DATE}_${NOW_TIME}"/>
   </target>
   
   
@@ -105,12 +94,12 @@
 	  <exec executable="cmd">
 		<arg value="/c"/>
 		<arg value="mongodump"/>
-		<arg value="-d kanbanv2"/>
-		<arg value="-o ${kanbanv2dump}"/>
+		<arg value="-d space"/>
+		<arg value="-o ${space_dump}"/>
 	  </exec>
 	  
 	  <zip destfile="mongodump_DEV_${NOW_DATE}_${NOW_TIME}.zip">
-			<fileset dir="${mongodb_dump}" includes="**"/>
+			<fileset dir="${space_dump}" includes="**"/>
 	  </zip>
   </target>
 

@@ -14,9 +14,13 @@ block content
 				span.icon-bar
 				span.icon-bar
 				span.icon-bar
-			a.navbar-brand(href='/') 
-				img(src="/images/space_long_white.png" height="30px")
-
+			if !session.AUTH
+				a.navbar-brand(href='/') 
+					img(src="/images/space_long_white.png" height="30px")
+			else
+				a.navbar-brand(href='/dashboard') 
+					img(src="/images/space_long_white.png" height="30px")
+			
 		.collapse.navbar-collapse
 			ul.nav.navbar-nav
 				
@@ -56,10 +60,7 @@ block content
 								a(role="menuitem" tabindex="-1" href="/org/circlecontain/targets") targets circle contain map								
 
 
-				if session.AUTH
-					li
-						a(href='/boards') boards
-					
+				
 				ul.nav.navbar-nav
 					li.dropdown(id="fat-menu")
 						a.dropdown-toggle(id="org" href="#" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false") initiatives & portfolio
@@ -71,6 +72,20 @@ block content
 					
 					
 				if session.AUTH
+					ul.nav.navbar-nav
+						li.dropdown(id="fat-menu")
+							a.dropdown-toggle(id="admin" href="#" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false") boards 
+								span.caret 
+
+							ul.dropdown-menu(role="menu" aria-labelledby="admin")
+								li(role="presentation") 
+									a(role="menuitem" tabindex="-1" href="/boards") kanban boards
+									
+								li(role="presentation") 
+									a(role="menuitem" tabindex="-1" href="/dashboard") dash boards
+								li(role="presentation") 
+									a(role="menuitem" tabindex="-1" href="/whiteboards") white boards									
+					
 					ul.nav.navbar-nav
 						li.dropdown(id="fat-menu")
 							a.dropdown-toggle(id="admin" href="#" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false") products & services 

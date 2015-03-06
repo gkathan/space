@@ -58,7 +58,6 @@ block content
 
 // ------------------ mixin start ----------------------------
 mixin renderTarget(target)
-
 	div.panel( style="position: relative;background-color:white;width:225px;text-align: left;height:280px")
 		.panel-heading(class="panel-#{target.children[0].theme.toLowerCase()}")
 			table(style="")
@@ -78,8 +77,6 @@ mixin renderTarget(target)
 									b #{_.rest(target.name.split(" ")).join(" ").toUpperCase()}
 								td(style="width:20px;font-size:12px;vertical-align:top;font-weight:normal;font-style:italic")
 									|#{target.children[0].id.split(".")[0]}
-								
-									
 			
 		.panel-body
 			table(style="")
@@ -117,7 +114,7 @@ mixin renderTarget(target)
 					tr(style="line-height:3px")
 						td 
 							|&nbsp;
-				
+					
 
 
 mixin renderTargetLane(lane)
@@ -148,7 +145,14 @@ div(style="margin-left:20px;width:1100px")
 	div(style="font-family:arial;font-weight:bold;font-size:24px;color:black;text-align:center") "#{vision}"
 	div(style="font-family:arial;font-weight:normal;font-size:16px;color:black;text-align:center") #{period}
 	br
-
+	b
+		|bonus relevant targets (L1):
+	each l1 in L1targets
+		div
+			|#{l1.name}
+			each l in l1.children
+				br
+				|#{l.id } - #{l.target} - #{l.directMetric} - #{l.directMetricScale}
 	
 	// ************ target card ******************
 

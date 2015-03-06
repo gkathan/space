@@ -42,7 +42,7 @@ var logger = new (winston.Logger)({
 logger.level='debug';
 
 // load build number
-var build = JSON.parse(fs.readFileSync('./s2t.build', 'utf8'));
+var build = JSON.parse(fs.readFileSync('./space.build', 'utf8'));
 
 if (config.env==="PRODUCTION") config.build=build.build;
 
@@ -56,7 +56,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
 
-app.locals.title="strategy2tactics";
+app.locals.title="s p a c e ";
 
 
 // get all org instance dates for the menu

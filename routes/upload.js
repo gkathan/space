@@ -97,7 +97,7 @@ router.post('/process',function(req,res){
     
     res.locals.success=true;
     res.locals.uploadfilename= _filename;
-    res.render("upload");
+    res.render("upload", { title: 's p a c e - import' });
   }
   else{
 	 res.redirect("/upload");//,{msg:"[SUCCESS] File uploaded, converted to json and imported to mongoDB"});

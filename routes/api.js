@@ -33,53 +33,53 @@ var BASE = "";
 var PATH_ROOT ="/";
 var PATH = {
 						ROOT : PATH_ROOT,
-						REST_INITIATIVES : BASE+'/kanbanv2/rest/initiatives',
-						REST_METRICS : BASE+'/kanbanv2/rest/metrics',
-						REST_TARGETS : BASE+'/kanbanv2/rest/targets',
-						REST_BOARDS : BASE+'/kanbanv2/rest/boards',
+						REST_INITIATIVES : BASE+'/space/rest/initiatives',
+						REST_METRICS : BASE+'/space/rest/metrics',
+						REST_TARGETS : BASE+'/space/rest/targets',
+						REST_BOARDS : BASE+'/space/rest/boards',
 						
 						
-						REST_RELEASES : BASE+'/kanbanv2/rest/releases',
-						REST_LANETEXT : BASE+'/kanbanv2/rest/lanetext',
-						REST_POSTITS : BASE+'/kanbanv2/rest/postits',
-						REST_LANES : BASE+'/kanbanv2/rest/lanes',
-						REST_SCRUMTEAMS : BASE+'/kanbanv2/rest/scrumteams',
-						REST_PRODUCTPORTFOLIO : BASE+'/kanbanv2/rest/productportfolio',
-						REST_PRODUCTCATALOG : BASE+'/kanbanv2/rest/productcatalog',
-						REST_INCIDENTS : BASE+'/kanbanv2/rest/incidents',
-						REST_V1EPICS : BASE+'/kanbanv2/rest/v1epics',
-						REST_LABELS : BASE+'/kanbanv2/rest/labels',
-						REST_CUSTOMERS : BASE+'/kanbanv2/rest/customers',
-						REST_COMPETITORS : BASE+'/kanbanv2/rest/competitors',
-						REST_PRODUCTCATALOG : BASE+'/kanbanv2/rest/productcatalog',
-						REST_ROADMAPS : BASE+'/kanbanv2/rest/roadmaps',
+						REST_RELEASES : BASE+'/space/rest/releases',
+						REST_LANETEXT : BASE+'/space/rest/lanetext',
+						REST_POSTITS : BASE+'/space/rest/postits',
+						REST_LANES : BASE+'/space/rest/lanes',
+						REST_SCRUMTEAMS : BASE+'/space/rest/scrumteams',
+						REST_PRODUCTPORTFOLIO : BASE+'/space/rest/productportfolio',
+						REST_PRODUCTCATALOG : BASE+'/space/rest/productcatalog',
+						REST_INCIDENTS : BASE+'/space/rest/incidents',
+						REST_V1EPICS : BASE+'/space/rest/v1epics',
+						REST_LABELS : BASE+'/space/rest/labels',
+						REST_CUSTOMERS : BASE+'/space/rest/customers',
+						REST_COMPETITORS : BASE+'/space/rest/competitors',
+						REST_PRODUCTCATALOG : BASE+'/space/rest/productcatalog',
+						REST_ROADMAPS : BASE+'/space/rest/roadmaps',
 						
 						
-						REST_INITIATIVES_DIFF_TRAIL : BASE+'/kanbanv2/rest/initiatives_diff_trail',
-						REST_ORGANIZATION : BASE+'/kanbanv2/rest/organization/:date',
+						REST_INITIATIVES_DIFF_TRAIL : BASE+'/space/rest/initiatives_diff_trail',
+						REST_ORGANIZATION : BASE+'/space/rest/organization/:date',
 						
-						REST_MAIL : BASE+'/kanbanv2/rest/mail',
-						
-						
-						EXPORT_TARGETS : BASE+'/kanbanv2/export/xlsx/targets',
-						EXPORT_METRICS : BASE+'/kanbanv2/export/xlsx/metrics',
-						EXPORT_INITIATIVES : BASE+'/kanbanv2/export/xlsx/initiatives',
-						EXPORT_SCRUMTEAMS : BASE+'/kanbanv2/export/xlsx/scrumteams',
-						EXPORT_BOARDS : BASE+'/kanbanv2/export/xlsx/boards',
-						EXPORT_V1EPICS : BASE+'/kanbanv2/export/xlsx/v1epics',
-						EXPORT_LABELS : BASE+'/kanbanv2/export/xlsx/labels',
-						EXPORT_CUSTOMERS : BASE+'/kanbanv2/export/xlsx/customers',
-						EXPORT_COMPETITORS : BASE+'/kanbanv2/export/xlsx/competitors',
-						EXPORT_ORGANIZATION : BASE+'/kanbanv2/export/xlsx/organization',
-						EXPORT_PRODUCTCATALOG : BASE+'/kanbanv2/export/xlsx/productcatalog',
-						EXPORT_ROADMAPS : BASE+'/kanbanv2/export/xlsx/roadmaps',
+						REST_MAIL : BASE+'/space/rest/mail',
 						
 						
+						EXPORT_TARGETS : BASE+'/space/export/xlsx/targets',
+						EXPORT_METRICS : BASE+'/space/export/xlsx/metrics',
+						EXPORT_INITIATIVES : BASE+'/space/export/xlsx/initiatives',
+						EXPORT_SCRUMTEAMS : BASE+'/space/export/xlsx/scrumteams',
+						EXPORT_BOARDS : BASE+'/space/export/xlsx/boards',
+						EXPORT_V1EPICS : BASE+'/space/export/xlsx/v1epics',
+						EXPORT_LABELS : BASE+'/space/export/xlsx/labels',
+						EXPORT_CUSTOMERS : BASE+'/space/export/xlsx/customers',
+						EXPORT_COMPETITORS : BASE+'/space/export/xlsx/competitors',
+						EXPORT_ORGANIZATION : BASE+'/space/export/xlsx/organization',
+						EXPORT_PRODUCTCATALOG : BASE+'/space/export/xlsx/productcatalog',
+						EXPORT_ROADMAPS : BASE+'/space/export/xlsx/roadmaps',
 						
 						
-						CONFIG : BASE+'/kanbanv2/config',
+						
+						
+						CONFIG : BASE+'/space/config',
 
-						TRANSCODE_BOARDS : BASE+'/kanbanv2/transcode'
+						TRANSCODE_BOARDS : BASE+'/space/transcode'
 					};
 
 router.get(PATH.ROOT, function(req, res, next) {res.locals.API_LIST=PATH;res.locals.REQ_PATH=req.baseUrl;res.render("api")});
@@ -195,7 +195,7 @@ function findAllByName(req, res , next){
 	
 	if (_filterName==undefined) _filter = null;
 	
-	// e.g http://localhost:3000/api/kanbanv2/rest/boards?filterName=name&filterOperator=$eq&filterValue=studios
+	// e.g http://localhost:3000/api/space/rest/boards?filterName=name&filterOperator=$eq&filterValue=studios
 	logger.debug("***** filter: "+JSON.stringify(_filter));
 	
     db.collection(collection).find(_filter).sort({id : 1} , function(err , success){
@@ -218,7 +218,7 @@ function findAllByName(req, res , next){
  */
 function findById(req, res , next){
     var path = req.path.split("/");
-	// format path: /kanbanv2/rest/boards/1
+	// format path: /space/rest/boards/1
 	// take the last from the set with last stripped ;-)
 	var collection = _.last(_.initial(path));
 	
@@ -242,7 +242,7 @@ function findBy_id(req, res , next){
 	
     
     var path = req.path.split("/");
-	// format path: /kanbanv2/rest/boards/1
+	// format path: /space/rest/boards/1
 	// take the last from the set with last stripped ;-)
 	var collection = _.last(_.initial(path));
 	// a string
@@ -538,6 +538,7 @@ function excelTargets(req, res , next){
     conf.cols = [
 		{caption:'_id',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'id',type:'string',width:5,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'type',type:'string',width:8,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'rag',type:'string',width:8,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'vision',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'cluster',type:'string',width:15,captionStyleIndex:2,beforeCellWrite:_formatCell},
@@ -880,7 +881,7 @@ function _generateAndSendExcel(collection,conf,req,res,next){
 			
 			var result = nodeExcel.execute(conf);
 			res.set('Content-Type', 'application/vnd.openxmlformats');
-			res.set("Content-Disposition", "attachment; filename=export_" + collection+"_"+_now+".xlsx");
+			res.set("Content-Disposition", "attachment; filename=s p a c e_export_" + collection+"_"+_now+".xlsx");
 			res.end(result, 'binary');
 		}
     });
@@ -994,7 +995,7 @@ function transcode(req,res,next){
 	var timestamp = moment(new Date());
 	var timestamp_string = timestamp.format("YYYY-MM-DD HH_mm_ss");
 	
-	var fileName=_context+"_kanbanv2_transcoded_"+timestamp_string;
+	var fileName=_context+"_space_transcoded_"+timestamp_string;
 
 	res.set("Content-Disposition","attachment; filename=\"" + fileName + "\"");
 	res.set("Cache-Control", "no-cache");

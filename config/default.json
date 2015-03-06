@@ -9,7 +9,7 @@
 
     "locale": "en",
     
-    "version" : "2.0.0 alpha",
+    "version" : "1.0.0 alpha",
     
     "build" : "---should be dynamically assigned",
 
@@ -33,7 +33,7 @@
      },
      
      "api" : {
-		"url" :"/api/kanbanv2/rest/"
+		"url" :"/api/space/rest/"
 	},
 	
 	"transcoder" : {

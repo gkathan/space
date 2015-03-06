@@ -21,7 +21,7 @@ var db = mongojs(connection_string, [DB]);
 router.get('/', function(req, res) {
     
     
-    res.render('index', { title: 'strategy²tactics' });
+    res.render('index', { title: 's p a c e' });
 });
 
 module.exports = router;
@@ -41,7 +41,7 @@ router.get('/test/elements', function(req, res) {
 
 //unsupported browser landing page
 router.get('/chromeonly', function(req, res) {
-	res.render('chromeonly');
+	res.render('chromeonly', { title: 's p a c e - chrome only' });
 });
 
 router.get('/config', function(req, res) {
@@ -57,7 +57,7 @@ router.get('/labels', function(req, res) {
 			//sort
 			docs=_.sortBy(docs, "market")
 			res.locals.labels=docs;
-			res.render('labels')
+			res.render('labels', { title: 's p a c e - labels' })
 	});
 });
 
@@ -69,7 +69,7 @@ router.get('/customers', function(req, res) {
 			//sort
 			customers=_.sortBy(docs, "type")
 			res.locals.customers=docs;
-			res.render('customers')
+			res.render('customers', { title: 's p a c e - customers' })
 	});
 });
 
@@ -81,7 +81,7 @@ router.get('/competitors', function(req, res) {
 			//sort
 			customers=_.sortBy(docs, "type")
 			res.locals.competitors=docs;
-			res.render('competitors')
+			res.render('competitors', { title: 's p a c e - competitiors' })
 	});
 });
 
@@ -93,7 +93,7 @@ router.get('/admin', function(req, res) {
 		  req.session.ORIGINAL_URL = req.originalUrl;
 		  res.redirect("/login");
 	}
-	res.render('admin/admin');
+	res.render('admin/admin', { title: 's p a c e - admin' });
 });
 
 
@@ -107,7 +107,7 @@ router.get('/dashboard', function(req, res) {
 			req.session.ORIGINAL_URL = req.originalUrl;
 			res.redirect("/login");
 		}
-	res.render('dashboard'), {title:"dashboard"}
+	res.render('dashboard', { title: 's p a c e - dashboards' });
 		
 });
 
@@ -117,7 +117,7 @@ router.get('/playbooks', function(req, res) {
 			req.session.ORIGINAL_URL = req.originalUrl;
 			res.redirect("/login");
 		}
-	res.render('playbooks'), {title:"playbooks"}
+	res.render('playbooks', { title: 's p a c e - playbooks' });
 		
 });
 
@@ -134,7 +134,7 @@ router.get('/boards', function(req, res) {
 		boards.find({}, function (err, docs){
 			res.locals.boards=docs;
 			console.log(": "+boards[0]);
-			res.render('boards'), {title:"boards"}
+			res.render('boards', { title: 's p a c e - kanbanboards' });
 		});
 });
 
@@ -199,7 +199,7 @@ router.get('/login', function(req, res) {
     if (req.session.AUTH){
 		 //res.redirect("/boards");
 	 }
-    res.render('login', { title: 'kanban login' })
+    res.render('login', { title: 's p a c e - login' })
 });
 
 
@@ -213,7 +213,7 @@ router.get('/kanban/:id', function(req, res) {
 		v1epics.find({}, function (err, docs){
 		res.locals.kanbanId = id;
 		res.locals.epics = docs[0].epics;
-		res.render('kanban', { title: 'kanban' })	
+		res.render('kanban', { title: 's p a c e - kanban board' })	
 	});
 			
 		

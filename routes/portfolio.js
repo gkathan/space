@@ -168,7 +168,7 @@ router.get('/', function(req, res) {
 		res.locals.v1LastUpdate=_V1lastUpdate;
 		
 
-		res.render('portfoliogate'), {title:"portfoliogate"}
+		res.render('portfoliogate'), { title: 's p a c e - portfoliogate' }
 		});
 	});
 });

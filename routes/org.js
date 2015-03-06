@@ -29,7 +29,7 @@ router.get("/", function(req, res, next) {
 router.get("/tree/:date", function(req, res, next) {
 	console.log("------------- :date = "+req.params.date);
 	res.locals.orgdate=req.params.date;
-	res.render("organization/org_tree");
+	res.render("organization/org_tree", { title: 's p a c e - organizationchart' });
 	
 });
 
@@ -51,7 +51,7 @@ router.get("/circlecontain/:collection", function(req, res, next) {
 	
 	
 	res.locals.collection=req.params.collection;
-	res.render("organization/circlecontain",{ title: req.params.collection });
+	res.render("organization/circlecontain",{ title: "s p a c e - "+req.params.collection });
 	
 });
 

@@ -209,6 +209,7 @@ function getTargetConfig(){
 	var _target =[
         { id:"_id", name: "_id", field: "_id",sortable:true,width:50,cssClass:"onKanbanImmutable"},
         { id:"id", name: "id", field: "id",sortable:true,width:50,cssClass:"onKanbanImmutable"},
+        { id:"type", name: "type", field: "type",width:80, editor: Slick.Editors.Text, cssClass: "cell-standard" },
         { id:"vision", name: "vision", field: "vision",width:150, editor: Slick.Editors.Text, cssClass: "cell-standard" },
         { id:"rag", name: "rag", field: "rag",width:10, editor: Slick.Editors.Text,formatter: Slick.Formatters.RAG,  cssClass: "cell-standard" },
         { id: "cluster", name: "cluster", field: "cluster",sortable:true, editor: Slick.Editors.Text ,width:200, cssClass: "cell-title"},

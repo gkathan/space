@@ -26,21 +26,31 @@ router.get('/overview', function(req, res, next) {
 	}
 	*/
 	_getTargets(function(err,data){
-		var targetsClustered = _.nst.nest(data,["theme","cluster","group"]);
-		for (var i in targetsClustered.children){
-			//console.log("*cluster.name "+targetsClustered[i].name+" children: "+targetsClustered[i].children);
-			console.log("*cluster.name ");
+		
+		var _L2targets = [];
+		var _L1targets = [];
+		
+		for (var i in data){
+			if (data[i].type=="target") _L2targets.push(data[i]);
+			if (data[i].type=="bonus") _L1targets.push(data[i]);
+			
 		}
-		res.locals.targets=targetsClustered.children;
+		
+		var L2targetsClustered = _.nst.nest(_L2targets,["theme","cluster","group"]);
+		var L1targetsClustered = _.nst.nest(_L1targets,["theme"]);
+		
+		res.locals.targets=L2targetsClustered.children;
+		res.locals.L1targets=L1targetsClustered.children;
+		
 		// take the first for the globals...
-		var _target = targetsClustered.children[0].children[0].children[0].children[0];
+		var _target = L2targetsClustered.children[0].children[0].children[0].children[0];
 		res.locals.vision=_target.vision;
 		res.locals.start=moment(_target.start).format();
 		res.locals.end=moment(_target.end).format();
 		res.locals._=require('lodash');
 		res.locals.period = "targets :: "+new moment(_target.start).format('MMMM').toLowerCase()+" - "+new moment(_target.end).format('MMMM').toLowerCase()+" "+new moment(_target.start).format('YYYY');
 		
-	res.render('targets');
+	res.render('targets', { title: 's p a c e - targets overview' });
 	});
 });
 
@@ -51,6 +61,23 @@ function _getTargets(callback){
 			callback(err,data);
 	});
 }
+
+
+function _getL2Targets(callback){
+    
+	db.collection("targets").find({type:"target"},function(err,data){
+			callback(err,data);
+	});
+}
+
+
+function _getL1Targets(callback){
+    
+	db.collection("targets").find({type:"bonus"},function(err,data){
+			callback(err,data);
+	});
+}
+
 
 
 module.exports = router;

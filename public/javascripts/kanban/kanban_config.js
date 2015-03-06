@@ -9,7 +9,7 @@
  */
 
 
-var CONFIG_URL = "/api/kanbanv2/config";
+var CONFIG_URL = "/api/space/config";
 
 
 var CONFIG=loadConfig();
