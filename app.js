@@ -6,6 +6,7 @@ var morgan = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var session = require('express-session')
+var mongojs = require("mongojs");
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
@@ -20,6 +21,16 @@ var fs = require('fs')
 
 // environment specific configurations
 var config = require('config');
+
+
+var config = require('config');
+var DB=config.database.db;
+var HOST = config.database.host;
+var connection_string = HOST+'/'+DB;
+var db = mongojs(connection_string, [DB]);
+
+
+
 
 var winston = require('winston');
 var logger = new (winston.Logger)({
@@ -162,11 +173,7 @@ app.use(function(err, req, res, next) {
  * => should be moved in a service class ;-)
  */
 function _getOrgDates(callback){
-    var mongojs = require("mongojs");
-	var DB="kanbanv2";
-	var connection_string = '127.0.0.1:27017/'+DB;
-	var db = mongojs(connection_string, [DB]);
-	db.collection("organization").find({},{oDate:1}).sort({oDate:-1},function(err,data){
+   db.collection("organization").find({},{oDate:1}).sort({oDate:-1},function(err,data){
 			callback(data);
 	});
 }
@@ -174,11 +181,7 @@ function _getOrgDates(callback){
 function _syncV1(url){
 	// call v1 rest service
     var Client = require('node-rest-client').Client;
-    var mongojs = require("mongojs");
-	var DB="kanbanv2";
-	var connection_string = '127.0.0.1:27017/'+DB;
-	var db = mongojs(connection_string, [DB]);
-	client = new Client();
+   client = new Client();
 	// direct way 
 	client.get(url, function(data, response){
 		// parsed response body as js object 

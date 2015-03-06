@@ -8,10 +8,13 @@ var _ = require('lodash');
 
 var router = express.Router();
 
-var DB="kanbanv2";
 
-var connection_string = '127.0.0.1:27017/'+DB;
+var DB=config.database.db;
+var HOST = config.database.host;
+var connection_string = HOST+'/'+DB;
 var db = mongojs(connection_string, [DB]);
+
+
 
 
 /* GET home page. */

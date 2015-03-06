@@ -28,7 +28,7 @@
 
     "database": {
         "type" : "mongo",
-        "db": "kanbanv2",
+        "db": "space",
         "host" : "localhost:27017"
      },
      

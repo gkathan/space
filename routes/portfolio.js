@@ -7,10 +7,13 @@ var mongojs = require('mongojs');
 var moment = require('moment');
 var _ = require('lodash');
 
-var DB="kanbanv2";
-
-var connection_string = '127.0.0.1:27017/'+DB;
+var config = require('config');
+var DB=config.database.db;
+var HOST = config.database.host;
+var connection_string = HOST+'/'+DB;
 var db = mongojs(connection_string, [DB]);
+
+
 
 
 var winston = require('winston');

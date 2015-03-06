@@ -90,7 +90,7 @@
    http://v1.bwinparty.corp/V1-Production/Epic.mvc/Summary?oidToken=Epic%3A3394319
   function EmployeeProfileURLFormatter(row, cell, value, columnDef, dataContext) {
 	 
-    return value ? "<a href=\"https://my.bwinparty.com/People/F/fuckingBla+Number+".aspx"\" target=\"_new\">"+value+"</a>" : "";
+    return value ? "<a href=\"https://my.bwinparty.com/People/F/fuckingBla+Number+.aspx target=\"_new\">"+value+"</a>" : "";
   }
 
   

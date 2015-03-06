@@ -6,6 +6,7 @@ var nodeExcel = require('excel-export');
 var express = require('express');
 var router = express.Router();
 var _ = require('lodash');
+var moment = require('moment');
 
 
 var winston = require('winston');
@@ -18,10 +19,9 @@ var logger = new (winston.Logger)({
 logger.level='debug';
 
 var config = require('config');
-
-var DB="kanbanv2";
-
-var connection_string = '127.0.0.1:27017/'+DB;
+var DB=config.database.db;
+var HOST = config.database.host;
+var connection_string = HOST+'/'+DB;
 var db = mongojs(connection_string, [DB]);
 
 var BASE = "";
@@ -537,6 +537,8 @@ function excelTargets(req, res , next){
     conf.stylesXmlFile = "views/excel_export/styles.xml";
     conf.cols = [
 		{caption:'_id',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'id',type:'string',width:5,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'rag',type:'string',width:8,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'vision',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'cluster',type:'string',width:15,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'theme',type:'string',width:10,captionStyleIndex:2,beforeCellWrite:_formatCell},
@@ -874,9 +876,11 @@ function _generateAndSendExcel(collection,conf,req,res,next){
 			else {
 				conf.rows = _createDataRows(conf,success);
 			}
+			var _now = moment().format("YYYYMMDD");
+			
 			var result = nodeExcel.execute(conf);
 			res.set('Content-Type', 'application/vnd.openxmlformats');
-			res.set("Content-Disposition", "attachment; filename=" + collection+".xlsx");
+			res.set("Content-Disposition", "attachment; filename=export_" + collection+"_"+_now+".xlsx");
 			res.end(result, 'binary');
 		}
     });

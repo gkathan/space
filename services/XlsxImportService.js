@@ -9,6 +9,13 @@ var mongojs = require('mongojs');
 
 var _ = require('lodash');
 
+var DB=config.database.db;
+var HOST = config.database.host;
+var connection_string = HOST+'/'+DB;
+var db = mongojs(connection_string, [DB]);
+
+
+
 
 var winston = require('winston');
 var logger = new (winston.Logger)({
@@ -76,10 +83,6 @@ exports.convertXlsx2Json = function convertXlsx2Json (filename) {
 				_function(json,_date,_boarddate,_fillblanks,function(_data){
 				
 					//console.log("...going to store to mongoDB: collection = "+_collection+" data:"+_data.oDate+" number of records: "+_data.oItems.length );
-					
-					var DB="kanbanv2";
-					var connection_string = '127.0.0.1:27017/'+DB;
-					var db = mongojs(connection_string, [DB]);
 					
 					// in some cases it would be needed to drop old collection first
 					if (_dropBeforeInsert) db.collection(_collection).drop();

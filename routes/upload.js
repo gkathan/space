@@ -1,13 +1,8 @@
 var express = require('express');
-
 var router = express.Router();
-
-var mongo = require('mongodb');
-var mongojs = require('mongojs');
 
 
 var _ = require('lodash');
-
 var config = require('config');
 
 
@@ -23,7 +18,6 @@ logger.level='debug';
 
 // fileupload + xls2json handling
 var multer  = require('multer');
-
 
 var baseUrl;
 

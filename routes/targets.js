@@ -1,6 +1,14 @@
 var express = require('express');
 var router = express.Router();
 var moment = require('moment');
+var mongojs = require("mongojs");
+
+var config = require('config');
+var DB=config.database.db;
+var HOST = config.database.host;
+var connection_string = HOST+'/'+DB;
+var db = mongojs(connection_string, [DB]);
+
 
 
 //https://github.com/iros/underscore.nest/issues/2
@@ -29,6 +37,7 @@ router.get('/overview', function(req, res, next) {
 		res.locals.vision=_target.vision;
 		res.locals.start=moment(_target.start).format();
 		res.locals.end=moment(_target.end).format();
+		res.locals._=require('lodash');
 		res.locals.period = "targets :: "+new moment(_target.start).format('MMMM').toLowerCase()+" - "+new moment(_target.end).format('MMMM').toLowerCase()+" "+new moment(_target.start).format('YYYY');
 		
 	res.render('targets');
@@ -37,10 +46,7 @@ router.get('/overview', function(req, res, next) {
 
 
 function _getTargets(callback){
-    var mongojs = require("mongojs");
-	var DB="kanbanv2";
-	var connection_string = '127.0.0.1:27017/'+DB;
-	var db = mongojs(connection_string, [DB]);
+    
 	db.collection("targets").find({},function(err,data){
 			callback(err,data);
 	});

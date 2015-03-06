@@ -207,8 +207,10 @@ function getBoardConfig(){
 function getTargetConfig(){
 		//targets
 	var _target =[
-        { id:"id", name: "id", field: "_id",sortable:true,width:150,cssClass:"onKanbanImmutable"},
+        { id:"_id", name: "_id", field: "_id",sortable:true,width:50,cssClass:"onKanbanImmutable"},
+        { id:"id", name: "id", field: "id",sortable:true,width:50,cssClass:"onKanbanImmutable"},
         { id:"vision", name: "vision", field: "vision",width:150, editor: Slick.Editors.Text, cssClass: "cell-standard" },
+        { id:"rag", name: "rag", field: "rag",width:10, editor: Slick.Editors.Text,formatter: Slick.Formatters.RAG,  cssClass: "cell-standard" },
         { id: "cluster", name: "cluster", field: "cluster",sortable:true, editor: Slick.Editors.Text ,width:200, cssClass: "cell-title"},
 		{ id: "theme", name: "theme",  field: "theme",sortable:true, editor: Slick.Editors.Text , cssClass: "cell-standard"},		
 		{ id: "group", name: "group",  field: "group",sortable:true,editor: Slick.Editors.Text,width:150, cssClass: "cell-standard"},
@@ -224,8 +226,8 @@ function getTargetConfig(){
         { id: "comments", name: "comments",  field: "comments", editor: Slick.Editors.Text,width:150, cssClass: "cell-standard" },
         { id: "contributors", name: "contributors",  field: "contributors", editor: Slick.Editors.Text,width:150, cssClass: "cell-standard" },
         { id: "sponsor", name: "sponsor",  field: "sponsor", editor: Slick.Editors.Text,width:150, cssClass: "cell-standard" },
-        { id: "start", name: "start",  field: "start", editor: Slick.Editors.Date,width:150, cssClass: "cell-standard" },
-        { id: "end", name: "end",  field: "end", editor: Slick.Editors.Date,width:150, cssClass: "cell-standard" }
+        { id: "start", name: "start",  field: "start", editor: Slick.Editors.Text,width:150,formatter: Slick.Formatters.SimpleDate,cssClass: "cell-standard" },
+        { id: "end", name: "end",  field: "end", editor: Slick.Editors.Text,width:150,formatter: Slick.Formatters.SimpleDate, cssClass: "cell-standard" }
         ];
 	var _config ={};
 	_config.mode="editable";
