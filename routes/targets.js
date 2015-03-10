@@ -36,6 +36,8 @@ router.get('/overview', function(req, res, next) {
 			
 		}
 		
+		
+		
 		var L2targetsClustered = _.nst.nest(_L2targets,["theme","cluster","group"]);
 		var L1targetsClustered = _.nst.nest(_L1targets,["theme"]);
 		
@@ -49,6 +51,8 @@ router.get('/overview', function(req, res, next) {
 		res.locals.end=moment(_target.end).format();
 		res.locals._=require('lodash');
 		res.locals.period = "targets :: "+new moment(_target.start).format('MMMM').toLowerCase()+" - "+new moment(_target.end).format('MMMM').toLowerCase()+" "+new moment(_target.start).format('YYYY');
+		
+		debugger;
 		
 	res.render('targets', { title: 's p a c e - targets overview' });
 	});

@@ -18,32 +18,36 @@ include kanban_menu
 //bpty yellow
 - var color6 = "rgb(255,203,5)";
 
-- var color_run = color2;
-- var color_grow = color5;
-- var color_transform = color3;
+- var color_RUN = color2;
+- var color_GROW = color5;
+- var color_TRANSFORM = color3;
 
 
 
 style.
-	.panel-heading-run {background-color: #{color_run}!important}
-	.panel-heading-grow {background-color: #{color_grow}!important}
-	.panel-heading-transform {background-color: #{color_transform}!important}
+	.panel-heading-run {background-color: #{color_RUN}!important}
+	.panel-heading-grow {background-color: #{color_GROW}!important}
+	.panel-heading-transform {background-color: #{color_TRANSFORM}!important}
+
+	.left-border-RUN {border-left: 8px solid #{color_RUN}!important}
+	.left-border-GROW {border-left: 8px solid #{color_GROW}!important}
+	.left-border-TRANSFORM {border-left: 8px solid #{color_TRANSFORM}!important}
 
 
 	.panel-body-lane {background-color: #f9f9f9!important}
 	
-	.text-heading-run {color: #{color_run}!important}
-	.text-heading-grow {color: #{color_grow}!important}
-	.text-heading-transform {color: #{color_transform}!important}
+	.text-heading-run {color: #{color_RUN}!important}
+	.text-heading-grow {color: #{color_GROW}!important}
+	.text-heading-transform {color: #{color_TRANSFORM}!important}
 	
 	
-	.panel-run {border-left: solid 10px #{color_run}!important;}
-	.panel-grow {border-left: solid 10px #{color_grow}!important;}
-	.panel-transform {border-left: solid 10px #{color_transform}!important;}
+	.panel-run {border-left: solid 10px #{color_RUN}!important;}
+	.panel-grow {border-left: solid 10px #{color_GROW}!important;}
+	.panel-transform {border-left: solid 10px #{color_TRANSFORM}!important;}
 	
-	.panel-lane-heading-run {border-top: solid 10px #{color_run}!important;}
-	.panel-lane-heading-grow {border-top: solid 10px #{color_grow}!important;}
-	.panel-lane-heading-transform {border-top: solid 10px #{color_transform}!important;}
+	.panel-lane-heading-run {border-top: solid 10px #{color_RUN}!important;}
+	.panel-lane-heading-grow {border-top: solid 10px #{color_GROW}!important;}
+	.panel-lane-heading-transform {border-top: solid 10px #{color_TRANSFORM}!important;}
 	
 
 -	function mapRAG2Color(rag){
@@ -54,9 +58,32 @@ style.
 -		return rag;
 -	}
 
-block content
 
-// ------------------ mixin start ----------------------------
+
+// -----------------------------------------------------------------------
+// ------------------ mixin target lane start ----------------------------
+// -----------------------------------------------------------------------
+mixin renderTargetLane(lane)
+	div.panel(style="height:300px" class="panel-body-lane")
+		.panel-heading(class="panel-lane-heading-#{lane.name.toLowerCase()}" style="-webkit-transform: translateX(-100%) rotate(-90deg);-webkit-transform-origin: right top;-moz-transform: translateX(-100%) rotate(-90deg); width:300px;text-align:center;font-weight:bold;vertical-align:top;text-align:center;")
+			table
+				tr(style="line-height:25px")
+					td(style="width:230px")
+						span(class="text-heading-#{lane.name.toLowerCase()}" style="margin-left:20px;font-size:24px;color:black;font-weight:bold")  #{lane.name}
+						br
+						span(style="font-size:14px;color:black;font-weight:normal") #{lane.children[0].name.toUpperCase()}
+					td(style="width:50px")
+						img(src="/images/targets/#{lane.name}_90.png" height="40px")
+		.panel-body(style="margin-left:80px;margin-top:-90px;vertical-align:top")
+			div.row(style="font-size:11px;margin-left:2px")
+				each t in lane.children[0].children
+					div.col-sm-2.col-md-3.col-lg4
+						+renderTarget(t)
+			
+
+// -----------------------------------------------------------------------
+// ------------------ mixin target card start ----------------------------
+// -----------------------------------------------------------------------
 mixin renderTarget(target)
 	div.panel( style="position: relative;background-color:white;width:225px;text-align: left;height:280px")
 		.panel-heading(class="panel-#{target.children[0].theme.toLowerCase()}")
@@ -68,26 +95,16 @@ mixin renderTarget(target)
 								td(style="width:40px;text-align:left")
 									//i.glyphicon.glyphicon-record(style="font-size:13px") 
 									img(src="/images/targets/#{target.name}.png" height="30px")
-									
-									
-								
 								td(style="width:140px;font-size:13px;vertical-align:middle;font-weight:normal;")
 									|#{target.name.split(" ")[0].toUpperCase()}
 									br
 									b #{_.rest(target.name.split(" ")).join(" ").toUpperCase()}
 								td(style="width:20px;font-size:12px;vertical-align:top;font-weight:normal;font-style:italic")
 									|#{target.children[0].id.split(".")[0]}
-			
 		.panel-body
 			table(style="")
 				each line in target.children
 					tr(style="line-height:15px")
-						
-						//if line.directMetric
-						//	td(style="width:100px;font-size:10px;height:24px;text-align:left;vertical-align:middle;border-bottom: 1px solid lightgrey") 
-						//		b #{line.id} - 
-						//		|#{line.target}
-
 						td(style="width:195px;font-size:10px;text-align:left;vertical-align:top;border-bottom: 1px solid lightgrey") 
 							table(style="width:190px")
 								tr(style="line-height:15px")
@@ -104,63 +121,51 @@ mixin renderTarget(target)
 											| &nbsp;&nbsp;&nbsp;&nbsp;   
 									td(style="width:25px;font-size:10px;font-style:italic")
 										|#{line.id}
-									
-						
-						//if line.directMetric
-						//	td(style="text-align:right;width:80px;font-size:18px;vertical-align:middle;font-weight:bold;;height:24px;border-bottom: 1px solid lightgrey") 
-						//		|#{line.directMetric}
-						//		span(style="font-size:10px;font-weight:normal") #{line.directMetricScale}
-								
 					tr(style="line-height:3px")
 						td 
 							|&nbsp;
 					
 
-
-mixin renderTargetLane(lane)
-	div.panel(style="height:300px" class="panel-body-lane")
-		.panel-heading(class="panel-lane-heading-#{lane.name.toLowerCase()}" style="-webkit-transform: translateX(-100%) rotate(-90deg);-webkit-transform-origin: right top;-moz-transform: translateX(-100%) rotate(-90deg); width:300px;text-align:center;font-weight:bold;vertical-align:top;text-align:center;")
-			table
-				tr(style="line-height:25px")
-					
-					td(style="width:230px")
-						span(class="text-heading-#{lane.name.toLowerCase()}" style="margin-left:20px;font-size:24px;color:black;font-weight:bold")  #{lane.name}
-						br
-						span(style="font-size:14px;color:black;font-weight:normal") #{lane.children[0].name.toUpperCase()}
-					td(style="width:50px")
-						img(src="/images/targets/#{lane.name}_90.png" height="40px")
-			
-			
-		.panel-body(style="margin-left:80px;margin-top:-90px;vertical-align:top")
-			div.row(style="font-size:11px;margin-left:2px")
-				each t in lane.children[0].children
-					div.col-sm-2.col-md-3.col-lg4
-						+renderTarget(t)
-	
-//				div.col-sm-2.col-md-3.col-lg4
-//					img(src="/images/triangle.png" height="300px")		
-
+// -----------------------------------------------------------------------
+// ------------------ main target template ----------------------------
+// -----------------------------------------------------------------------
 block content
-div(style="margin-left:20px;width:1100px")
-	div(style="font-family:arial;font-weight:bold;font-size:24px;color:black;text-align:center") "#{vision}"
-	div(style="font-family:arial;font-weight:normal;font-size:16px;color:black;text-align:center") #{period}
-	br
-	b
-		|bonus relevant targets (L1):
-	each l1 in L1targets
-		div
-			|#{l1.name}
-			each l in l1.children
-				br
-				|#{l.id } - #{l.target} - #{l.directMetric} - #{l.directMetricScale}
+div(style="margin-left:20px;width:1400px")
+	div(style="font-family:arial;font-weight:bold;font-size:24px;color:#174D75;text-align:center") "#{vision}"
+	div(style="font-family:arial;font-weight:normal;font-size:16px;color:#174D75;text-align:center") #{period}
+	div(style="font-family:arial;font-weight:normal;font-size:16px;color:#174D75;text-align:center")
+		br
+		img(src="/images/space_triangle_bpty_down.png" style="vertical-align:middle;" width="700px" height="30px")		
+		br
+		br
 	
-	// ************ target card ******************
-
-	each lane in targets
-		+renderTargetLane(lane)
-		
-	br
-	br
-	
+	table(style="width:1400px")
+		each lane in targets
+			tr(style="line-height:330px")
+				td(style="width:1100px;vertical-align:middle")
+					+renderTargetLane(lane)
+				td(style="width:100px;vertical-align:bottom;text-align:center")
+					img(src="/images/space_triangle_#{lane.name}_right.png" style="vertical-align:middle" height="250px")		
+				td(style="width:200px;vertical-align:middle;text-align")
+					each l1 in _.find(L1targets,{'name':lane.name}).children
+						table(style="width:200px")
+							tr
+								td(style="width:80px;vertical-align:middle;border-bottom: 1px solid lightgrey")
+									div(id="xxx" class="left-border-#{lane.name}" style=";text-align:center;line-height:32px;background-color:white;padding:10px 10px 10px 10px")
+										span(style="line-height:72px;font-size:24px;font-weight:bold")
+											|#{l1.directMetric}
+										span(style="line-height:12px;font-size:12px;font-weight:normal")
+											|#{l1.directMetricScale}
+								td(style="width:10px")
+								
+								td(style="width:70px;vertical-align:middle")
+									div(style="line-height:20px")
+										//span(style="font-weight:normal;font-size:10px") #{l1.id}
+										//br
+										span(style="font-weight:bold;font-size:12px") #{l1.target}
+										
+						
+					
+			
 	
 		

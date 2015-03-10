@@ -57,6 +57,16 @@ var JSON_CONFIG =
 var COLOR_BPTY="#174D75";
 // hsl(206,67%,27%)
 
+var COLOR_PRIMARY = "#174D75";
+
+var COLOR_PRIMARY2 = "#00b8e4";
+var COLOR_SECONDARY = "#82cec1";
+var COLOR_SECONDARY2 = "#f99d1c";
+var COLOR_SECONDARY3 = "#b0acd5";
+var COLOR_SECONDARY4 = "#ffcd03";
+
+
+
 /*
 #00b8e4 türkis
 hsl(192,100%,45%)
