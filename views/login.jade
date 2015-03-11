@@ -11,9 +11,9 @@ div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;back
 			br
 			div(style="margin-left:30px;width:200px")
 				div(style="height:40px")
-					input.form-control.floating-label(id="uid" name="uid" type="text" placeholder="username" autocomplete="off" )
+					input.form-control.floating-label(id="username" name="username" type="text" placeholder="username" autocomplete="off" )
 				div(style="height:40px")
-					input.form-control.floating-label(id="pwd" name ="pwd" type="password" placeholder="password" autocomplete="off"  )
+					input.form-control.floating-label(id="password" name ="password" type="password" placeholder="password" autocomplete="off"  )
 			br
 		
 			button.btn.btn-primary(id="loginsubmit" type="button") Login
@@ -35,19 +35,20 @@ script(type='text/javascript').
 	
 	function submit() {
 		var form = document.getElementById("loginform");
-		var _uid = form.uid.value;
-		var _pwd = form.pwd.value;
+		var _uid = form.username.value;
+		var _pwd = form.password.value;
 		var _url = "/authenticate";
 		
 		//form.ajax call 
 		$.ajax({
 			type: "POST",
 			url: _url,
-			data: { 'uid': _uid, 'pwd':_pwd },
+			data: { 'username': _uid, 'password':_pwd },
 			cache: false,
 			dataType:"json",
 			success: function(msg)
 				{
+					console.log("~~~~~~~~~~~~~~~~~~~ huhuuuuuuuuuuuuuuuuuuuuuuuuuu");
 					// and redirect
 					// but to which destination ????
 					sessionStorage.setItem("AUTH",msg.AUTH);

@@ -71,7 +71,7 @@ block content
 
 					
 					
-				if session.AUTH
+				if session.AUTH=="exec" || session.AUTH=="admin"
 					ul.nav.navbar-nav
 						li.dropdown(id="fat-menu")
 							a.dropdown-toggle(id="admin" href="#" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false") boards 
@@ -97,6 +97,7 @@ block content
 								li(role="presentation") 
 									a(role="menuitem" tabindex="-1" href="/org/circlecontain/productcatalog") product & service catalog (stg)
 					
+				if session.AUTH=="exec" || session.AUTH=="admin"
 					ul.nav.navbar-nav
 						li.dropdown(id="fat-menu")
 							a.dropdown-toggle(id="org" href="#" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false") organization 
@@ -114,7 +115,7 @@ block content
 									a(role="menuitem" tabindex="-1" href="/org/force") force map experiments
 
 					
-					
+				if session.AUTH=="admin"	
 					ul.nav.navbar-nav
 						li.dropdown(id="fat-menu")
 							a.dropdown-toggle(id="import" href="#" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false") xlsx import 
@@ -157,6 +158,8 @@ block content
 									a(role="menuitem" tabindex="-1" href="/admin?type=productcatalog") product catalog
 								li(role="presentation") 
 									a(role="menuitem" tabindex="-1" href="/admin?type=roadmaps") roadmaps
+								li(role="presentation") 
+									a(role="menuitem" tabindex="-1" href="/admin?type=availability") availability
 								
 								li(role="presentation") 
 									a(role="menuitem" tabindex="-1" href="/admin?type=incidents") incidents (very large..)

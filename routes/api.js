@@ -53,7 +53,7 @@ var PATH = {
 						REST_COMPETITORS : BASE+'/space/rest/competitors',
 						REST_PRODUCTCATALOG : BASE+'/space/rest/productcatalog',
 						REST_ROADMAPS : BASE+'/space/rest/roadmaps',
-						
+						REST_AVAILABILITY : BASE+'/space/rest/availability',
 						
 						REST_INITIATIVES_DIFF_TRAIL : BASE+'/space/rest/initiatives_diff_trail',
 						REST_ORGANIZATION : BASE+'/space/rest/organization/:date',
@@ -73,7 +73,7 @@ var PATH = {
 						EXPORT_ORGANIZATION : BASE+'/space/export/xlsx/organization',
 						EXPORT_PRODUCTCATALOG : BASE+'/space/export/xlsx/productcatalog',
 						EXPORT_ROADMAPS : BASE+'/space/export/xlsx/roadmaps',
-						
+						EXPORT_AVAILABILITY : BASE+'/space/export/xlsx/availability',
 						
 						
 						
@@ -136,6 +136,11 @@ router.delete(PATH.REST_PRODUCTCATALOG, function(req, res, next) {remove(req,res
 router.get(PATH.REST_ROADMAPS, function(req, res, next) {findAllByName(req,res,next);});
 router.post(PATH.REST_ROADMAPS, function(req, res, next) {save(req,res,next); });
 router.delete(PATH.REST_ROADMAPS, function(req, res, next) {remove(req,res,next); });
+
+router.get(PATH.REST_AVAILABILITY, function(req, res, next) {findAllByName(req,res,next);});
+router.post(PATH.REST_AVAILABILITY, function(req, res, next) {save(req,res,next); });
+router.delete(PATH.REST_AVAILABILITY, function(req, res, next) {remove(req,res,next); });
+
 
 router.post(PATH.REST_MAIL, function(req, res, next) {mail(req,res,next); });
 
@@ -762,6 +767,23 @@ function excelLabels(req, res , next){
     _generateAndSendExcel("labels",conf,req,res,next);
 }
 
+/**
+ * generate availability excel
+ */
+function excelAvailability(req, res , next){
+	var conf ={};
+    conf.stylesXmlFile = "views/excel_export/styles.xml";
+    conf.cols = [
+		{caption:'_id',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'year',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'week',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'unplannedYTD',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'plannedYTD',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'totalYTD',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell}
+	];
+    
+    _generateAndSendExcel("availability",conf,req,res,next);
+}
 
 
 /**

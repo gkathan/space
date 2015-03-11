@@ -1,13 +1,24 @@
-var express = require('express');
+var express = require('express')
 
 var path = require('path');
 var favicon = require('serve-favicon');
-var morgan = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var session = require('express-session')
 var mongojs = require("mongojs");
+var fs = require('fs')
+var config = require('config');
 
+var app = express();
+
+// passport stuff
+var passport = require('passport'),
+ LocalStrategy = require('passport-local');
+var flash = require('connect-flash')
+
+
+
+// routes 
 var routes = require('./routes/index');
 var users = require('./routes/users');
 var api = require('./routes/api');
@@ -17,21 +28,15 @@ var portfolio = require('./routes/portfolio');
 var upload = require('./routes/upload');
 var targets = require('./routes/targets');
 
-var fs = require('fs')
 
-// environment specific configurations
-var config = require('config');
-
-
-var config = require('config');
+// db 
 var DB=config.database.db;
 var HOST = config.database.host;
 var connection_string = HOST+'/'+DB;
 var db = mongojs(connection_string, [DB]);
 
 
-
-
+// logger
 var winston = require('winston');
 var logger = new (winston.Logger)({
     transports: [
@@ -43,13 +48,11 @@ logger.level='debug';
 
 // load build number
 var build = JSON.parse(fs.readFileSync('./space.build', 'utf8'));
-
 if (config.env==="PRODUCTION") config.build=build.build;
 
-var app = express();
 
 // create a write stream (in append mode)
-var accessLogStream = fs.createWriteStream(__dirname + '/access.log', {flags: 'a'})
+//var accessLogStream = fs.createWriteStream(__dirname + '/access.log', {flags: 'a'})
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -60,6 +63,7 @@ app.locals.title="s p a c e ";
 
 
 // get all org instance dates for the menu
+// ** this should go somewhere else ;-)
 _getOrgDates(function(data){
 	app.locals.organizationDates=data;
 	console.log("** data: "+data);
@@ -67,11 +71,11 @@ _getOrgDates(function(data){
 
 app.use(favicon(path.join(__dirname,'public','images','favicon.ico')));
 app.use(bodyParser.json()); 
-
 // limit 50m is for large svg POST data needed for transcoder
 app.use(bodyParser.urlencoded({ extended: false ,limit: '50mb'}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
 
 app.use(session({
   secret: 'keyboard cat',
@@ -79,11 +83,35 @@ app.use(session({
   saveUninitialized: true
 }))
 
+
+app.use(passport.initialize());
+app.use(passport.session()); // persistent login sessions
+app.use(flash());
+
+
 // http://thenitai.com/2013/11/25/how-to-access-sessions-in-jade-template/
 app.use(function(req,res,next){
 	res.locals.session = req.session;
 	next();
 });
+
+// Session-persisted message middleware
+app.use(function(req, res, next){
+  var err = req.session.error,
+      msg = req.session.notice,
+      success = req.session.success;
+
+  delete req.session.error;
+  delete req.session.success;
+  delete req.session.notice;
+
+  if (err) res.locals.error = err;
+  if (msg) res.locals.notice = msg;
+  if (success) res.locals.success = success;
+
+  next();
+});
+
 
 // get access to URL of running app
 app.use(function(req, res, next) {
@@ -92,7 +120,6 @@ app.use(function(req, res, next) {
     }
     return next();
   });
-
 
 
 // adds config object to all responses
@@ -104,6 +131,8 @@ logger.info(path.join(__dirname,'public','images','favicon.ico'));
 logger.debug("[CONFIG] "+JSON.stringify(config));
 
 
+
+// should also go into some service class
 // schedule v1sync
 var schedule = require('node-schedule');
 var rule = new schedule.RecurrenceRule();
@@ -119,6 +148,7 @@ if (config.v1.syncEpics.mode!="off"){
 }
 
 
+
 app.use('/', routes);
 app.use('/api', api);
 app.use('/org', org);
@@ -127,7 +157,6 @@ app.use('/upload', upload);
 app.use('/portfolio', portfolio);
 app.use('/incidents', incidents);
 app.use('/targets', targets);
-
 
 
 
@@ -157,7 +186,6 @@ if (app.get('env') === 'development') {
 // production error handler
 // no stacktraces leaked to user
 app.use(function(err, req, res, next) {
-    
     logger.error(err.status+" "+err.messag);
     
     res.status(err.status || 500);
@@ -166,6 +194,8 @@ app.use(function(err, req, res, next) {
         error: {}
     });
 });
+
+
 
 
 /**
@@ -202,5 +232,7 @@ function _syncV1(url){
 		})
 	});
 }
+
+
 
 module.exports = app;

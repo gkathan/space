@@ -9,6 +9,7 @@ var HOST = config.database.host;
 var connection_string = HOST+'/'+DB;
 var db = mongojs(connection_string, [DB]);
 
+var avService = require('../services/AvailabilityService');
 
 
 //https://github.com/iros/underscore.nest/issues/2
@@ -51,10 +52,17 @@ router.get('/overview', function(req, res, next) {
 		res.locals.end=moment(_target.end).format();
 		res.locals._=require('lodash');
 		res.locals.period = "targets :: "+new moment(_target.start).format('MMMM').toLowerCase()+" - "+new moment(_target.end).format('MMMM').toLowerCase()+" "+new moment(_target.start).format('YYYY');
+		avService.getLatest(function(av){
+			debugger;
+			res.locals.availability = av;
+			res.locals.downtime = avService.getDowntimeYTD(av.unplannedYTD,av.week);
+			res.locals.targetDowntime = avService.getDowntimeYTD(99.75,52);
+			res.locals.leftDowntime = avService.getDowntimeYTD(99.75,52);
+			
+			res.render('targets', { title: 's p a c e - targets overview' });
+
+		});
 		
-		debugger;
-		
-	res.render('targets', { title: 's p a c e - targets overview' });
 	});
 });
 

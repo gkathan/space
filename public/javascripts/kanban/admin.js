@@ -67,6 +67,7 @@ function getConfig(collection){
 		case "organization/2015-02-17": return getOrganizationConfig();
 		case "productcatalog": return getProductCatalogConfig();
 		case "roadmaps": return getRoadmapConfig();
+		case "availability":  return getAvailabilityConfig();
 		
 	}
 }
@@ -179,6 +180,20 @@ function getProductCatalogConfig(){
 	return _config;
 }
 
+
+function getAvailabilityConfig(){
+	var _availability = [
+        { id:"id", name: "id", field: "_id",sortable:true,cssClass:"onKanbanImmutable" },
+        { id: "year", name: "year",  field: "year",sortable:true, cssClass: "cell-standard" },
+        { id: "week", name: "week",  field: "week" ,width:200,sortable:true, editor: Slick.Editors.Text, cssClass: "cell-standard"},
+		{ id: "unplannedYTD", name: "unplannedYTD",  field: "unplannedYTD" ,sortable:true,width:200, editor: Slick.Editors.Text, cssClass: "cell-standard"},
+		{ id: "plannedYTD", name: "plannedYTD",  field: "plannedYTD",sortable:true,width:200, editor: Slick.Editors.Text, cssClass: "cell-standard" },
+		{ id: "totalYTD", name: "totalYTD",  field: "totalYTD",width:200,sortable:true,editor:Slick.Editors.Text, cssClass: "cell-standard"}];
+	var _config ={};
+		_config.mode="editable";
+		_config.fields = _availability;
+	return _config;
+}
 
 function getBoardConfig(){
 	//lanetext

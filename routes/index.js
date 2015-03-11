@@ -3,6 +3,53 @@ var express = require('express');
 var mongojs = require("mongojs");
 var config = require('config');
 
+var passport = require('passport')
+  , LocalStrategy = require('passport-local').Strategy;
+
+
+var user = require('../services/UserService');
+
+
+passport.use('local-signin', new LocalStrategy(
+	{passReqToCallback : true}, // allows us to pass back the request to the callback
+	function(req,username, password, done) {
+		
+		console.log("....trying to authenticate");
+		debugger;
+		
+		user.findByUsername(username, function (err, user) {
+			console.log("...in find");
+			if (err) { 
+				console.log("...error");
+				return done(err); 
+			}
+			if (!user) { 
+				console.log("...invalid user");
+				return done(null, false, { message: 'Unknown user ' + username });
+			}
+			if (user.password != password) {
+				 console.log("...wrong password");
+				 return done(null, false, { message: 'Invalid password' }); 
+			}
+			console.log("...[OK]");
+			return done(null, user);
+		  
+		});
+		
+  }
+));
+
+// Passport session setup.
+passport.serializeUser(function(user, done) {
+  console.log("serializing " + user.username);
+  done(null, user);
+});
+
+passport.deserializeUser(function(obj, done) {
+  console.log("deserializing " + JSON.stringify(obj));
+  done(null, obj);
+});
+
 //underscore 
 var _ = require('lodash');
 
@@ -103,11 +150,13 @@ router.get('/admin', function(req, res) {
 
 
 router.get('/dashboard', function(req, res) {
-    if (!req.session.AUTH){
+    //if (!req.session.AUTH){
+	if (!req.session.AUTH){	
 			req.session.ORIGINAL_URL = req.originalUrl;
+			console.log("no req.session.AUTH found: ");
 			res.redirect("/login");
 		}
-	res.render('dashboard', { title: 's p a c e - dashboards' });
+	else res.render('dashboard', { title: 's p a c e - dashboards' });
 		
 });
 
@@ -140,14 +189,15 @@ router.get('/boards', function(req, res) {
 
 
 
-/** REST API 
+/** legacy auth
  * */
+/*
 router.post('/authenticate', function(req, res) {
     // do authetication handling
     var sha1 = require('sha1');
     var auth;
-    var uid = req.body.uid;
-    var pwd = req.body.pwd
+    var uid = req.body.username;
+    var pwd = req.body.password
     
     console.log("...authenicate request: uid: "+uid+ "pwd: "+pwd);
     
@@ -164,8 +214,28 @@ router.post('/authenticate', function(req, res) {
     
     res.send({AUTH:auth,ORIGINAL_URL:req.session.ORIGINAL_URL});
 });
+*/
 
 
+
+/** passport authetication
+ */
+router.post('/authenticate', function(req,res,next){
+	debugger;
+	passport.authenticate('local-signin', function(err,user,info){
+		if (err) { return next(err); }
+			if (!user) { return res.render('login'); }
+			req.logIn(user, function(err) {
+				if (err) { return next(err); }
+				console.log("[we are very close :-), req.session.ORIGINAL_URL: "+req.session.ORIGINAL_URL);
+				var sess = req.session;
+				sess.AUTH=user.role;
+				//return res.json({detail: info});
+				res.send({AUTH:user.role,ORIGINAL_URL:req.session.ORIGINAL_URL});
+			});
+		})(req, res, next);
+});
+	
 
 router.get('/sync/v1/epics', function(req, res) {
     // call v1 rest service
@@ -202,6 +272,11 @@ router.get('/login', function(req, res) {
     res.render('login', { title: 's p a c e - login' })
 });
 
+router.get('/signup', function(req, res) {
+    res.render('signup', { title: 's p a c e - signup' })
+});
+
+
 
 router.get('/kanban/:id', function(req, res) {
     if (!req.session.AUTH){
@@ -222,9 +297,24 @@ router.get('/kanban/:id', function(req, res) {
 
 
 router.get('/logout', function(req, res) {
+    console.log("req.session: "+req.session);
+    
     if (req.session){
+		console.log("...we have a session...");
 		req.session.destroy();
+		
 		res.redirect('/login');
 	}
-	res.redirect("/login");
+	//res.redirect("/login");
 });
+
+
+// Simple route middleware to ensure user is authenticated.
+//   Use this route middleware on any resource that needs to be protected.  If
+//   the request is authenticated (typically via a persistent login session),
+//   the request will proceed.  Otherwise, the user will be redirected to the
+//   login page.
+function ensureAuthenticated(req, res, next) {
+  if (req.isAuthenticated()) { return next(); }
+  res.redirect('/login')
+}
