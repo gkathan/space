@@ -7,4 +7,5 @@ node_modules
 temp
 .git
 s2t.build
+public/files
 !.gitignore

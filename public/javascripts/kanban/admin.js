@@ -1,4 +1,4 @@
-var _excelExportURL = '/api/kanbanv2/export/xlsx/';
+var _excelExportURL = '/api/space/export/xlsx/';
 
 var admingrid;
   
@@ -58,6 +58,7 @@ function getConfig(collection){
 		case "metrics": return getMetricConfig();
 		case "initiatives": return getInitiativeConfig();
 		case "scrumteams": return getTeamConfig();
+		case "v1teams": return getV1TeamConfig();
 		case "boards": return getBoardConfig();
 		case "v1epics": return getV1EpicsConfig();
 		case "incidents": return getIncidentsConfig();
@@ -68,6 +69,7 @@ function getConfig(collection){
 		case "productcatalog": return getProductCatalogConfig();
 		case "roadmaps": return getRoadmapConfig();
 		case "availability":  return getAvailabilityConfig();
+		case "firereport":  return getFirereportConfig();
 		
 	}
 }
@@ -195,6 +197,21 @@ function getAvailabilityConfig(){
 	return _config;
 }
 
+function getFirereportConfig(){
+	var _firereport = [
+        { id:"id", name: "id", field: "_id",sortable:true,cssClass:"onKanbanImmutable" },
+        { id: "year", name: "year",  field: "year" ,width:70,sortable:true, editor: Slick.Editors.Text, cssClass: "cell-standard"},
+		{ id: "type", name: "type",  field: "type",sortable:true, cssClass: "cell-standard" },
+        { id: "count", name: "count",  field: "count" ,sortable:true,width:50, editor: Slick.Editors.Text, cssClass: "cell-standard"},
+		{ id: "path", name: "path",  field: "path",width:250,sortable:true,editor:Slick.Editors.Text, cssClass: "cell-standard"},
+		{ id: "contact", name: "contact",  field: "contact",width:200,sortable:true,editor:Slick.Editors.Text, cssClass: "cell-standard"}];
+		
+	var _config ={};
+		_config.mode="editable";
+		_config.fields = _firereport;
+	return _config;
+}
+
 function getBoardConfig(){
 	//lanetext
 	var _boards = [
@@ -300,6 +317,24 @@ function getTeamConfig(){
 		_config.fields = _teams;
 	return _config;
 }
+
+
+//scrumteams exported from V1 Teamrooms
+// http://v1.bwinparty.corp/V1-Production/Default.aspx?menu=TeamRoomsPage
+function getV1TeamConfig(){
+	var _v1teams =[
+        { id:"id", name: "id", field: "_id",sortable:true,width:30 ,cssClass:"onKanbanImmutable"},
+        { id:"Title", name: "Title", field: "Title",sortable:true,width:250, editor: Slick.Editors.Text,cssClass: "cell-title" },
+	    { id: "Business Backlog", name: "Business Backlog", field: "Business Backlog",width:200,sortable:true, editor: Slick.Editors.Text, cssClass: "cell-standard"},
+		{ id: "Sprint Schedule", name: "Sprint Schedule",  field: "Sprint Schedule",editor: Slick.Editors.Text,width:150, cssClass: "cell-standard"},
+		{ id: "Description", name: "Description",  field: "Description",width:400 ,sortable:true, cssClass: "cell-standard"}
+	  ];
+       	var _config ={};
+		_config.mode="editable";
+		_config.fields = _v1teams;
+	return _config;
+}
+
 
 
 function getV1EpicsConfig(){
@@ -480,6 +515,8 @@ function renderAdminGrid(data,conf){
  
 	var dataView = new Slick.Data.DataView();
 	dataView.setItems(data,"_id");
+	
+	$('#countitems').html(dataView.getLength());
 
     admingrid = new Slick.Grid("#adminGrid", dataView, columns, options);
 	

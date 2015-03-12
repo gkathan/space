@@ -26,7 +26,7 @@ var appRoot = require('app-root-path');
 
 module.exports = router;
 
-// => has to be moved out of app.js !!!!!!!!!!!!!
+
 router.use(multer({ dest: appRoot+'/temp/',
 
 	rename: function (fieldname, filename) {
@@ -62,21 +62,54 @@ router.use(multer({ dest: appRoot+'/temp/',
 
 
 
-router.get('/', function(req, res) {
+router.get('/plain', function(req, res) {
    if (!req.session.AUTH){
 		req.session.ORIGINAL_URL = req.originalUrl;
 		res.redirect("/login");
 	}
     
-    res.render('upload',{title:'upload'});
+    res.render('upload/plain',{title:'upload plain .xlsx'});
+});
+
+router.get('/pi', function(req, res) {
+   if (!req.session.AUTH){
+		req.session.ORIGINAL_URL = req.originalUrl;
+		res.redirect("/login");
+	}
+    
+    res.render('upload/pi',{title:'upload pi .xlsx'});
+});
+
+router.get('/portfolio', function(req, res) {
+   if (!req.session.AUTH){
+		req.session.ORIGINAL_URL = req.originalUrl;
+		res.redirect("/login");
+	}
+    
+    res.render('upload/portfolio',{title:'upload portfolio .xlsx'});
+});
+
+router.get('/firereport', function(req, res) {
+   if (!req.session.AUTH){
+		req.session.ORIGINAL_URL = req.originalUrl;
+		res.redirect("/login");
+	}
+    
+    res.render('upload/firereport',{title:'upload firereport .pdf'});
 });
 
 
-router.post('/process',function(req,res){
+
+router.post('/process/xlsx',function(req,res){
+   var _type = req.query.type;
+    console.log("**************************************** req.query.type: "+_type);
+    
   if(req.files){
     
-    
+    debugger;
     logger.debug(req.files);
+    
+   
     
     // [TODO]and put some message in the locals....
     //res.locals.message="[SUCCESS] File uploaded, converted to json and imported to mongoDB";
@@ -97,10 +130,45 @@ router.post('/process',function(req,res){
     
     res.locals.success=true;
     res.locals.uploadfilename= _filename;
-    res.render("upload", { title: 's p a c e - import' });
+    res.render("upload/plain", { title: 's p a c e - import' });
   }
   else{
-	 res.redirect("/upload");//,{msg:"[SUCCESS] File uploaded, converted to json and imported to mongoDB"});
+	 res.redirect("/upload/"+_type);//,{msg:"[SUCCESS] File uploaded, converted to json and imported to mongoDB"});
+	
+  }
+});
+
+
+
+router.post('/process/firereport',function(req,res){
+  if(req.files){
+    
+    
+    logger.debug(req.files);
+    
+    // [TODO]and put some message in the locals....
+    //res.locals.message="[SUCCESS] File uploaded, converted to json and imported to mongoDB";
+    //res.send({msg:"[SUCCESS] File uploaded, converted to json and imported to mongoDB"});
+    logger.info("...........upload done: now we should process the shit ....: "+req.files);
+    
+    var _filename;
+    
+    for (var f in req.files){
+		_filename = req.files[f].name;
+		logger.info("  ** file: : "+_filename);
+	}
+    
+    // lets take the first 
+    // and do the json 
+    var pdfimport = require('../services/PdfImportService');
+    pdfimport.store(_filename,"firereports");
+    
+    res.locals.success=true;
+    res.locals.uploadfilename= _filename;
+    res.render("upload/firereport", { title: 's p a c e - import' });
+  }
+  else{
+	 res.redirect("/upload/firereport");//,{msg:"[SUCCESS] File uploaded, converted to json and imported to mongoDB"});
 	
   }
 });

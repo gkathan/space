@@ -44,6 +44,7 @@ var PATH = {
 						REST_POSTITS : BASE+'/space/rest/postits',
 						REST_LANES : BASE+'/space/rest/lanes',
 						REST_SCRUMTEAMS : BASE+'/space/rest/scrumteams',
+						REST_V1TEAMS : BASE+'/space/rest/v1teams',
 						REST_PRODUCTPORTFOLIO : BASE+'/space/rest/productportfolio',
 						REST_PRODUCTCATALOG : BASE+'/space/rest/productcatalog',
 						REST_INCIDENTS : BASE+'/space/rest/incidents',
@@ -54,6 +55,7 @@ var PATH = {
 						REST_PRODUCTCATALOG : BASE+'/space/rest/productcatalog',
 						REST_ROADMAPS : BASE+'/space/rest/roadmaps',
 						REST_AVAILABILITY : BASE+'/space/rest/availability',
+						REST_FIREREPORT : BASE+'/space/rest/firereport',
 						
 						REST_INITIATIVES_DIFF_TRAIL : BASE+'/space/rest/initiatives_diff_trail',
 						REST_ORGANIZATION : BASE+'/space/rest/organization/:date',
@@ -74,6 +76,7 @@ var PATH = {
 						EXPORT_PRODUCTCATALOG : BASE+'/space/export/xlsx/productcatalog',
 						EXPORT_ROADMAPS : BASE+'/space/export/xlsx/roadmaps',
 						EXPORT_AVAILABILITY : BASE+'/space/export/xlsx/availability',
+						EXPORT_FIREREPORT : BASE+'/space/export/xlsx/firereport',
 						
 						
 						
@@ -109,6 +112,7 @@ router.get(PATH.REST_POSTITS, function(req, res, next) {findAllByName(req,res,ne
 router.get(PATH.REST_LANES, function(req, res, next) {findAllByName(req,res,next);});
 router.get(PATH.REST_LANETEXT, function(req, res, next) {findAllByName(req,res,next);});
 router.get(PATH.REST_SCRUMTEAMS, function(req, res, next) {findAllByName(req,res,next);});
+router.get(PATH.REST_V1TEAMS, function(req, res, next) {findAllByName(req,res,next);});
 router.get(PATH.REST_PRODUCTPORTFOLIO, function(req, res, next) {findAllByName(req,res,next);});
 router.get(PATH.REST_PRODUCTCATALOG, function(req, res, next) {findAllByName(req,res,next);});
 router.get(PATH.REST_INCIDENTS, function(req, res, next) {findAllByName(req,res,next);});
@@ -140,6 +144,10 @@ router.delete(PATH.REST_ROADMAPS, function(req, res, next) {remove(req,res,next)
 router.get(PATH.REST_AVAILABILITY, function(req, res, next) {findAllByName(req,res,next);});
 router.post(PATH.REST_AVAILABILITY, function(req, res, next) {save(req,res,next); });
 router.delete(PATH.REST_AVAILABILITY, function(req, res, next) {remove(req,res,next); });
+
+router.get(PATH.REST_FIREREPORT, function(req, res, next) {findAllByName(req,res,next);});
+router.post(PATH.REST_FIREREPORT, function(req, res, next) {save(req,res,next); });
+router.delete(PATH.REST_FIREREPORT, function(req, res, next) {remove(req,res,next); });
 
 
 router.post(PATH.REST_MAIL, function(req, res, next) {mail(req,res,next); });
@@ -173,7 +181,8 @@ router.get(PATH.EXPORT_CUSTOMERS, function(req, res, next) {excelCustomers(req,r
 router.get(PATH.EXPORT_COMPETITORS, function(req, res, next) {excelCompetitors(req,res,next);});
 router.get(PATH.EXPORT_PRODUCTCATALOG, function(req, res, next) {excelProductCatalog(req,res,next);});
 router.get(PATH.EXPORT_ROADMAPS, function(req, res, next) {excelRoadmaps(req,res,next);});
-
+router.get(PATH.EXPORT_AVAILABILITY, function(req, res, next) {excelAvailability(req,res,next);});
+router.get(PATH.EXPORT_FIREREPORT, function(req, res, next) {excelFirereport(req,res,next);});
 router.post(PATH.TRANSCODE_BOARDS, function(req, res, next) {transcode(req,res,next); });
 
 router.get(PATH.CONFIG, function(req, res, next) {getConfig(req,res,next);});
@@ -746,10 +755,54 @@ function excelScrumTeams(req, res , next){
 		{caption:'Self-formation?',type:'string',width:7,captionStyleIndex:2,beforeCellWrite:_formatCell}
 	];
     
-    _generateAndSendExcel("scrumteams",conf,req,res,next);
+
+/**
+ * generate scrumteams excel
+ */
+function excelFirereport(req, res , next){
+	var conf ={};
+	
+	
+    conf.stylesXmlFile = "views/excel_export/styles.xml";
+    conf.cols = [
+		{caption:'_id',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'type',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'path',type:'string',width:5,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'year',type:'string',width:8,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'count',type:'string',width:8,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'contact',type:'string',width:10,captionStyleIndex:2,beforeCellWrite:_formatCell}
+		
+		
+	];
+    
+    _generateAndSendExcel("v1teams",conf,req,res,next);
+}    _generateAndSendExcel("scrumteams",conf,req,res,next);
 }
 
 
+
+
+/**
+ * generate scrumteams excel
+ */
+function excelV1Teams(req, res , next){
+	var conf ={};
+	
+	
+    conf.stylesXmlFile = "views/excel_export/styles.xml";
+    conf.cols = [
+		{caption:'_id',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'Title',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'Business Backlog',type:'string',width:5,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'Program',type:'string',width:8,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'Description',type:'string',width:8,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'Mascot',type:'string',width:10,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'Sprint Schedule',type:'string',width:10,captionStyleIndex:2,beforeCellWrite:_formatCell}
+		
+	];
+    
+    _generateAndSendExcel("v1teams",conf,req,res,next);
+}
 
 /**
  * generate labels excel

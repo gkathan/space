@@ -1,60 +1,14 @@
 var express = require('express');
 
 var mongojs = require("mongojs");
-var config = require('config');
-
-var passport = require('passport')
-  , LocalStrategy = require('passport-local').Strategy;
-
-
-var user = require('../services/UserService');
-
-
-passport.use('local-signin', new LocalStrategy(
-	{passReqToCallback : true}, // allows us to pass back the request to the callback
-	function(req,username, password, done) {
-		
-		console.log("....trying to authenticate");
-		debugger;
-		
-		user.findByUsername(username, function (err, user) {
-			console.log("...in find");
-			if (err) { 
-				console.log("...error");
-				return done(err); 
-			}
-			if (!user) { 
-				console.log("...invalid user");
-				return done(null, false, { message: 'Unknown user ' + username });
-			}
-			if (user.password != password) {
-				 console.log("...wrong password");
-				 return done(null, false, { message: 'Invalid password' }); 
-			}
-			console.log("...[OK]");
-			return done(null, user);
-		  
-		});
-		
-  }
-));
-
-// Passport session setup.
-passport.serializeUser(function(user, done) {
-  console.log("serializing " + user.username);
-  done(null, user);
-});
-
-passport.deserializeUser(function(obj, done) {
-  console.log("deserializing " + JSON.stringify(obj));
-  done(null, obj);
-});
 
 //underscore 
 var _ = require('lodash');
 
 var router = express.Router();
 
+
+var config = require('config');
 
 var DB=config.database.db;
 var HOST = config.database.host;
@@ -109,6 +63,16 @@ router.get('/labels', function(req, res) {
 });
 
 
+router.get('/firereports', function(req, res) {
+	var firereports =  db.collection('firereport');
+		firereports.find().sort({$natural:-1}, function (err, docs){
+			//sort
+			
+			res.locals.firereports=docs;
+			res.render('firereports', { title: 's p a c e - firereports' })
+	});
+});
+
 router.get('/customers', function(req, res) {
 	//res.locals.customers = CustomerService.findCustomers();
 	var customers =  db.collection('customers');
@@ -149,23 +113,9 @@ router.get('/admin', function(req, res) {
 
 
 
-router.get('/dashboard', function(req, res) {
-    //if (!req.session.AUTH){
-	if (!req.session.AUTH){	
-			req.session.ORIGINAL_URL = req.originalUrl;
-			console.log("no req.session.AUTH found: ");
-			res.redirect("/login");
-		}
-	else res.render('dashboard', { title: 's p a c e - dashboards' });
-		
-});
 
 
 router.get('/playbooks', function(req, res) {
-    if (!req.session.AUTH){
-			req.session.ORIGINAL_URL = req.originalUrl;
-			res.redirect("/login");
-		}
 	res.render('playbooks', { title: 's p a c e - playbooks' });
 		
 });
@@ -188,53 +138,6 @@ router.get('/boards', function(req, res) {
 });
 
 
-
-/** legacy auth
- * */
-/*
-router.post('/authenticate', function(req, res) {
-    // do authetication handling
-    var sha1 = require('sha1');
-    var auth;
-    var uid = req.body.username;
-    var pwd = req.body.password
-    
-    console.log("...authenicate request: uid: "+uid+ "pwd: "+pwd);
-    
-    var sess = req.session;
-    
-    // :o) the simplest possible user store .....
-    if (uid=="bpty" && sha1($pwd)=="d95575af5968042ad37a64d89ee8eb92b7c8c947") auth="bpty";
-    else if (uid=="exec" && sha1(pwd)=="2d2bea78d8b52e14eaf8f20b3288c28fc76e1654") auth="exec";
-    else if (uid=="admin" && sha1(pwd)=="40dc6c3b5c6595384395164908da32c18ae9dfc9") auth="admin";
-    
-    // set session variable
-    console.log("...auth: "+auth);
-    if (auth) sess.AUTH=auth;
-    
-    res.send({AUTH:auth,ORIGINAL_URL:req.session.ORIGINAL_URL});
-});
-*/
-
-
-
-/** passport authetication
- */
-router.post('/authenticate', function(req,res,next){
-	debugger;
-	passport.authenticate('local-signin', function(err,user,info){
-		if (err) { return next(err); }
-			if (!user) { return res.render('login'); }
-			req.logIn(user, function(err) {
-				if (err) { return next(err); }
-				console.log("[we are very close :-), req.session.ORIGINAL_URL: "+req.session.ORIGINAL_URL);
-				var sess = req.session;
-				sess.AUTH=user.role;
-				//return res.json({detail: info});
-				res.send({AUTH:user.role,ORIGINAL_URL:req.session.ORIGINAL_URL});
-			});
-		})(req, res, next);
-});
 	
 
 router.get('/sync/v1/epics', function(req, res) {

@@ -44,6 +44,8 @@ block content
 								a(role="menuitem" tabindex="-1" href="/competitors") competitors
 							li(role="presentation") 
 								a(role="menuitem" tabindex="-1" href="/labels") labels
+							li(role="presentation") 
+								a(role="menuitem" tabindex="-1" href="/firereports") fire reports
 							li
 								a(href='/playbooks') playbooks
 								
@@ -57,7 +59,7 @@ block content
 							li(role="presentation") 
 								a(role="menuitem" tabindex="-1" href="/targets/overview") targets overview
 							li(role="presentation") 
-								a(role="menuitem" tabindex="-1" href="/org/circlecontain/targets") targets circle contain map								
+								a(role="menuitem" tabindex="-1" href="/organization/circlecontain/targets") targets circle contain map								
 
 
 				
@@ -79,6 +81,9 @@ block content
 
 							ul.dropdown-menu(role="menu" aria-labelledby="admin")
 								li(role="presentation") 
+									a(role="menuitem" tabindex="-1" href="/roadmaps") roadmap boards
+					
+								li(role="presentation") 
 									a(role="menuitem" tabindex="-1" href="/boards") kanban boards
 									
 								li(role="presentation") 
@@ -93,9 +98,9 @@ block content
 
 							ul.dropdown-menu(role="menu" aria-labelledby="admin")
 								li(role="presentation") 
-									a(role="menuitem" tabindex="-1" href="/org/circlecontain/productportfolio") product portfolio (pka)
+									a(role="menuitem" tabindex="-1" href="/organization/circlecontain/productportfolio") product portfolio (pka)
 								li(role="presentation") 
-									a(role="menuitem" tabindex="-1" href="/org/circlecontain/productcatalog") product & service catalog (stg)
+									a(role="menuitem" tabindex="-1" href="/organization/circlecontain/productcatalog") product & service catalog (stg)
 					
 				if session.AUTH=="exec" || session.AUTH=="admin"
 					ul.nav.navbar-nav
@@ -106,13 +111,17 @@ block content
 							ul.dropdown-menu(role="menu" aria-labelledby="org")
 								each _date in organizationDates
 									li(role="presentation") 
-										a(role="menuitem" tabindex="-1" href="/org/tree/#{_date.oDate}") tree [#{_date.oDate}]
+										a(role="menuitem" tabindex="-1" href="/organization/tree/#{_date.oDate}") tree [#{_date.oDate}]
 								li(role="presentation") 
-									a(role="menuitem" tabindex="-1" href="/org/radial") radial
+									a(role="menuitem" tabindex="-1" href="/organization/radial") radial
 								li(role="presentation") 
-									a(role="menuitem" tabindex="-1" href="/org/circlecontain/org/2015-01-15") circle contain
+									a(role="menuitem" tabindex="-1" href="/organization/circlecontain/org/2015-01-15") circle contain
 								li(role="presentation") 
-									a(role="menuitem" tabindex="-1" href="/org/force") force map experiments
+									a(role="menuitem" tabindex="-1" href="/organization/force") force map experiments
+								li(role="presentation") 
+									a(role="menuitem" tabindex="-1" href="/organization/scrumteams") scrum teams (old)
+								li(role="presentation") 
+									a(role="menuitem" tabindex="-1" href="/organization/v1teams") teams (v1 teamroom export)
 
 					
 				if session.AUTH=="admin"	
@@ -123,11 +132,22 @@ block content
 
 							ul.dropdown-menu(role="menu" aria-labelledby="import")
 								li(role="presentation") 
-									a(role="menuitem" tabindex="-1" href="/upload") portfolio gate 
+									a(role="menuitem" tabindex="-1" href="/upload/portfolio") portfolio gate 
 								li(role="presentation") 
-									a(role="menuitem" tabindex="-1" href="/upload") PI HR assignment
+									a(role="menuitem" tabindex="-1" href="/upload/pi") PI HR assignment
 								li(role="presentation") 
-									a(role="menuitem" tabindex="-1" href="/upload") plain **you should know what you do !
+									a(role="menuitem" tabindex="-1" href="/upload/plain") plain **you should know what you do !
+					ul.nav.navbar-nav
+						li.dropdown(id="fat-menu")
+							a.dropdown-toggle(id="import" href="#" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false") firereport 
+								span.caret 
+
+							ul.dropdown-menu(role="menu" aria-labelledby="firereport")
+								li(role="presentation") 
+									a(role="menuitem" tabindex="-1" href="/upload/firereport") upload pdf
+								li(role="presentation") 
+									a(role="menuitem" tabindex="-1" href="/firereports") firerport list
+					
 					ul.nav.navbar-nav
 						li.dropdown(id="fat-menu")
 							a.dropdown-toggle(id="admin" href="#" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false") admin 
@@ -145,6 +165,8 @@ block content
 								li(role="presentation") 
 									a(role="menuitem" tabindex="-1" href="/admin?type=v1epics") v1 epics
 								li(role="presentation") 
+									a(role="menuitem" tabindex="-1" href="/admin?type=v1teams") v1 teams								
+								li(role="presentation") 
 									a(role="menuitem" tabindex="-1" href="/admin?type=scrumteams") scrum teams
 								li(role="presentation") 
 									a(role="menuitem" tabindex="-1" href="/admin?type=labels") labels
@@ -160,6 +182,8 @@ block content
 									a(role="menuitem" tabindex="-1" href="/admin?type=roadmaps") roadmaps
 								li(role="presentation") 
 									a(role="menuitem" tabindex="-1" href="/admin?type=availability") availability
+								li(role="presentation") 
+									a(role="menuitem" tabindex="-1" href="/admin?type=firereport") fire reports
 								
 								li(role="presentation") 
 									a(role="menuitem" tabindex="-1" href="/admin?type=incidents") incidents (very large..)

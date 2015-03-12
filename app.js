@@ -22,12 +22,13 @@ var flash = require('connect-flash')
 var routes = require('./routes/index');
 var users = require('./routes/users');
 var api = require('./routes/api');
-var org = require('./routes/org');
+var organization = require('./routes/organization');
 var incidents = require('./routes/incidents');
 var portfolio = require('./routes/portfolio');
 var upload = require('./routes/upload');
 var targets = require('./routes/targets');
-
+var dashboard = require('./routes/dashboard');
+var authenticate = require('./routes/authenticate');
 
 // db 
 var DB=config.database.db;
@@ -151,12 +152,14 @@ if (config.v1.syncEpics.mode!="off"){
 
 app.use('/', routes);
 app.use('/api', api);
-app.use('/org', org);
+app.use('/organization', organization);
 app.use('/users', users);
 app.use('/upload', upload);
 app.use('/portfolio', portfolio);
 app.use('/incidents', incidents);
 app.use('/targets', targets);
+app.use('/dashboard', dashboard);
+app.use('/authenticate', authenticate);
 
 
 

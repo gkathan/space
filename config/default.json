@@ -9,7 +9,7 @@
 
     "locale": "en",
     
-    "version" : "1.0.0 alpha",
+    "version" : "1.0.1 beta",
     
     "build" : "---should be dynamically assigned",
 
@@ -50,6 +50,13 @@
      "notifications" : {
 		"portfolioupdate": "gerold.kathan@bwinparty.com"
      
+     },
+     
+     "firereports" : {
+		"contact": "Pablo Delgado Caballero",
+		"contactEmail" : "Pablo.DelgadoCaballero@bwinparty.com"
+     
      }
+     
      
 }
