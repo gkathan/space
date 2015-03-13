@@ -3,8 +3,10 @@ extends layout
 block content
 	div.row(style="margin-left:10px;margin-bottom:10px;margin-top:10px")
 		img(src='/images/external_elements_logo_bpty.png'  height='20px')
+		span(style="font-size:10px;margin-left:20px;color:grey")  entity: <b> #{config.entity}</b>
 		if session.AUTH
-			span(style="font-size:10px;margin-left:20px;color:grey")  logged in as: <b> #{session.AUTH} </b> 
+			span(style="font-size:10px;margin-left:20px;color:grey")  logged in as: <b> #{session.AUTH}/#{session.USER} </b> 
+			
 			
 		.div(class='notifications top-left')
 

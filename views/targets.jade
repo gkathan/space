@@ -29,9 +29,10 @@ style.
 	.panel-heading-grow {background-color: #{color_GROW}!important}
 	.panel-heading-transform {background-color: #{color_TRANSFORM}!important}
 
-	.left-border-RUN {border-left: 8px solid #{color_RUN}!important}
-	.left-border-GROW {border-left: 8px solid #{color_GROW}!important}
-	.left-border-TRANSFORM {border-left: 8px solid #{color_TRANSFORM}!important}
+
+	.left-border-RUN {border-left:solid 10px #{color_RUN}!important}
+	.left-border-GROW {border-left:solid 10px #{color_GROW}!important}
+	.left-border-TRANSFORM {border-left:solid 10px #{color_TRANSFORM}!important}
 
 
 	.panel-body-lane {background-color: #f9f9f9!important}
@@ -58,7 +59,7 @@ style.
 -		return rag;
 -	}
 
-
+	
 
 // -----------------------------------------------------------------------
 // ------------------ mixin target lane start ----------------------------
@@ -109,7 +110,7 @@ mixin renderTarget(target)
 							table(style="width:190px")
 								tr(style="line-height:15px")
 									td(style="width:10px;font-size:10px;text-align:left")
-										|- 
+										|-
 									td(style="width:140px;font-size:11px;font-weight:bold")
 										div(style="width:140px")
 											
@@ -122,7 +123,7 @@ mixin renderTarget(target)
 									td(style="width:25px;font-size:10px;font-style:italic")
 										|#{line.id}
 					tr(style="line-height:3px")
-						td 
+						td
 							|&nbsp;
 					
 
@@ -135,7 +136,7 @@ div(style="margin-left:20px")
 	div(style="font-family:arial;font-weight:normal;font-size:16px;color:#174D75;text-align:center") #{period}
 	div(style="font-family:arial;font-weight:normal;font-size:16px;color:#174D75;text-align:center")
 		br
-		img(src="/images/space_triangle_bpty_down.png" style="vertical-align:middle;" width="700px" height="30px")		
+		img(src="/images/space_triangle_bpty_down.png" style="vertical-align:middle;" width="400px" height="20px")		
 		br
 		br
 	
@@ -151,24 +152,41 @@ div(style="margin-left:20px")
 						img(src="/images/space_triangle_#{lane.name}_right.png" style="vertical-align:top" height="250px" width="20px")		
 					td(style=";vertical-align:middle;text-align")
 						each l1 in _.find(L1targets,{'name':lane.name}).children
-							div.table-responsive
-	
-								table.table
-									tr
-										td(style="width:120px;vertical-align:middle;border-bottom: 1px solid lightgrey")
-											div(id="xxx" class="left-border-#{lane.name}" style=";text-align:center;line-height:100%;background-color:white;padding:10px 10px 10px 10px")
-												span(style="line-height:72px;font-size:24px;font-weight:bold")
-													|#{l1.directMetric}
-												span(style="line-height:12px;font-size:12px;font-weight:normal")
-													|#{l1.directMetricScale}
-										td(style="width:10px")
+							//div.table-responsive
+							table.table(style="max-width:400px")
+								tr
+									- var _color="green";
+									-if (lane.name=="RUN") _color= color_RUN;
+									-if (lane.name=="GROW") _color= color_GROW;
+									-if (lane.name=="TRANSFORM") _color= color_TRANSFORM;
+									
+									
+									td(style="width:120px;text-align:center;vertical-align:middle;background-color:#efefef")
+										div(style="line-height:20px")
+											span(style="font-weight:normal;font-size:12px;font-style:italic") #{l1.id} 
+											br
+											span(style="font-weight:bold;font-size:16px") #{l1.target}
+											
+									
+									td(style="width:130px;vertical-align:middle;border-bottom: 1px solid lightgrey;border-right: solid 10px #{_color}!important;")
+										div(id="xxx" style=";text-align:center;line-height:100%;background-color:white;padding:2px 2px 2px 2px")
+											span(style="line-height:72px;font-size:28px;font-weight:bold")
+												|#{l1.directMetric}
+											span(style="line-height:12px;font-size:12px;font-weight:normal")
+												|&nbsp;#{l1.directMetricScale}
+											
+											if (l1.id=="R0.1")
+												div(style="font-size:18px;color:red;font-weight:bold") 
+													|#{availability.unplannedYTD}
+													span(style="font-size:12px")%  
+												div(style="font-size:10px;color:red;font-style:italic")
+													|YTD as per firereport 
+													br
+													|week-#{availability.week}-#{availability.year}
+													br
 										
-										td(style="width:50%;vertical-align:middle")
-											div(style="line-height:20px")
-												//span(style="font-weight:normal;font-size:10px") #{l1.id}
-												//br
-												span(style="font-weight:bold;font-size:12px") #{l1.target}
-												
+										
+									
 								
 							
 				

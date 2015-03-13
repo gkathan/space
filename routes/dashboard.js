@@ -22,8 +22,8 @@ router.get('/', function(req, res) {
 			
 			res.locals.availability = av;
 			res.locals.downtime = avService.getDowntimeYTD(av.unplannedYTD,av.week);
-			res.locals.targetDowntime = avService.getDowntimeYTD(99.75,52);
-			res.locals.leftDowntime = avService.getDowntimeYTD(99.75,52);
+			res.locals.targetDowntime = avService.getDowntimeYTD(av,52);
+			res.locals.leftDowntime = avService.getDowntimeYTD(av,52);
 			res.render('dashboard', { title: 's p a c e - dashboards' });
 		 });
 	}

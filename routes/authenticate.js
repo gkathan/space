@@ -63,12 +63,14 @@ router.post('/', function(req,res,next){
 	debugger;
 	passport.authenticate('local-signin', function(err,user,info){
 		if (err) { return next(err); }
-			if (!user) { return res.render('login'); }
+			if (!user) { //return res.render('login'); 
+				return;}
 			req.logIn(user, function(err) {
 				if (err) { return next(err); }
 				console.log("[we are very close :-), req.session.ORIGINAL_URL: "+req.session.ORIGINAL_URL);
 				var sess = req.session;
-				sess.AUTH=user.role;
+				sess.AUTH = user.role;
+				sess.USER = user.username;
 				//return res.json({detail: info});
 				res.send({AUTH:user.role,ORIGINAL_URL:req.session.ORIGINAL_URL});
 			});

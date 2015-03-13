@@ -9,10 +9,13 @@
 
     "locale": "en",
     
-    "version" : "1.0.1 beta",
+    "version" : "1.0.1-beta",
     
     "build" : "---should be dynamically assigned",
 
+    
+    "entity" : "bpty.studios",
+    
     "v1" : {
 		
 		"url" : "http://v1.bwinparty.corp/V1-Production/",

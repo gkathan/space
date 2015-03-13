@@ -552,6 +552,7 @@ function excelTargets(req, res , next){
     conf.cols = [
 		{caption:'_id',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'id',type:'string',width:5,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'entity',type:'string',width:12,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'type',type:'string',width:8,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'rag',type:'string',width:8,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'vision',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
