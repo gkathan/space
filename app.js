@@ -42,7 +42,7 @@ var winston = require('winston');
 var logger = new (winston.Logger)({
     transports: [
       new (winston.transports.Console)({colorize:true, prettyPrint:true,showLevel:true,timestamp:true}),
-      new (winston.transports.File)({ filename: 'logs/s2t.log' , prettyPrint:true,showLevel:true})
+      new (winston.transports.File)({ filename: 'logs/space.log' , prettyPrint:true,showLevel:true})
     ]
   });
 logger.level='debug';

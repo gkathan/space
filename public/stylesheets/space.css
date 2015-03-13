@@ -32,7 +32,14 @@ body {
           box-sizing: border-box;
 }
 
-
+/* borderless table */
+.table.table-borderless td, .table.table-borderless th {
+    border: 0 !important;
+}
+ 
+.table.table-borderless {
+    margin-bottom: 0px;
+}
 
 /* custome bootstrap3 file input 
  * http://stackoverflow.com/questions/11235206/twitter-bootstrap-form-file-element-upload-button

@@ -5,7 +5,8 @@
   "scripts": {
     "startDEV": "nodemon ./bin/www",
     "start": "node ./bin/www",
-    "startPROD": "forever ./bin/www"
+    "startPROD": "forever ./bin/www",
+    "startDEBUG": "node-debug ./bin/www"
   },
   "dependencies": {
     "app-root-path": "^1.0.0",

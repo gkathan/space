@@ -130,7 +130,7 @@ mixin renderTarget(target)
 // ------------------ main target template ----------------------------
 // -----------------------------------------------------------------------
 block content
-div(style="margin-left:20px;width:1400px")
+div(style="margin-left:20px")
 	div(style="font-family:arial;font-weight:bold;font-size:24px;color:#174D75;text-align:center") "#{vision}"
 	div(style="font-family:arial;font-weight:normal;font-size:16px;color:#174D75;text-align:center") #{period}
 	div(style="font-family:arial;font-weight:normal;font-size:16px;color:#174D75;text-align:center")
@@ -140,33 +140,37 @@ div(style="margin-left:20px;width:1400px")
 		br
 	
 	
-	table(style="width:1400px")
-		each lane in targets
-			tr(style="line-height:330px")
-				td(style="width:1100px;vertical-align:middle")
-					+renderTargetLane(lane)
-				td(style="width:100px;vertical-align:bottom;text-align:center")
-					img(src="/images/space_triangle_#{lane.name}_right.png" style="vertical-align:middle" height="250px")		
-				td(style="width:200px;vertical-align:middle;text-align")
-					each l1 in _.find(L1targets,{'name':lane.name}).children
-						table(style="width:200px")
-							tr
-								td(style="width:80px;vertical-align:middle;border-bottom: 1px solid lightgrey")
-									div(id="xxx" class="left-border-#{lane.name}" style=";text-align:center;line-height:32px;background-color:white;padding:10px 10px 10px 10px")
-										span(style="line-height:72px;font-size:24px;font-weight:bold")
-											|#{l1.directMetric}
-										span(style="line-height:12px;font-size:12px;font-weight:normal")
-											|#{l1.directMetricScale}
-								td(style="width:10px")
-								
-								td(style="width:70px;vertical-align:middle")
-									div(style="line-height:20px")
-										//span(style="font-weight:normal;font-size:10px") #{l1.id}
-										//br
-										span(style="font-weight:bold;font-size:12px") #{l1.target}
-										
-						
-					
-			
+	div.table-responsive
 	
+		table.table.table-borderless(style="max-width:1400px")
+			each lane in targets
+				tr(style="line-height:330px")
+					td(style="width:79%;vertical-align:middle")
+						+renderTargetLane(lane)
+					td(style="width:3%;vertical-align:middle;text-align:center")
+						img(src="/images/space_triangle_#{lane.name}_right.png" style="vertical-align:top" height="250px" width="20px")		
+					td(style=";vertical-align:middle;text-align")
+						each l1 in _.find(L1targets,{'name':lane.name}).children
+							div.table-responsive
+	
+								table.table
+									tr
+										td(style="width:120px;vertical-align:middle;border-bottom: 1px solid lightgrey")
+											div(id="xxx" class="left-border-#{lane.name}" style=";text-align:center;line-height:100%;background-color:white;padding:10px 10px 10px 10px")
+												span(style="line-height:72px;font-size:24px;font-weight:bold")
+													|#{l1.directMetric}
+												span(style="line-height:12px;font-size:12px;font-weight:normal")
+													|#{l1.directMetricScale}
+										td(style="width:10px")
+										
+										td(style="width:50%;vertical-align:middle")
+											div(style="line-height:20px")
+												//span(style="font-weight:normal;font-size:10px") #{l1.id}
+												//br
+												span(style="font-weight:bold;font-size:12px") #{l1.target}
+												
+								
+							
+				
+		
 		
