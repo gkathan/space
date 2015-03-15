@@ -8,12 +8,12 @@ clean install
 * install mongodb
 ** what else to prepare
 * npm install -g bower
-* npm install -g grunt
+* npm install -g gulp
 
 
 checkout s2t from git
 --------------------
-=> fixed some missing dependcies and files
+=> fixed some missing dependencies and files
 => now [OK]
 
 * git clone https://github.com/gkathan/strategy2tactics
@@ -25,6 +25,6 @@ checkout s2t from git
  
  3) bootstrap#~3.3.2 which resolved to 3.3.2 and is required by kanban
  
- * npm start
+ * npm runs-scriptDEV
  
  
