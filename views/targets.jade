@@ -113,8 +113,7 @@ mixin renderTarget(target)
 										|-
 									td(style="width:140px;font-size:11px;font-weight:bold")
 										div(style="width:140px")
-											
-											|#{line.target}
+											a(style="color:black" id="#{line.id}" href="" title="show more details...") #{line.target}
 									td(style="width:10px;font-size:10px;font-style:italic")
 										
 									td(style="width:15px;font-size:8px;")
@@ -127,11 +126,50 @@ mixin renderTarget(target)
 							|&nbsp;
 					
 
+						
+
 // -----------------------------------------------------------------------
 // ------------------ main target template ----------------------------
 // -----------------------------------------------------------------------
 block content
 div(style="margin-left:20px")
+	button.btn.btn-primary.btn-xs(type="button" data-toggle="modal" data-target="#targetDetailModal")
+			span targetDetail sample
+			
+	div.modal.fade(id="targetDetailModal" tabindex="-1" role="dialog" aria-labelledby="targetDetailModal" aria-hidden="true" )
+		div.modal-dialog
+			div.modal-content(style="opacity:1")
+				div.modal-header
+					button.close(type="button" data-dismiss="modal" aria-label="Close")
+						span(aria-hidden="true") &times
+					h4.modal-title(id="myModalLabel")
+						| target details
+				div.modal-body
+					p
+						|target detail
+						br
+						|target outcome
+						br
+						|target description
+						br
+						|baseline
+						br
+						|measure
+						br
+						|link
+						br
+						|comments
+						br
+						|sponsor / contributors
+						br
+						|start /end
+						
+												
+						
+				div.modal-footer
+					button.btn.btn-default.btn-xs(type="button" data-dismiss="modal")
+						span Close
+
 	div(style="font-family:arial;font-weight:bold;font-size:24px;color:#174D75;text-align:center") "#{vision}"
 	div(style="font-family:arial;font-weight:normal;font-size:16px;color:#174D75;text-align:center") #{period}
 	div(style="font-family:arial;font-weight:normal;font-size:16px;color:#174D75;text-align:center")
@@ -139,10 +177,7 @@ div(style="margin-left:20px")
 		img(src="/images/space_triangle_bpty_down.png" style="vertical-align:middle;" width="400px" height="20px")		
 		br
 		br
-	
-	
 	div.table-responsive
-	
 		table.table.table-borderless(style="max-width:1400px")
 			each lane in targets
 				tr(style="line-height:330px")

@@ -10,4 +10,5 @@ space.build
 config/secret.json
 Dockerfile
 public/files
+change.log
 !.gitignore
