@@ -13,6 +13,17 @@
     
     "build" : "---should be dynamically assigned",
 
+
+	"gulp":{
+		"baseDir" : "./",
+		"remoteBaseDir" :"/home/cactus/",
+		"deployTarget" :"pi",
+		"deployTargetPort" :22,
+		"deployTargetEnv": "development"
+		
+		
+	},
+	
     
     "entity" : "bpty.studios",
     

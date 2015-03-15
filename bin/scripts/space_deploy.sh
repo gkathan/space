@@ -1,14 +1,18 @@
 #!/bin/bash
 . ~/.bash_profile
 
-rm -Rf space_roll_back
-echo"[space_deploy] says: parking old version in space_rollback folder..."
+rm -Rf space_rollback
+echo '[space-deploy] says: parking old version in space_rollback folder...'
 mv  space space_rollback
-echo"[space_deploy] says: going to create and unzip new version..."
+echo '[space-deploy] says: going to create and unzip new version...'
 mkdir space
-mv space.zip space/
+mv space.tar.gz space/
 # transfer the files directory from roll_back (all the uploads,..)
-cp space_rollback/files space/files 
+mkdir -p space/public/files
+if [ -d "space_rollback/public/files" ]; then
+  cp -a space_rollback/public/files space/public/files 
+fi
 cd space
-unzip ./space.zip
-rm space.zip
+gunzip ./space.tar.gz
+tar -xvf ./space.tar
+

@@ -1,5 +1,5 @@
 {
-	"env": "tiny3-development",
+  	"env": "TEST",
 
     "v1" : {
 		"url" : "data/json/epics.json",
@@ -12,7 +12,7 @@
 	"gulp":{
 		"baseDir" : "/home/cactus/",
 		"deployTarget" : "pi",
-		"deployTargetEnv" :"TEST"
+		"deployTargetEnv" : "TEST"
 	},
 
      "transcoder" : {

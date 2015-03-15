@@ -1,83 +1,284 @@
 
 var gulp = require('gulp');
-var rename = require('gulp-rename');
+var copy = require('gulp-copy');
+var tar = require('gulp-tar');
+var untar = require('gulp-untar');
 
-var zip = require('gulp-zip');
+var rename = require('gulp-rename');
+var gutil = require('gulp-util');
+
+var fs = require('fs');
+var runSequence = require('run-sequence');
+
+var moment = require('moment');
+var minimist = require('minimist');
+
+var config = require('config');
+var secret = require('./config/secret.json');
+
+
+var SERVER={};
+SERVER.host=config.gulp.deployTarget;
+SERVER.port=config.gulp.deployTargetPort;
+SERVER.username=secret.deployTargetUser;
+SERVER.password=secret.deployTargetPassword;
+SERVER.env=config.gulp.deployTargetEnv;
+
+var gzip = require('gulp-gzip');
+var tar = require('gulp-tar');
+;
 var gulpSSH = require('gulp-ssh')({
   ignoreErrors: false,
   sshConfig: {
-    host: 'space.bwinparty.corp',
-    port: 22,
-    username: 'gkathan',
-    password : 'bwin123'
+    host: SERVER.host,
+    port: SERVER.port,
+    username: SERVER.username,
+    password : SERVER.password
     //privateKey: require('fs').readFileSync('/Users/zensh/.ssh/id_rsa')
   }
 });
 
-var runSequence = require('run-sequence');
-
-var moment = require('moment');
-var config = require('config');
-
 
 
 var src=".";
-var dist = "C:/Users/gkathan/Dropbox/_work/space/dist";
+//var dist = "C:/Users/gkathan/Dropbox/_work/space/dist";
+
 var mongodb_dev="c:\mongodb";
 
 var version = config.version;
 var timestamp = moment(new Date()).format("YYYYMMDD_HHmmss");
 
-var PACKAGE = dist+"/zip/space_v"+version+"_build_"+timestamp+".zip";
-var TRANSFER = dist+"/zip/space.zip";
+
+
+var BASE = config.gulp.baseDir;
+var REMOTE_BASE = config.gulp.remoteBaseDir;
+
+//"/home/cactus/";
+//var base = "c:/users/gkathan/";
+//var base = "c:/users/gerold/";
+//var base = "c:/users/cactus/";
+
+var DIST = BASE+"dist/package/";
+var DUMP = BASE+"dist/dump/";
+
+var PACKAGE = "space_v"+version+"_build_"+timestamp;
+var TRANSFER = DIST+"space.tar.gz";
+var INSTALL = "./bin/scripts/*.sh";
+var TARGET = './space.tar.gz';
+var SCRIPT_TARGET = './space_scripts.tar';
+
+var REMOTE_DEPLOY = ['./space_deploy.sh'];
+var REMOTE_START = ['./space_start.sh'];
+var REMOTE_MONGODUMP = ['./space_mongodump.sh'];
+var REMOTE_FILESDUMP = ['./space_filesdump.sh'];
+var REMOTE_MONGORESTORE = ['./space_mongorestore.sh'];
+
+var MONGODUMP = './mongodump_space'+SERVER.env+".tar";
+var FILESDUMP = './filesdump_space'+SERVER.env+".tar";
+
+gutil.beep();
 
 
 
-//build number
-require('fs').writeFile('./space.build', '{"build":"'+timestamp+'"}');
+var knownOptions = {
+  string: 'target',
+  default: { target: 'production' }
+};
+var options = minimist(process.argv.slice(2),knownOptions);
 
-gulp.task('space_package', function () {
-    console.log("...PACKAGE: "+PACKAGE);
-    
-    return gulp.src(['**','!logs','!git','!public/files'])
-        .pipe(zip(PACKAGE))
-        .pipe(gulp.dest(dist+"/zip"));
+gutil.log("knownoptions: "+JSON.stringify(knownOptions));
+
+
+
+gulp.task('installscripts', function () {
+  return gulp.src(INSTALL)
+    .pipe(gulpSSH.sftp('write', './'));
 });
 
-gulp.task('space_copy',function(){
-	 console.log("PACKAGE: "+PACKAGE);
-	 return gulp.src(PACKAGE)
-        .pipe(rename(TRANSFER))
-        .pipe(gulp.dest(dist+"/zip"));
+
+gulp.task('build', function () {
+	gutil.log(gutil.colors.magenta('[s p a c e -deploy] create space.build file - '), 'build: '+timestamp);
+    return fs.writeFile('./space.build', '{"build":"'+timestamp+'"}');
+});	
+
+
+gulp.task('package', function () {
+    var _src = ['./**','!logs','!.git','!public/files'];
+    gutil.log('[s p a c e -deploy] package stuff together - ', '_src:'+_src.join(","));
+    return gulp.src(_src)
+    .pipe(tar(PACKAGE+'.tar'))
+    .pipe(gzip())
+    .pipe(gulp.dest(DIST));    
+});	
+
+gulp.task('copy',function(){
+	 gutil.log("[s p a c e -deploy] copy and rename - source: "+DIST+PACKAGE+".tar.gz");
+	 gutil.log("[s p a c e -deploy] target: "+TARGET);
+
+	 
+	 return gulp.src(DIST+PACKAGE+".tar.gz")
+        .pipe(rename(TARGET))
+        .pipe(gulp.dest(DIST));
+        
 });
 
 
-gulp.task('space_transfer', function () {
+gulp.task('transfer', function () {
+  gutil.log("[s p a c e -deploy] scp stuff - source: "+TRANSFER,"target: "+TARGET);
+  gutil.log("[s p a c e -deploy] ssh config: host: "+SERVER.host+" ,port: "+SERVER.port+" ,username: "+SERVER.username+" , password : "+SERVER.password);
+
   return gulp.src(TRANSFER)
-    .pipe(gulpSSH.sftp('write', './space.zip'));
+    .pipe(gulpSSH.sftp('write', TARGET));
 });
 
-
 	
-gulp.task('space_remotedeploy', function () {
+gulp.task('remotedeploy', function () {
+   gutil.log("[s p a c e -deploy] remote deploy - execute: "+REMOTE_DEPLOY.join(','));
+
    return gulpSSH
-    .exec(['./space_deploy.sh'], {filePath: 'space_remotedeploy.log'})
+    .exec(REMOTE_DEPLOY, {filePath: 'space_remotedeploy.log'})
     .pipe(gulp.dest('logs'));
 });
 
-gulp.task('space_remotestart', function () {
+gulp.task('remotestart', function () {
+   gutil.log("[s p a c e -deploy] remote start - execute: "+REMOTE_START.join(','));
    return gulpSSH
-    .exec(['./space_start.sh'], {filePath: 'space_remotestart.log'})
+    .exec(REMOTE_START, {filePath: 'space_remotestart.log'})
     .pipe(gulp.dest('logs'));
 });
 
-gulp.task('space_deploy',function(callback){
-	runSequence('space_package','space_copy','space_transfer','space_remotedeploy','space_remotestart',callback);
+
+/**
+ * deploys a space version, setup scripts and dumps current server
+ */
+gulp.task('fullmonty',function(callback){
+    gutil.log("[s p a c e -fullmonty] ******");
+   
+	runSequence('setup','dump','deploy',callback);
 });
 	
 
 
+/**
+ * deploys a space version
+ */
+gulp.task('deploy',function(callback){
+    gutil.log("[s p a c e -deploy] ****** going to deploy to: "+SERVER.host+" -> "+SERVER.env);
+   
+	runSequence('build','package','copy','transfer','remotedeploy','remotestart',callback);
+});
+	
 
+/**
+ * dumps all data from mongoDB into a tar file
+ * and the stuf in files/directory (uploads)
+ */
+gulp.task('dump',function(callback){
+	runSequence('remotemongodump','remotefilesdump','transfermongodump','transferfilesdump',callback);
+});
+
+gulp.task('remotemongodump', function () {
+   gutil.log("[s p a c e -deploy] remote monodump - execute: "+REMOTE_MONGODUMP.join(','));
+
+   return gulpSSH
+    .exec(REMOTE_MONGODUMP, {filePath: 'space_remotedeploy.log'})
+    .pipe(gulp.dest('logs'));
+});
+
+
+gulp.task('remotefilesdump', function () {
+   gutil.log("[s p a c e -deploy] remote files dump - execute: "+REMOTE_FILESDUMP.join(','));
+
+   return gulpSSH
+    .exec(REMOTE_FILESDUMP, {filePath: 'space_remotedeploy.log'})
+    .pipe(gulp.dest('logs'));
+});
+
+
+// get file from server and write to local 
+gulp.task('transfermongodump', function () {
+  gutil.log("[s p a c e -deploy] transfer mongodump from remote: "+MONGODUMP);
+  gutil.log("[s p a c e -deploy] destination: "+DUMP);
+	
+	return gulpSSH.sftp('read',MONGODUMP)
+    .pipe(gulp.dest(DUMP))
+    .pipe(untar())
+    .pipe(gulp.dest(DUMP+'mongodump_space'+SERVER.env+'_'+timestamp));
+});
+
+// get file from server and write to local 
+gulp.task('transferfilesdump', function () {
+  gutil.log("[s p a c e -deploy] transfer filesdump from remote: "+FILESDUMP);
+  gutil.log("[s p a c e -deploy] destination: "+DUMP);
+	
+	return gulpSSH.sftp('read',FILESDUMP)
+    .pipe(gulp.dest(DUMP))
+    .pipe(untar())
+    .pipe(gulp.dest(DUMP+'files_space'+SERVER.env+'_'+timestamp));
+});
+
+
+gulp.task('remotemongorestore', function () {
+   gutil.log("[s p a c e -deploy] remote monorestore - execute: "+REMOTE_MONGORESTORE.join(','));
+
+   return gulpSSH
+    .exec(REMOTE_MONGORESTORE, {filePath: 'space_remotedeploy.log'})
+    .pipe(gulp.dest('logs'));
+});
+
+
+
+
+
+/**
+ *  copies s p a c e  scripts to REMOTE
+ */
+gulp.task('setup',function(callback){
+    gutil.log("[s p a c e -setup] ****** going to install latest shell scripts "+SERVER.host+" -> "+SERVER.env);
+   
+	runSequence('transferscripts','remote_untar_scripts',callback);
+});
+
+gulp.task('transferscripts', function () {
+  gutil.log("[s p a c e -transferscripts] remote copy shell scripts - target: "+REMOTE_BASE);
+  return gulp.src('bin/scripts/*.sh')
+    .pipe(tar('bin/scripts/space_scripts.tar'))
+    .pipe(gulpSSH.sftp('write', SCRIPT_TARGET));
+});
+
+gulp.task('remote_untar_scripts', function () {
+  gutil.log("[s p a c e -remoteuntarscripts] remote untar space scripts: ");
+  return gulpSSH
+    .shell(['tar -xvf space_scripts.tar','chmod 755 *.sh'], {filePath: 'space_remotedeploy.log'})
+    .pipe(gulp.dest('logs'));
+});
+
+
+
+
+/*
+	<target name="mongodumpPROD" description="dumps remote PROD mongoDB, scps it to LOCAL and tars + timestamps it">
+		<sshexec host="space.bwinparty.corp" username="gkathan" password="bwin123" command="./space_mongodump.sh" trust="true" port="22"/>
+		<scp file="gkathan@space.bwinparty.corp:/home/gkathan/mongodump_spacePROD.tar" todir="${dist}/data/mongo" password="bwin123" port="22" trust="true"/>
+		<untar src="${dist}/data/mongo/mongodump_spacePROD.tar" dest="${dist}/data/mongo"/>
+		<move file="${dist}/data/mongo/mongodump_spacePROD" tofile="${dist}/data/mongo/mongodump_spacePROD_${NOW_DATE}_${NOW_TIME}"/>
+  </target>
+  
+  
+  <target name="mongodumpDEV" description="dumps local DEV mongoDB, tags it with timestamp and zips it">
+	  <exec executable="cmd">
+		<arg value="/c"/>
+		<arg value="mongodump"/>
+		<arg value="-d space"/>
+		<arg value="-o ${space_dump}"/>
+	  </exec>
+	  
+	  <zip destfile="mongodump_DEV_${NOW_DATE}_${NOW_TIME}.zip">
+			<fileset dir="${space_dump}" includes="**"/>
+	  </zip>
+  </target>
+
+*/
 
 
 
@@ -96,8 +297,8 @@ gulp.task('sftp-read', function () {
  
 // put local file to server 
 gulp.task('sftp-write', function () {
-  return gulp.src('index.js')
-    .pipe(gulpSSH.sftp('write', 'test.js'));
+  return gulp.src('space.build')
+    .pipe(gulpSSH.sftp('write', 'xxx.xxx'));
 });
  
 // execute commands in shell 

@@ -13,6 +13,9 @@
 			"url" : "http://knbnprxy.ea.bwinparty.corp/rest/epics"
 			}	
 	},
+	"gulp":{
+		"baseDir" : "c:\users\gkathan"
+	},
 	
 	 "transcoder" : {
 		"url" : "http://tomcat.ea.bwinparty.corp/transcode/"

@@ -7,5 +7,7 @@ node_modules
 temp
 .git
 space.build
+config/secret.json
+Dockerfile
 public/files
 !.gitignore

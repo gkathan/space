@@ -1,5 +1,6 @@
 #!/bin/bash
-/opt/mongodb/bin/mongodump  --db space --out mongodump_spacePROD
-tar -cvf mongodump_spacePROD.tar mongodump_spacePROD
-rm -Rf mongodump_spacePROD
+
+mongodump  --db space --out mongodump_space${NODE_ENV}
+tar -cvf mongodump_space${NODE_ENV}.tar mongodump_space${NODE_ENV}
+rm -Rf mongodump_space${NODE_ENV}
 

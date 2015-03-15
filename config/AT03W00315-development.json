@@ -13,6 +13,14 @@
 			"url" : "http://localhost:8686/rest/epics"
 			}	
 	},
+	"gulp":{
+		"baseDir" : "c:\users\gkathan",
+		"remoteBaseDir" : "/home/gkathan/",
+		
+		"deployTarget" : "space.bwinparty.corp",
+		"deployTargetEnv" : "PRODUCTION"
+	},
+	
 	
 	 "transcoder" : {
 		"url" : "http://tomcat.ea.bwinparty.corp/transcode/"

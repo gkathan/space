@@ -49,7 +49,7 @@ logger.level='debug';
 
 // load build number
 var build = JSON.parse(fs.readFileSync('./space.build', 'utf8'));
-if (config.env==="PRODUCTION") config.build=build.build;
+if (config.env==="PRODUCTION" ||config.env==="TEST" ) config.build=build.build;
 
 
 // create a write stream (in append mode)

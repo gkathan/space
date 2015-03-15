@@ -19,3 +19,16 @@ cd space
 #nohup npm start > /dev/null 2>&1 &
 echo "[s p a c e] init:  run-script startPROD ..."
 nohup npm run-script startPROD > /dev/null 2>&1 &
+sleep 1
+echo "[s p a c e] starting .."
+sleep 1
+echo "[s p a c e] starting ..."
+sleep 1
+echo "[s p a c e] starting ...."
+sleep 1
+echo "[s p a c e] starting ....."
+sleep 1
+echo "[s p a c e] starting ......"
+
+PIDNEW=`ps -eaf | grep 'space/bin/www' | grep -v grep | awk '{print $2}'`
+echo "[s p a c e ] new instance RUNNING PID = $PIDNEW"
