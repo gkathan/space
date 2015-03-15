@@ -14,17 +14,9 @@ var connection_string = HOST+'/'+DB;
 var db = mongojs(connection_string, [DB]);
 
 
-
-
+// logger
 var winston = require('winston');
-var logger = new (winston.Logger)({
-    transports: [
-      new (winston.transports.Console)({colorize:true, prettyPrint:true,showLevel:true,timestamp:true}),
-      new (winston.transports.File)({ filename: 'logs/s2t_portfolio.log' , prettyPrint:true,showLevel:true})
-    ]
-  });
-logger.level='debug';
-
+var logger = winston.loggers.get('space_log');
 
 module.exports = router;
 

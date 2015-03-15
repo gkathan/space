@@ -39,13 +39,26 @@ var db = mongojs(connection_string, [DB]);
 
 // logger
 var winston = require('winston');
-var logger = new (winston.Logger)({
-    transports: [
-      new (winston.transports.Console)({colorize:true, prettyPrint:true,showLevel:true,timestamp:true}),
-      new (winston.transports.File)({ filename: 'logs/space.log' , prettyPrint:true,showLevel:true})
-    ]
-  });
-logger.level='debug';
+winston.loggers.add('space_log',{
+	console:{
+		colorize:true, 
+		prettyPrint:true,
+		showLevel:true,
+		timestamp:true,
+		level:"debug"
+	},
+    file:{
+		filename: 'logs/space.log' ,
+		prettyPrint:true,
+		showLevel:true,
+		level:"debug"
+	}
+});
+
+var logger = winston.loggers.get('space_log');
+
+
+logger.info("[s p a c e] - app initializes...");
 
 // load build number
 var build = JSON.parse(fs.readFileSync('./space.build', 'utf8'));
@@ -67,7 +80,6 @@ app.locals.title="s p a c e ";
 // ** this should go somewhere else ;-)
 _getOrgDates(function(data){
 	app.locals.organizationDates=data;
-	console.log("** data: "+data);
 });
 
 app.use(favicon(path.join(__dirname,'public','images','favicon.ico')));
@@ -93,7 +105,6 @@ app.use(flash());
 // http://thenitai.com/2013/11/25/how-to-access-sessions-in-jade-template/
 app.use(function(req,res,next){
 	res.locals.session = req.session;
-
 	next();
 });
 
@@ -129,25 +140,9 @@ var addconfig = require('./services/middleware/addconfig.js');
 app.use(addconfig());
 
 logger.debug("**** ENV: "+app.get('env'));
-logger.info(path.join(__dirname,'public','images','favicon.ico'));
 logger.debug("[CONFIG] "+JSON.stringify(config));
 
 
-
-// should also go into some service class
-// schedule v1sync
-var schedule = require('node-schedule');
-var rule = new schedule.RecurrenceRule();
-
-// every 10 minutes
-rule.minute = new schedule.Range(0, 59, config.v1.syncEpics.intervalMinutes);
-
-if (config.v1.syncEpics.mode!="off"){
-	var j = schedule.scheduleJob(rule, function(){
-		logger.debug('...going to sync V1 ....');
-		_syncV1(config.v1.syncEpics.url);
-	});
-}
 
 
 
@@ -162,6 +157,11 @@ app.use('/targets', targets);
 app.use('/dashboard', dashboard);
 app.use('/authenticate', authenticate);
 
+
+
+// services
+var v1SyncService = require('./services/V1SyncService');
+v1SyncService.init();
 
 
 // catch 404 and forward to error handler
@@ -212,30 +212,6 @@ function _getOrgDates(callback){
 	});
 }
 
-function _syncV1(url){
-	// call v1 rest service
-    var Client = require('node-rest-client').Client;
-   client = new Client();
-	// direct way 
-	client.get(url, function(data, response){
-		// parsed response body as js object 
-		console.log(data);
-		// raw response 
-		console.log(response);
-		// and insert 
-		var v1epics =  db.collection('v1epics');
-		v1epics.drop();
-		v1epics.insert({createDate:new Date(),epics:JSON.parse(data)}	 , function(err , success){
-			//console.log('Response success '+success);
-			logger.debug('Response error '+err);
-			if(success){
-				logger.info("syncv1 [DONE]");
-				
-			}
-			//return next(err);
-		})
-	});
-}
 
 
 

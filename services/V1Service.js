@@ -7,7 +7,7 @@ var mongojs = require("mongojs");
 
 var _ = require('lodash');
 
-var DB="kanbanv2";
+var DB="space";
 
 var connection_string = '127.0.0.1:27017/'+DB;
 var db = mongojs(connection_string, [DB]);
