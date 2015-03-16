@@ -48,7 +48,7 @@ var mongodb_dev="c:\mongodb";
 var version = config.version;
 var timestamp = moment(new Date()).format("YYYYMMDD_HHmmss");
 
-
+var VERSION = require('./package.json').version;
 
 var BASE = config.gulp.baseDir;
 var REMOTE_BASE = config.gulp.remoteBaseDir;
@@ -60,6 +60,7 @@ var REMOTE_BASE = config.gulp.remoteBaseDir;
 
 var DIST = BASE+"dist/package/";
 var DUMP = BASE+"dist/dump/";
+var RESTORE = "./";
 
 var PACKAGE = "space_v"+version+"_build_"+timestamp;
 var TRANSFER = DIST+"space.tar.gz";
@@ -76,6 +77,9 @@ var REMOTE_MONGORESTORE = ['./space_mongorestore.sh'];
 var MONGODUMP = './mongodump_space'+SERVER.env+".tar";
 var FILESDUMP = './filesdump_space'+SERVER.env+".tar";
 
+var MONGORESTORE = DUMP + 'mongodump_space'+SERVER.env+".tar";
+var MONGORESTORE_TARGET = './mongorestore_space'+SERVER.env+".tar";
+
 gutil.beep();
 
 
@@ -88,6 +92,15 @@ var options = minimist(process.argv.slice(2),knownOptions);
 
 gutil.log("knownoptions: "+JSON.stringify(knownOptions));
 
+
+
+gulp.task('minorrelease', function () {
+	gutil.log("current version: "+VERSION);
+	gutil.log("increment maintenance: "+incrementVersion("maintenance",VERSION));
+	gutil.log("increment minor: "+incrementVersion("minor",VERSION));
+	gutil.log("increment major: "+incrementVersion("major",VERSION));
+	
+});
 
 
 gulp.task('installscripts', function () {
@@ -228,6 +241,42 @@ gulp.task('remotemongorestore', function () {
 
 
 
+/**
+ * uploads and restores db data
+ */
+gulp.task('restore',function(callback){
+	runSequence('transfermongorestore','remote_untar_mongorestore','remotemongorestore',callback);
+});
+
+gulp.task('transfermongorestore', function () {
+  gutil.log("[s p a c e -restore] transfer mongorestore to remote: "+MONGORESTORE);
+  gutil.log("[s p a c e -restore] destination: "+RESTORE);
+	
+  return gulp.src(MONGORESTORE)
+    .pipe(gulpSSH.sftp('write', MONGORESTORE_TARGET));
+});
+
+gulp.task('remote_untar_mongorestore', function () {
+  gutil.log("[s p a c e -remoteuntarscripts] remote untar mongorestore.tar: ");
+  return gulpSSH
+    .shell(["tar -xvf mongorestore_space${NODE_ENV}.tar"], {filePath: 'space_remotedeploy.log'})
+    .pipe(gulp.dest('logs'));
+});
+
+
+
+
+gulp.task('remotemongorestore', function () {
+   gutil.log("[s p a c e -restore] remote monorestore - execute: "+REMOTE_MONGORESTORE.join(','));
+
+   return gulpSSH
+    .exec(REMOTE_MONGORESTORE, {filePath: 'space_remotedeploy.log'})
+    .pipe(gulp.dest('logs'));
+});
+
+
+
+
 
 
 /**
@@ -254,61 +303,19 @@ gulp.task('remote_untar_scripts', function () {
 });
 
 
-
-
-/*
-	<target name="mongodumpPROD" description="dumps remote PROD mongoDB, scps it to LOCAL and tars + timestamps it">
-		<sshexec host="space.bwinparty.corp" username="gkathan" password="bwin123" command="./space_mongodump.sh" trust="true" port="22"/>
-		<scp file="gkathan@space.bwinparty.corp:/home/gkathan/mongodump_spacePROD.tar" todir="${dist}/data/mongo" password="bwin123" port="22" trust="true"/>
-		<untar src="${dist}/data/mongo/mongodump_spacePROD.tar" dest="${dist}/data/mongo"/>
-		<move file="${dist}/data/mongo/mongodump_spacePROD" tofile="${dist}/data/mongo/mongodump_spacePROD_${NOW_DATE}_${NOW_TIME}"/>
-  </target>
-  
-  
-  <target name="mongodumpDEV" description="dumps local DEV mongoDB, tags it with timestamp and zips it">
-	  <exec executable="cmd">
-		<arg value="/c"/>
-		<arg value="mongodump"/>
-		<arg value="-d space"/>
-		<arg value="-o ${space_dump}"/>
-	  </exec>
-	  
-	  <zip destfile="mongodump_DEV_${NOW_DATE}_${NOW_TIME}.zip">
-			<fileset dir="${space_dump}" includes="**"/>
-	  </zip>
-  </target>
-
-*/
-
-
-
-// execute commands 
-gulp.task('exec', function () {
-  return gulpSSH
-    .exec(['uptime', 'ls -a', 'pwd'], {filePath: 'commands.log'})
-    .pipe(gulp.dest('logs'));
-});
- 
-// get file from server and write to local 
-gulp.task('sftp-read', function () {
-  return gulpSSH.sftp('read', 'z')
-    .pipe(gulp.dest(''));
-});
- 
-// put local file to server 
-gulp.task('sftp-write', function () {
-  return gulp.src('space.build')
-    .pipe(gulpSSH.sftp('write', 'xxx.xxx'));
-});
- 
-// execute commands in shell 
-gulp.task('shell', function () {
-  return gulpSSH
-    .shell(['cd /home/thunks', 'git pull', 'npm install', 'npm update', 'npm test'], {filePath: 'shell.log'})
-    .pipe(gulp.dest('logs'));
-});
-
-
-gulp.task('default', function() {
-  console.log("hello gulp :-)");
-});
+/** 
+ * @param version: type string major.minor.maintenance-build
+ */
+function incrementVersion(type,version){
+	var _v = version.split(".");
+	
+	switch (type){
+		case "major":
+			_v[0] = parseInt(_v[0])+1;
+		case "minor":
+			_v[1] = parseInt(_v[1])+1;
+		case "maintenance":
+			_v[2] = parseInt(_v[2])+1;
+	}
+	return _v.join('.');
+}
