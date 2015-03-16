@@ -68,11 +68,11 @@ var INSTALL = "./bin/scripts/*.sh";
 var TARGET = './space.tar.gz';
 var SCRIPT_TARGET = './space_scripts.tar';
 
-var REMOTE_DEPLOY = ['./space_deploy.sh'];
-var REMOTE_START = ['./space_start.sh'];
-var REMOTE_MONGODUMP = ['./space_mongodump.sh'];
-var REMOTE_FILESDUMP = ['./space_filesdump.sh'];
-var REMOTE_MONGORESTORE = ['./space_mongorestore.sh'];
+var REMOTE_DEPLOY = ['./space/scripts/space_deploy.sh'];
+var REMOTE_START = ['./space/scripts/space_start.sh'];
+var REMOTE_MONGODUMP = ['./space/scripts/space_mongodump.sh'];
+var REMOTE_FILESDUMP = ['./space/scripts/space_filesdump.sh'];
+var REMOTE_MONGORESTORE = ['./space/scripts/space_mongorestore.sh'];
 
 var MONGODUMP = './mongodump_space'+SERVER.env+".tar";
 var FILESDUMP = './filesdump_space'+SERVER.env+".tar";
@@ -178,7 +178,7 @@ gulp.task('fullmonty',function(callback){
 gulp.task('deploy',function(callback){
     gutil.log("[s p a c e -deploy] ****** going to deploy to: "+SERVER.host+" -> "+SERVER.env);
    
-	runSequence('build','package','copy','transfer','remotedeploy','remotestart',callback);
+	runSequence('setup','build','package','copy','transfer','remotedeploy','remotestart',callback);
 });
 	
 
@@ -295,10 +295,11 @@ gulp.task('transferscripts', function () {
     .pipe(gulpSSH.sftp('write', SCRIPT_TARGET));
 });
 
+
 gulp.task('remote_untar_scripts', function () {
   gutil.log("[s p a c e -remoteuntarscripts] remote untar space scripts: ");
   return gulpSSH
-    .shell(['tar -xvf space_scripts.tar','chmod 755 *.sh'], {filePath: 'space_remotedeploy.log'})
+    .shell(['mkdir space/scripts -p','mkdir space/app -p','mkdir space/dump -p','tar -xvf space_scripts.tar -C space/scripts/','chmod 755 space/scripts/*.sh'], {filePath: 'space_remotedeploy.log'})
     .pipe(gulp.dest('logs'));
 });
 

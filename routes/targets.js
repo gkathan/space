@@ -9,6 +9,8 @@ var HOST = config.database.host;
 var connection_string = HOST+'/'+DB;
 var db = mongojs(connection_string, [DB]);
 
+var winston=require('winston');
+var logger = winston.loggers.get('space_log');
 
 var avService = require('../services/AvailabilityService');
 
@@ -43,6 +45,10 @@ router.get('/overview', function(req, res, next) {
 			
 			res.locals.targets=L2targetsClustered.children;
 			res.locals.L1targets=L1targetsClustered.children;
+			
+			res.locals.testTarget=_L2targets[0];
+			
+			logger.debug("testTarget: "+JSON.stringify(_L2targets[0]));
 			
 			// take the first for the globals...
 			var _target = L2targetsClustered.children[0].children[0].children[0].children[0];
