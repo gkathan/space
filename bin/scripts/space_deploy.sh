@@ -4,12 +4,8 @@
 PACKAGE='space.tar.gz'
 PACKAGE_TAR='space.tar'
 
-
 # first check whether we have a deploy package..
 if [ -a $PACKAGE ]; then
-	
-	
-	
 	rm -Rf space/app_rollback
 	echo '[s p a c e - deploy] says: parking old version in "space_rollback" folder...'
 	mv  space/app space/app_rollback
