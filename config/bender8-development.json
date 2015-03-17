@@ -11,7 +11,9 @@
 			}
 	}    
 	"gulp":{
-		"baseDir" : "c:\users\gerold"
+		"baseDir" : "c:\users\gerold",
+		"deployTarget" : "pi",
+		"deployTargetEnv" :"TEST"
 	},
      
 }
