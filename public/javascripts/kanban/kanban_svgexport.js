@@ -26,7 +26,7 @@ function submit_download_form(output_format,css)
     
     */
     
-    if (!css) css="/stylesheets/kanbanv2.css";
+    if (!css) css="/stylesheets/space.css";
 	
 	// 1) load css
 	$.ajax({
@@ -83,6 +83,6 @@ $("#show_svg_code").click(function() { show_svg_code(); });
 $("#save_as_svg").click(function() { submit_download_form("svg"); });
 $("#save_as_pdf").click(function() { submit_download_form("pdf"); });
 $("#save_as_png").click(function() { submit_download_form("png"); });
-if (document.getElementById("input_transcode_url")) document.getElementById("input_transcode_url").value = TRANSCODE_URL;
+$("#input_transcode_url").val(TRANSCODE_URL)	;
 $("#b99").click(function() { TRANSCODE_URL = document.getElementById("input_transcode_url").value });
 

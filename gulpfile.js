@@ -1,21 +1,20 @@
-
 var gulp = require('gulp');
 var copy = require('gulp-copy');
 var tar = require('gulp-tar');
 var untar = require('gulp-untar');
-
 var rename = require('gulp-rename');
 var gutil = require('gulp-util');
+var runSequence = require('run-sequence');
+var gzip = require('gulp-gzip');
+var tar = require('gulp-tar');
+
+var config = require('config');
 
 var fs = require('fs');
-var runSequence = require('run-sequence');
-
 var moment = require('moment');
 var minimist = require('minimist');
 
-var config = require('config');
 var secret = require('./config/secret.json');
-
 
 var SERVER={};
 SERVER.host=config.gulp.deployTarget;
@@ -24,9 +23,6 @@ SERVER.username=secret.deployTargetUser;
 SERVER.password=secret.deployTargetPassword;
 SERVER.env=config.gulp.deployTargetEnv;
 
-var gzip = require('gulp-gzip');
-var tar = require('gulp-tar');
-;
 var gulpSSH = require('gulp-ssh')({
   ignoreErrors: false,
   sshConfig: {
@@ -38,41 +34,29 @@ var gulpSSH = require('gulp-ssh')({
   }
 });
 
-
-
 var src=".";
-//var dist = "C:/Users/gkathan/Dropbox/_work/space/dist";
-
 var mongodb_dev="c:\mongodb";
 
 var version = config.version;
 var timestamp = moment(new Date()).format("YYYYMMDD_HHmmss");
 
 var VERSION = require('./package.json').version;
-
 var BASE = config.gulp.baseDir;
 var REMOTE_BASE = config.gulp.remoteBaseDir;
-
-//"/home/cactus/";
-//var base = "c:/users/gkathan/";
-//var base = "c:/users/gerold/";
-//var base = "c:/users/cactus/";
-
 var DIST = BASE+"dist/package/";
 var DUMP = BASE+"dist/dump/";
 var RESTORE = "./";
-
 var PACKAGE = "space_v"+version+"_build_"+timestamp;
 var TRANSFER = DIST+"space.tar.gz";
 var INSTALL = "./bin/scripts/*.sh";
 var TARGET = './space.tar.gz';
 var SCRIPT_TARGET = './space_scripts.tar';
 
-var REMOTE_DEPLOY = ['./space_deploy.sh'];
-var REMOTE_START = ['./space_start.sh'];
-var REMOTE_MONGODUMP = ['./space_mongodump.sh'];
-var REMOTE_FILESDUMP = ['./space_filesdump.sh'];
-var REMOTE_MONGORESTORE = ['./space_mongorestore.sh'];
+var REMOTE_DEPLOY = ['./space/scripts/space_deploy.sh'];
+var REMOTE_START = ['./space/scripts/space_start.sh'];
+var REMOTE_MONGODUMP = ['./space/scripts/space_mongodump.sh'];
+var REMOTE_FILESDUMP = ['./space/scripts/space_filesdump.sh'];
+var REMOTE_MONGORESTORE = ['./space/scripts/space_mongorestore.sh'];
 
 var MONGODUMP = './mongodump_space'+SERVER.env+".tar";
 var FILESDUMP = './filesdump_space'+SERVER.env+".tar";
@@ -82,8 +66,6 @@ var MONGORESTORE_TARGET = './mongorestore_space'+SERVER.env+".tar";
 
 gutil.beep();
 
-
-
 var knownOptions = {
   string: 'target',
   default: { target: 'production' }
@@ -91,8 +73,6 @@ var knownOptions = {
 var options = minimist(process.argv.slice(2),knownOptions);
 
 gutil.log("knownoptions: "+JSON.stringify(knownOptions));
-
-
 
 gulp.task('minorrelease', function () {
 	gutil.log("current version: "+VERSION);
@@ -102,14 +82,13 @@ gulp.task('minorrelease', function () {
 	
 });
 
-
 gulp.task('installscripts', function () {
   return gulp.src(INSTALL)
     .pipe(gulpSSH.sftp('write', './'));
 });
 
 
-gulp.task('build', function () {
+gulp.task('buildfile', function () {
 	gutil.log(gutil.colors.magenta('[s p a c e -deploy] create space.build file - '), 'build: '+timestamp);
     return fs.writeFile('./space.build', '{"build":"'+timestamp+'"}');
 });	
@@ -178,7 +157,7 @@ gulp.task('fullmonty',function(callback){
 gulp.task('deploy',function(callback){
     gutil.log("[s p a c e -deploy] ****** going to deploy to: "+SERVER.host+" -> "+SERVER.env);
    
-	runSequence('build','package','copy','transfer','remotedeploy','remotestart',callback);
+	runSequence('setup','buildfile','package','copy','transfer','remotedeploy','remotestart',callback);
 });
 	
 
@@ -295,10 +274,11 @@ gulp.task('transferscripts', function () {
     .pipe(gulpSSH.sftp('write', SCRIPT_TARGET));
 });
 
+
 gulp.task('remote_untar_scripts', function () {
   gutil.log("[s p a c e -remoteuntarscripts] remote untar space scripts: ");
   return gulpSSH
-    .shell(['tar -xvf space_scripts.tar','chmod 755 *.sh'], {filePath: 'space_remotedeploy.log'})
+    .shell(['mkdir space/scripts -p','mkdir space/app -p','mkdir space/dump -p','tar -xvf space_scripts.tar -C space/scripts/','chmod 755 space/scripts/*.sh'], {filePath: 'space_remotedeploy.log'})
     .pipe(gulp.dest('logs'));
 });
 
