@@ -25,7 +25,7 @@
 			}
 		},
 	"gulp": {
-		"baseDir" : "c:/users/gkathan",
+		"baseDir" : "c:/users/gkathan/",
 		"remoteBaseDir" : "/home/gkathan/",
 		"deployTarget" : "space.bwinparty.corp",
 		"deployTargetEnv" : "production"

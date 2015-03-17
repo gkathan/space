@@ -48,16 +48,17 @@
   },
   "devDependencies": {
     "gulp": "^3.8.11",
+    "gulp-copy": "0.0.2",
+    "gulp-gunzip": "0.0.2",
+    "gulp-gzip": "~1.0.0",
     "gulp-rename": "^1.2.0",
     "gulp-ssh": "^0.3.3",
-    "gulp-zip": "^2.0.3",
-    "node-inspector": "^0.9.2",
-    "run-sequence": "^1.0.2",
     "gulp-tar": "~1.4.0",
-    "gulp-gzip": "~1.0.0",
-    "gulp-copy": "0.0.2",
-    "gulp-util": "~3.0.4",
     "gulp-untar": "0.0.4",
-    "minimist": "~1.1.1"
+    "gulp-util": "~3.0.4",
+    "gulp-zip": "^2.0.3",
+    "minimist": "~1.1.1",
+    "node-inspector": "^0.9.2",
+    "run-sequence": "^1.0.2"
   }
 }

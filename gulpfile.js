@@ -95,17 +95,17 @@ gulp.task('buildfile', function () {
 
 
 gulp.task('package', function () {
-    var _src = ['./**','!logs','!.git','!public/files'];
+    var _src = ['./**','!logs','!.git','!public/files','!temp'];
     gutil.log('[s p a c e -deploy] package stuff together - ', '_src:'+_src.join(","));
     return gulp.src(_src)
-    .pipe(tar(PACKAGE+'.tar'))
+    .pipe(tar(PACKAGE+'.tar'),{"mode":0755})
     .pipe(gzip())
     .pipe(gulp.dest(DIST));    
 });	
 
 gulp.task('copy',function(){
 	 gutil.log("[s p a c e -deploy] copy and rename - source: "+DIST+PACKAGE+".tar.gz");
-	 gutil.log("[s p a c e -deploy] target: "+TARGET);
+	 gutil.log("[s p a c e -deploy] target: "+TRANSFER);
 
 	 
 	 return gulp.src(DIST+PACKAGE+".tar.gz")
