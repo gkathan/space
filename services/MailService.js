@@ -8,9 +8,8 @@ var email = require('emailjs');
 var config = require('config');
 
 
-var signatureHtml="<style>html {position: relative;min-height: 100%;}body {background-color: #f9f9f9;font-family: RobotoDraft,  Helvetica, Arial;-webkit-user-select: none;-moz-user-select: none;-ms-user-select: none;user-select: none;-webkit-tap-highlight-color: rgba(0,0,0,0);-webkit-touch-callout: none; overflow: auto; argin-bottom: 20px;}</style>"
-
-var signatureText="\n________________________________\n:: this is an automatically generated mail - please do not reply to this email - in case of questions please contact gerold.kathan@bwinparty.com\n\n:: bpty   s t u d i o s | commercial management";
+var signatureHtml=config.mailer.signatureHtml;
+var signatureText=config.mailer.signatureText;
 var subjectPrefix = "";
 
 

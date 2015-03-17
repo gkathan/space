@@ -15,6 +15,10 @@ div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;back
 			
 			li environment: 
 				b #{config.env}
+			
+			li session.CONTEXT: 
+				b #{session.CONTEXT}
+			
 			li v1:
 				ul
 					li url: 
@@ -53,6 +57,10 @@ div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;back
 						
 		br
 		a.btn.btn-xs.btn-warning(id="sendtestnotification" href="#" ) send testmail
+		a.btn.btn-xs.btn-danger(id="switchcontext_bpty" href="#" ) switch context --> bpty
+		a.btn.btn-xs.btn-danger(id="switchcontext_studios" href="#" ) switch context --> bpty.studios
+		a.btn.btn-xs.btn-danger(id="switchcontext_bwin" href="#" ) switch context --> bpty.bwin
+		a.btn.btn-xs.btn-danger(id="switchcontext_kalixa" href="#" ) switch context --> bpty.kalixa
 		
 	include includes/material
 	
@@ -63,14 +71,14 @@ div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;back
 			
 			var content = {};
 
-			content.from = "strategy2tactics@bwinparty.com";
+			content.from = "space@bwinparty.corp";
 			content.to = "gerold.kathan@bwinparty.com";
 			content.subject = "[testmail]";
 			content.text="hello testmail";
 			console.log("trying to send mail: "+JSON.stringify(content));
 
 			$.ajax({
-			  url: '/api/kanbanv2/rest/mail',
+			  url: '/api/space/rest/mail',
 			  type: 'POST',
 			  data: { 
 					  mail: JSON.stringify(content)
@@ -79,6 +87,41 @@ div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;back
 			});
 
 		});
-
+		
+		$('#switchcontext_bpty').on('click', function () {
 			
+			_switch("bpty");
+		});
+
+
+		$('#switchcontext_studios').on('click', function () {
+			
+			_switch("bpty.studios");
+		});
+
+		$('#switchcontext_bwin').on('click', function () {
+			
+			_switch("bpty.bwin");
+		});
+
+		$('#switchcontext_kalixa').on('click', function () {
+			
+			_switch("bpty.kalixa");
+
+		});
+
+		function _switch(context){
+			console.log("switch context to "+context+" : ");
+			
+			
+			$.ajax({
+			  url: '/api/space/rest/switchcontext',
+			  type: 'POST',
+			  data: { 
+					  context: context
+					}
+			});
+			location.reload();
+
+		}	
 		

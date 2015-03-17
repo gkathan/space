@@ -9,14 +9,8 @@ var _ = require('lodash');
 var moment = require('moment');
 
 
-var winston = require('winston');
-var logger = new (winston.Logger)({
-    transports: [
-      new (winston.transports.Console)({colorize:true, prettyPrint:true,showLevel:true,timestamp:true}),
-      new (winston.transports.File)({ filename: 'logs/s2t_api.log' , prettyPrint:true,showLevel:true})
-    ]
-  });
-logger.level='debug';
+var winston=require('winston');
+var logger = winston.loggers.get('space_log');
 
 var config = require('config');
 var DB=config.database.db;
@@ -61,6 +55,7 @@ var PATH = {
 						REST_ORGANIZATION : BASE+'/space/rest/organization/:date',
 						
 						REST_MAIL : BASE+'/space/rest/mail',
+						REST_SWITCHCONTEXT : BASE+'/space/rest/switchcontext',
 						
 						
 						EXPORT_TARGETS : BASE+'/space/export/xlsx/targets',
@@ -151,6 +146,9 @@ router.delete(PATH.REST_FIREREPORT, function(req, res, next) {remove(req,res,nex
 
 
 router.post(PATH.REST_MAIL, function(req, res, next) {mail(req,res,next); });
+
+router.post(PATH.REST_SWITCHCONTEXT, function(req, res, next) {switchcontext(req,res,next); });
+router.get(PATH.REST_SWITCHCONTEXT, function(req, res, next) {switchcontext(req,res,next); });
 
 
 router.get(PATH.REST_ORGANIZATION, function(req, res, next) {
@@ -344,8 +342,8 @@ function save(req, res , next){
 		var _diff;
 
 		db.collection(_collection).findOne({_id:mongojs.ObjectId(item._id)}, function(err , success){
-			//console.log('FindOne() Response success '+success);
-			//console.log('FindOne() Response error '+err);
+			//logger.debug('FindOne() Response success '+success);
+			//logger.debug('FindOne() Response error '+err);
 			_old=success;
 			logger.debug("************_old: "+JSON.stringify(_old));
 			_diff = jsondiffpatch.diff(_old,item);
@@ -367,11 +365,11 @@ function save(req, res , next){
 			}
 
 			
-			console.log("[DEBUG] going to update collection ...");
+			logger.debug("[DEBUG] going to update collection ...");
 
 			db.collection(_collection).update({_id:mongojs.ObjectId(item._id)},item,{upsert:true} , function(err , success){
-				//console.log('Response success '+success);
-				//console.log('Response error '+err);
+				//logger.debug('Response success '+success);
+				//logger.debug('Response error '+err);
 				logger.debug("[DEBUG] updated collection ...");
 				if(success){
 					logger.debug("[DEBUG] SUCCESS updatedExisting: "+success.updatedExisting);
@@ -454,7 +452,7 @@ function saveNG(req, res , next){
 	async.each(items, function (item, callback){ 
 		logger.debug("*item: "+item); // print the key
 		
-		db.collection(collection).remove({_id:mongojs.ObjectId(item)} , function(err , success){if (success) {console.log("--- remove: id:"+item+" [SUCCESS]");}})
+		db.collection(collection).remove({_id:mongojs.ObjectId(item)} , function(err , success){if (success) {logger.debug("--- remove: id:"+item+" [SUCCESS]");}})
 		
 		callback(); // tell async that the iterator has completed
 
@@ -477,7 +475,7 @@ function saveNG(req, res , next){
 
  */
 function mail(req, res , next){
-    console.log("*********************** mail: "+req.body.mail);
+    logger.debug("*********************** mail: "+req.body.mail);
     
     var mail = JSON.parse(req.body.mail);
     
@@ -527,7 +525,7 @@ function remove(req, res , next){
 	async.each(items, function (item, callback){ 
 		logger.debug("*item: "+item); // print the key
 		
-		db.collection(collection).remove({_id:mongojs.ObjectId(item)} , function(err , success){if (success) {console.log("--- remove: id:"+item+" [SUCCESS]");}})
+		db.collection(collection).remove({_id:mongojs.ObjectId(item)} , function(err , success){if (success) {logger.debug("--- remove: id:"+item+" [SUCCESS]");}})
 		
 		callback(); // tell async that the iterator has completed
 
@@ -995,7 +993,7 @@ function _formatCell(row, cellData,eOpt){
 			 else 
 				eOpt.styleIndex=3;
 			 
-             //console.log(JSON.stringify(row));
+             //logger.debug(JSON.stringify(row));
              return _stripCrap(cellData);
         }
 
@@ -1022,15 +1020,15 @@ function _createDataRows(conf,data){
 	
 	for (var d in data){
 		var _row = new Array();
-		//console.log("JSON: "+JSON.stringify(success[m]));
+		//logger.debug("JSON: "+JSON.stringify(success[m]));
 		for (var f in _fields){
 			var _column = _fields[f];
-			//console.log("+ column: "+_column);
+			//logger.debug("+ column: "+_column);
 			if (! data[d][_column]) _row.push("");
 			else _row.push(data[d][_column]);
 		}
 		_list.push(_row);
-		//console.log("** row: "+_row);
+		//logger.debug("** row: "+_row);
 	}	
 	return _list;
 }
@@ -1081,6 +1079,26 @@ function transcode(req,res,next){
 }
 
 
+function switchcontext(req,res,next){
+	var context = require('../services/ContextService');
+	
+	logger.debug("switchcontext called: "+req.body.context);
+	
+	if (req.body.context){
+		context.switch(req.body.context,function(context){
+				
+				logger.debug("*** context: "+JSON.stringify(context));
+				
+				logger.debug("*** session.AUTH: "+req.session.AUTH);
+				logger.debug("*** session.CONTEXT: "+req.session.CONTEXT);
+				
+				req.session.CONTEXT = context.name;
+				logger.debug("*** session.CONTEXT: "+req.session.CONTEXT);
+		})
+	}
+	res.send("switchcontext");
+	//next();
+}
 
 
 /** exposes server side config relevant for client 

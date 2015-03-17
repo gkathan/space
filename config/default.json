@@ -24,10 +24,74 @@
 		
 	},
 	
+	
+
+	
+	
+	
     
-    "entity" : "bpty.studios",
-//    "entity" : "bpty.kalixa",
-//    "entity" : "bpty.bwin",
+    "context" : "bpty.studios",
+
+    "entities" : [
+		{
+			"name": "bpty",
+			"skin": {
+				"colors" : {
+					"primary" :"rgb(50,57,99)",
+					"secondary" :"rgb(0,184,228)",
+					"secondary2" :"rgb(249,157,28)",
+					"secondary3" :"rgb(176,172,213)",
+					"secondary4" :"rgb(130,206,193)",
+					"secondary5" :"rgb(255,203,5)"
+				}
+			}
+		},
+		{
+			"name": "bpty.studios",
+			"skin": {
+				"colors" : {
+					"primary" :"rgb(50,57,99)",
+					"secondary" :"rgb(0,184,228)",
+					"secondary2" :"rgb(249,157,28)",
+					"secondary3" :"rgb(176,172,213)",
+					"secondary4" :"rgb(130,206,193)",
+					"secondary5" :"rgb(255,203,5)"
+				}
+			}
+		},
+		{
+		
+			"name": "bpty.kalixa",
+			
+			"skin": {
+				"colors" : {
+					"primary" :"rgb(50,57,99)",
+					"secondary" :"rgb(0,184,228)",
+					"secondary2" :"rgb(249,157,28)",
+					"secondary3" :"rgb(176,172,213)",
+					"secondary4" :"rgb(130,206,193)",
+					"secondary5" :"rgb(255,203,5)"
+				}
+			}
+		},
+		{
+			"name": "bpty.bwin",
+			
+			"skin": {
+				"colors" : {
+					"primary" :"rgb(50,57,99)",
+					"secondary" :"rgb(0,184,228)",
+					"secondary2" :"rgb(249,157,28)",
+					"secondary3" :"rgb(176,172,213)",
+					"secondary4" :"rgb(130,206,193)",
+					"secondary5" :"rgb(255,203,5)"
+				}
+			}
+		}
+	],
+
+
+
     
     "v1" : {
 		
@@ -59,7 +123,10 @@
      "mailer" : {
 		"host": "localhost",
 		"port": 25,
-		"from" : "mailer@localhost"
+		"from" : "mailer@localhost",
+		"signatureHtml" : "<style>html {position: relative;min-height: 100%;}body {background-color: #f9f9f9;font-family: RobotoDraft,  Helvetica, Arial;-webkit-user-select: none;-moz-user-select: none;-ms-user-select: none;user-select: none;-webkit-tap-highlight-color: rgba(0,0,0,0);-webkit-touch-callout: none; overflow: auto; argin-bottom: 20px;}</style>",
+		"signatureText" : "\n________________________________\n:: this is an automatically generated mail - please do not reply to this email - in case of questions please contact gerold.kathan@bwinparty.com\n\n:: bpty   s t u d i o s | commercial management"
+		
 	
      },
      

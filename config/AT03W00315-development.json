@@ -20,7 +20,7 @@
 		
 		"syncEpics": {
 			"mode": "on",
-			"intervalMinutes" :10,
+			"intervalMinutes" :60,
 			"url" : "http://knbnprxy.ea.bwinparty.corp/rest/epics"
 			}
 		},
@@ -39,7 +39,7 @@
 
 	"mailer" : {
 		"host": "smtprelay.icepor.com",
-		"from": "strategy2tactics-mailer@bwinparty.com"
+		"from": "space-mailer@bwinparty.corp"
 
 	},
      

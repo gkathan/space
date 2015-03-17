@@ -2,8 +2,12 @@ extends layout
 
 block content
 	div.row(style="margin-left:10px;margin-bottom:10px;margin-top:10px")
-		img(src='/images/#{config.entity}_logo.png'  height='20px')
-		span(style="font-size:10px;margin-left:20px;color:grey")  entity: <b> #{config.entity}</b>
+		if session.CONTEXT
+			img(src='/images/#{session.CONTEXT}_logo.png'  height='20px')
+			span(style="font-size:10px;margin-left:20px;color:grey")  entity: <b> #{session.CONTEXT}</b>
+		else
+			img(src='/images/bpty_logo.png'  height='20px')
+			
 		if session.AUTH
 			span(style="font-size:10px;margin-left:20px;color:grey")  logged in as: <b> #{session.AUTH}/#{session.USER} </b> 
 			
@@ -27,41 +31,44 @@ block content
 			ul.nav.navbar-nav
 				
 				if !session.AUTH
-					li.active
+					li
 						a(href='/login') login 
+					
+					li
+						a(role="menuitem" tabindex="-1" href="/firereports") fire reports
 					
 				if session.AUTH
 					li.active
 						a(href='/logout') logout
 				
-				ul.nav.navbar-nav
-					li.dropdown(id="fat-menu")
-						a.dropdown-toggle(id="targets" href="#" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false") environment
-							span.caret 
+					ul.nav.navbar-nav
+						li.dropdown(id="fat-menu")
+							a.dropdown-toggle(id="targets" href="#" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false") environment
+								span.caret 
 
-						ul.dropdown-menu(role="menu" aria-labelledby="admin")
-							li(role="presentation") 
-								a(role="menuitem" tabindex="-1" href="/customers") customers
-							li(role="presentation") 
-								a(role="menuitem" tabindex="-1" href="/competitors") competitors
-							li(role="presentation") 
-								a(role="menuitem" tabindex="-1" href="/labels") labels
-							li(role="presentation") 
-								a(role="menuitem" tabindex="-1" href="/firereports") fire reports
-							li
-								a(href='/playbooks') playbooks
-								
-								
-				ul.nav.navbar-nav
-					li.dropdown(id="fat-menu")
-						a.dropdown-toggle(id="targets" href="#" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false") targets
-							span.caret 
+							ul.dropdown-menu(role="menu" aria-labelledby="admin")
+								li(role="presentation") 
+									a(role="menuitem" tabindex="-1" href="/customers") customers
+								li(role="presentation") 
+									a(role="menuitem" tabindex="-1" href="/competitors") competitors
+								li(role="presentation") 
+									a(role="menuitem" tabindex="-1" href="/labels") labels
+								li(role="presentation") 
+									a(role="menuitem" tabindex="-1" href="/firereports") fire reports
+								li
+									a(href='/playbooks') playbooks
+									
+									
+					ul.nav.navbar-nav
+						li.dropdown(id="fat-menu")
+							a.dropdown-toggle(id="targets" href="#" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false") targets
+								span.caret 
 
-						ul.dropdown-menu(role="menu" aria-labelledby="admin")
-							li(role="presentation") 
-								a(role="menuitem" tabindex="-1" href="/targets/overview") targets overview
-							li(role="presentation") 
-								a(role="menuitem" tabindex="-1" href="/organization/circlecontain/targets") targets circle contain map								
+							ul.dropdown-menu(role="menu" aria-labelledby="admin")
+								li(role="presentation") 
+									a(role="menuitem" tabindex="-1" href="/targets/overview") targets overview
+								li(role="presentation") 
+									a(role="menuitem" tabindex="-1" href="/organization/circlecontain/targets") targets circle contain map								
 
 
 				

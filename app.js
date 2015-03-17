@@ -104,9 +104,14 @@ app.use(flash());
 
 // http://thenitai.com/2013/11/25/how-to-access-sessions-in-jade-template/
 app.use(function(req,res,next){
+	
 	res.locals.session = req.session;
+	res.locals.config = config;
 	next();
 });
+
+
+
 
 // Session-persisted message middleware
 app.use(function(req, res, next){

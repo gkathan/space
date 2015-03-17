@@ -46,6 +46,8 @@ router.get('/chromeonly', function(req, res) {
 });
 
 router.get('/config', function(req, res) {
+	ensureAuthenticated(req,res);
+	
 	var os = require('os');
 	res.locals.os = os;	
 	res.render('config');
@@ -66,8 +68,6 @@ router.get('/labels', function(req, res) {
 router.get('/firereports', function(req, res) {
 	var firereports =  db.collection('firereport');
 		firereports.find().sort({$natural:-1}, function (err, docs){
-			//sort
-			
 			res.locals.firereports=docs;
 			res.render('firereports', { title: 's p a c e - firereports' })
 	});
@@ -100,19 +100,9 @@ router.get('/competitors', function(req, res) {
 
 /* GET the admin page. */
 router.get('/admin', function(req, res) {
-	if (!req.session.AUTH){
-		  req.session.ORIGINAL_URL = req.originalUrl;
-		  res.redirect("/login");
-	}
+	ensureAuthenticated(req,res);
 	res.render('admin/admin', { title: 's p a c e - admin' });
 });
-
-
-
-
-
-
-
 
 
 router.get('/playbooks', function(req, res) {
@@ -122,21 +112,16 @@ router.get('/playbooks', function(req, res) {
 
 
 
-
 router.get('/boards', function(req, res) {
-    if (!req.session.AUTH){
-			req.session.ORIGINAL_URL = req.originalUrl;
-			res.redirect("/login");
-		}
-		
-		var boards =  db.collection('boards');
-		boards.find({}, function (err, docs){
-			res.locals.boards=docs;
-			console.log(": "+boards[0]);
-			res.render('boards', { title: 's p a c e - kanbanboards' });
-		});
+    ensureAuthenticated(req,res);
+    	
+	var boards =  db.collection('boards');
+	boards.find({}, function (err, docs){
+		res.locals.boards=docs;
+		console.log(": "+boards[0]);
+		res.render('boards', { title: 's p a c e - kanbanboards' });
+	});
 });
-
 
 	
 
@@ -182,20 +167,15 @@ router.get('/signup', function(req, res) {
 
 
 router.get('/kanban/:id', function(req, res) {
-    if (!req.session.AUTH){
-		req.session.ORIGINAL_URL = req.originalUrl;
-		res.redirect("/login");
-	}
-    var id = req.params.id;
+	ensureAuthenticated(req,res);
+
+	var id = req.params.id;
 	var v1epics =  db.collection('v1epics');
 		v1epics.find({}, function (err, docs){
 		res.locals.kanbanId = id;
 		res.locals.epics = docs[0].epics;
 		res.render('kanban', { title: 's p a c e - kanban board' })	
 	});
-			
-		
-    
 });
 
 
@@ -205,19 +185,15 @@ router.get('/logout', function(req, res) {
     if (req.session){
 		console.log("...we have a session...");
 		req.session.destroy();
-		
 		res.redirect('/login');
 	}
-	//res.redirect("/login");
 });
 
 
-// Simple route middleware to ensure user is authenticated.
-//   Use this route middleware on any resource that needs to be protected.  If
-//   the request is authenticated (typically via a persistent login session),
-//   the request will proceed.  Otherwise, the user will be redirected to the
-//   login page.
-function ensureAuthenticated(req, res, next) {
-  if (req.isAuthenticated()) { return next(); }
-  res.redirect('/login')
+
+function ensureAuthenticated(req, res) {
+	if (!req.session.AUTH){
+		  req.session.ORIGINAL_URL = req.originalUrl;
+		  res.redirect("/login");
+	}
 }

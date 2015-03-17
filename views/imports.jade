@@ -61,7 +61,10 @@ link(rel='stylesheet', href='/javascripts/components/jasny-bootstrap/dist/css/ja
 // material bootstrap
 //link(href="/javascripts/components/bootstrap-material-design/dist/css/material-wfont.min.css" rel="stylesheet")
 
-link(rel="stylesheet"  href="/stylesheets/#{config.entity}-material.css")
+if session.CONTEXT
+	link(rel="stylesheet"  href="/stylesheets/#{session.CONTEXT}-material.css")
+else
+	link(rel="stylesheet"  href="/stylesheets/bpty-material.css")
 
 link(href="/javascripts/components/bootstrap-material-design/dist/css/ripples.min.css" rel="stylesheet")
 

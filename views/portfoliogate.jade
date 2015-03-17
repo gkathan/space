@@ -63,7 +63,8 @@ mixin renderEpic(epic)
 							
 				td(style="width:15px;vertical-align:middle;text-align:center")
 					if epic.oldState
-						span.glyphicon.glyphicon-star(style="font-size:12px;color:black; ")
+						span.glyphicon.glyphicon-star(style="font-size:12px;color:black; ") 
+						span(style="opacity:0") x
 						//span(style="color:orange; font-size:10px") #{epic.oldState}
 				
 			else
@@ -76,7 +77,7 @@ mixin renderEpic(epic)
 block content
 	span(style="color:#999999;font-size:8px") #{pgates.length} [portfolio board] snapshots online | last v1.epics sync #{v1LastUpdate}
 	each _date in pgates
-		div.panel
+		div.panel(style="max-width:1400px")
 			div.panel-heading(style="font-size:14px; color:black") 
 				| WEEKLY PORTFOLIO SNAPSHOT 
 				br
@@ -98,7 +99,7 @@ block content
 						each _change in _date.stateChangeBucket
 							if _change.Status !="New"
 								tr
-									td(style="width:150px;font-size:10px;vertical-align:middle;height:14px")
+									td(style="width:180px;font-size:10px;vertical-align:middle;height:14px")
 										span.glyphicon.glyphicon-star(style="font-size:10px;color:black;")
 										<b>#{_change.oldState}</b> 
 										span.glyphicon.glyphicon-arrow-right 
@@ -145,22 +146,22 @@ block content
 											thead
 												tr(style="height:15px")
 													th(style="width:25px;text-align:left;font-size:8px;vertical-align:top") 
-														a(href="#" title="sort by health" onClick="alert('[TODO] sort by health')") 
+														a(href="#" title="sort by health" ) 
 															
 															//span.glyphicon.glyphicon-triangle-bottom(style="font-size:8px;color:black;")
 													th(style="width:35px;text-align:left;font-size:8px;vertical-align:top") 
-														a(href="#" title="sort by id" onClick="alert('[TODO] sort by id')") 
+														a(href="#" title="sort by id") 
 															
 															//span.glyphicon.glyphicon-triangle-bottom(style="font-size:8px;color:black;")
 													th(style="width:180px;text-align:left;font-size:8px;vertical-align:top")
-														a(href="#" title="sort by name" onClick="alert('[TODO] sort by name')") 
+														a(href="#" title="sort by name") 
 															
 															//span.glyphicon.glyphicon-triangle-bottom(style="font-size:8px;color:black;")
 													th(style="width:35px;text-align:left;font-size:8px;vertical-align:top")
-														a(href="#" title="sort by ref" onClick="alert('[TODO] sort by ref')")
+														a(href="#" title="sort by ref" )
 															
 													th(style="width:30px;text-align:left;font-size:8px;vertical-align:top") 
-														a(href="#" title="sort by changed from last time" onClick="alert('[TODO] sort by change')")
+														a(href="#" title="sort by changed from last time")
 															
 															//span.glyphicon.glyphicon-triangle-bottom(style="font-size:8px;color:black;")
 											tbody
@@ -172,6 +173,8 @@ block content
 		$(function () {
 			//$('[data-toggle="tooltip"]').tooltip({html:true})
 		})
+		
+		
 		
 		
 

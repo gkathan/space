@@ -27,7 +27,15 @@ router.get('/overview', function(req, res, next) {
 	
 	res.locals._=require('lodash');
 	
-	_getTargets(config.entity,function(err,data){
+	var _context;
+	if (req.session.CONTEXT){
+		_context = req.session.CONTEXT;
+	}
+	else
+	{
+		_context = config.context;
+	}
+	_getTargets(_context,function(err,data){
 		
 		var _L2targets = [];
 		var _L1targets = [];
@@ -66,8 +74,10 @@ router.get('/overview', function(req, res, next) {
 			 });	
 		}
 		else{
+			
 			res.locals.targets=[];
 			res.locals.L1targets=[];
+			res.locals.L2targets=[];
 			res.locals.vision="undefined";
 			res.locals.start="undefined";
 			res.locals.end="undefined";
@@ -82,26 +92,26 @@ router.get('/overview', function(req, res, next) {
 });
 
 
-function _getTargets(entity,callback){
+function _getTargets(context,callback){
     
     
-	db.collection("targets").find({entity:entity},function(err,data){
+	db.collection("targets").find({context:context},function(err,data){
 			callback(err,data);
 	});
 }
 
 
-function _getL2Targets(entity,callback){
+function _getL2Targets(context,callback){
     
-	db.collection("targets").find({type:"target",entity:entity},function(err,data){
+	db.collection("targets").find({type:"target",context:context},function(err,data){
 			callback(err,data);
 	});
 }
 
 
-function _getL1Targets(entity,callback){
+function _getL1Targets(context,callback){
     
-	db.collection("targets").find({type:"bonus",entity:entity},function(err,data){
+	db.collection("targets").find({type:"bonus",context:context},function(err,data){
 			callback(err,data);
 	});
 }

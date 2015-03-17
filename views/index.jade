@@ -3,7 +3,10 @@ include kanban_menu
 block content
 	div.row(style="margin-left:10px;margin-bottom:10px;width:420px; margin: 10px auto;")
 		.jumbotron(style="background:#ffffff;text-align:center")
-			img(src="images/space_big_blue.png" width="300px" style="margin:5px auto")
+			if session.CONTEXT
+				img(src="images/space_big_#{session.CONTEXT}.png" width="300px" style="margin:5px auto")
+			else
+				img(src="images/space_big_bpty.png" width="300px" style="margin:5px auto")
 			h2(style="margin:5px auto;text-align:center") 
 				small
 					div(style="font-size:14px;color:#174D75") <b>strategy</b> » <b>performance</b> and <b>change</b> explorer
