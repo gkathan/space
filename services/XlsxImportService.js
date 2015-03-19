@@ -29,10 +29,10 @@ exports.convertXlsx2Json = function convertXlsx2Json (filename) {
 	var _outputFile =  _base +_jsonfilename;
 	var _inputFile = _base+filename;
 	logger.debug("******************** output: "+_outputFile);
-	//1) convert xlsx2json
+	//1) convert xlsx2json - we do not write a physical output file only use the data stream
 	xlsx_json({
 		input: _inputFile ,
-		output: _outputFile
+		output: null
 	}, function(err, json) {
 		if(err) {
 			logger.error(err);
@@ -134,19 +134,7 @@ exports.convertXlsx2Json = function convertXlsx2Json (filename) {
 				done = false;
 			}
 		}
-		logger.debug("****now we can delete the json temp file: "+_outputFile);
-		fs.unlink(_outputFile,function(err,succes){
-			if (err) logger.debug("....[ERROR] delete done"+err);
-			else logger.debug("....[OK] delete done");
-		});
-		
 	});
-		logger.debug("****now we can delete the json temp file: "+_outputFile);
-		fs.unlink(_outputFile,function(err,succes){
-			if (err) logger.debug("....[ERROR] delete done"+err);
-			else if (success) logger.debug("....[OK] delete done");
-			else logger.debug("....[hmmmm] ???");
-		});
 }
 
 
