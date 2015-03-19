@@ -69,7 +69,7 @@ function submit_download_form(output_format,css)
 			data: svg_xml,
 			//contentType: 'text/plain',
 			crossDomain:true,
-			url: TRANSCODE_URL+"?context="+CONTEXT+"&format="+output_format,						
+			url: TRANSCODE_URL+"?context="+CONTEXT+"&format="+output_format+"&width=1000&height=1000&scale=1"	
 			
 		});
 		
