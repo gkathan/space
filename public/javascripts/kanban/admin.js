@@ -28,11 +28,6 @@ function refresh(collection){
 				if (collection=="v1epics"){
 					 _data = data[0].epics;
 				}
-				else if (collection.indexOf("organization")>-1){
-					 
-					 console.log("+++ organization data: "+_data.oDate)
-					 _data = data.oItems;
-				}
 				
 				// check for "_id" field
 				if (_data[0]._id == undefined){
@@ -65,7 +60,7 @@ function getConfig(collection){
 		case "labels": return getLabelsConfig();
 		case "customers": return getCustomersConfig();
 		case "competitors": return getCompetitorsConfig();
-		case "organization/2015-02-17": return getOrganizationConfig();
+		case "organization": return getOrganizationConfig();
 		case "productcatalog": return getProductCatalogConfig();
 		case "roadmaps": return getRoadmapConfig();
 		case "availability":  return getAvailabilityConfig();

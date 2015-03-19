@@ -55,9 +55,13 @@ router.get('/chromeonly', function(req, res) {
 router.get('/config', function(req, res) {
 	ensureAuthenticated(req,res);
 	
-	var os = require('os');
-	res.locals.os = os;	
-	res.render('config');
+	var orgService = require('../services/OrganizationService');
+	orgService.findEmployeeByFirstLastName(config.test.user.firstname,config.test.user.lastname,function(employee){
+		var os = require('os');
+		res.locals.os = os;	
+		res.locals.employee = employee[0];
+		res.render('config');
+	});
 });
 
 router.get('/labels', function(req, res) {

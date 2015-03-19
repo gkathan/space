@@ -20,10 +20,15 @@
 		"deployTarget" :"pi",
 		"deployTargetPort" :22,
 		"deployTargetEnv": "development"
-		
-		
 	},
-	
+
+
+	"test":{
+		"user":{
+			"firstname":"Marc-Alexander",
+			"lastname":"Lange"
+		}
+	},
 	
 	"content":{
 		"spacenews" : {

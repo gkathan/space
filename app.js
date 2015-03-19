@@ -23,6 +23,7 @@ var routes = require('./routes/index');
 var users = require('./routes/users');
 var api = require('./routes/api');
 var organization = require('./routes/organization');
+
 var incidents = require('./routes/incidents');
 var portfolio = require('./routes/portfolio');
 var upload = require('./routes/upload');
@@ -78,8 +79,10 @@ app.locals.title="s p a c e ";
 
 // get all org instance dates for the menu
 // ** this should go somewhere else ;-)
-_getOrgDates(function(data){
-	app.locals.organizationDates=data;
+
+orgService = require('./services/OrganizationService');
+orgService.getOrganizationHistoryDates(function(data){
+	app.locals.organizationhistoryDates=data;
 });
 
 app.use(favicon(path.join(__dirname,'public','images','favicon.ico')));
@@ -206,16 +209,6 @@ app.use(function(err, req, res, next) {
 
 
 
-
-/**
- * organization snapsho dates
- * => should be moved in a service class ;-)
- */
-function _getOrgDates(callback){
-   db.collection("organization").find({},{oDate:1}).sort({oDate:-1},function(err,data){
-			callback(data);
-	});
-}
 
 
 

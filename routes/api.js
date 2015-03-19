@@ -52,10 +52,12 @@ var PATH = {
 						REST_FIREREPORT : BASE+'/space/rest/firereport',
 						REST_INCIDENTTRACKER : BASE+'/space/rest/incidenttracker',
 						REST_CONTENT : BASE+'/space/rest/content',
+						REST_SYNCEMPLOYEEIMAGES : BASE+'/space/rest/syncemployeeimages',
 						
 						
 						REST_INITIATIVES_DIFF_TRAIL : BASE+'/space/rest/initiatives_diff_trail',
-						REST_ORGANIZATION : BASE+'/space/rest/organization/:date',
+						REST_ORGANIZATION : BASE+'/space/rest/organization',
+						REST_ORGANIZATIONHISTORY : BASE+'/space/rest/organization/history/:date',
 						
 						REST_MAIL : BASE+'/space/rest/mail',
 						REST_SWITCHCONTEXT : BASE+'/space/rest/switchcontext',
@@ -157,14 +159,15 @@ router.delete(PATH.REST_CONTENT, function(req, res, next) {remove(req,res,next);
 
 router.post(PATH.REST_MAIL, function(req, res, next) {mail(req,res,next); });
 
+router.post(PATH.REST_SYNCEMPLOYEEIMAGES, function(req, res, next) {syncEmployeeImages(req,res,next); });
+
 router.post(PATH.REST_SWITCHCONTEXT, function(req, res, next) {switchcontext(req,res,next); });
 router.get(PATH.REST_SWITCHCONTEXT, function(req, res, next) {switchcontext(req,res,next); });
 
+router.get(PATH.REST_ORGANIZATION, function(req, res, next) {findAllByName(req,res,next); });
 
-router.get(PATH.REST_ORGANIZATION, function(req, res, next) {
-	db.collection("organization").findOne({oDate:req.params.date} , function(err , success){
-        logger.debug('Response success '+success);
-        logger.debug('Response error '+err);
+router.get(PATH.REST_ORGANIZATIONHISTORY, function(req, res, next) {
+	db.collection("organizationhistory").findOne({oDate:req.params.date} , function(err , success){
         if(success){
             res.send(success);
             return;
@@ -511,19 +514,30 @@ function saveNG(req, res , next){
     subject: subjectPrefix+mail.subject,
 
  */
-function mail(req, res , next){
+function mail(req,res,next){
     logger.debug("*********************** mail: "+req.body.mail);
-    
     var mail = JSON.parse(req.body.mail);
-    
     var mailer = require('../services/MailService');
-
 	mailer.sendText(mail);
-	
 	res.send({});
 	return;
+}
+
+
+
+function syncEmployeeImages(req,res,next){
+    logger.debug("*********************** lets sync images of employees... ");
+    
+    var orgService = require ('../services/OrganizationService');
+    orgService.syncEmployeeImages(req,res,function(){
+		
+		logger.debug("???");
+	});
+    
     
 }
+
+
 
 
 function _checkCreateDate(item){

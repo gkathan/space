@@ -62,6 +62,19 @@ div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;back
 		a.btn.btn-xs.btn-danger(id="switchcontext_bwin" href="#" ) switch context --> bpty.bwin
 		a.btn.btn-xs.btn-danger(id="switchcontext_kalixa" href="#" ) switch context --> bpty.kalixa
 		
+		br
+		a.btn.btn-xs.btn-danger(id="sync_employeeimages" href="#" ) sync employeeimages 
+		
+		br
+		if employee
+			|employee:
+			|number: #{employee.Title}
+			div(style="font-size:8px")
+				img.img-circle(src='http://my.bwinparty.com/api/people/images/#{employee["Employee Number"]}' height="50" width="50")
+				|#{JSON.stringify(employee)}
+		else
+			|hmmmm
+
 	include includes/material
 	
 	script.
@@ -87,27 +100,35 @@ div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;back
 			});
 
 		});
+
+
+		$('#sync_employeeimages').on('click', function () {
+			$.ajax({
+			  url: '/api/space/rest/syncemployeeimages',
+			  type: 'POST',
+			  data: { 
+					 
+					}
+			});
+			//location.reload();
+		});
+
 		
 		$('#switchcontext_bpty').on('click', function () {
-			
 			_switch("bpty");
 		});
 
 
 		$('#switchcontext_studios').on('click', function () {
-			
 			_switch("bpty.studios");
 		});
 
 		$('#switchcontext_bwin').on('click', function () {
-			
 			_switch("bpty.bwin");
 		});
 
 		$('#switchcontext_kalixa').on('click', function () {
-			
 			_switch("bpty.kalixa");
-
 		});
 
 		function _switch(context){
