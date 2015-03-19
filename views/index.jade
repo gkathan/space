@@ -6,14 +6,22 @@ block content
 			if session.CONTEXT
 				img(src="images/space_big_#{session.CONTEXT}.png" width="300px" style="margin:5px auto")
 			else
-				img(src="images/space_big_bpty.png" width="300px" style="margin:5px auto")
+				img(src="images/space_big_bpty.png" width="150px" style="margin:5px auto")
 			h2(style="margin:5px auto;text-align:center") 
 				small
 					div(style="font-size:14px;color:#174D75") <b>strategy</b> » <b>performance</b> and <b>change</b> explorer
-					br
-					button.btn.btn-primary.btn-xs(onClick="window.location.href='/login'") Login
 				br
-				span(style="color:grey;font-size:10px") brought to you by:  bpty studios | <b>commercial management</b>   
+				center
+					div(style="width:300px;align:center")
+						div(style="font-size:10px;color:lightgrey") 
+							|news published on: #{spaceNews.date}
+						div(style="font-size:18px;color:#174D75;font-weight:bold") 
+							|#{spaceNews.headline}
+						div(style="font-size:14px;color:#174D75") 
+							|#{spaceNews.content}
+						
+				br
+				span(style="color:grey;font-size:10px") bpty studios | <b>commercial management</b> | #{moment().format("MMMM")} #{moment().format("YYYY")}  
 
 	include includes/material
 

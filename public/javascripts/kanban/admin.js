@@ -70,6 +70,8 @@ function getConfig(collection){
 		case "roadmaps": return getRoadmapConfig();
 		case "availability":  return getAvailabilityConfig();
 		case "firereport":  return getFirereportConfig();
+		case "content":  return getContentConfig();
+		
 		
 	}
 }
@@ -211,6 +213,25 @@ function getFirereportConfig(){
 		_config.fields = _firereport;
 	return _config;
 }
+
+
+function getContentConfig(){
+	var _content = [
+        { id:"id", name: "id", field: "_id",sortable:true,cssClass:"onKanbanImmutable" },
+        { id: "context", name: "context",  field: "context" ,width:80,sortable:true, editor: Slick.Editors.Text, cssClass: "cell-standard"},
+		{ id: "type", name: "type",  field: "type",width:100,sortable:true, editor: Slick.Editors.Text,sortable:true, cssClass: "cell-standard" },
+        { id: "headline", name: "headline",  field: "headline" ,sortable:true,width:200, editor: Slick.Editors.Text, cssClass: "cell-standard"},
+		{ id: "content", name: "content",  field: "content",width:400,sortable:true,editor:Slick.Editors.LongText, cssClass: "cell-standard"},
+		{ id: "date", name: "date",  field: "date",width:80,sortable:true,editor:Slick.Editors.Text, cssClass: "cell-standard"},
+		{ id: "status", name: "status",  field: "status",width:80,sortable:true,editor:Slick.Editors.Text, cssClass: "cell-standard"}
+		];
+		
+	var _config ={};
+		_config.mode="editable";
+		_config.fields = _content;
+	return _config;
+}
+
 
 function getBoardConfig(){
 	//lanetext

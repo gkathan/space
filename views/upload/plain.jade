@@ -26,18 +26,9 @@ div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;back
 				td
 					span(style="font-size:11px;font-weight:bold") supported collections:
 					ul(style="font-size:10px;margin-left:20px")
-						li productportfolio
-						li productcatalog
-						li targets
-						li incidents
-						li labels
-						li customers
-						li competitors
-						li product catalog
-						li roadmaps
-						li availability
-						li v1 teams
-					
+						each type in config.import.plainTypes
+							li #{type}
+						
 	
 			
 			

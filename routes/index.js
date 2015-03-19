@@ -21,8 +21,15 @@ var db = mongojs(connection_string, [DB]);
 /* GET home page. */
 router.get('/', function(req, res) {
     
+    var cms = require ('../services/ContentService');
     
-    res.render('index', { title: 's p a c e' });
+    cms.getLatestSpaceNews(config.context,function(content){
+	
+	res.locals.spaceNews = content;
+	res.locals.moment = require('moment');
+		
+	res.render('index', { title: 's p a c e' });
+	});
 });
 
 module.exports = router;

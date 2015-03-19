@@ -50,6 +50,9 @@ var PATH = {
 						REST_ROADMAPS : BASE+'/space/rest/roadmaps',
 						REST_AVAILABILITY : BASE+'/space/rest/availability',
 						REST_FIREREPORT : BASE+'/space/rest/firereport',
+						REST_INCIDENTTRACKER : BASE+'/space/rest/incidenttracker',
+						REST_CONTENT : BASE+'/space/rest/content',
+						
 						
 						REST_INITIATIVES_DIFF_TRAIL : BASE+'/space/rest/initiatives_diff_trail',
 						REST_ORGANIZATION : BASE+'/space/rest/organization/:date',
@@ -72,6 +75,7 @@ var PATH = {
 						EXPORT_ROADMAPS : BASE+'/space/export/xlsx/roadmaps',
 						EXPORT_AVAILABILITY : BASE+'/space/export/xlsx/availability',
 						EXPORT_FIREREPORT : BASE+'/space/export/xlsx/firereport',
+						EXPORT_CONTENT : BASE+'/space/export/xlsx/content',
 						
 						
 						
@@ -111,6 +115,8 @@ router.get(PATH.REST_V1TEAMS, function(req, res, next) {findAllByName(req,res,ne
 router.get(PATH.REST_PRODUCTPORTFOLIO, function(req, res, next) {findAllByName(req,res,next);});
 router.get(PATH.REST_PRODUCTCATALOG, function(req, res, next) {findAllByName(req,res,next);});
 router.get(PATH.REST_INCIDENTS, function(req, res, next) {findAllByName(req,res,next);});
+router.get(PATH.REST_INCIDENTTRACKER, function(req, res, next) {findAllByName(req,res,next);});
+router.get(PATH.REST_INCIDENTTRACKER+'/:year', function(req, res, next) {findByKey("year",req,res,next);});
 router.get(PATH.REST_V1EPICS, function(req, res, next) {findAllByName(req,res,next);});
 //
 
@@ -143,6 +149,10 @@ router.delete(PATH.REST_AVAILABILITY, function(req, res, next) {remove(req,res,n
 router.get(PATH.REST_FIREREPORT, function(req, res, next) {findAllByName(req,res,next);});
 router.post(PATH.REST_FIREREPORT, function(req, res, next) {save(req,res,next); });
 router.delete(PATH.REST_FIREREPORT, function(req, res, next) {remove(req,res,next); });
+
+router.get(PATH.REST_CONTENT, function(req, res, next) {findAllByName(req,res,next);});
+router.post(PATH.REST_CONTENT, function(req, res, next) {save(req,res,next); });
+router.delete(PATH.REST_CONTENT, function(req, res, next) {remove(req,res,next); });
 
 
 router.post(PATH.REST_MAIL, function(req, res, next) {mail(req,res,next); });
@@ -181,6 +191,8 @@ router.get(PATH.EXPORT_PRODUCTCATALOG, function(req, res, next) {excelProductCat
 router.get(PATH.EXPORT_ROADMAPS, function(req, res, next) {excelRoadmaps(req,res,next);});
 router.get(PATH.EXPORT_AVAILABILITY, function(req, res, next) {excelAvailability(req,res,next);});
 router.get(PATH.EXPORT_FIREREPORT, function(req, res, next) {excelFirereport(req,res,next);});
+router.get(PATH.EXPORT_CONTENT, function(req, res, next) {excelContent(req,res,next);});
+
 router.post(PATH.TRANSCODE_BOARDS, function(req, res, next) {transcode(req,res,next); });
 
 router.get(PATH.CONFIG, function(req, res, next) {getConfig(req,res,next);});
@@ -245,6 +257,31 @@ function findById(req, res , next){
     })
 }
 
+
+
+/**
+ * find by generic key
+ */
+function findByKey(key,req, res , next){
+    var path = req.path.split("/");
+	// format path: /space/rest/boards/1
+	// take the last from the set with last stripped ;-)
+	var collection = _.last(_.initial(path));
+	
+	logger.debug("findbyKey: key: "+key+" value: "+req.params[key]);
+	logger.debug("collection: "+collection);
+	
+	
+    db.collection(collection).find({key:req.params[key]} , function(err , success){
+        logger.debug('Response success '+success);
+        logger.debug('Response error '+err);
+        if(success){
+            res.send(success);
+            return;
+        }
+        return next(err);
+    })
+}
 
 /**
  * find single object by _id
@@ -802,6 +839,30 @@ function excelV1Teams(req, res , next){
     
     _generateAndSendExcel("v1teams",conf,req,res,next);
 }
+
+
+/**
+ * generate scrumteams excel
+ */
+function excelContent(req, res , next){
+	var conf ={};
+	
+	
+    conf.stylesXmlFile = "views/excel_export/styles.xml";
+    conf.cols = [
+		{caption:'_id',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'context',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'type',type:'string',width:5,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'headline',type:'string',width:8,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'content',type:'string',width:8,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'date',type:'string',width:10,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'status',type:'string',width:10,captionStyleIndex:2,beforeCellWrite:_formatCell}
+		
+	];
+    
+    _generateAndSendExcel("content",conf,req,res,next);
+}
+
 
 /**
  * generate labels excel

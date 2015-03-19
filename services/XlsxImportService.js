@@ -66,7 +66,7 @@ exports.convertXlsx2Json = function convertXlsx2Json (filename) {
 			var _function ="";
 			var _dropBeforeInsert=false;
 			
-			var _plainElements =["productportfolio","productcatalog","targets","incidents","labels","customers","competitors","roadmaps","availability","v1teams","scrumteams"];
+			var _plainElements = config.import.plainTypes;
 			
 			if (_collection=="portfoliogate") _function = _handlePortfolioGate;
 			else if (_collection=="organization") _function = _handleHR_PI;
@@ -284,7 +284,7 @@ function _sendPortfolioUpdate(to){
 	var mailer = require('../services/MailService');
 
 	//var _url = baseUrl+"/portfolio";
-	var _url = "http://strategy2tactics.ea.bwinparty.corp/portfolio";
+	var _url = "http://space.bwinparty.corp/portfolio";
 	
 	var mail = {};
 	mail.to=to;
