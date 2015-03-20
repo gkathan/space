@@ -338,170 +338,91 @@ function findTrailByNameForId(req, res , next){
 
 
 /**
- * async pattern to handle a list of items to be processed
- * inspired by http://book.mixu.net/node/ch7.html (chapter 7.2.1)
- * 
- * 
- * todo: think about using async module: https://github.com/caolan/async
- */
-function save(req, res , next){
-    console.log("*************[DEBUG] save POST:");
-    var items = JSON.parse(req.body.itemJson);
-    var path = req.path.split("/");
-	var _collection = _.last(path);
-	
-    
-    var jsondiffpatch=require('jsondiffpatch');
-    
-    var results = [];
-    var _timestamp = new Date();
-
-    logger.debug("*************[DEBUG] save POST: collection= "+_collection+" itemJson: "+JSON.stringify(items));
-
-
-	// Async task 
-	function async(item, callback) {
-	    logger.debug("----------------------------------- async(item:"+item.name+" called");
-
-	    logger.debug("[DEBUG] save POST: collection= "+_collection+" itemJson: "+JSON.stringify(item));
-		if (!(item.createDate)){
-			item.createDate=_timestamp;
-			//TODO refactor to ASYNC handling !!!!
-			//item.id = getNextSequence("initiativeId");
-			console.log("--->>>>>>>>>>no create date found: "+item.createDate);
-			//console.log("--->>>>>>>>>>autoinc id: "+item.id);
-		}
-		else console.log("[DEBUG] createDate: "+item.createDate);
-		
-		item.changeDate=_timestamp;
-
-		logger.debug("************_item: "+item.ExtId);
-		
-		// get old before update
-		var _old;
-		var _diff;
-
-		db.collection(_collection).findOne({_id:mongojs.ObjectId(item._id)}, function(err , success){
-			//logger.debug('FindOne() Response success '+success);
-			//logger.debug('FindOne() Response error '+err);
-			_old=success;
-			logger.debug("************_old: "+JSON.stringify(_old));
-			_diff = jsondiffpatch.diff(_old,item);
-			logger.debug("************diff: "+JSON.stringify(_diff));
-
-		restOfTheFunction();	
-			
-		function restOfTheFunction(seq){	
-			logger.debug("++++++++++++++++++++++ restOfTheFunction() called +++++++++++++++++++++++++++");
-			if (seq){
-				logger.debug("[DEBUG] > restOfTheFunction() called with seq ="+seq);
-				item.id=seq;
-			}
-			
-			// http://stackoverflow.com/questions/13031541/mongoerror-cannot-change-id-of-a-document
-			if ( item._id && ( typeof(item._id) === 'string' ) ) {
-				logger.debug("[DEBUG] fixing mongDB _id issue....");
-			    item._id = mongojs.ObjectId.createFromHexString(item._id)
-			}
-
-			
-			logger.debug("[DEBUG] going to update collection ...");
-
-			db.collection(_collection).update({_id:mongojs.ObjectId(item._id)},item,{upsert:true} , function(err , success){
-				//logger.debug('Response success '+success);
-				//logger.debug('Response error '+err);
-				logger.debug("[DEBUG] updated collection ...");
-				if(success){
-					logger.debug("[DEBUG] SUCCESS updatedExisting: "+success.updatedExisting);
-					
-					//insert trail (in case of update)
-					if (success.updatedExisting){
-						logger.debug("[DEBUG] going to insert trail ...");
-						db.collection(_collection+"_diff_trail").insert({timestamp:_timestamp,refId:_old._id,diff:_diff,old:_old}	 , function(err , success){
-							logger.debug('Response success '+success);
-							logger.debug('Response error '+err);
-							if(success){
-								callback(success);
-							}
-							//return next(err);
-							
-						})
-					}
-					callback(success);
-				}
-				else {
-					logger.debug("[DEBUG] ERROR no success returned.. what to do now ????"+JSON.stringify(err));
-					callback(err);
-				}
-				//return next(err);
-			})
-		}
-	});
-	}
-
-    // Final task 
-	function final() { 
-		logger.debug('************************************************************************* Done', results);
-		
-		var _id;
-		if (results[0]){
-			if(results[0].updatedExisting==false){
-				_id = results[0].upserted[0]._id;
-			}
-		}
-				
-		logger.debug("_id: "+_id+ JSON.stringify(results[0].upserted));
-		
-		res.send({_id:_id});
-		return;
-	}
-    
-	
-	function series(item) {
-	 logger.debug(".series()...");
-	  if(item) {
-		async( item, function(result) {
-		  results.push(result);
-		  return series(items.shift());
-		});
-	  } else {
-		return final();
-		
-	  }
-	}
-	
-	series(items.shift());
-    
-}
-
-/**
  * generic save handler
  */
-function saveNG(req, res , next){
-    
+function save(req, res , next){
     logger.debug("*********************** save POST: action= "+req.body.action);
+    var jsondiffpatch=require('jsondiffpatch');
     var path = req.path.split("/");
-	var collection = _.last(path);
-
-    
+	var _collection = _.last(path);
     var items = JSON.parse(req.body.itemJson);
-    
-    
+    var _timestamp = new Date();
     // now lets iterate over the array 
     var async = require('async');
 	async.each(items, function (item, callback){ 
-		logger.debug("*item: "+item); // print the key
+		logger.debug("[async.series: now lets do what we havto do :-) ...*item: "+item); // print the key
 		
-		db.collection(collection).remove({_id:mongojs.ObjectId(item)} , function(err , success){if (success) {logger.debug("--- remove: id:"+item+" [SUCCESS]");}})
+		var _old;
+		var _diff;
 		
+		async.series([
+			function(callback){
+				logger.debug("[async.series - 1] preparing stuff ...");
+				//0 fixing some _id shit
+				// http://stackoverflow.com/questions/13031541/mongoerror-cannot-change-id-of-a-document
+				if ( item._id && ( typeof(item._id) === 'string' ) ) {
+					logger.debug("[DEBUG] fixing mongDB _id issue....");
+					item._id = mongojs.ObjectId.createFromHexString(item._id)
+				}
+				// 1) setting timestamps
+				if (!(item.createDate)){
+					item.createDate=_timestamp;
+					console.log("--->>>>>>>>>>no create date found: "+item.createDate);
+				}
+				else console.log("[DEBUG] createDate: "+item.createDate);
+				item.changeDate=_timestamp;
+				// 2) get old value before update
+				db.collection(_collection).findOne({_id:mongojs.ObjectId(item._id)}, function(err , success){
+					_old=success;
+					logger.debug("************_old: "+JSON.stringify(_old));
+					_diff = jsondiffpatch.diff(_old,item);
+					logger.debug("************diff: "+JSON.stringify(_diff));
+					callback();
+				});
+				
+			},
+			function(callback){
+				// 2) and update stuff
+				logger.debug("[async.series - 2] going to update collection ...");
+				db.collection(_collection).update({_id:mongojs.ObjectId(item._id)},item,{upsert:true} , function(err , success){
+					if(success){
+						logger.info("[success] updatedExisting: "+success.updatedExisting);
+					}
+					else {
+						logger.error("[error]  no success returned.. what to do now ????"+JSON.stringify(err));
+					}
+					callback();
+				});
+				
+			},
+			function(callback){
+				logger.debug("[async.series - 3] going to insert trail ...");
+				db.collection(_collection+"_diff_trail").insert({timestamp:_timestamp,refId:_old._id,diff:_diff,old:_old}	 , function(err , success){
+					logger.debug('Response success '+success);
+					logger.debug('Response error '+err);
+					if(success){
+						logger.info("[DEBUG] SUCCESS insert trail: ");
+					}
+					else {
+						logger.error("[DEBUG] ERROR insert trail failed"+JSON.stringify(err));
+					}
+					callback();
+				});
+				
+			}
+		]);
+	
+	
 		callback(); // tell async that the iterator has completed
-
 	}, function(err) {
 		logger.debug('iterating done');
 		res.send({});
 		return;
 	});  
-    
+		logger.debug('done');
+		res.send({});
+		return;
+
 }
 
 
