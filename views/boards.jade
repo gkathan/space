@@ -110,6 +110,8 @@ script(type='text/javascript').
 		$(".modal-header #boardName").text(_name);
 		$(".modal-body #removeboardsubmit").val(_id);
 		
+		console.log("+++++"+_self.attr('href'));
+		console.log("+++++"+$(_self.attr('href')).modal);
 
 		$(_self.attr('href')).modal('show');
 	});
@@ -175,7 +177,6 @@ script(type='text/javascript').
 						  }).show(); // for the ones that aren't closable and don't fade out there is a .hide() function.
 				}
 			});
-		
 		return false;
 	}
 
@@ -183,18 +184,13 @@ script(type='text/javascript').
 
 	function submitRemove() {
 		
-		
-		
 		var _id = $(".modal-body #removeboardsubmit").val();
 		
 		console.log("------------------- and now lets remove : _id = "+_id);
 		
-		
 		var _ids = [];
 		_ids.push(_id);
 		var _json = JSON.stringify(_ids);
-		
-		
 		var _url = "/api/kanbanv2/rest/boards";
 		
 		//form.ajax call 

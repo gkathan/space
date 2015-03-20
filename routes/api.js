@@ -57,6 +57,7 @@ var PATH = {
 						
 						REST_INITIATIVES_DIFF_TRAIL : BASE+'/space/rest/initiatives_diff_trail',
 						REST_ORGANIZATION : BASE+'/space/rest/organization',
+						REST_ORGANIZATION_EMPLOYEE : BASE+'/space/rest/organization/employee/:name',
 						REST_ORGANIZATIONHISTORY : BASE+'/space/rest/organization/history/:date',
 						
 						REST_MAIL : BASE+'/space/rest/mail',
@@ -165,6 +166,7 @@ router.post(PATH.REST_SWITCHCONTEXT, function(req, res, next) {switchcontext(req
 router.get(PATH.REST_SWITCHCONTEXT, function(req, res, next) {switchcontext(req,res,next); });
 
 router.get(PATH.REST_ORGANIZATION, function(req, res, next) {findAllByName(req,res,next); });
+router.get(PATH.REST_ORGANIZATION_EMPLOYEE, function(req, res, next) {findEmployeeByName(req,res,next); });
 
 router.get(PATH.REST_ORGANIZATIONHISTORY, function(req, res, next) {
 	db.collection("organizationhistory").findOne({oDate:req.params.date} , function(err , success){
@@ -313,6 +315,30 @@ function findBy_id(req, res , next){
     })
 }
 
+/**
+ * find single object by Id
+ */
+function findEmployeeByName(req, res , next){
+    
+    var collection = "organization";
+    
+    var _name = req.params.name.split(" ");
+	
+    db.collection(collection).findOne({"First Name":_.capitalize(_name[0]),"Last Name":_.capitalize(_name[1])} , function(err , success){
+        logger.debug('Response success '+success);
+        logger.debug('Response error '+err);
+        if(success){
+            res.send(success);
+            return;
+        }
+        else {
+            res.send(err);
+            return;
+			
+		}
+        return next(err);
+    })
+}
 
 
 

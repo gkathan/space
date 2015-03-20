@@ -14,7 +14,8 @@ div.btn-group-xs(style="margin-left:20px;")
 	
 	each employee in employees
 		//img.img-circle(src='http://my.bwinparty.com/api/people/images/#{employee["Employee Number"]}' height="50" width="50")
-		|#{employee["First Name"]} - 
+		a(href='https://my.bwinparty.com/People/#{_.first(employee["Last Name"])}/#{employee["First Name"]}#{employee["Last Name"]}#{employee["Employee Number"]}.aspx' target="_blank") #{employee["First Name"]} | 
+		
 		
 
 

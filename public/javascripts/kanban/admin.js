@@ -223,6 +223,8 @@ function getContentConfig(){
 		
 	var _config ={};
 		_config.mode="editable";
+		_config.addRow="enabled";
+		
 		_config.fields = _content;
 	return _config;
 }
@@ -510,7 +512,11 @@ function renderAdminGrid(data,conf){
 		});
 		
 	var _editable = true;
-	if (conf.mode=="readonly") _editable = false
+	if (conf.mode=="readonly") _editable = false;
+	
+	var _addRow = false;
+	if (conf.addRow=="enabled") _addRow = true;
+	
 	
 	// adds element in beginning of array
 	if (_editable) conf.fields.unshift(checkboxSelector.getColumnDefinition());
@@ -519,7 +525,7 @@ function renderAdminGrid(data,conf){
 
 	var options = {
 		editable: _editable,
-		enableAddRow: false,
+		enableAddRow: _addRow,
 		enableCellNavigation: true,
 		asyncEditorLoading: false,
 		cellHighlightCssClass: "changed",

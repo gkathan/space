@@ -24,6 +24,18 @@ _.nst = require('underscore.nest');
 /* GET targets . */
 router.get('/overview', function(req, res, next) {
 
+	_handleTargetView(req,res,next,"./targets/overview");
+	
+});
+
+
+router.get('/overview/old', function(req, res, next) {
+
+	_handleTargetView(req,res,next,"targets/overview_old");
+	
+});
+
+function _handleTargetView(req,res,next,view){
 	
 	res.locals._=require('lodash');
 	
@@ -47,6 +59,7 @@ router.get('/overview', function(req, res, next) {
 				if (data[i].type=="target") _L2targets.push(data[i]);
 				if (data[i].type=="bonus") _L1targets.push(data[i]);
 				
+				
 			}
 			var L2targetsClustered = _.nst.nest(_L2targets,["theme","cluster","group"]);
 			var L1targetsClustered = _.nst.nest(_L1targets,["theme"]);
@@ -69,7 +82,15 @@ router.get('/overview', function(req, res, next) {
 				
 				res.locals.availability = av;
 				
-				res.render('targets', { title: 's p a c e - targets overview' });
+				
+				//var orgService = require('../services/OrganizationService');
+				//orgService.findEmployeesByFunction("Studios",function(employees){
+		
+				//res.locals.orgService = orgService;
+				res.render(view, { title: 's p a c e - targets overview' });
+
+				
+				
 
 			 });	
 		}
@@ -83,13 +104,13 @@ router.get('/overview', function(req, res, next) {
 			res.locals.end="undefined";
 			res.locals.period = "undefined";
 			res.locals.availability = {};
-			res.render('targets', { title: 's p a c e - targets overview' });
+			res.render(view, { title: 's p a c e - targets overview' });
 		}
 		
 		
 		
 	});
-});
+}
 
 
 function _getTargets(context,callback){
