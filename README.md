@@ -1,6 +1,6 @@
 ![alt tag](https://raw.github.com/gkathan/space/master/public/images/space_big_bpty.bwin.png)
-# space
-strategy::performance::and:change::explorer
+
+strategy >> performance and change explorer
 
 clean install
 -------------
