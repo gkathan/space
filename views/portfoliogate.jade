@@ -78,16 +78,16 @@ block content
 	span(style="color:#999999;font-size:8px") #{pgates.length} [portfolio board] snapshots online | last v1.epics sync #{v1LastUpdate}
 	each _date in pgates
 		div.panel(style="max-width:1400px")
-			div.panel-heading(style="font-size:14px; color:black") 
-				| WEEKLY PORTFOLIO SNAPSHOT 
+			div.panel-heading(style="font-size:16px; color:black") 
+				| PORTFOLIO BOARD SNAPSHOT 
 				br
-				span(style="font-size:28px;font-weight:bold") #{_date.pDate}
+				span(style="font-size:28px;font-weight:bold") #{_date.pBoardDate}
 				ul.list-unstyled
 
 				if _date.stateChangeBucket.length == 0 && _date.healthChangeBucket.length == 0
-					span(style="font-size:11px;font-weight:normal;color:black;text-align:center") <b>NO CHANGES</b> from previous [portfolio meeting] @ #{_date.pBoardDate}:
+					span(style="font-size:11px;font-weight:normal;color:black;text-align:center") <b>NO CHANGES</b>: 
 				else
-					span(style="font-size:11px;font-weight:normal;color:black;text-align:center") <b>CHANGES</b> from previous [portfolio meeting] @ #{_date.pBoardDate}:
+					span(style="font-size:11px;font-weight:normal;color:black;text-align:center") <b>CHANGES</b>:
 				br
 
 
@@ -104,7 +104,7 @@ block content
 										<b>#{_change.oldState}</b> 
 										span.glyphicon.glyphicon-arrow-right 
 										|  <b>#{_change.Status}</b>   
-									td(style="width:450px;font-size:10px;vertical-align:middle;height:14px")
+									td(style="width:420px;font-size:10px;vertical-align:middle;height:14px")
 										a(href="http://v1.bwinparty.corp/V1-Production/Epic.mvc/Summary?oidToken=Epic%3A"+_change.id target="_new" )
 											| <span style="font-size:9px">#{_change.EpicRef}</span>  <b>#{_change.name}</b>  
 			
