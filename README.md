@@ -5,11 +5,12 @@ strategy >> performance and change explorer
 clean install
 -------------
 * install git
-* install nodeJS (e.g. ubuntu = sudo apt-get install -y nodejs)
-* install mongodb
+* install nodeJS (e.g. windows = just run the nodejs installer, ubuntu = "sudo apt-get install -y nodejs" )
+* install mongodb (and start it ;-)
 * npm install -g bower
 * npm install -g gulp
-
+* npm install -g nodemon
+* npm install -g forever
 
 checkout space from git
 --------------------
