@@ -31,8 +31,8 @@ var PATH = {
 						REST_METRICS : BASE+'/space/rest/metrics',
 						REST_TARGETS : BASE+'/space/rest/targets',
 						REST_BOARDS : BASE+'/space/rest/boards',
-						
-						
+
+
 						REST_RELEASES : BASE+'/space/rest/releases',
 						REST_LANETEXT : BASE+'/space/rest/lanetext',
 						REST_POSTITS : BASE+'/space/rest/postits',
@@ -42,6 +42,8 @@ var PATH = {
 						REST_PRODUCTPORTFOLIO : BASE+'/space/rest/productportfolio',
 						REST_PRODUCTCATALOG : BASE+'/space/rest/productcatalog',
 						REST_INCIDENTS : BASE+'/space/rest/incidents',
+						REST_INCIDENTTRACKER : BASE+'/space/rest/incidenttracker',
+						REST_INCIDENTTRACKER_DATE : BASE+'/space/rest/incidenttracker/:date',
 						REST_V1EPICS : BASE+'/space/rest/v1epics',
 						REST_LABELS : BASE+'/space/rest/labels',
 						REST_CUSTOMERS : BASE+'/space/rest/customers',
@@ -50,20 +52,19 @@ var PATH = {
 						REST_ROADMAPS : BASE+'/space/rest/roadmaps',
 						REST_AVAILABILITY : BASE+'/space/rest/availability',
 						REST_FIREREPORT : BASE+'/space/rest/firereport',
-						REST_INCIDENTTRACKER : BASE+'/space/rest/incidenttracker',
 						REST_CONTENT : BASE+'/space/rest/content',
 						REST_SYNCEMPLOYEEIMAGES : BASE+'/space/rest/syncemployeeimages',
-						
-						
+
+
 						REST_INITIATIVES_DIFF_TRAIL : BASE+'/space/rest/initiatives_diff_trail',
 						REST_ORGANIZATION : BASE+'/space/rest/organization',
 						REST_ORGANIZATION_EMPLOYEE : BASE+'/space/rest/organization/employee/:name',
 						REST_ORGANIZATIONHISTORY : BASE+'/space/rest/organization/history/:date',
-						
+
 						REST_MAIL : BASE+'/space/rest/mail',
 						REST_SWITCHCONTEXT : BASE+'/space/rest/switchcontext',
-						
-						
+
+
 						EXPORT_TARGETS : BASE+'/space/export/xlsx/targets',
 						EXPORT_METRICS : BASE+'/space/export/xlsx/metrics',
 						EXPORT_INITIATIVES : BASE+'/space/export/xlsx/initiatives',
@@ -79,9 +80,9 @@ var PATH = {
 						EXPORT_AVAILABILITY : BASE+'/space/export/xlsx/availability',
 						EXPORT_FIREREPORT : BASE+'/space/export/xlsx/firereport',
 						EXPORT_CONTENT : BASE+'/space/export/xlsx/content',
-						
-						
-						
+
+
+
 						CONFIG : BASE+'/space/config',
 
 						TRANSCODE_BOARDS : BASE+'/space/transcode'
@@ -119,7 +120,9 @@ router.get(PATH.REST_PRODUCTPORTFOLIO, function(req, res, next) {findAllByName(r
 router.get(PATH.REST_PRODUCTCATALOG, function(req, res, next) {findAllByName(req,res,next);});
 router.get(PATH.REST_INCIDENTS, function(req, res, next) {findAllByName(req,res,next);});
 router.get(PATH.REST_INCIDENTTRACKER, function(req, res, next) {findAllByName(req,res,next);});
-router.get(PATH.REST_INCIDENTTRACKER+'/:year', function(req, res, next) {findByKey("year",req,res,next);});
+router.post(PATH.REST_INCIDENTTRACKER, function(req, res, next) {save(req,res,next);});
+router.delete(PATH.REST_INCIDENTTRACKER, function(req, res, next) {delete(req,res,next);});
+router.get(PATH.REST_INCIDENTTRACKER_DATE, function(req, res, next) {findByDate(req,res,next);});
 router.get(PATH.REST_V1EPICS, function(req, res, next) {findAllByName(req,res,next);});
 //
 
@@ -176,9 +179,9 @@ router.get(PATH.REST_ORGANIZATIONHISTORY, function(req, res, next) {
         }
         return next(err);
     })
-	
-	
-	
+
+
+
 	});
 
 router.get(PATH.REST_INITIATIVES_DIFF_TRAIL+'/:initiativeId' , function(req, res, next) {findTrailByNameForId(req,res,next);});
@@ -218,21 +221,21 @@ function findAllByName(req, res , next){
 	var _filterValue = req.query.v;
 	var _filterOperator = req.query.o;
 	var _filter = {};
-	
+
 	_filter[_filterName]={};
 	_filter[_filterName][_filterOperator]=_filterValue;
-	
+
 	if (_filterName==undefined) _filter = null;
-	
+
 	// e.g http://localhost:3000/api/space/rest/boards?filterName=name&filterOperator=$eq&filterValue=studios
 	logger.debug("***** filter: "+JSON.stringify(_filter));
-	
+
     db.collection(collection).find(_filter).sort({id : 1} , function(err , success){
         //console.log("[DEBUG] findAllByName() for: "+_name+", Response success: "+JSON.stringify(success));
         //console.log('Response error '+err);
         if(success){
             logger.debug("******************* success: "+success);
-            
+
             res.send(success);
             return ;//next();
         }else{
@@ -250,7 +253,7 @@ function findById(req, res , next){
 	// format path: /space/rest/boards/1
 	// take the last from the set with last stripped ;-)
 	var collection = _.last(_.initial(path));
-	
+
     db.collection(collection).findOne({id:req.params.id} , function(err , success){
         logger.debug('Response success '+success);
         logger.debug('Response error '+err);
@@ -267,16 +270,69 @@ function findById(req, res , next){
 /**
  * find by generic key
  */
+function findByDate(req, res , next){
+    var path = req.path.split("/");
+	// format path: /space/rest/boards/1
+	// take the last from the set with last stripped ;-)
+	var collection = _.last(_.initial(path));
+
+	var _date = _.last(path);
+
+	var _quarter = _parseQuarter(_date);
+	logger.debug("quarter: "+_quarter)
+
+	// ok lets inspect what kind of date is specified
+	// we support currently:
+	// 1) just plain year "2015"
+	// 2) quarter of a year "2015q1"
+	// 3) a day "2015-03-21"
+
+  var _year = parseInt(_date);
+	logger.debug("year:" +_year);
+	var _query;
+	if ( _year != NaN && _year >2010){
+		logger.debug("[year]:" +_year);
+		_query = "'day' : { $gte : new ISODate("+_date+"-01-01',$lte : new ISODate("+_date+"-12-31' )";
+	}
+	else if (_quarter[0] != "Invalid date" && _quarter[1] != "Invalid date"){
+		logger.debug("[quarter]:" +_quarter);
+		_query = "'day' : { $gte : new ISODate("+_quarter[0]+"',$lte : new ISODate("+_quarter[1]+"' )";
+	}
+	else {
+		logger.error("no way");
+	}
+
+	logger.debug("findbyDate: value: "+_.last(path));
+	logger.debug("collection: "+collection);
+	logger.debug("query: "+_query);
+
+
+
+    db.collection(collection).find(_query, function(err , success){
+        logger.debug('Response success '+success);
+        logger.debug('Response error '+err);
+        if(success){
+            res.send(success);
+            return;
+        }
+        return next(err);
+    })
+}
+
+
+/**
+ * find by generic key
+ */
 function findByKey(key,req, res , next){
     var path = req.path.split("/");
 	// format path: /space/rest/boards/1
 	// take the last from the set with last stripped ;-)
 	var collection = _.last(_.initial(path));
-	
+
 	logger.debug("findbyKey: key: "+key+" value: "+req.params[key]);
 	logger.debug("collection: "+collection);
-	
-	
+
+
     db.collection(collection).find({key:req.params[key]} , function(err , success){
         logger.debug('Response success '+success);
         logger.debug('Response error '+err);
@@ -293,17 +349,17 @@ function findByKey(key,req, res , next){
  */
 function findBy_id(req, res , next){
     console.log("...path: "+req.path);
-	
-    
+
+
     var path = req.path.split("/");
 	// format path: /space/rest/boards/1
 	// take the last from the set with last stripped ;-)
 	var collection = _.last(_.initial(path));
 	// a string
 	var _id = req.params._id;
-	
+
 	console.log("...looking for collection: "+collection+ "_id: "+req.params._id);
-	
+
     db.collection(collection).findOne({_id:mongojs.ObjectId(_id)}, function(err , success){
         logger.debug('Response success '+success);
         logger.debug('Response error '+err);
@@ -319,11 +375,11 @@ function findBy_id(req, res , next){
  * find single object by Id
  */
 function findEmployeeByName(req, res , next){
-    
+
     var collection = "organization";
-    
+
     var _name = req.params.name.split(" ");
-	
+
     db.collection(collection).findOne({"First Name":_.capitalize(_name[0]),"Last Name":_.capitalize(_name[1])} , function(err , success){
         logger.debug('Response success '+success);
         logger.debug('Response error '+err);
@@ -334,7 +390,7 @@ function findEmployeeByName(req, res , next){
         else {
             res.send(err);
             return;
-			
+
 		}
         return next(err);
     })
@@ -350,7 +406,7 @@ function findTrailByNameForId(req, res , next){
     logger.debug("*** find Trail for :"+req.params.initiativeId);
     var path = req.path.split("/");
 	var collection = _.last(_.initial(path));
-	
+
     db.collection(collection).find({refId:mongojs.ObjectId(req.params.initiativeId)} , function(err , success){
         logger.debug('Response success '+success);
         logger.debug('Response error '+err);
@@ -373,14 +429,14 @@ function save(req, res , next){
 	var _collection = _.last(path);
     var items = JSON.parse(req.body.itemJson);
     var _timestamp = new Date();
-    // now lets iterate over the array 
+    // now lets iterate over the array
     var async = require('async');
-	async.each(items, function (item, callback){ 
+	async.each(items, function (item, callback){
 		logger.debug("[async.series: now lets do what we havto do :-) ...*item: "+item); // print the key
-		
+
 		var _old;
 		var _diff;
-		
+
 		async.series([
 			function(callback){
 				logger.debug("[async.series - 1] preparing stuff ...");
@@ -405,7 +461,7 @@ function save(req, res , next){
 					logger.debug("************diff: "+JSON.stringify(_diff));
 					callback();
 				});
-				
+
 			},
 			function(callback){
 				// 2) and update stuff
@@ -419,7 +475,7 @@ function save(req, res , next){
 					}
 					callback();
 				});
-				
+
 			},
 			function(callback){
 				logger.debug("[async.series - 3] going to insert trail ...");
@@ -434,17 +490,17 @@ function save(req, res , next){
 					}
 					callback();
 				});
-				
+
 			}
 		]);
-	
-	
+
+
 		callback(); // tell async that the iterator has completed
 	}, function(err) {
 		logger.debug('iterating done');
 		res.send({});
 		return;
-	});  
+	});
 		logger.debug('done');
 		res.send({});
 		return;
@@ -454,8 +510,8 @@ function save(req, res , next){
 
 /**
  * generic mail handler
- *  text:    mail.text+signatureText, 
-    from:    config.mailer.from, 
+ *  text:    mail.text+signatureText,
+    from:    config.mailer.from,
     to:      mail.to,
     cc:      mail.cc,
     subject: subjectPrefix+mail.subject,
@@ -474,14 +530,14 @@ function mail(req,res,next){
 
 function syncEmployeeImages(req,res,next){
     logger.debug("*********************** lets sync images of employees... ");
-    
+
     var orgService = require ('../services/OrganizationService');
     orgService.syncEmployeeImages(req,res,function(){
-		
+
 		logger.debug("???");
 	});
-    
-    
+
+
 }
 
 
@@ -489,7 +545,7 @@ function syncEmployeeImages(req,res,next){
 
 function _checkCreateDate(item){
 	logger.debug("----------------------------------- _checkCreateDate (item:"+item.name+" called");
-	
+
 	if (!(item.createDate)){
 		item.createDate=_timestamp;
 		logger.debug("--->>>>>>>>>>no create date found: "+item.createDate);
@@ -498,7 +554,7 @@ function _checkCreateDate(item){
 		logger.debug("[DEBUG] createDate: "+item.createDate);
 		item.changeDate=_timestamp;
 	}
-	
+
 	return item;
 }
 
@@ -509,30 +565,30 @@ function _checkCreateDate(item){
  * delete
  */
 function remove(req, res , next){
-    
+
     logger.debug("*********************** remove DELETE: action= "+req.body.action);
     var path = req.path.split("/");
 	var collection = _.last(path);
 
-    
+
     var items = JSON.parse(req.body.itemJson);
     logger.debug("*********************** itemJson= "+items[0]);
-    
-    // now lets iterate over the array 
+
+    // now lets iterate over the array
     var async = require('async');
-	async.each(items, function (item, callback){ 
+	async.each(items, function (item, callback){
 		logger.debug("*item: "+item); // print the key
-		
+
 		db.collection(collection).remove({_id:mongojs.ObjectId(item)} , function(err , success){if (success) {logger.debug("--- remove: id:"+item+" [SUCCESS]");}})
-		
+
 		callback(); // tell async that the iterator has completed
 
 	}, function(err) {
 		logger.debug('iterating done');
 		res.send({});
 		return;
-	});  
-    
+	});
+
 }
 
 
@@ -543,12 +599,12 @@ function remove(req, res , next){
  */
 function excelTargets(req, res , next){
 	var conf ={};
-	
+
     conf.stylesXmlFile = "views/excel_export/styles.xml";
     conf.cols = [
 		{caption:'_id',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'id',type:'string',width:5,captionStyleIndex:2,beforeCellWrite:_formatCell},
-		{caption:'entity',type:'string',width:12,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'context',type:'string',width:12,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'type',type:'string',width:8,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'rag',type:'string',width:8,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'vision',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
@@ -558,6 +614,8 @@ function excelTargets(req, res , next){
 		{caption:'target',type:'string',width:30,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'directMetric',type:'string',width:10,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'directMetricScale',type:'string',width:5,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'directTarget',type:'string',width:5,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'directTime',type:'string',width:5,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'outcome',type:'string',width:30,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'description',type:'string',width:30,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'baseline',type:'string',width:15,captionStyleIndex:2,beforeCellWrite:_formatCell},
@@ -571,11 +629,11 @@ function excelTargets(req, res , next){
 		{caption:'sponsor',type:'string',width:10,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'start',type:'string',width:10,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'end',type:'string',width:10,captionStyleIndex:2,beforeCellWrite:_formatCell}
-		
+
 	];
-    
+
     _generateAndSendExcel("targets",conf,req,res,next);
-    
+
 }
 
 /**
@@ -583,7 +641,7 @@ function excelTargets(req, res , next){
  */
 function excelRoadmaps(req, res , next){
 	var conf ={};
-	
+
     conf.stylesXmlFile = "views/excel_export/styles.xml";
     conf.cols = [
 		{caption:'_id',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
@@ -595,21 +653,21 @@ function excelRoadmaps(req, res , next){
 		{caption:'endDate',type:'string',width:10,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'version',type:'string',width:5,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'description',type:'string',width:30,captionStyleIndex:2,beforeCellWrite:_formatCell}
-		
+
 	];
-    
+
     _generateAndSendExcel("roadmaps",conf,req,res,next);
-    
+
 }
-  
+
 
 /**
  * generate metrics excel
  */
 function excelMetrics(req, res , next){
 	var conf ={};
-	
-	
+
+
     conf.stylesXmlFile = "views/excel_export/styles.xml";
     conf.cols = [
 		{caption:'_id',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
@@ -628,7 +686,7 @@ function excelMetrics(req, res , next){
 		{caption:'targets',type:'string',width:10,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'direction',type:'number',width:7,captionStyleIndex:2,beforeCellWrite:_formatCell}
 	];
-    
+
     _generateAndSendExcel("metrics",conf,req,res,next);
 }
 
@@ -637,8 +695,8 @@ function excelMetrics(req, res , next){
  */
 function excelBoards(req, res , next){
 	var conf ={};
-	
-	
+
+
     conf.stylesXmlFile = "views/excel_export/styles.xml";
     conf.cols = [
 		{caption:'_id',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
@@ -655,7 +713,7 @@ function excelBoards(req, res , next){
 		{caption:'endDate',type:'number',width:7,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'WIPWindowDays',type:'number',width:7,captionStyleIndex:2,beforeCellWrite:_formatCell}
 	];
-    
+
     _generateAndSendExcel("boards",conf,req,res,next);
 }
 
@@ -664,8 +722,8 @@ function excelBoards(req, res , next){
  */
 function excelV1Epics(req, res , next){
 	var conf ={};
-	
-	
+
+
     conf.stylesXmlFile = "views/excel_export/styles.xml";
     conf.cols = [
 		{caption:'_id',type:'string',width:8,captionStyleIndex:2,beforeCellWrite:_formatCell},
@@ -685,11 +743,11 @@ function excelV1Epics(req, res , next){
 		{caption:'Value',type:'number',width:3,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'HealthComment',type:'string',width:2,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'Description',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell}
-		
-				
+
+
 	];
 	conf._field="epics";
-    
+
     _generateAndSendExcel("v1epics",conf,req,res,next);
 }
 
@@ -698,8 +756,8 @@ function excelV1Epics(req, res , next){
  */
 function excelProductCatalog(req, res , next){
 	var conf ={};
-	
-	
+
+
     conf.stylesXmlFile = "views/excel_export/styles.xml";
     conf.cols = [
 		{caption:'_id',type:'string',width:8,captionStyleIndex:2,beforeCellWrite:_formatCell},
@@ -713,23 +771,23 @@ function excelProductCatalog(req, res , next){
 		{caption:'Comments',type:'string',width:15,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'DependsOn',type:'string',width:8,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'ConsumedBy',type:'string',width:8,captionStyleIndex:2,beforeCellWrite:_formatCell}
-		
-				
+
+
 	];
-	
+
     _generateAndSendExcel("productcatalog",conf,req,res,next);
 }
 
-   	
-   	
+
+
 
 /**
  * generate scrumteams excel
  */
 function excelScrumTeams(req, res , next){
 	var conf ={};
-	
-	
+
+
     conf.stylesXmlFile = "views/excel_export/styles.xml";
     conf.cols = [
 		{caption:'_id',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
@@ -751,15 +809,15 @@ function excelScrumTeams(req, res , next){
 		{caption:'IsCrosscomponent',type:'string',width:10,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'Self-formation?',type:'string',width:7,captionStyleIndex:2,beforeCellWrite:_formatCell}
 	];
-    
+
 
 /**
  * generate scrumteams excel
  */
 function excelFirereport(req, res , next){
 	var conf ={};
-	
-	
+
+
     conf.stylesXmlFile = "views/excel_export/styles.xml";
     conf.cols = [
 		{caption:'_id',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
@@ -768,10 +826,10 @@ function excelFirereport(req, res , next){
 		{caption:'year',type:'string',width:8,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'count',type:'string',width:8,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'contact',type:'string',width:10,captionStyleIndex:2,beforeCellWrite:_formatCell}
-		
-		
+
+
 	];
-    
+
     _generateAndSendExcel("v1teams",conf,req,res,next);
 }    _generateAndSendExcel("scrumteams",conf,req,res,next);
 }
@@ -784,8 +842,8 @@ function excelFirereport(req, res , next){
  */
 function excelV1Teams(req, res , next){
 	var conf ={};
-	
-	
+
+
     conf.stylesXmlFile = "views/excel_export/styles.xml";
     conf.cols = [
 		{caption:'_id',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
@@ -795,9 +853,9 @@ function excelV1Teams(req, res , next){
 		{caption:'Description',type:'string',width:8,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'Mascot',type:'string',width:10,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'Sprint Schedule',type:'string',width:10,captionStyleIndex:2,beforeCellWrite:_formatCell}
-		
+
 	];
-    
+
     _generateAndSendExcel("v1teams",conf,req,res,next);
 }
 
@@ -807,8 +865,8 @@ function excelV1Teams(req, res , next){
  */
 function excelContent(req, res , next){
 	var conf ={};
-	
-	
+
+
     conf.stylesXmlFile = "views/excel_export/styles.xml";
     conf.cols = [
 		{caption:'_id',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
@@ -818,9 +876,9 @@ function excelContent(req, res , next){
 		{caption:'content',type:'string',width:8,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'date',type:'string',width:10,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'status',type:'string',width:10,captionStyleIndex:2,beforeCellWrite:_formatCell}
-		
+
 	];
-    
+
     _generateAndSendExcel("content",conf,req,res,next);
 }
 
@@ -837,7 +895,7 @@ function excelLabels(req, res , next){
 		{caption:'brand',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'label',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell}
 	];
-    
+
     _generateAndSendExcel("labels",conf,req,res,next);
 }
 
@@ -855,7 +913,7 @@ function excelAvailability(req, res , next){
 		{caption:'plannedYTD',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'totalYTD',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell}
 	];
-    
+
     _generateAndSendExcel("availability",conf,req,res,next);
 }
 
@@ -878,7 +936,7 @@ function excelCustomers(req, res , next){
 		{caption:'key accounter',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'url',type:'string',width:40,captionStyleIndex:2,beforeCellWrite:_formatCell}
 	];
-    
+
     _generateAndSendExcel("customers",conf,req,res,next);
 }
 
@@ -901,18 +959,18 @@ function excelCompetitors(req, res , next){
 		{caption:'markets',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'url',type:'string',width:40,captionStyleIndex:2,beforeCellWrite:_formatCell}
 	];
-    
+
     _generateAndSendExcel("competitors",conf,req,res,next);
 }
 
-        
+
 /**
  * generates initiatives excel
  */
 function excelInitiatives(req, res , next){
 	var conf ={};
-    
-    
+
+
     conf.stylesXmlFile = "views/excel_export/styles.xml";
     conf.cols = [
  		{caption:'_id',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
@@ -955,9 +1013,9 @@ function excelInitiatives(req, res , next){
 		{caption:'DoR',type:'string',width:15,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'createDate',type:'string',width:10,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'changeDate',type:'string',width:10,captionStyleIndex:2,beforeCellWrite:_formatCell}
-		
+
    ];
-    
+
     _generateAndSendExcel("initiatives",conf,req,res,next);
 }
 
@@ -965,16 +1023,16 @@ function excelInitiatives(req, res , next){
 function _generateAndSendExcel(collection,conf,req,res,next){
 	db.collection(collection).find().sort({_id : 1} , function(err , success){
 		if(success){
-			
+
 			if (conf._field){
-				
+
 				conf.rows = _createDataRows(conf,success[0][conf._field]);
 			}
 			else {
 				conf.rows = _createDataRows(conf,success);
 			}
 			var _now = moment().format("YYYYMMDD");
-			
+
 			var result = nodeExcel.execute(conf);
 			res.set('Content-Type', 'application/vnd.openxmlformats');
 			res.set("Content-Disposition", "attachment; filename=s p a c e_export_" + collection+"_"+_now+".xlsx");
@@ -983,12 +1041,33 @@ function _generateAndSendExcel(collection,conf,req,res,next){
     });
 }
 
+/**
+* parses a string to indiciate a quarter of a year
+* @param quarter: "Q1-2014"
+*/
+function _parseQuarter(quarter){
+	var dateParsed;
 
 
+	var splitted = quarter.split('-');
+	var quarterEndMonth =  splitted[0].charAt(1) * 3;
+	var quarterStartMonth = quarterEndMonth - 3;
+	if (quarterStartMonth ==0) quarterStartMonth =1;
+
+
+
+	var _start = moment(quarterStartMonth + ' ' + splitted[1],'MM YYYY').format('YYYY-MM-DD');
+	var _end = moment(quarterEndMonth + ' ' + splitted[1],'MM YYYY').endOf('month').format('YYYY-MM-DD');
+
+	logger.debug(" quarterStartMonth= "+quarterStartMonth +"quarterEndMonth = "+quarterEndMonth+ "splitted[1]"+splitted[1])
+	logger.debug("q1 start: "+_start);
+	logger.debug("q1 end: "+_end);
+	return [_start,_end];
+}
 
 
 function _stripCrap(object){
-	if (typeof object =="string"){ 
+	if (typeof object =="string"){
 		//strip out all HTML tags - http://stackoverflow.com/questions/822452/strip-html-from-text-javascript
 		object = object.replace(/(<([^>]+)>)/ig,"");
 		object = object.replace(/[^ -~]/g, "");
@@ -1006,15 +1085,15 @@ function _stripCrap(object){
 }
 
 
-/** row formatting 
- * 
+/** row formatting
+ *
  */
 function _formatCell(row, cellData,eOpt){
              if (eOpt.rowNum%2 ==0)
 				eOpt.styleIndex=1;
-			 else 
+			 else
 				eOpt.styleIndex=3;
-			 
+
              //logger.debug(JSON.stringify(row));
              return _stripCrap(cellData);
         }
@@ -1025,21 +1104,21 @@ function _formatCell(row, cellData,eOpt){
  */
 function _getCaptionArray(conf){
    var _fields = new Array();
-   
+
    for (c in conf.cols){
 	   _fields.push(conf.cols[c].caption);
    }
-   
+
    return _fields;
 }
 
-/** 
+/**
  * builds array of values for excel export
  */
 function _createDataRows(conf,data){
 	var _fields = _getCaptionArray(conf);
 	var _list = new Array();
-	
+
 	for (var d in data){
 		var _row = new Array();
 		//logger.debug("JSON: "+JSON.stringify(success[m]));
@@ -1051,7 +1130,7 @@ function _createDataRows(conf,data){
 		}
 		_list.push(_row);
 		//logger.debug("** row: "+_row);
-	}	
+	}
 	return _list;
 }
 
@@ -1059,7 +1138,7 @@ function _createDataRows(conf,data){
 /** rsvg based transcode
  * https://github.com/walling/node-rsvg
  *
- * data is posted : 
+ * data is posted :
  * <input type="hidden" id="format" name="format" value="">
    <input type="hidden" id="data" name="data" value="">
    <input type="hidden" id="context" name="context" value="">
@@ -1069,28 +1148,28 @@ function _createDataRows(conf,data){
   */
 function transcode(req,res,next){
 	var Rsvg = require('rsvg').Rsvg;
-	
+
 	var _svg_raw = req.param("data");
 	var _format = req.param("format");
 	var _width = req.param("svg_width");
 	var _height = req.param("svg_height");
 	var _context = req.param("context");
-	
-	
-	
+
+
+
 	var svg = new Rsvg(_svg_raw);
-	
+
 	var _s = svg.render({
 		format: _format,
 		width: _width,
 		height: _height
 	});
-	
-	
+
+
 	var moment = require('moment');
 	var timestamp = moment(new Date());
 	var timestamp_string = timestamp.format("YYYY-MM-DD HH_mm_ss");
-	
+
 	var fileName=_context+"_space_transcoded_"+timestamp_string;
 
 	res.set("Content-Disposition","attachment; filename=\"" + fileName + "\"");
@@ -1103,17 +1182,17 @@ function transcode(req,res,next){
 
 function switchcontext(req,res,next){
 	var context = require('../services/ContextService');
-	
+
 	logger.debug("switchcontext called: "+req.body.context);
-	
+
 	if (req.body.context){
 		context.switch(req.body.context,function(context){
-				
+
 				logger.debug("*** context: "+JSON.stringify(context));
-				
+
 				logger.debug("*** session.AUTH: "+req.session.AUTH);
 				logger.debug("*** session.CONTEXT: "+req.session.CONTEXT);
-				
+
 				req.session.CONTEXT = context.name;
 				logger.debug("*** session.CONTEXT: "+req.session.CONTEXT);
 		})
@@ -1123,7 +1202,7 @@ function switchcontext(req,res,next){
 }
 
 
-/** exposes server side config relevant for client 
+/** exposes server side config relevant for client
  *
  */
 function getConfig(req,res,next){

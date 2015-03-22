@@ -57,19 +57,18 @@ function _handleTargetView(req,res,next,view){
 			
 			for (var i in data){
 				if (data[i].type=="target") _L2targets.push(data[i]);
-				if (data[i].type=="bonus") _L1targets.push(data[i]);
+				if (data[i].type=="L1") _L1targets.push(data[i]);
 				
 				
 			}
 			var L2targetsClustered = _.nst.nest(_L2targets,["theme","cluster","group"]);
-			var L1targetsClustered = _.nst.nest(_L1targets,["theme"]);
+			//var L1targetsClustered = _.nst.nest(_L1targets,["theme"]);
 			
 			res.locals.targets=L2targetsClustered.children;
-			res.locals.L1targets=L1targetsClustered.children;
+			res.locals.L1targets=_L1targets;
 			
-			res.locals.testTarget=_L2targets[0];
 			
-			logger.debug("testTarget: "+JSON.stringify(_L2targets[0]));
+			logger.debug("L1targets: "+_L1targets.length);
 			
 			// take the first for the globals...
 			var _target = L2targetsClustered.children[0].children[0].children[0].children[0];

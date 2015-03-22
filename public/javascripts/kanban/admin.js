@@ -1,7 +1,7 @@
 var _excelExportURL = '/api/space/export/xlsx/';
 
 var admingrid;
-  
+
 var columnFilters={};
 
 var _type=getUrlVars()["type"];
@@ -24,11 +24,11 @@ function refresh(collection){
 		success: function(data)
 			{
 				var _data = data;
-				
+
 				if (collection=="v1epics"){
 					 _data = data[0].epics;
 				}
-				
+
 				// check for "_id" field
 				if (_data[0]._id == undefined){
 					 // slickgrid needs an _id field.....
@@ -66,8 +66,8 @@ function getConfig(collection){
 		case "availability":  return getAvailabilityConfig();
 		case "firereport":  return getFirereportConfig();
 		case "content":  return getContentConfig();
-		
-		
+
+
 	}
 }
 
@@ -95,7 +95,7 @@ function lookupByField(list,field,value){
 
 function getInitiativeConfig(){
 	var _initiatives = [
-	
+
 		{ id:"_id", name: "_id", field: "_id",sortable:true,width:150,cssClass:"onKanbanImmutable" },
         { id:"id", name: "id", field: "id",sortable:true,width:40,cssClass:"onKanbanImmutable"},
         { id:"ExtId", name: "ExtId", field: "ExtId",sortable:true,cssClass:"onKanbanImmutable",width:50 },
@@ -202,7 +202,7 @@ function getFirereportConfig(){
         { id: "count", name: "count",  field: "count" ,sortable:true,width:50, editor: Slick.Editors.Text, cssClass: "cell-standard"},
 		{ id: "path", name: "path",  field: "path",width:250,sortable:true,editor:Slick.Editors.Text, cssClass: "cell-standard"},
 		{ id: "contact", name: "contact",  field: "contact",width:200,sortable:true,editor:Slick.Editors.Text, cssClass: "cell-standard"}];
-		
+
 	var _config ={};
 		_config.mode="editable";
 		_config.fields = _firereport;
@@ -220,11 +220,11 @@ function getContentConfig(){
 		{ id: "date", name: "date",  field: "date",width:80,sortable:true,editor:Slick.Editors.Text, cssClass: "cell-standard"},
 		{ id: "status", name: "status",  field: "status",width:80,sortable:true,editor:Slick.Editors.Text, cssClass: "cell-standard"}
 		];
-		
+
 	var _config ={};
 		_config.mode="editable";
 		_config.addRow="enabled";
-		
+
 		_config.fields = _content;
 	return _config;
 }
@@ -258,17 +258,19 @@ function getTargetConfig(){
 		//targets
 	var _target =[
         { id:"_id", name: "_id", field: "_id",sortable:true,width:50,cssClass:"onKanbanImmutable"},
-        { id:"entity", name: "entity", field: "entity",sortable:true,width:80,cssClass:"onKanbanImmutable"},
+        { id:"context", name: "context", field: "context",sortable:true,width:80,cssClass:"onKanbanImmutable"},
         { id:"id", name: "id", field: "id",sortable:true,width:50,cssClass:"onKanbanImmutable"},
         { id:"type", name: "type", field: "type",width:80, editor: Slick.Editors.Text, cssClass: "cell-standard" },
         { id:"vision", name: "vision", field: "vision",width:150, editor: Slick.Editors.Text, cssClass: "cell-standard" },
         { id:"rag", name: "rag", field: "rag",width:10, editor: Slick.Editors.Text,formatter: Slick.Formatters.RAG,  cssClass: "cell-standard" },
         { id: "cluster", name: "cluster", field: "cluster",sortable:true, editor: Slick.Editors.Text ,width:200, cssClass: "cell-title"},
-		{ id: "theme", name: "theme",  field: "theme",sortable:true, editor: Slick.Editors.Text , cssClass: "cell-standard"},		
+		{ id: "theme", name: "theme",  field: "theme",sortable:true, editor: Slick.Editors.Text , cssClass: "cell-standard"},
 		{ id: "group", name: "group",  field: "group",sortable:true,editor: Slick.Editors.Text,width:150, cssClass: "cell-standard"},
 	    { id: "target", name: "target", field: "target", editor: Slick.Editors.LongText,width:150, cssClass: "cell-standard" },
 	    { id: "directMetric", name: "directMetric", field: "directMetric", editor: Slick.Editors.Text,width:100, cssClass: "cell-standard" },
 	    { id: "directMetricScale", name: "directMetricScale", field: "directMetricScale", editor: Slick.Editors.Text,width:50, cssClass: "cell-standard" },
+      { id: "directTarget", name: "directTarget", field: "directTarget", editor: Slick.Editors.Text,width:50, cssClass: "cell-standard" },
+      { id: "directTime", name: "directTime", field: "directTime", editor: Slick.Editors.Text,width:50, cssClass: "cell-standard" },
 	    { id: "outcome", name: "outcome", field: "outcome", editor: Slick.Editors.LongText ,width:150, cssClass: "cell-standard"},
 		{ id: "description", name: "description", field: "description", editor: Slick.Editors.LongText,width:200, cssClass: "cell-standard" },
 	    { id: "baseline", name: "baseline", field: "baseline", editor: Slick.Editors.LongText,width:150 , cssClass: "cell-standard"},
@@ -293,13 +295,13 @@ function getRoadmapConfig(){
         { id:"id", name: "id", field: "_id",sortable:true,width:20,cssClass:"onKanbanImmutable"},
         { id:"area", name: "area", field: "area",width:80, editor: Slick.Editors.Text, cssClass: "cell-standard" },
         { id: "lane", name: "lane", field: "lane",sortable:true, editor: Slick.Editors.Text ,width:80, cssClass: "cell-title"},
-		{ id: "name", name: "name",  field: "name",width:200,sortable:true, editor: Slick.Editors.Text , cssClass: "cell-standard"},		
+		{ id: "name", name: "name",  field: "name",width:200,sortable:true, editor: Slick.Editors.Text , cssClass: "cell-standard"},
 		{ id: "type", name: "type",  field: "type",sortable:true,editor: Slick.Editors.Text,width:80, cssClass: "cell-standard"},
 	    { id: "startDate", name: "startDate", field: "startDate", editor: Slick.Editors.LongText,width:100,formatter: Slick.Formatters.SimpleDate, cssClass: "cell-standard" },
 	    { id: "endDate", name: "endDate", field: "endDate", editor: Slick.Editors.Text,width:100,formatter: Slick.Formatters.SimpleDate, cssClass: "cell-standard" },
 	    { id: "version", name: "version", field: "version", editor: Slick.Editors.Text,width:50, cssClass: "cell-standard" },
 	    { id: "description", name: "description", field: "description", editor: Slick.Editors.LongText ,width:150, cssClass: "cell-standard"}
-		
+
         ];
 	var _config ={};
 	_config.mode="editable";
@@ -494,7 +496,7 @@ function getOrganizationConfig(){
 		{id: "Date First Hired", name:"Date First Hired" , field: "Date First Hired", editor: Slick.Editors.Text ,width:150,sortable:true, cssClass: "cell-standard"},
 		{id: "Projected Termination Date", name:"Projected Termination Date" , field: "Projected Termination Date", editor: Slick.Editors.Text ,width:150,sortable:true, cssClass: "cell-standard"},
 		{id: "Actual Termination Date", name:"Actual Termination Date" , field: "Actual Termination Date", editor: Slick.Editors.Text ,width:150,sortable:true, cssClass: "cell-standard"}
-		
+
 ];
 	var _config ={};
 	_config.mode="readonly";
@@ -510,17 +512,17 @@ function renderAdminGrid(data,conf){
 	var checkboxSelector = new Slick.CheckboxSelectColumn({
 		  cssClass: "slick-cell-checkboxsel"
 		});
-		
+
 	var _editable = true;
 	if (conf.mode=="readonly") _editable = false;
-	
+
 	var _addRow = false;
 	if (conf.addRow=="enabled") _addRow = true;
-	
-	
+
+
 	// adds element in beginning of array
 	if (_editable) conf.fields.unshift(checkboxSelector.getColumnDefinition());
-	
+
 	columns= columns.concat(conf.fields);
 
 	var options = {
@@ -535,21 +537,21 @@ function renderAdminGrid(data,conf){
 		explicitInitialization:true,
 		autoHeight: true
 	}
- 
+
 	var dataView = new Slick.Data.DataView();
 	dataView.setItems(data,"_id");
-	
+
 	$('#countitems').html(dataView.getLength());
 
     admingrid = new Slick.Grid("#adminGrid", dataView, columns, options);
-	
+
 	admingrid.onAddNewRow.subscribe(function (e, args) {
       console.log("[DEBUG] onAddNewRow() fired");
       var item = args.item;
       item.id=0;
       dataView.addItem(item);
     });
-    
+
     admingrid.onSort.subscribe(function (e, args) {
 		 var comparer = function(a, b) {
 			return (a[args.sortCol.field] > b[args.sortCol.field]) ? 1 : -1;
@@ -563,11 +565,11 @@ function renderAdminGrid(data,conf){
 		admingrid.invalidateRows(args.rows);
 		admingrid.render();
 	});
-	
-	
+
+
 	admingrid.onCellChange.subscribe(function(e,args){
 	});
-	
+
 	// ----------------------- column filter --------------------------------
 	$(admingrid.getHeaderRow()).delegate(":input", "change keyup", function (e) {
       //console.log("~~~~ keyup");
@@ -578,12 +580,12 @@ function renderAdminGrid(data,conf){
         dataView.refresh();
       }
     });
-    
+
     //from query GET string
     if (_id){
 		columnFilters["_id"] = _id;
 	}
-	
+
 	admingrid.onHeaderRowCellRendered.subscribe(function(e, args) {
         $(args.node).empty();
         $("<input type='text'>")
@@ -592,26 +594,26 @@ function renderAdminGrid(data,conf){
            .appendTo(args.node);
     });
 
-	
+
 	admingrid.setSelectionModel(new Slick.RowSelectionModel({selectActiveRow: false}));
     admingrid.registerPlugin(checkboxSelector);
-    
-    
+
+
     var columnpicker = new Slick.Controls.ColumnPicker(columns, admingrid, options);
-	
-    admingrid.init(); 
-    
+
+    admingrid.init();
+
     // default sort column
     dataView.sort(function(a, b) {
 		return (new Date(a["ChangeDateUTC"]) > new Date(b["ChangeDateUTC"])) ? 1 : -1;
 	},false);
-     
-     
-   
+
+
+
     dataView.setFilter(filter);
-   
-	// ------------------------  column filter ---------------------------------- 
-     
+
+	// ------------------------  column filter ----------------------------------
+
 }
 
 /**
@@ -641,14 +643,14 @@ function NumericSorter(a, b) {
 }
 
 
-var syncList; 
-var itemInsertList; 
+var syncList;
+var itemInsertList;
 
 d3.select("#bremove").on("click", function(){
 		console.log("REMOVE selected rows: "+admingrid.getSelectedRows());
-		
+
 		deleteList = new Array();
-		
+
 		var _sel = admingrid.getSelectedRows();
 		for (var s in _sel){
 				deleteList.push(admingrid.getData().getItem(_sel[s])["_id"]);
@@ -656,21 +658,21 @@ d3.select("#bremove").on("click", function(){
 		//kanban_utils.js
 		ajaxCall("DELETE","remove",deleteList,_type,refresh);
 	});
-	
+
 
 d3.select("#bsave").on("click", function(){
 		console.log("[DEBUG] SAVE selected rows: "+admingrid.getSelectedRows());
-		
+
 		saveList = new Array();
-		
+
 		var _sel = admingrid.getSelectedRows();
-		
+
 		for (var s in _sel){
 				saveList.push(admingrid.getData().getItem(_sel[s]));
 		}
 		//kanban_utils.js
 		ajaxCall("POST","save",saveList,_type,refresh);
-	});	
+	});
 
 
   function requiredFieldValidator(value) {
@@ -680,16 +682,3 @@ d3.select("#bsave").on("click", function(){
       return {valid: true, msg: null};
     }
   }
-
-
-
-
-
-
-
-
-
-
-
-
-

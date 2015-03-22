@@ -18,6 +18,9 @@ var flash = require('connect-flash')
 
 
 
+
+
+
 // routes 
 var routes = require('./routes/index');
 var users = require('./routes/users');
@@ -170,6 +173,32 @@ app.use('/authenticate', authenticate);
 // services
 var v1SyncService = require('./services/V1SyncService');
 v1SyncService.init();
+
+
+
+
+// https 
+// Enable reverse proxy support in Express. This causes the
+// the "X-Forwarded-Proto" header field to be trusted so its
+// value can be used to determine the protocol. See 
+// http://expressjs.com/api#app-settings for more details.
+app.enable('trust proxy');
+
+// Add a handler to inspect the req.secure flag (see 
+// http://expressjs.com/api#req.secure). This allows us 
+// to know whether the request was via http or https.
+app.use (function (req, res, next) {
+	if (req.secure) {
+		logger.debug("[ok] ssl call");
+		// request was via https, so do no special handling
+		next();
+	} else {
+		// request was via http, so redirect to https
+		logger.debug("[http] forwarding to ssl call"+ req.headers.host + req.url);
+		res.redirect('https://' + req.headers.host+":3443" + req.url);
+	}
+});
+
 
 
 // catch 404 and forward to error handler

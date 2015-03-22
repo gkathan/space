@@ -12,13 +12,14 @@ block content
 					div(style="font-size:14px;color:#174D75") <b>strategy</b> » <b>performance</b> and <b>change</b> explorer
 				br
 				center
-					div(style="width:300px;align:center")
-						div(style="font-size:10px;color:lightgrey") 
-							|news published on: #{spaceNews.date}
-						div(style="font-size:18px;color:#174D75;font-weight:bold") 
-							|#{spaceNews.headline}
-						div(style="font-size:14px;color:#174D75") 
-							|#{spaceNews.content}
+					if spaceNews
+						div(style="width:300px;align:center")
+							div(style="font-size:10px;color:lightgrey") 
+								|news published on: #{spaceNews.date}
+							div(style="font-size:18px;color:#174D75;font-weight:bold") 
+								|#{spaceNews.headline}
+							div(style="font-size:14px;color:#174D75") 
+								|#{spaceNews.content}
 						
 				br
 				span(style="color:grey;font-size:10px") bpty studios | <b>commercial management</b> | #{moment().format("MMMM")} #{moment().format("YYYY")}  
