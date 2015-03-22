@@ -22,7 +22,7 @@ if [ -a $PACKAGE ]; then
 
 	cd space/app
 	unzip ./$PACKAGE
-
+ 
 else
 	echo "[s p a c e - deploy] says: SORRY but there is NO $PACKAGE around .... "
 fi

@@ -256,7 +256,7 @@ gulp.task('remotemongorestore', function () {
     .pipe(gulp.dest('logs'));
 });
 
-
+ 
 
 
 
@@ -286,7 +286,7 @@ gulp.task('transfersetup', function () {
 });
 
 gulp.task('remoteunpackscripts', function () {
-  gutil.log("[s p a c e -remoteuntarscripts] remote unpack space scripts: ");
+  gutil.log("[s p a c e -remoteunpackscripts] remote unpack space scripts: ");
   return gulpSSH
     .exec(REMOTE_SETUP,{filePath: 'logs/space_remotesetup.log'})
     .pipe(gulp.dest('logs'));
