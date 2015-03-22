@@ -47,20 +47,20 @@ style.
 
 
 	.panel-body-lane {background-color: #f9f9f9!important}
-	
+
 	.text-heading-run {color: #{color_RUN}!important}
 	.text-heading-grow {color: #{color_GROW}!important}
 	.text-heading-transform {color: #{color_TRANSFORM}!important}
-	
-	
+
+
 	.panel-run {border-left: solid 5px #{color_RUN}!important;}
 	.panel-grow {border-left: solid 5px #{color_GROW}!important;}
 	.panel-transform {border-left: solid 5px #{color_TRANSFORM}!important;}
-	
+
 	.panel-lane-heading-run {border-left: solid 5px #{color_RUN}!important;}
 	.panel-lane-heading-grow {border-left: solid 5px #{color_GROW}!important;}
 	.panel-lane-heading-transform {border-left: solid 5px #{color_TRANSFORM}!important;}
-	
+
 
 -	function mapRAG2Color(rag){
 -		// there is no amber css color ;-)
@@ -87,7 +87,7 @@ mixin renderL1Targets(target)
 				span(style="line-height:20px;font-weight:normal;font-size:14px") #{target.directTarget}
 			div
 				span(style="line-height:18px;font-weight:bold;font-size:14px") #{target.directTime}
-			
+
 
 
 // -----------------------------------------------------------------------
@@ -121,7 +121,7 @@ mixin renderTarget(target)
 			table
 				tr(style="line-height:12px")
 					td(style="width:30px;text-align:left")
-						//i.glyphicon.glyphicon-record(style="font-size:13px") 
+						//i.glyphicon.glyphicon-record(style="font-size:13px")
 						img(src="/images/targets/#{target.name}.png" height="25px" style="vertical-align:top" )
 					td(style="width:150px;font-size:13px;vertical-align:middle;font-weight:normal;")
 						|#{target.name.split(" ")[0].toUpperCase()}
@@ -133,7 +133,7 @@ mixin renderTarget(target)
 			table(style="")
 				each line in target.children
 					tr(style="line-height:15px")
-						td(style="width:205px;font-size:10px;text-align:left;vertical-align:top;border-bottom: 1px solid lightgrey") 
+						td(style="width:205px;font-size:10px;text-align:left;vertical-align:top;border-bottom: 1px solid lightgrey")
 							table(style="width:190px")
 								tr(style="line-height:15px")
 									td(style="width:10px;font-size:10px;text-align:left")
@@ -142,37 +142,37 @@ mixin renderTarget(target)
 										div(style="width:140px")
 											//a(style="color:black" id="#{line.id}" href="" title="show more details...") #{line.target}
 											a.targetDetail(style="color:black" id="targetDetail" href="#targetDetail" title="show more details..."
-												data-_id="#{line._id}" 
-												data-id="#{line.id}" 
-												data-name="#{line.target}" 
-												data-rag="#{line.rag}" 
-												data-outcome="#{line.outcome}" 
-												data-bywhen="#{line.bywhen}" 
-												data-description="#{line.description}" 
-												data-baseline="#{line.baseline}" 
-												data-measure="#{line.measure}" 
-												data-link="#{line.link}" 
-												data-comments="#{line.comments}" 
-												data-sponsor="#{line.sponsor}" 
-												data-contributors="#{line.contributors}" 
-												data-start="#{line.start}" 
-												data-end="#{line.end}" 
-												data-group="#{line.group}" 
-												data-theme="#{line.theme}" 
-												data-cluster="#{line.cluster}" 
+												data-_id="#{line._id}"
+												data-id="#{line.id}"
+												data-name="#{line.target}"
+												data-rag="#{line.rag}"
+												data-outcome="#{line.outcome}"
+												data-bywhen="#{line.bywhen}"
+												data-description="#{line.description}"
+												data-baseline="#{line.baseline}"
+												data-measure="#{line.measure}"
+												data-link="#{line.link}"
+												data-comments="#{line.comments}"
+												data-sponsor="#{line.sponsor}"
+												data-contributors="#{line.contributors}"
+												data-start="#{line.start}"
+												data-end="#{line.end}"
+												data-group="#{line.group}"
+												data-theme="#{line.theme}"
+												data-cluster="#{line.cluster}"
 												) #{line.target}
 									td(style="width:10px;font-size:10px;font-style:italic")
-										
+
 									td(style="width:15px;font-size:8px;")
 										span(style="margin-left:2px;border-radius:100%;background-color:#{mapRAG2Color(line.rag)}")
-											| &nbsp;&nbsp;&nbsp;&nbsp;   
+											| &nbsp;&nbsp;&nbsp;&nbsp;
 									td(style="width:25px;font-size:10px;font-style:italic")
 										|#{line.id}
 					tr(style="line-height:3px")
 						td
 							|&nbsp;
 
-			
+
 // -----------------------------------------------------------------------
 // ------------------ mixin target detail modal ----------------------------
 // -----------------------------------------------------------------------
@@ -203,7 +203,7 @@ mixin renderTargetDetail(target)
 					td(style="width:350px")
 						span(id="targetId" )
 						| &nbsp; - &nbsp;
-						span(id="targetName" style="font-weight:bold") 
+						span(id="targetName" style="font-weight:bold")
 				tr(style="vertical-align:middle")
 					td(style="width:70px;text-align:right;font-style:italic;color:grey;font-size:12px;vertical-align:top")
 						|sponsor
@@ -260,8 +260,8 @@ mixin renderTargetDetail(target)
 					td(style="text-align:right;font-style:italic;color:grey;font-size:12px;vertical-align:top")
 						|time period
 					td
-						span(id="targetTime") 
-						
+						span(id="targetTime")
+
 	div.modal-footer
 		button.btn.btn-default.btn-xs(type="button" data-dismiss="modal")
 			span Close
@@ -281,7 +281,7 @@ div(style="margin-left:5px")
 				+renderTargetDetail()
 
 	div(style="font-family:arial;font-weight:normal;font-size:16px;color:#174D75;text-align:center")
-		div.panel(style="max-width:1600px" class="panel-body-lane")
+		div.panel(style="max-width:1800px" class="panel-body-lane")
 			.panel-heading(class="" style="text-align:center;font-weight:bold;vertical-align:top")
 				div(style="font-family:arial;font-weight:bold;font-size:24px;color:#174D75;text-align:center") "#{vision}"
 				div(style="font-family:arial;font-weight:normal;font-size:16px;color:#174D75;text-align:center") #{period}
@@ -291,7 +291,7 @@ div(style="margin-left:5px")
 					each target in L1targets
 						+renderL1Targets(target)
 
-				
+
 			.panel-body(style="vertical-align:top")
 				div(style="font-family:arial;font-weight:normal;font-size:16px;color:#174D75;text-align:center")
 					//each l1 in _.find(L1targets,{'name':null}).children
@@ -329,32 +329,32 @@ script.
 		var _contributors = _self.data('contributors');
 		var _start = _self.data('start');
 		var _end = _self.data('end');
-		
+
 		var _m1 = moment(_start).format("MMMM");
 		var _m2 = moment(_end).format("MMMM");
 		var _y1 = moment(_start).format("YYYY");
 		var _y2 = moment(_end).format("YYYY");
 		var _y = _y1;
 		if (_y1 != _y2) _y+='/'+_y2;
-		
+
 		var _time = _m1 +' - '+_m2+' '+_y;
-		
+
 		var _group = _self.data('group');
 		var _theme = _self.data('theme');
 		var _cluster = _self.data('cluster');
-		
-		
-		
+
+
+
 		console.log("**************** _id: "+__id+" *************************");
 		console.log("**************** outcome: "+_outcome+" *************************");
 		console.log("**************** description: "+_description+" *************************");
 		console.log("**************** sponsor: "+_sponsor+" *************************");
-		
+
 		$(".modal-header #targetId").text(_id);
 		$(".modal-header #targetTheme").text(_theme);
 		$(".modal-header #targetCluster").text(_cluster);
 		$(".modal-header #targetGroup").text(_group);
-		
+
 		$(".modal-body #targetId").text(_id);
 		$(".modal-header #targetName").text(_name);
 		$(".modal-body #targetName").text(_name);
@@ -368,38 +368,38 @@ script.
 		$(".modal-body #targetSponsor").text(_sponsor);
 		$(".modal-body #targetContributors").text(_contributors);
 		$(".modal-body #targetTime").text(_time);
-		
-		
-		
+
+
+
 		$("#modal_theme_icon").attr("src","/images/targets/"+_theme+".png");
 		$("#modal_group_icon").attr("src","/images/targets/"+_group+".png");
-		
+
 		$("#targetTheme").attr("style","font-weight:bold;font-size:32px;color:"+_getColor(_theme));
 		$("#targetCluster").attr("style","font-weight:bold;font-size:18px;color:"+_getColor(_theme));
-		
+
 		$("#targetRag").attr("style","background-color:"+mapRAG2Color(_rag)+";border-radius: 100%;width:25px;height:25px;");
-		
-		
+
+
 		$.get( "/api/space/rest/organization/employee/"+_sponsor, function( data ) {
 			//$( ".result" ).html( data );
 			console.log("**** employe: "+data["Employee Number"]);
-			
+
 			if (data) {
 				var _url = "http://my.bwinparty.com/api/people/images/"+data["Employee Number"];
 				console.log("url: "+_url);
 				$("#modal_sponsor_icon").attr("src",_url);
 			}
-			
-			
+
+
 			$(_self.attr('href')).modal('show');
-		
+
 		});
-		
-		
-		
+
+
+
 	});
-	
-	
+
+
 	function _getColor(theme){
 		switch(theme){
 			case "RUN":
@@ -412,12 +412,13 @@ script.
 				return "#{color_PL}";
 		}
 	}
-				
-								
-								
-							
-						
-							
-				
-		
-		
+
+
+		function mapRAG2Color(rag){
+			// there is no amber css color ;-)
+			if (rag=="amber") return "gold";
+			if (rag=="green") return "limegreen";
+			if (!rag) return "lightgrey"
+			// red and green are ok
+			return rag;
+		}
