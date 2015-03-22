@@ -14,7 +14,7 @@
 			}
 	},
 	"gulp":{
-		"baseDir" : "c:/users/gkathan"
+		"baseDir" : "c:/users/gkathan/"
 	},
 
 	 "transcoder" : {
