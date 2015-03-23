@@ -1,83 +1,106 @@
 include kanban_menu
 
-
 block content
-	div.row(style="margin: auto;width:1100px")
+	div.row(style="margin: auto;max-width:1150px")
 		div.panel.panel-default
-			div.panel-heading ...dashboard
+			div.panel-heading studios - L1 targets dashboard
 			div.panel-body
-				div.col-md-3.col-lg4
-					.panel.panel-default(style="width:250px;margin:0px ")
-						.panel-heading(style="font-weight:bold")  availability (unplanned) 2015 
-							span(style="font-weight:normal;font-size:10px") [R0.1]
+				
+				div.col-md-2.col-lg3(style="width:220px")
+					.panel.panel-default(style="width:200px;margin:0px;height:300px ")
+						.panel-heading(style="text-align:center;font-weight:bold") S1 - availability unplanned
 						.panel-body
-							h4 target
-							div(style="font-size:48px;font-weight:bold") 
-								|99.75
-								span(style="font-size:18px")% 
-							
-							h4(style="color:red") actual YTD
-							div(style="font-size:48px;color:red;font-weight:bold") 
-								|#{availability.unplannedYTD}
-								span(style="font-size:18px")% 
-							div
-								|as per firereport week-#{availability.week}-#{availability.year}
-								br
-							div(style="font-weight:normal;font-size:10px")
-								br
-								|<b>#{downtime}</b> hours unplanned downtime YTD
-								br
-								|<b>#{targetDowntime}</b> allowed to reach target of 99.75% per year
-								
-							
-							
-							
-				div.col-md-3.col-lg4
-					.panel.panel-default(style="width:250px;margin:0px ")
-						.panel-heading(style="font-weight:bold") kpi-2
+						div(style="font-weight:normal;font-size:12px;text-align:center")
+							|target | Q4
+						div(style="font-weight:bold;font-size:28px;text-align:center")
+							|99.75% 
+						
+						div(id="c3_availability_gauge")
+						div(style="font-size:12px;text-align:center")
+							br
+							a(href="files/firereports/firereport_#{availability.year}-week-#{availability.week}.pdf" target="_blank") as per firereport week-#{availability.week}-#{availability.year}
+				
+				div.col-md-2.col-lg3(style="width:220px")
+					.panel.panel-default(style="width:200px;margin:0px;height:300px ")
+						.panel-heading(style="text-align:center;font-weight:bold") S2 - incidents P1-P8
 						.panel-body
-							h3 some big numbers
-							h2(style="font-size:80px") 100% 
-				div.col-md-3.col-lg4
-					.panel.panel-default(style="width:250px;margin:0px ")
-						.panel-heading(style="font-weight:bold") kpi-3
-						.panel-body
-							h3 some big numbers
-							h2(style="font-size:80px") 100%
+						div(style="font-weight:normal;font-size:12px;text-align:center")
+							|target | Q4
+						div(style="font-weight:bold;font-size:28px;text-align:center")
+							|-25% 
+						
+						div(id="c3_incident_barchart")
+						div(style="font-size:12px;text-align:center")
+							br
+							a(href="files/firereports/firereport_#{availability.year}-week-#{availability.week}.pdf" target="_blank") as per firereport week-#{availability.week}-#{availability.year}
 
-				div.col-md-3.col-lg4
-					.panel.panel-default(style="width:250px;margin:0px ")
-						.panel-heading(style="font-weight:bold") kpi-4
+				div.col-md-2.col-lg3(style="width:220px")
+					.panel.panel-default(style="width:200px;margin:0px;height:300px ")
+						.panel-heading(style="text-align:center;font-weight:bold") S3 - mobile share 
 						.panel-body
-							h3 some big numbers
-							h2(style="font-size:80px") 100%
-					
-		
-		
+						div(style="font-weight:normal;font-size:12px;text-align:center")
+							|target | Q4
+						div(style="font-weight:bold;font-size:28px;text-align:center")
+							|50% 
+						
+						div(id="c3_mobile_spline")
+						div(style="font-size:12px;text-align:center")
+							br
+							a(href="" target="_blank") as per some source
+
+				div.col-md-2.col-lg3(style="width:220px")
+					.panel.panel-default(style="width:200px;margin:0px;height:300px ")
+						.panel-heading(style="text-align:center;font-weight:bold") S4 - roadmap delivery
+						.panel-body
+						div(style="font-weight:normal;font-size:12px;text-align:center")
+							|target | YoY
+						div(style="font-weight:bold;font-size:28px;text-align:center")
+							|100% 
+						
+						div(id="c3_incident_chart")
+						div(style="font-size:12px;text-align:center")
+							br
+							a(href="" target="_blank") as per some source
+
+				div.col-md-2.col-lg3(style="width:220px")
+					.panel.panel-default(style="width:200px;margin:0px;height:300px ")
+						.panel-heading(style="text-align:center;font-weight:bold") S5 - contracted B2B rev 
+						.panel-body
+						div(style="font-weight:normal;font-size:12px;text-align:center")
+							|target | YoY
+						div(style="font-weight:bold;font-size:28px;text-align:center")
+							|10 mEur 
+						
+						div(id="c3_incident_chart")
+						div(style="font-size:12px;text-align:center")
+							br
+							a(href="" target="_blank") as per some source
+
+			
 		div.panel.panel-default
 			div.panel-heading ...dashboard
 			div.panel-body
 				div.col-md-3.col-lg4
-					.panel.panel-default(style="width:250px;margin:0px ")
+					.panel.panel-default(style="width:250px;margin:0px;height:300px ")
 						.panel-heading(style="font-weight:bold") kpi-5
 						.panel-body
 							h3 some big numbers
 							h2(style="font-size:80px") 100%
 				div.col-md-3.col-lg4
-					.panel.panel-default(style="width:250px;margin:0px ")
+					.panel.panel-default(style="width:250px;margin:0px;height:300px ")
 						.panel-heading(style="font-weight:bold") kpi-6
 						.panel-body
 							h3 some big numbers
 							h2(style="font-size:80px") 100%
 				div.col-md-3.col-lg4
-					.panel.panel-default(style="width:250px;margin:0px ")
+					.panel.panel-default(style="width:250px;margin:0px;height:300px ")
 						.panel-heading(style="font-weight:bold") kpi-7
 						.panel-body
 							h3 some big numbers
 							h2(style="font-size:80px") 100%
 
 				div.col-md-3.col-lg4
-					.panel.panel-default(style="width:250px;margin:0px ")
+					.panel.panel-default(style="width:250px;margin:0px;height:300px ")
 						.panel-heading(style="font-weight:bold") kpi-8
 						.panel-body
 							h3 some big numbers
@@ -114,3 +137,6 @@ block content
 							h2(style="font-size:80px") 100%
 					
 		
+script(src='/javascripts/c3/availability_gauge.js')
+script(src='/javascripts/c3/incident_barchart.js')
+script(src='/javascripts/c3/mobile_spline.js')

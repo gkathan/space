@@ -20,10 +20,27 @@
 		"deployTarget" :"pi",
 		"deployTargetPort" :22,
 		"deployTargetEnv": "development"
-		
-		
+	},
+
+
+	"test":{
+		"user":{
+			"firstname":"Marc-Alexander",
+			"lastname":"Lange"
+		}
 	},
 	
+	"content":{
+		"spacenews" : {
+			"headline" :"new headline",
+			"content" :"bla bla",
+			"date" : "2015-03-20"
+		}
+	},
+	
+	"import":{
+		"plainTypes" : ["productportfolio","productcatalog","targets","incidents","labels","customers","competitors","roadmaps","availability","v1teams","scrumteams","incidenttracker","content"]
+	},
 	
 
 	

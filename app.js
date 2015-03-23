@@ -16,13 +16,12 @@ var passport = require('passport'),
  LocalStrategy = require('passport-local');
 var flash = require('connect-flash')
 
-
-
-// routes 
+// routes
 var routes = require('./routes/index');
 var users = require('./routes/users');
 var api = require('./routes/api');
 var organization = require('./routes/organization');
+
 var incidents = require('./routes/incidents');
 var portfolio = require('./routes/portfolio');
 var upload = require('./routes/upload');
@@ -30,33 +29,17 @@ var targets = require('./routes/targets');
 var dashboard = require('./routes/dashboard');
 var authenticate = require('./routes/authenticate');
 
-// db 
-var DB=config.database.db;
-var HOST = config.database.host;
-var connection_string = HOST+'/'+DB;
-var db = mongojs(connection_string, [DB]);
-
-
 // logger
 var winston = require('winston');
 winston.loggers.add('space_log',{
 	console:{
-		colorize:true, 
-		prettyPrint:true,
-		showLevel:true,
-		timestamp:true,
-		level:"debug"
+    colorize:true,prettyPrint:true,showLevel:true,timestamp:true,level:"debug"
 	},
-    file:{
-		filename: 'logs/space.log' ,
-		prettyPrint:true,
-		showLevel:true,
-		level:"debug"
+  file:{
+		filename: 'logs/space.log',prettyPrint:true,showLevel:true,level:"debug"
 	}
 });
-
 var logger = winston.loggers.get('space_log');
-
 
 logger.info("[s p a c e] - app initializes...");
 
@@ -64,61 +47,46 @@ logger.info("[s p a c e] - app initializes...");
 var build = JSON.parse(fs.readFileSync('./space.build', 'utf8'));
 if (config.env==="PRODUCTION" ||config.env==="TEST" ) config.build=build.build;
 
-
-// create a write stream (in append mode)
-//var accessLogStream = fs.createWriteStream(__dirname + '/access.log', {flags: 'a'})
-
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
-
 app.locals.title="s p a c e ";
-
 
 // get all org instance dates for the menu
 // ** this should go somewhere else ;-)
-_getOrgDates(function(data){
-	app.locals.organizationDates=data;
+orgService = require('./services/OrganizationService');
+orgService.getOrganizationHistoryDates(function(data){
+	app.locals.organizationhistoryDates=data;
 });
 
 app.use(favicon(path.join(__dirname,'public','images','favicon.ico')));
-app.use(bodyParser.json()); 
+app.use(bodyParser.json());
 // limit 50m is for large svg POST data needed for transcoder
 app.use(bodyParser.urlencoded({ extended: false ,limit: '50mb'}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-
 app.use(session({
-  secret: 'keyboard cat',
-  resave: false,
-  saveUninitialized: true
+  secret: 'keyboard cat',resave: false,saveUninitialized: true
 }))
-
 
 app.use(passport.initialize());
 app.use(passport.session()); // persistent login sessions
 app.use(flash());
 
-
 // http://thenitai.com/2013/11/25/how-to-access-sessions-in-jade-template/
 app.use(function(req,res,next){
-	
 	res.locals.session = req.session;
 	res.locals.config = config;
 	next();
 });
 
-
-
-
 // Session-persisted message middleware
 app.use(function(req, res, next){
   var err = req.session.error,
-      msg = req.session.notice,
-      success = req.session.success;
-
+  msg = req.session.notice,
+  success = req.session.success;
   delete req.session.error;
   delete req.session.success;
   delete req.session.notice;
@@ -126,7 +94,6 @@ app.use(function(req, res, next){
   if (err) res.locals.error = err;
   if (msg) res.locals.notice = msg;
   if (success) res.locals.success = success;
-
   next();
 });
 
@@ -147,9 +114,7 @@ app.use(addconfig());
 logger.debug("**** ENV: "+app.get('env'));
 logger.debug("[CONFIG] "+JSON.stringify(config));
 
-
-
-
+debugger;
 
 app.use('/', routes);
 app.use('/api', api);
@@ -162,12 +127,30 @@ app.use('/targets', targets);
 app.use('/dashboard', dashboard);
 app.use('/authenticate', authenticate);
 
-
-
 // services
 var v1SyncService = require('./services/V1SyncService');
 v1SyncService.init();
 
+// https
+// Enable reverse proxy support in Express. This causes the
+// the "X-Forwarded-Proto" header field to be trusted so its
+// value can be used to determine the protocol. See
+// http://expressjs.com/api#app-settings for more details.
+app.enable('trust proxy');
+// Add a handler to inspect the req.secure flag (see
+// http://expressjs.com/api#req.secure). This allows us
+// to know whether the request was via http or https.
+app.use (function (req, res, next) {
+	if (req.secure) {
+		logger.debug("[ok] ssl call");
+		// request was via https, so do no special handling
+		next();
+	} else {
+		// request was via http, so redirect to https
+		logger.debug("[http] forwarding to ssl call"+ req.headers.host + req.url);
+		res.redirect('https://' + req.headers.host+":3443" + req.url);
+	}
+});
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -178,7 +161,6 @@ app.use(function(req, res, next) {
 });
 
 // error handlers
-
 // development error handler
 // will print stacktrace
 if (app.get('env') === 'development') {
@@ -196,28 +178,12 @@ if (app.get('env') === 'development') {
 // no stacktraces leaked to user
 app.use(function(err, req, res, next) {
     logger.error(err.status+" "+err.messag);
-    
+
     res.status(err.status || 500);
     res.render('error', {
         message: err.message,
         error: {}
     });
 });
-
-
-
-
-/**
- * organization snapsho dates
- * => should be moved in a service class ;-)
- */
-function _getOrgDates(callback){
-   db.collection("organization").find({},{oDate:1}).sort({oDate:-1},function(err,data){
-			callback(data);
-	});
-}
-
-
-
 
 module.exports = app;

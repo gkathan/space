@@ -20,20 +20,27 @@ var db = mongojs(connection_string, [DB]);
 
 
 router.get("/", function(req, res, next) {
-
 	res.send("org base page");
-	
+});
+
+router.get("/facebook", function(req, res, next) {
+	var orgService = require('../services/OrganizationService');
+	orgService.findEmployeesByFunction("Studios",function(employees){
+		
+		res.locals.employees = employees;
+		res.render("organization/facebook");
+	});
 });
 
 
-router.get("/tree/:date", function(req, res, next) {
+router.get("/history/tree/:date", function(req, res, next) {
 	console.log("------------- :date = "+req.params.date);
 	res.locals.orgdate=req.params.date;
 	res.render("organization/org_tree", { title: 's p a c e - organizationchart' });
 	
 });
 
-router.get("/radial", function(req, res, next) {
+router.get("/history/radial", function(req, res, next) {
 
 	res.send("org radial");
 	

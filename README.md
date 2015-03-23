@@ -1,30 +1,23 @@
-# space
-strategy::performance::and:change::explorer
+![alt tag](https://raw.github.com/gkathan/space/master/public/images/space_big_bpty.bwin.png)
+
+strategy >> performance and change explorer
 
 clean install
 -------------
 * install git
-* install nodeJS
-* install mongodb
-** what else to prepare
+* install nodeJS (e.g. windows = just run the nodejs installer, ubuntu = "sudo apt-get install -y nodejs" )
+* install mongodb (and start it ;-)
 * npm install -g bower
 * npm install -g gulp
+* npm install -g nodemon
+* npm install -g forever
 
-
-checkout s2t from git
+checkout space from git
 --------------------
-=> fixed some missing dependencies and files
-=> now [OK]
-
-* git clone https://github.com/gkathan/strategy2tactics
-* cd strategy2tacics
+* git clone https://github.com/gkathan/space
+* cd space
 * npm install 
-* bower install (2 resolves: latest bootstrap + old other)
-
- 1) eonasdan-bootstrap-datetimepicker#3.1.3
- 
- 3) bootstrap#~3.3.2 which resolved to 3.3.2 and is required by kanban
- 
- * npm runs-scriptDEV
+* bower install
+* npm run-script startDEV
  
  

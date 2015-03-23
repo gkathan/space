@@ -31,7 +31,7 @@ var MAX_COUNT;
 
 // set by multiselect box to switch data 
 // default
-var ORG_DATA="organization/";
+var ORG_DATA="organization/history/";
 
 
 //fixed distance between depth levels

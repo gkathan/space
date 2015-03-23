@@ -18,7 +18,11 @@ div(style="width:500px;margin:0 auto;height:600px")
 					h3.text-center uuupsie!
 						br
 						br
-						img(src="/images/space_big_blue.png" height="100px")
+						if session.CONTEXT
+							img(src="images/space_big_#{session.CONTEXT}.png" width="100px" style="margin:5px auto")
+						else
+							img(src="images/space_big_bpty.png" width="100px" style="margin:5px auto")
+						
 						br
 						br
 						small.text-center ...is not supported on any other browsers than google chrome 

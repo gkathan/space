@@ -68,6 +68,9 @@ block content
 								li(role="presentation") 
 									a(role="menuitem" tabindex="-1" href="/targets/overview") targets overview
 								li(role="presentation") 
+									a(role="menuitem" tabindex="-1" href="/targets/overview/old") targets overview (old)
+								
+								li(role="presentation") 
 									a(role="menuitem" tabindex="-1" href="/organization/circlecontain/targets") targets circle contain map								
 
 
@@ -118,19 +121,21 @@ block content
 								span.caret 
 
 							ul.dropdown-menu(role="menu" aria-labelledby="org")
-								each _date in organizationDates
+								each _date in organizationhistoryDates
 									li(role="presentation") 
-										a(role="menuitem" tabindex="-1" href="/organization/tree/#{_date.oDate}") tree [#{_date.oDate}]
+										a(role="menuitem" tabindex="-1" href="/organization/history/tree/#{_date.oDate}") tree [#{_date.oDate}]
 								li(role="presentation") 
-									a(role="menuitem" tabindex="-1" href="/organization/radial") radial
+									a(role="menuitem" tabindex="-1" href="/organization/history/radial") radial
 								li(role="presentation") 
-									a(role="menuitem" tabindex="-1" href="/organization/circlecontain/org/2015-01-15") circle contain
+									a(role="menuitem" tabindex="-1" href="/organization/history/circlecontain/org/2015-01-15") circle contain
 								li(role="presentation") 
-									a(role="menuitem" tabindex="-1" href="/organization/force") force map experiments
+									a(role="menuitem" tabindex="-1" href="/organization/history/force") force map experiments
 								li(role="presentation") 
 									a(role="menuitem" tabindex="-1" href="/organization/scrumteams") scrum teams (old)
 								li(role="presentation") 
 									a(role="menuitem" tabindex="-1" href="/organization/v1teams") teams (v1 teamroom export)
+								li(role="presentation") 
+									a(role="menuitem" tabindex="-1" href="/organization/facebook") facebook
 
 					
 				if session.AUTH=="admin"	
@@ -184,7 +189,7 @@ block content
 								li(role="presentation") 
 									a(role="menuitem" tabindex="-1" href="/admin?type=competitors") competitors
 								li(role="presentation") 
-									a(role="menuitem" tabindex="-1" href="/admin?type=organization/2015-02-17") organization
+									a(role="menuitem" tabindex="-1" href="/admin?type=organization") organization
 								li(role="presentation") 
 									a(role="menuitem" tabindex="-1" href="/admin?type=productcatalog") product catalog
 								li(role="presentation") 
@@ -193,6 +198,10 @@ block content
 									a(role="menuitem" tabindex="-1" href="/admin?type=availability") availability
 								li(role="presentation") 
 									a(role="menuitem" tabindex="-1" href="/admin?type=firereport") fire reports
+								li(role="presentation") 
+									a(role="menuitem" tabindex="-1" href="/admin?type=content") content
+								li(role="presentation") 
+									a(role="menuitem" tabindex="-1" href="/admin?type=incidenttracker") incident tracker
 								
 								li(role="presentation") 
 									a(role="menuitem" tabindex="-1" href="/admin?type=incidents") incidents (very large..)
