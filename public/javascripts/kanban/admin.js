@@ -66,6 +66,7 @@ function getConfig(collection){
 		case "availability":  return getAvailabilityConfig();
 		case "firereport":  return getFirereportConfig();
 		case "content":  return getContentConfig();
+    case "incidenttracker":  return getIncidenttrackerConfig();
 
 
 	}
@@ -263,6 +264,7 @@ function getTargetConfig(){
         { id:"type", name: "type", field: "type",width:80, editor: Slick.Editors.Text, cssClass: "cell-standard" },
         { id:"vision", name: "vision", field: "vision",width:150, editor: Slick.Editors.Text, cssClass: "cell-standard" },
         { id:"rag", name: "rag", field: "rag",width:10, editor: Slick.Editors.Text,formatter: Slick.Formatters.RAG,  cssClass: "cell-standard" },
+        { id:"ragComment", name: "ragComment", field: "ragComment",width:10, editor: Slick.Editors.Text,formatter: Slick.Formatters.RAG,  cssClass: "cell-standard" },
         { id: "cluster", name: "cluster", field: "cluster",sortable:true, editor: Slick.Editors.Text ,width:200, cssClass: "cell-title"},
 		{ id: "theme", name: "theme",  field: "theme",sortable:true, editor: Slick.Editors.Text , cssClass: "cell-standard"},
 		{ id: "group", name: "group",  field: "group",sortable:true,editor: Slick.Editors.Text,width:150, cssClass: "cell-standard"},
@@ -292,15 +294,15 @@ function getTargetConfig(){
 function getRoadmapConfig(){
 		//targets
 	var _target =[
-        { id:"id", name: "id", field: "_id",sortable:true,width:20,cssClass:"onKanbanImmutable"},
-        { id:"area", name: "area", field: "area",width:80, editor: Slick.Editors.Text, cssClass: "cell-standard" },
-        { id: "lane", name: "lane", field: "lane",sortable:true, editor: Slick.Editors.Text ,width:80, cssClass: "cell-title"},
-		{ id: "name", name: "name",  field: "name",width:200,sortable:true, editor: Slick.Editors.Text , cssClass: "cell-standard"},
-		{ id: "type", name: "type",  field: "type",sortable:true,editor: Slick.Editors.Text,width:80, cssClass: "cell-standard"},
-	    { id: "startDate", name: "startDate", field: "startDate", editor: Slick.Editors.LongText,width:100,formatter: Slick.Formatters.SimpleDate, cssClass: "cell-standard" },
-	    { id: "endDate", name: "endDate", field: "endDate", editor: Slick.Editors.Text,width:100,formatter: Slick.Formatters.SimpleDate, cssClass: "cell-standard" },
-	    { id: "version", name: "version", field: "version", editor: Slick.Editors.Text,width:50, cssClass: "cell-standard" },
-	    { id: "description", name: "description", field: "description", editor: Slick.Editors.LongText ,width:150, cssClass: "cell-standard"}
+    { id:"id", name: "id", field: "_id",sortable:true,width:20,cssClass:"onKanbanImmutable"},
+    { id:"area", name: "area", field: "area",width:80, editor: Slick.Editors.Text, cssClass: "cell-standard" },
+    { id: "lane", name: "lane", field: "lane",sortable:true, editor: Slick.Editors.Text ,width:80, cssClass: "cell-title"},
+    { id: "name", name: "name",  field: "name",width:200,sortable:true, editor: Slick.Editors.Text , cssClass: "cell-standard"},
+    { id: "type", name: "type",  field: "type",sortable:true,editor: Slick.Editors.Text,width:80, cssClass: "cell-standard"},
+    { id: "startDate", name: "startDate", field: "startDate", editor: Slick.Editors.LongText,width:100,formatter: Slick.Formatters.SimpleDate, cssClass: "cell-standard" },
+    { id: "endDate", name: "endDate", field: "endDate", editor: Slick.Editors.Text,width:100,formatter: Slick.Formatters.SimpleDate, cssClass: "cell-standard" },
+    { id: "version", name: "version", field: "version", editor: Slick.Editors.Text,width:50, cssClass: "cell-standard" },
+    { id: "description", name: "description", field: "description", editor: Slick.Editors.LongText ,width:150, cssClass: "cell-standard"}
 
         ];
 	var _config ={};
@@ -309,6 +311,23 @@ function getRoadmapConfig(){
 	return _config;
 }
 
+
+function getIncidenttrackerConfig(){
+		//targets
+	var _incidenttracker =[
+    { id:"id", name: "id", field: "_id",sortable:true,width:20,cssClass:"onKanbanImmutable"},
+    { id:"day", name: "day", field: "day",sortable:true,width:80, editor: Slick.Editors.Text, cssClass: "cell-standard" },
+    { id: "P1", name: "P1", field: "P1", editor: Slick.Editors.Number ,width:80, cssClass: "cell-standard"},
+    { id: "P8", name: "P8",  field: "P8",width:80, editor: Slick.Editors.Number , cssClass: "cell-standard"}
+
+        ];
+	var _config ={};
+	_config.mode="editable";
+  _config.addRow="enabled";
+
+	_config.fields = _incidenttracker;
+	return _config;
+}
 
 
 

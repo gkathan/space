@@ -272,6 +272,11 @@ mixin renderTargetDetail(target)
 // -----------------------------------------------------------------------
 block content
 div(style="margin-left:5px")
+	
+	div(style="text-align:right")
+		a(href="/api/space/export/xlsx/targets" title="export targets as xlsx")
+			span(style="font-size:10px;text-align:right") >> export targets xlsx &nbsp;
+			img(src="/images/space/logo_msexcel.png" height="30px")
 	//-----------------------------------------------------------------------------------
 	// ------------------------------ target detail modal -------------------------------
 	//-----------------------------------------------------------------------------------

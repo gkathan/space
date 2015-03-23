@@ -809,6 +809,8 @@ function excelScrumTeams(req, res , next){
 		{caption:'IsCrosscomponent',type:'string',width:10,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'Self-formation?',type:'string',width:7,captionStyleIndex:2,beforeCellWrite:_formatCell}
 	];
+   _generateAndSendExcel("scrumteams",conf,req,res,next);
+}
 
 
 /**
@@ -830,8 +832,7 @@ function excelFirereport(req, res , next){
 
 	];
 
-    _generateAndSendExcel("v1teams",conf,req,res,next);
-}    _generateAndSendExcel("scrumteams",conf,req,res,next);
+   _generateAndSendExcel("firereports",conf,req,res,next);
 }
 
 
@@ -859,6 +860,25 @@ function excelV1Teams(req, res , next){
     _generateAndSendExcel("v1teams",conf,req,res,next);
 }
 
+
+/**
+ * generate scrumteams excel
+ */
+function excelIncidenttracker(req, res , next){
+	var conf ={};
+
+
+    conf.stylesXmlFile = "views/excel_export/styles.xml";
+    conf.cols = [
+		{caption:'_id',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'day',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'P1',type:'string',width:5,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'P8',type:'string',width:8,captionStyleIndex:2,beforeCellWrite:_formatCell}
+
+	];
+
+    _generateAndSendExcel("incidenttracker",conf,req,res,next);
+}
 
 /**
  * generate scrumteams excel

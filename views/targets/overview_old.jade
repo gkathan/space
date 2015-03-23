@@ -125,99 +125,12 @@ mixin renderTarget(target)
 						td
 							|&nbsp;
 		
-// -----------------------------------------------------------------------
-// ------------------ mixin target lane start ----------------------------
-// -----------------------------------------------------------------------
-mixin renderTargetDetail(target)
-	div
-	if testTarget
-		table.table(style="width:500px;vertical-align:middle")
-			tr(style="vertical-align:middle")
-				td(style="width:70px;text-align:right;font-style:italic;color:grey;font-size:12px;vertical-align:middle")
-					img(src="/images/targets/#{testTarget.group}.png" height="70px")
-				td(style="width:350px;vertical-align:middle")
-					span(style="font-weight:bold;font-size:18px") #{testTarget.id}: #{testTarget.theme} -> #{testTarget.cluster} -> #{testTarget.group}
-			tr(style="vertical-align:middle")
-				td(style="width:70px;text-align:right;font-style:italic;color:grey;font-size:12px;vertical-align:middle")
-					|target
-				td(style="width:350px")
-					|#{testTarget.target}
-			tr(style="vertical-align:middle")
-				td(style="text-align:right;font-style:italic;color:grey;font-size:12px;vertical-align:middle")
-					|RAG
-				td
-					|#{testTarget.rag}
-			tr(style="vertical-align:middle")
-				td(style="text-align:right;font-style:italic;color:grey;font-size:12px;vertical-align:middle")
-					|outcome
-				td
-					|#{testTarget.outcome}
-			tr(style="vertical-align:middle")
-				td(style="text-align:right;font-style:italic;color:grey;font-size:12px;vertical-align:middle")
-					|description
-				td
-					|#{testTarget.description}
-			tr(style="vertical-align:middle")
-				td(style="text-align:right;font-style:italic;color:grey;font-size:12px;vertical-align:middle")
-					|baseline
-				td
-					|#{testTarget.baseline}
-			tr(style="vertical-align:middle")
-				td(style="text-align:right;font-style:italic;color:grey;font-size:12px;vertical-align:middle")
-					|measure
-				td
-					|#{testTarget.measure}
-			tr(style="vertical-align:middle")
-				td(style="text-align:right;font-style:italic;color:grey;font-size:12px;vertical-align:middle")
-					|link
-				td
-					|#{testTarget.link}
-			tr(style="vertical-align:middle")
-				td(style="text-align:right;font-style:italic;color:grey;font-size:12px;vertical-align:middle")
-					|comments
-				td
-					|#{testTarget.comments}
-			tr(style="vertical-align:middle")
-				td(style="text-align:right;font-style:italic;color:grey;font-size:12px;vertical-align:middle")
-					|contributors
-				td
-					|#{testTarget.contributors}
-			tr(style="vertical-align:middle")
-				td(style="text-align:right;font-style:italic;color:grey;font-size:12px;vertical-align:middle")
-					|sponsor
-				td
-					|#{testTarget.sponsor}
-			tr(style="vertical-align:middle")
-				td(style="text-align:right;font-style:italic;color:grey;font-size:12px;vertical-align:middle")
-					|start /end
-				td
-					|#{testTarget.start} - #{testTarget.end}
-
 
 // -----------------------------------------------------------------------
 // ------------------ main target template ----------------------------
 // -----------------------------------------------------------------------
 block content
 div(style="margin-left:20px")
-	button.btn.btn-primary.btn-xs(type="button" data-toggle="modal" data-target="#targetDetailModal") targetDetail sample
-	//-----------------------------------------------------------------------------------
-	// ------------------------------ target detail modal -------------------------------
-	//-----------------------------------------------------------------------------------
-	div.modal.fade(id="targetDetailModal" tabindex="-1" role="dialog" aria-labelledby="targetDetailModal" aria-hidden="true" )
-		div.modal-dialog
-			div.modal-content(style="opacity:1")
-				div.modal-header
-					button.close(type="button" data-dismiss="modal" aria-label="Close")
-						span(aria-hidden="true") &times
-					h4.modal-title(id="myModalLabel")
-						| target details - target XY
-				div.modal-body
-					+renderTargetDetail("#{testTarget}")
-												
-						
-				div.modal-footer
-					button.btn.btn-default.btn-xs(type="button" data-dismiss="modal")
-						span Close
 
 	div(style="font-family:arial;font-weight:bold;font-size:24px;color:#174D75;text-align:center") "#{vision}"
 	div(style="font-family:arial;font-weight:normal;font-size:16px;color:#174D75;text-align:center") #{period}
@@ -235,7 +148,7 @@ div(style="margin-left:20px")
 					td(style="width:3%;vertical-align:middle;text-align:center")
 						img(src="/images/space_triangle_#{lane.name}_right.png" style="vertical-align:top" height="250px" width="20px")
 					td(style=";vertical-align:middle;text-align")
-						each l1 in _.find(L1targets,{'name':lane.name}).children
+						each l1 in L1targets
 							// div.table-responsive
 							table.table(style="max-width:400px")
 								tr
