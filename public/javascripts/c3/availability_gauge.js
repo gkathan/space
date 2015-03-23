@@ -1,6 +1,6 @@
 var availability={unplannedYTD:99.61,targetYTD:99.75};
 
-var chart = c3.generate({
+var chart1 = c3.generate({
     bindto : '#c3_availability_gauge',
     data: {
         columns: [
@@ -37,31 +37,31 @@ var chart = c3.generate({
 });
 
 setTimeout(function () {
-    chart.load({
+    chart1.load({
         columns: [['data', 99.30]]
     });
 }, 500);
 
 setTimeout(function () {
-    chart.load({
+    chart1.load({
         columns: [['data', 99.50]]
     });
 }, 1000);
 
 setTimeout(function () {
-    chart.load({
+    chart1.load({
         columns: [['data', 99.90]]
     });
 }, 1500);
 
 setTimeout(function () {
-    chart.load({
+    chart1.load({
         columns: [['data', 99.00]]
     });
 }, 2000);
 
 setTimeout(function () {
-    chart.load({
+    chart1.load({
         columns: [['data', availability.unplannedYTD]]
     });
 }, 2500);

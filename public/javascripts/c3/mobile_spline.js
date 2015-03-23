@@ -1,6 +1,6 @@
 
 
-var chart = c3.generate({
+var chart3 = c3.generate({
     bindto : '#c3_mobile_spline',
     size: {
       height:180,
@@ -8,9 +8,10 @@ var chart = c3.generate({
     },
     data: {
         columns: [
-            ['data1', 30, 200, 100, 400, 150, 250],
+            ['data1', 30, 200, 100, 300, 150, 250],
+            ['data2', 50, 150, 90, 250, 120, 250],
         ],
-        type: 'spline'
+        type: 'area-spline'
     },
     bar: {
         width: {

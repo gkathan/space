@@ -1,6 +1,6 @@
 
 
-var chart = c3.generate({
+var chart2 = c3.generate({
     bindto : '#c3_incident_barchart',
     size: {
       height:180,

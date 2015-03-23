@@ -76,18 +76,20 @@ style.
 // -----------------------------------------------------------------------
 mixin renderL1Targets(target)
 	// div.table-responsive
-	div.col-sm-2.col-md-4.col-lg-4(style="max-width:200px")
-		div(id="xxx" style=";text-align:center;line-height:100%;color:white;background-color:"+color_PL+";padding:2px 2px 2px 2px")
+	td
+		div(id="xxx" style=";text-align:center;line-height:100%;color:white;background-color:"+color_PL+";min-width:90px;max-width:150px")
 			div
-				span(style="line-height:32px;font-size:26px;font-weight:bold")
+				span(style="line-height:28px;font-size:24px;font-weight:bold")
 					|#{target.directMetric}
-				span(style="line-height:12px;font-size:12px;font-weight:normal")
+				span(style="line-height:12px;font-size:11px;font-weight:normal")
 					|&nbsp;#{target.directMetricScale}
 			div
-				span(style="line-height:20px;font-weight:normal;font-size:14px") #{target.directTarget}
+				span(style="line-height:20px;font-weight:normal;font-size:11px") #{target.directTarget}
 			div
-				span(style="line-height:18px;font-weight:bold;font-size:14px") #{target.directTime}
-
+				span(style="line-height:14px;font-weight:bold;font-size:12px") #{target.directTime}
+				
+		img(src="/images/space_arrow_bpty_down.png" style="vertical-align:middle;text-align:center" width="50px" height="15px" )
+	
 
 
 // -----------------------------------------------------------------------
@@ -95,7 +97,7 @@ mixin renderL1Targets(target)
 // -----------------------------------------------------------------------
 mixin renderTargetLane(lane)
 	div.col-sm-2.col-md-4.col-lg-4
-		div.panel(style="max-width:550px;min-width:250px" class="panel-body-lane")
+		div.panel(style="min-width:300px;max-width:480px" class="panel-body-lane")
 			.panel-heading(class="panel-lane-heading-#{lane.name.toLowerCase()}" style="text-align:center;font-weight:bold;vertical-align:top")
 				table.table.table-borderless(style="background-color:transparent;max-width:400px")
 					tr
@@ -109,7 +111,7 @@ mixin renderTargetLane(lane)
 				div.row(style="font-size:11px")
 					each t in lane.children[0].children
 						center
-							div.col-sm-6.col-md-6.col-lg6
+							div.col-xs-6.col-sm-6.col-md-6.col-lg6
 								+renderTarget(t)
 
 // -----------------------------------------------------------------------
@@ -285,26 +287,23 @@ div(style="margin-left:5px")
 			div.modal-content(style="opacity:1")
 				+renderTargetDetail()
 
-	div(style="font-family:arial;font-weight:normal;font-size:16px;color:#174D75;text-align:center")
-		div.panel(style="max-width:1800px" class="panel-body-lane")
-			.panel-heading(class="" style="text-align:center;font-weight:bold;vertical-align:top")
-				div(style="font-family:arial;font-weight:bold;font-size:24px;color:#174D75;text-align:center") "#{vision}"
-				div(style="font-family:arial;font-weight:normal;font-size:16px;color:#174D75;text-align:center") #{period}
-				br
-				//img(src="/images/space_triangle_bpty_down.png" style="vertical-align:middle;" width="400px" height="20px")
-				div(style="font-family:arial;font-weight:normal;font-size:16px;color:#174D75;text-align:center")
+	div.container-fluid
+		div.row
+			div(style="font-weight:bold;font-size:24px;color:#174D75;text-align:center") "#{vision}"
+			div(style="font-weight:normal;font-size:16px;color:#174D75;text-align:center") #{period}
+			br
+		div.row(style="text-align:center")
+			table.table.table-borderless(style="background-color:transparent")
+				tr
 					each target in L1targets
 						+renderL1Targets(target)
 
 
-			.panel-body(style="vertical-align:top")
-				div(style="font-family:arial;font-weight:normal;font-size:16px;color:#174D75;text-align:center")
-					//each l1 in _.find(L1targets,{'name':null}).children
-					//	+renderL1Targets(L1Targets)
-				div(style="font-family:arial;font-weight:normal;font-size:16px;color:#174D75;text-align:center")
-					each lane in targets
-						if lane.name != "P&L"
-							+renderTargetLane(lane)
+			
+		div.row(style="vertical-align:top")
+				each lane in targets
+					if lane.name != "P&L"
+						+renderTargetLane(lane)
 
 script.
 	/**
