@@ -1,6 +1,6 @@
 {
 	"env" : "default",
-	
+
     "debug": true,
 
     "url": "http://localhost",
@@ -8,9 +8,9 @@
     "timezone": "UTC",
 
     "locale": "en",
-    
+
     "version" : "1.0.1-beta",
-    
+
     "build" : "---should be dynamically assigned",
 
 
@@ -29,7 +29,7 @@
 			"lastname":"Lange"
 		}
 	},
-	
+
 	"content":{
 		"spacenews" : {
 			"headline" :"new headline",
@@ -37,16 +37,16 @@
 			"date" : "2015-03-20"
 		}
 	},
-	
+
 	"import":{
 		"plainTypes" : ["productportfolio","productcatalog","targets","incidents","labels","customers","competitors","roadmaps","availability","v1teams","scrumteams","incidenttracker","content"]
 	},
-	
 
-	
-	
-	
-    
+
+
+
+
+
     "context" : "bpty.studios",
 
     "entities" : [
@@ -77,9 +77,9 @@
 			}
 		},
 		{
-		
+
 			"name": "bpty.kalixa",
-			
+
 			"skin": {
 				"colors" : {
 					"primary" :"rgb(50,57,99)",
@@ -93,7 +93,7 @@
 		},
 		{
 			"name": "bpty.bwin",
-			
+
 			"skin": {
 				"colors" : {
 					"primary" :"rgb(50,57,99)",
@@ -109,13 +109,13 @@
 
 
 
-    
+
     "v1" : {
-		
+
 		"url" : "http://v1.bwinparty.corp/V1-Production/",
-		
+
 		"proxy" : "http://knbnprxy.ea.bwinparty.corp/rest/epics",
-		
+
 		"syncEpics": {
 			"mode": "off",
 			"intervalMinutes" :0,
@@ -128,35 +128,40 @@
         "db": "space",
         "host" : "localhost:27017"
      },
-     
+
      "api" : {
 		"url" :"/api/space/rest/"
 	},
-	
+
 	"transcoder" : {
 		"url" : ""
      },
-     
+
      "mailer" : {
 		"host": "localhost",
 		"port": 25,
 		"from" : "mailer@localhost",
 		"signatureHtml" : "<style>html {position: relative;min-height: 100%;}body {background-color: #f9f9f9;font-family: RobotoDraft,  Helvetica, Arial;-webkit-user-select: none;-moz-user-select: none;-ms-user-select: none;user-select: none;-webkit-tap-highlight-color: rgba(0,0,0,0);-webkit-touch-callout: none; overflow: auto; argin-bottom: 20px;}</style>",
 		"signatureText" : "\n________________________________\n:: this is an automatically generated mail - please do not reply to this email - in case of questions please contact gerold.kathan@bwinparty.com\n\n:: bpty   s t u d i o s | commercial management"
-		
-	
+
+
      },
-     
+
      "notifications" : {
-		"portfolioupdate": "gerold.kathan@bwinparty.com"
-     
+		"portfolioupdate": {
+				"to":"gerold.kathan@bwinparty.com",
+				"subject" : "[portfolio gate] update notification",
+				"text" : "hej,\nthere is an updated portfolio gate view available under \n\n http://space.bwinparty.corp/portfolio \n\ncheerz.",
+				"url" : "http://space.bwinparty.corp/portfolio"
+			}
+
      },
-     
+
      "firereports" : {
 		"contact": "Pablo Delgado Caballero",
 		"contactEmail" : "Pablo.DelgadoCaballero@bwinparty.com"
-     
+
      }
-     
-     
+
+
 }

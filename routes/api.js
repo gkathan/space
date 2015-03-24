@@ -292,11 +292,11 @@ function findByDate(req, res , next){
 	var _query;
 	if ( _year != NaN && _year >2010){
 		logger.debug("[year]:" +_year);
-		_query = "'day' : { $gte : new ISODate("+_date+"-01-01',$lte : new ISODate("+_date+"-12-31' )";
+		_query = "{'date' : { $gte : new ISODate('"+_date+"-01-01'),$lte : new ISODate('"+_date+"-12-31' )}}";
 	}
 	else if (_quarter[0] != "Invalid date" && _quarter[1] != "Invalid date"){
 		logger.debug("[quarter]:" +_quarter);
-		_query = "'day' : { $gte : new ISODate("+_quarter[0]+"',$lte : new ISODate("+_quarter[1]+"' )";
+		_query = "{'date' : { $gte : new ISODate("+_quarter[0]+"',$lte : new ISODate("+_quarter[1]+"' )}}";
 	}
 	else {
 		logger.error("no way");
@@ -305,10 +305,11 @@ function findByDate(req, res , next){
 	logger.debug("findbyDate: value: "+_.last(path));
 	logger.debug("collection: "+collection);
 	logger.debug("query: "+_query);
+        res.send("???");
 
+/*
 
-
-    db.collection(collection).find(_query, function(err , success){
+    db.collection(collection).find(_query).sort({}, function(err , success){
         logger.debug('Response success '+success);
         logger.debug('Response error '+err);
         if(success){
@@ -317,6 +318,7 @@ function findByDate(req, res , next){
         }
         return next(err);
     })
+	*/
 }
 
 
@@ -871,7 +873,7 @@ function excelIncidenttracker(req, res , next){
     conf.stylesXmlFile = "views/excel_export/styles.xml";
     conf.cols = [
 		{caption:'_id',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
-		{caption:'day',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'date',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'P1',type:'string',width:5,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'P8',type:'string',width:8,captionStyleIndex:2,beforeCellWrite:_formatCell}
 

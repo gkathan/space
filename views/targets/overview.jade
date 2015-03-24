@@ -76,21 +76,20 @@ style.
 // -----------------------------------------------------------------------
 mixin renderL1Targets(target)
 	// div.table-responsive
-	td
-		div(id="xxx" style=";text-align:center;line-height:100%;color:white;background-color:"+color_PL+";min-width:90px;max-width:150px")
-			div
-				span(style="line-height:28px;font-size:24px;font-weight:bold")
-					|#{target.directMetric}
-				span(style="line-height:12px;font-size:11px;font-weight:normal")
-					|&nbsp;#{target.directMetricScale}
+	td(style="text-align:center;padding:10px")
+		div(style=";color:white;background-color:#{color1}")
+			span(style="line-height:28px;font-size:24px;font-weight:bold")
+				|#{target.directMetric}
+			span(style="line-height:12px;font-size:11px;font-weight:normal")
+				|&nbsp;#{target.directMetricScale}
 			div
 				span(style="line-height:20px;font-weight:normal;font-size:11px") #{target.directTarget}
 			div
 				span(style="line-height:14px;font-weight:bold;font-size:12px") #{target.directTime}
 				
-		img(src="/images/space_arrow_bpty_down.png" style="vertical-align:middle;text-align:center" width="50px" height="15px" )
-	
-
+		div(style="margin-top:10px;margin-bottom:10px")
+			img(src="/images/space_arrow_bpty_up.png" style="vertical-align:middle;display:block;margin: auto auto" height="30px" width="35px"  )
+		
 
 // -----------------------------------------------------------------------
 // ------------------ mixin target lane start ----------------------------
@@ -292,6 +291,9 @@ div(style="margin-left:5px")
 			div(style="font-weight:bold;font-size:24px;color:#174D75;text-align:center") "#{vision}"
 			div(style="font-weight:normal;font-size:16px;color:#174D75;text-align:center") #{period}
 			br
+			div(style="margin-top:10px;margin-bottom:10px")
+				img(src="/images/space_triangle_bpty_up.png" style="vertical-align:middle;display:block;margin: auto auto" height="20px" width="450px"  )
+		
 		div.row(style="text-align:center")
 			table.table.table-borderless(style="background-color:transparent")
 				tr

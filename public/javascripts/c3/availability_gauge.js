@@ -56,7 +56,7 @@ setTimeout(function () {
 
 setTimeout(function () {
     chart1.load({
-        columns: [['data', 99.00]]
+        columns: [['data', 99.40]]
     });
 }, 2000);
 
