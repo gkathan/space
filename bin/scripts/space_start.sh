@@ -14,7 +14,7 @@ if [[ "" !=  "$PID2" ]]; then
   kill -9 $PID2
 fi
 . ~/.bash_profile
-#nohup npm start > /dev/null 2>&1 &
+#nohup npm start > /dev/null 2>&1 &kill
 cd ~/space/app
 echo "[s p a c e] init:  run-script startPROD ..."
 nohup npm run-script startPROD > /dev/null 2>&1 &

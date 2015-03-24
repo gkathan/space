@@ -1,7 +1,7 @@
 include kanban_menu
 
 block content
-	div.row(style="margin-left:10px;margin-bottom:10px;width:420px; margin: 10px auto;")
+	div.row(style="margin-left:10px;margin-bottom:10px;width:350px; margin: 10px auto;")
 		.jumbotron(style="background:#ffffff;text-align:center")
 			if session.CONTEXT
 				img(src="images/space_big_#{session.CONTEXT}.png" width="150px" style="margin:5px auto")
@@ -13,13 +13,13 @@ block content
 				br
 				center
 					if spaceNews
-						div(style="width:300px;align:center")
-							div(style="font-size:10px;color:lightgrey") 
-								|news published on: #{spaceNews.date}
-							div(style="font-size:18px;color:#174D75;font-weight:bold") 
+						div(style="width:300px;text-align:left")
+							div(style="font-size:14px;color:#174D75;font-weight:bold;text-align:left") 
 								|#{spaceNews.headline}
-							div(style="font-size:14px;color:#174D75") 
-								|#{spaceNews.content}
+							div(style="font-size:12px;color:#174D75;text-align:left") 
+								#{spaceNews.content}
+							div(style="font-size:10px;color:lightgrey") 
+								|published on: #{moment(spaceNews.date).format("YYYY-MM-DD")}
 						
 				br
 				span(style="color:grey;font-size:10px") bpty studios | <b>commercial management</b> | #{moment().format("MMMM")} #{moment().format("YYYY")}  
@@ -27,4 +27,3 @@ block content
 	include includes/material
 
 			
-

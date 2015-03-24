@@ -289,14 +289,18 @@ function findByDate(req, res , next){
 
   var _year = parseInt(_date);
 	logger.debug("year:" +_year);
-	var _query;
+	var _from;
+	var _to;
+
 	if ( _year != NaN && _year >2010){
-		logger.debug("[year]:" +_year);
-		_query = "{'date' : { $gte : new ISODate('"+_date+"-01-01'),$lte : new ISODate('"+_date+"-12-31' )}}";
+		_from = new Date(_date+"-01-01");
+		_to = new Date(_date+"-12-31");
+		logger.debug("[year]:" +_year+ "[from]: "+_from+" [to]: "+_to);
 	}
 	else if (_quarter[0] != "Invalid date" && _quarter[1] != "Invalid date"){
-		logger.debug("[quarter]:" +_quarter);
-		_query = "{'date' : { $gte : new ISODate("+_quarter[0]+"',$lte : new ISODate("+_quarter[1]+"' )}}";
+		_from = new Date(_quarter[0]);
+		_to = new Date(_quarter[1]);
+		logger.debug("[quarter]:" +_quarter+ "[from]: "+_from+" [to]: "+_to);
 	}
 	else {
 		logger.error("no way");
@@ -304,12 +308,12 @@ function findByDate(req, res , next){
 
 	logger.debug("findbyDate: value: "+_.last(path));
 	logger.debug("collection: "+collection);
-	logger.debug("query: "+_query);
-        res.send("???");
 
-/*
 
-    db.collection(collection).find(_query).sort({}, function(err , success){
+
+ var _query = {date : { $gte : _from,$lte : _to}};
+
+    db.collection(collection).find( _query, function(err , success){
         logger.debug('Response success '+success);
         logger.debug('Response error '+err);
         if(success){
@@ -318,7 +322,7 @@ function findByDate(req, res , next){
         }
         return next(err);
     })
-	*/
+
 }
 
 
@@ -1064,26 +1068,20 @@ function _generateAndSendExcel(collection,conf,req,res,next){
 }
 
 /**
-* parses a string to indiciate a quarter of a year
+* parses a string to indiciate a quarter of a year and returns array with start end end date
 * @param quarter: "Q1-2014"
 */
 function _parseQuarter(quarter){
 	var dateParsed;
-
-
 	var splitted = quarter.split('-');
 	var quarterEndMonth =  splitted[0].charAt(1) * 3;
-	var quarterStartMonth = quarterEndMonth - 3;
-	if (quarterStartMonth ==0) quarterStartMonth =1;
-
-
-
+	var quarterStartMonth = (quarterEndMonth - 3)+1;
 	var _start = moment(quarterStartMonth + ' ' + splitted[1],'MM YYYY').format('YYYY-MM-DD');
 	var _end = moment(quarterEndMonth + ' ' + splitted[1],'MM YYYY').endOf('month').format('YYYY-MM-DD');
 
 	logger.debug(" quarterStartMonth= "+quarterStartMonth +"quarterEndMonth = "+quarterEndMonth+ "splitted[1]"+splitted[1])
-	logger.debug("q1 start: "+_start);
-	logger.debug("q1 end: "+_end);
+	logger.debug("q start: "+_start);
+	logger.debug("q end: "+_end);
 	return [_start,_end];
 }
 
