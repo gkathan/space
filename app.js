@@ -28,6 +28,7 @@ var upload = require('./routes/upload');
 var targets = require('./routes/targets');
 var dashboard = require('./routes/dashboard');
 var authenticate = require('./routes/authenticate');
+var content = require('./routes/content');
 
 // logger
 var winston = require('winston');
@@ -126,6 +127,7 @@ app.use('/incidents', incidents);
 app.use('/targets', targets);
 app.use('/dashboard', dashboard);
 app.use('/authenticate', authenticate);
+app.use('/content', content);
 
 // services
 var v1SyncService = require('./services/V1SyncService');
