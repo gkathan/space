@@ -121,12 +121,12 @@
 
 		},
 		"availability" : {
-			"mode": "on",
+			"mode": "off",
 			"intervalMinutes" :1 	,
 			"url" : ["http://avreport.bwinparty.corp/API/AvReoprtingService.svc/getYTDDatapoint","http://avreport.bwinparty.corp/API/AvReoprtingService.svc/GetAVGraphDatapoints"]
 		},
 		"incident" : {
-			"mode": "on",
+			"mode": "off",
 			"intervalMinutes" :1 	,
 			"url" : "http://snow.bwinparty.corp/incident_list.do?JSON&sysparm_query="
 		}

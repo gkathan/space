@@ -28,7 +28,7 @@ describe('AvailabilityService', function(){
   describe('#sync()', function(){
     it('should read data from REST endpoint from avreport and store it in DB', function(){
 
-      var avService = require('../services/AvailabilityService');
+      var avService = require('../services/AvailabilitySyncService');
 			var urls = ["http://avreport.bwin.intranet/API/AvReoprtingService.svc/getYTDDatapoint","http://avreport.bwin.intranet/API/AvReoprtingService.svc/GetAVGraphDatapoints"];
 			avService.sync(urls);
 

@@ -2,13 +2,9 @@
 	"env": "tiny3-development",
 
     "v1" : {
-		"url" : "data/json/epics.json",
-		"proxy" : "/local/proxy",
-		
-		"syncEpics": {
-			"mode": "off"
-			}
-	},    
+			"url" : "data/json/epics.json",
+			"proxy" : "/local/proxy"
+	},
 	"gulp":{
 		"baseDir" : "/home/cactus/",
 		"deployTarget" : "pi",
@@ -16,8 +12,6 @@
 	},
 
      "transcoder" : {
-		//"url" : "/api/kanbanv2/transcode"
-		//"url" : "http://localhost:8080/transcode/"
 		"url" : "http://localhost:8585/rest/transcode"
      }
 }

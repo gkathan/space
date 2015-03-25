@@ -1,48 +1,53 @@
 {
 	"env": "AT03W00315-development",
 
-/*
-	"v1" : {
-		"url" : "http://v1.bwinparty.corp/V1-Production/",
-		"proxy" : "http://localhost:8686/rest/epics",
-		"syncEpics": {
-			"mode": "on",
-			"intervalMinutes" :60,
-			"url" : "http://localhost:8686/rest/epics"
-			}	
-	},
-*/
-	"v1" : {
-		
-		"url" : "http://v1.bwinparty.corp/V1-Production/",
-		
-		"proxy" : "http://knbnprxy.ea.bwinparty.corp/rest/epics",
-		
-		"syncEpics": {
-			"mode": "on",
+
+
+  "sync": {
+		"v1Epics" : {
+			"mode": "off",
 			"intervalMinutes" :60,
 			"url" : "http://knbnprxy.ea.bwinparty.corp/rest/epics"
-			}
+
 		},
+		"availability" : {
+			"mode": "on",
+			"intervalMinutes" :1 	,
+			"url" : ["http://avreport.bwinparty.corp/API/AvReoprtingService.svc/getYTDDatapoint","http://avreport.bwinparty.corp/API/AvReoprtingService.svc/GetAVGraphDatapoints"]
+		},
+		"incident" : {
+			"mode": "on",
+			"intervalMinutes" :1 	,
+			"url" : "http://snow.bwinparty.corp/incident_list.do?JSON&sysparm_query="
+		}
+	},
+
+
+
+	"v1" : {
+		"url" : "http://v1.bwinparty.corp/V1-Production/",
+		"proxy" : "http://knbnprxy.ea.bwinparty.corp/rest/epics"
+	},
+
 	"gulp": {
 		"baseDir" : "c:/users/gkathan/",
 		"remoteBaseDir" : "/home/gkathan/",
 		"deployTarget" : "space.bwinparty.corp",
 		"deployTargetEnv" : "production"
 	},
-	
-	
+
+
 	 "transcoder" : {
 		"url" : "http://tomcat.ea.bwinparty.corp/transcode/"
 	},
-     
+
 
 	"mailer" : {
 		"host": "smtprelay.icepor.com",
 		"from": "space-mailer@bwinparty.corp"
 
 	},
-     
+
 	"notifications" : {
 		"portfolioupdate": "gerold.kathan@bwinparty.com",
 		"mailertest":"gerold.kathan@bwinparty.com"

@@ -1,19 +1,14 @@
 {
 	"env": "bender8-development",
 
-    "v1" : {
+  "v1" : {
 		"url" : "/local/epics",
-		
-		"proxy" : "/local/proxy",
-		
-		"syncEpics": {
-			"mode": "off"
-			}
-	}    
+		"proxy" : "/local/proxy"
+	},
 	"gulp":{
-		"baseDir" : "c:\users\gerold",
+		"baseDir" : "c:/users/gerold",
 		"deployTarget" : "pi",
 		"deployTargetEnv" :"TEST"
 	},
-     
+
 }

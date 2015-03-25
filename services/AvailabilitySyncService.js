@@ -39,6 +39,8 @@ exports.init = function(callback){
 }
 
 
+exports.sync=_syncAvailability;
+
 
 function _syncAvailability(urls){
 
@@ -68,7 +70,7 @@ function _syncAvailability(urls){
 							logger.debug(data);
 							avData[_endpoint]=data;
 
-							// and store it 
+							// and store it
 							var availability =  db.collection('availability');
 							availability.drop();
 							availability.insert({createDate:new Date(),avReport:avData}	 , function(err , success){
@@ -88,13 +90,5 @@ function _syncAvailability(urls){
 					// store
 					callback();
 		}
-
-
 		]);
-
-
-
-
-
-
 }
