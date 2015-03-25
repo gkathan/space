@@ -6,7 +6,7 @@ log
 node_modules
 temp
 .git
-space.build
+*.build
 config/secret.json
 Dockerfile
 public/files
