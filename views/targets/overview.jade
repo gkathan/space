@@ -52,6 +52,10 @@ style.
 	.text-heading-grow {color: #{color_GROW}!important}
 	.text-heading-transform {color: #{color_TRANSFORM}!important}
 
+	.box-run {background-color: #{color_RUN}!important}
+	.box-grow {background-color: #{color_GROW}!important}
+	.box-transform {background-color: #{color_TRANSFORM}!important}
+
 
 	.panel-run {border-left: solid 5px #{color_RUN}!important;}
 	.panel-grow {border-left: solid 5px #{color_GROW}!important;}
@@ -85,7 +89,7 @@ mixin renderL1Targets(target)
 			div
 				span(style="line-height:20px;font-weight:normal;font-size:11px") #{target.directTarget}
 			div
-				span(style="line-height:14px;font-weight:bold;font-size:12px") #{target.directTime}
+				span(style="line-height:16px;font-weight:bold;font-size:14px") #{target.directTime}
 				
 		div(style="margin-top:10px;margin-bottom:10px")
 			img(src="/images/space_arrow_bpty_up.png" style="vertical-align:middle;display:block;margin: auto auto" height="30px" width="35px"  )
@@ -96,22 +100,24 @@ mixin renderL1Targets(target)
 // -----------------------------------------------------------------------
 mixin renderTargetLane(lane)
 	div.col-sm-2.col-md-4.col-lg-4
-		div.panel(style="min-width:300px;max-width:480px" class="panel-body-lane")
-			.panel-heading(class="panel-lane-heading-#{lane.name.toLowerCase()}" style="text-align:center;font-weight:bold;vertical-align:top")
-				table.table.table-borderless(style="background-color:transparent;max-width:400px")
-					tr
-						td(style="width:75px;text-align:left;vertical-align:middle")
-							img(src="/images/targets/#{lane.name}.png" height="50px")
-						td(style="text-align:left;width:350px")
-							span(class="text-heading-#{lane.name.toLowerCase()}" style="margin-left:2px;font-size:26px;color:black;font-weight:bold")  #{lane.name}
-							br
-							span(class="text-heading-#{lane.name.toLowerCase()}" style="font-size:14px;color:black;font-weight:normal") #{lane.children[0].name.toUpperCase()}
-			.panel-body(style="vertical-align:top")
-				div.row(style="font-size:11px")
-					each t in lane.children[0].children
-						center
-							div.col-xs-6.col-sm-6.col-md-6.col-lg6
-								+renderTarget(t)
+		div(style="min-width:350px;max-width:600px" class="panel-body-lane")
+			
+			
+			div(class="box-#{lane.name.toLowerCase()}" style="text-align:center;line-height:50px;vertical-align:middle")
+				img(src="/images/targets/#{lane.name}_white_circle.png" height="40px" style="vertical-align:middle;margin-bottom:8px")
+				
+					
+				//span(class="text-heading-#{lane.name.toLowerCase()}" style="margin-left:2px;font-size:26px;color:black;font-weight:bold")  #{lane.name}
+				span(style="margin-left:2px;font-size:28px;color:white;font-weight:bold")  #{lane.name}
+					
+					//span(class="text-heading-#{lane.name.toLowerCase()}" style="font-size:14px;color:black;font-weight:normal") #{lane.children[0].name.toUpperCase()}
+				//span(style="font-size:14px;color:white;font-weight:normal") #{lane.children[0].name.toUpperCase()}
+			br
+			div.row(style="font-size:11px")
+				each t in lane.children[0].children
+					center
+						div.col-xs-6.col-sm-6.col-md-6.col-lg6
+							+renderTarget(t)
 
 // -----------------------------------------------------------------------
 // ------------------ mixin target card start ----------------------------
@@ -128,7 +134,7 @@ mixin renderTarget(target)
 						|#{target.name.split(" ")[0].toUpperCase()}
 						br
 						b #{_.rest(target.name.split(" ")).join(" ").toUpperCase()}
-					td(style="width:20px;font-size:12px;vertical-align:top;font-weight:normal;font-style:italic")
+					td(style="width:20px;font-size:16px;vertical-align:top;font-weight:normal;vertical-align:middle")
 						|#{target.children[0].id.split(".")[0]}
 		.panel-body
 			table(style="")
@@ -147,6 +153,7 @@ mixin renderTarget(target)
 												data-id="#{line.id}"
 												data-name="#{line.target}"
 												data-rag="#{line.rag}"
+												data-ragComment="#{line.ragComment}"
 												data-outcome="#{line.outcome}"
 												data-bywhen="#{line.bywhen}"
 												data-description="#{line.description}"
@@ -164,10 +171,11 @@ mixin renderTarget(target)
 												) #{line.target}
 									td(style="width:10px;font-size:10px;font-style:italic")
 
-									td(style="width:15px;font-size:8px;")
-										span(style="margin-left:2px;border-radius:100%;background-color:#{mapRAG2Color(line.rag)}")
-											| &nbsp;&nbsp;&nbsp;&nbsp;
-									td(style="width:25px;font-size:10px;font-style:italic")
+									td(style="width:15px;font-size:8px;vertical-align:top")
+										
+										div(style="margin-left:2px;width: 8px;height: 8px;-moz-border-radius: 50%; -webkit-border-radius: 50%; border-radius: 50%;background-color:#{mapRAG2Color(line.rag)};margin-top:2px")
+											
+									td(style="width:25px;font-size:10px;vertical-align:top")
 										|#{line.id}
 					tr(style="line-height:3px")
 						td
@@ -182,16 +190,16 @@ mixin renderTargetDetail(target)
 		button.close(type="button" data-dismiss="modal" aria-label="Close")
 			span(aria-hidden="true") &times
 		h4.modal-title(id="myModalLabel")
-			table.table.table-borderless(style="width:500px;vertical-align:middle")
+			table.table.table-borderless(style="width:450px;vertical-align:middle")
 				tr(style="vertical-align:middle")
-					td(style="width:70px;text-align:right;font-style:italic;color:grey;font-size:12px;vertical-align:middle")
+					td(style="width:70px;text-align:right;font-style:italic;color:black;font-size:12px;vertical-align:middle")
 						img(id="modal_theme_icon" src="" height="60px")
 					td(style="width:350px;vertical-align:middle")
 						div(id="targetTheme" style="")
 						div(id="targetCluster" style="")
 				tr(style="vertical-align:middle")
 					td
-					td(style="text-align:left;color:grey;font-size:12px;vertical-align:top")
+					td(style="text-align:left;color:black;font-size:12px;vertical-align:top")
 						img(id="modal_group_icon" src="" height="35px")
 						|&nbsp;&nbsp;
 						span(id="targetGroup" style="font-weight:bold;font-size:14px")
@@ -199,69 +207,69 @@ mixin renderTargetDetail(target)
 		div
 			table.table(style="width:450px;vertical-align:middle")
 				tr(style="vertical-align:middle")
-					td(style="width:70px;text-align:right;font-style:italic;color:grey;font-size:12px;vertical-align:top")
+					td(style="width:70px;text-align:right;font-style:italic;color:grey;font-size:10px;vertical-align:top")
 						|target
 					td(style="width:350px")
-						span(id="targetId" )
+						span(id="targetId" style=";font-size:12px;vertical-align:top")
 						| &nbsp; - &nbsp;
-						span(id="targetName" style="font-weight:bold")
+						span(id="targetName" style="font-weight:bold;font-size:12px;vertical-align:top")
 				tr(style="vertical-align:middle")
-					td(style="width:70px;text-align:right;font-style:italic;color:grey;font-size:12px;vertical-align:top")
+					td(style="width:70px;text-align:right;font-style:italic;color:grey;font-size:10px;vertical-align:middle")
 						|sponsor
 					td(style="width:350px;vertical-align:middle")
-						img.img-circle(id ="modal_sponsor_icon" src="" height="35" width="35")
-						span(id="targetSponsor" style="font-weight:normal;vertical-align:top;margin-left:10px")
+						img.img-circle(id ="modal_sponsor_icon" src="" height="30" width="30")
+						span(id="targetSponsor" style="font-weight:normal;vertical-align:middle;margin-left:10px;font-size:12px")
 				tr(style="vertical-align:top")
-					td(style="text-align:right;font-style:italic;color:grey;font-size:12px;vertical-align:top")
+					td(style="text-align:right;font-style:italic;color:grey;font-size:10px;vertical-align:middle")
 						|RAG
 					td
 						span(id ="targetRag" style="")
 							|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp
 				tr(style="vertical-align:middle")
-					td(style="text-align:right;font-style:italic;color:grey;font-size:12px;vertical-align:top")
+					td(style="text-align:right;font-style:italic;color:grey;font-size:10px;vertical-align:top")
 						|outcome
 					td
-						span(id="targetOutcome")
+						span(id="targetOutcome" style=";font-size:12px;vertical-align:top")
 				tr(style="vertical-align:middle")
-					td(style="text-align:right;font-style:italic;color:grey;font-size:12px;vertical-align:top")
+					td(style="text-align:right;font-style:italic;color:grey;font-size:10px;vertical-align:top")
 						|by when
 					td
-						span(id="targetByWhen")
+						span(id="targetByWhen" style=";font-size:12px;vertical-align:top")
 				tr(style="vertical-align:middle")
-					td(style="text-align:right;font-style:italic;color:grey;font-size:12px;vertical-align:top")
+					td(style="text-align:right;font-style:italic;color:grey;font-size:10px;vertical-align:top")
 						|description
 					td
-						span(id="targetDescription")
+						span(id="targetDescription" style=";font-size:12px;vertical-align:top")
 				tr(style="vertical-align:middle")
-					td(style="text-align:right;font-style:italic;color:grey;font-size:12px;vertical-align:top")
+					td(style="text-align:right;font-style:italic;color:grey;font-size:10px;vertical-align:top")
 						|baseline
 					td
-						span(id="targetBaseline")
+						span(id="targetBaseline" style=";font-size:12px;vertical-align:top")
 				tr(style="vertical-align:middle")
-					td(style="text-align:right;font-style:italic;color:grey;font-size:12px;vertical-align:top")
+					td(style="text-align:right;font-style:italic;color:grey;font-size:10px;vertical-align:top")
 						|measure
 					td
-						span(id="targetMeasure")
+						span(id="targetMeasure" style=";font-size:12px;vertical-align:top")
 				tr(style="vertical-align:middle")
-					td(style="text-align:right;font-style:italic;color:grey;font-size:12px;vertical-align:top")
+					td(style="text-align:right;font-style:italic;color:grey;font-size:10px;vertical-align:top")
 						|link
 					td
-						span(id="targetLink")
+						span(id="targetLink" style=";font-size:12px;vertical-align:top")
 				tr(style="vertical-align:middle")
-					td(style="text-align:right;font-style:italic;color:grey;font-size:12px;vertical-align:top")
+					td(style="text-align:right;font-style:italic;color:grey;font-size:10px;vertical-align:top")
 						|comments
 					td
-						span(id="targetComments")
+						span(id="targetComments" style=";font-size:12px;vertical-align:top")
 				tr(style="vertical-align:middle")
-					td(style="text-align:right;font-style:italic;color:grey;font-size:12px;vertical-align:top")
+					td(style="text-align:right;font-style:italic;color:grey;font-size:10px;vertical-align:top")
 						|contributors
 					td
-						span(id="targetContributors")
+						span(id="targetContributors" style=";font-size:12px;vertical-align:top")
 				tr(style="vertical-align:middle")
-					td(style="text-align:right;font-style:italic;color:grey;font-size:12px;vertical-align:top")
+					td(style="text-align:right;font-style:italic;color:grey;font-size:10px;vertical-align:top")
 						|time period
 					td
-						span(id="targetTime")
+						span(id="targetTime" style=";font-size:12px;vertical-align:top")
 
 	div.modal-footer
 		button.btn.btn-default.btn-xs(type="button" data-dismiss="modal")
@@ -278,34 +286,36 @@ div(style="margin-left:5px")
 		a(href="/api/space/export/xlsx/targets" title="export targets as xlsx")
 			span(style="font-size:10px;text-align:right") >> export targets xlsx &nbsp;
 			img(src="/images/space/logo_msexcel.png" height="30px")
-	//-----------------------------------------------------------------------------------
+
+
 	// ------------------------------ target detail modal -------------------------------
-	//-----------------------------------------------------------------------------------
 	div.modal.fade(id="targetDetail" tabindex="-1" role="dialog" aria-labelledby="targetDetailModal" aria-hidden="true" )
 		div.modal-dialog
 			div.modal-content(style="opacity:1")
 				+renderTargetDetail()
 
-	div.container-fluid
+	// ------------------------------ main view -------------------------------
+	div.container-fluid(style="max-width:1600px")
 		div.row
-			div(style="font-weight:bold;font-size:24px;color:#174D75;text-align:center") "#{vision}"
-			div(style="font-weight:normal;font-size:16px;color:#174D75;text-align:center") #{period}
-			br
+			div(style="font-weight:bold;font-size:20px;color:#174D75;text-align:center") "#{vision}"
+			div(style="font-weight:normal;font-size:14px;color:#174D75;text-align:center") #{period}
 			div(style="margin-top:10px;margin-bottom:10px")
-				img(src="/images/space_triangle_bpty_up.png" style="vertical-align:middle;display:block;margin: auto auto" height="20px" width="450px"  )
-		
+				img(src="/images/space_triangle_bpty_up.png" style="vertical-align:middle;display:block;margin: auto auto" height="20px" width="300px"  )
+
+			div(style=";color:white;background-color:#{color1};text-align:center;font-size:18px;font-weight:bold;margin-left:10px;margin-right:10px;line-height:48px") Studios P&L
+			
+			
 		div.row(style="text-align:center")
 			table.table.table-borderless(style="background-color:transparent")
 				tr
 					each target in L1targets
 						+renderL1Targets(target)
 
-
-			
 		div.row(style="vertical-align:top")
 				each lane in targets
 					if lane.name != "P&L"
 						+renderTargetLane(lane)
+
 
 script.
 	/**
@@ -313,7 +323,6 @@ script.
 	* http://stackoverflow.com/questions/20723111/passing-data-to-bootstrap-3-modal
 	*/
 	$(document).on("click", ".targetDetail", function (e) {
-
 		console.log("**************** targetDetail called *************************");
 		e.preventDefault();
 
@@ -324,6 +333,7 @@ script.
 		var _id = _self.data('id');
 		var _name = _self.data('name');
 		var _rag = _self.data('rag');
+		var _ragComment = _self.data('ragComment');
 		var _outcome = _self.data('outcome');
 		var _bywhen = _self.data('bywhen');
 		var _description = _self.data('description');
@@ -374,6 +384,7 @@ script.
 		$(".modal-body #targetSponsor").text(_sponsor);
 		$(".modal-body #targetContributors").text(_contributors);
 		$(".modal-body #targetTime").text(_time);
+		$(".modal-body #targetRAGComment").text(_ragComment);
 
 
 
@@ -382,30 +393,26 @@ script.
 
 		$("#targetTheme").attr("style","font-weight:bold;font-size:32px;color:"+_getColor(_theme));
 		$("#targetCluster").attr("style","font-weight:bold;font-size:18px;color:"+_getColor(_theme));
-
 		$("#targetRag").attr("style","background-color:"+mapRAG2Color(_rag)+";border-radius: 100%;width:25px;height:25px;");
-
+		if (_ragComment){
+			//write text after RAG indicator
+		}
 
 		$.get( "/api/space/rest/organization/employee/"+_sponsor, function( data ) {
 			//$( ".result" ).html( data );
-			console.log("**** employe: "+data["Employee Number"]);
-
+			console.log("**** employee: "+data["Employee Number"]);
 			if (data) {
 				var _url = "http://my.bwinparty.com/api/people/images/"+data["Employee Number"];
 				console.log("url: "+_url);
 				$("#modal_sponsor_icon").attr("src",_url);
 			}
-
-
 			$(_self.attr('href')).modal('show');
-
 		});
-
-
-
 	});
 
-
+	/** 
+	* helper to get colors
+	*/
 	function _getColor(theme){
 		switch(theme){
 			case "RUN":

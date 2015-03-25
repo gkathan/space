@@ -1,6 +1,6 @@
 {
-  "name": "space",
-  "version": "1.0.0",
+  "name": "s p a c e",
+  "version": "1.1.0",
   "dependencies": {
     "jquery": "latest",
     "bootstrap": "~3.3.2",
@@ -24,7 +24,8 @@
     "Sortable": "~1.1.0",
     "tablesorter": "*",
     "jquery.fileDownload": "~1.4.2",
-    "c3": "~0.4.10"
+    "c3": "~0.4.10",
+    "bootstrap3-wysiwyg": "~0.3.3"
   },
   "authors": [
     "cactus <gerold.kathan@gmail.com>"

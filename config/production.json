@@ -7,39 +7,39 @@
 	"gulp":{
 		"baseDir" : "/home/gkathan/",
 		"remoteBaseDir" :"",
-				
+
 		"deployTarget" : "space.bwinparty.corp",
 		"deployTargetEnv" : "PRODUCTION"
 	},
 
     "v1" : {
-		
+
 		"url" : "http://v1.bwinparty.corp/V1-Production/",
-		
+
 		"proxy" : "http://knbnprxy.ea.bwinparty.corp/rest/epics",
-		
+
 		"syncEpics": {
 			"mode": "on",
 			"intervalMinutes" :10,
 			"url" : "http://knbnprxy.ea.bwinparty.corp/rest/epics"
 			}
 		},
-	 
+
 	 "transcoder" : {
 		"url" : "http://tomcat.ea.bwinparty.corp/transcode/"
      },
-      
+
       "mailer" : {
 		"host": "smtprelay.icepor.com",
 		"from": "strategy2tactics-mailer@bwinparty.com"
 
      },
-     
+
      "notifications" : {
-		"portfolioupdate": "joachim.baca@bwinparty.com,marc.lange@bwinparty.com,peter.kugler-antony@bwinparty.com,christoph.haas@bwinparty.com,sandeep.tiku@bwinparty.com,steve.guthrie@bwinparty.com,lluis.mora@bwinparty.com,andy.pickard@bwinparty.com,gerold.kathan@bwinparty.com,Patricia.Meyer@bwinparty.com,teja.rangi@bwinparty.com,martin.lindner@bwinparty.com",
+		"portfolioupdate": "gerold.kathan@bwinparty.com",
 		"mailertest":"gerold.kathan@bwinparty.com"
      }
-    
+
 
 
 

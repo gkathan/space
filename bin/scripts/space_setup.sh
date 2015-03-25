@@ -5,6 +5,7 @@ PACKAGE='space_scripts.zip'
 
 # first check whether we have a deploy package..
 if [ -a $PACKAGE ]; then
+	rm -Rf space/scripts
 	mkdir space/scripts -p
 	mkdir space/app -p
 	mkdir space/dump -p
