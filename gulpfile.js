@@ -67,7 +67,7 @@ var FILESDUMP = './filesdump_space'+SERVER.env+".tar";
 var MONGORESTORE = DUMP + 'mongodump_space'+SERVER.env+".tar";
 var MONGORESTORE_TARGET = './mongorestore_space'+SERVER.env+".tar";
 
-gutil.beep();
+
 
 var knownOptions = {
   string: 'target',
@@ -142,6 +142,13 @@ gulp.task('remotestart', function () {
     .pipe(gulp.dest('logs'));
 });
 
+gulp.task('done', function () {
+  gutil.log("[s p a c e -deploy] ****** S U C C E S S F U L *******");
+  gutil.beep();
+   return;
+});
+
+
 
 /**
  * deploys a space version, setup scripts and dumps current server
@@ -158,9 +165,13 @@ gulp.task('fullmonty',function(callback){
  * deploys a space version
  */
 gulp.task('deploy',function(callback){
+    gutil.beep();
+    gutil.log("[s p a c e -deploy] ************************************************************");
     gutil.log("[s p a c e -deploy] ****** going to deploy to: "+SERVER.host+" -> "+SERVER.env);
 
-	runSequence('setup','buildfile','package','copy','transfer','remotedeploy','remotestart',callback);
+
+	runSequence('setup','buildfile','package','copy','transfer','remotedeploy','remotestart','done',callback);
+
 });
 
 
@@ -256,7 +267,7 @@ gulp.task('remotemongorestore', function () {
     .pipe(gulp.dest('logs'));
 });
 
- 
+
 
 
 

@@ -16,8 +16,7 @@ if [ -a $PACKAGE ]; then
 	# transfer the files directory from roll_back (all the uploads,..)
 
 	if [ -d "space/app_rollback/public/files" ]; then
-	  mkdir -p space/app/public/files
-	  cp -a space/app_rollback/public/files space/app/public/files
+		echo "handle firereports"
 	fi
 
 	cd space/app
