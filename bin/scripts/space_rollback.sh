@@ -1,4 +1,4 @@
 #!/bin/bash
-mv space space_rollforward
-mv space_rollback space
-
+echo '[s p a c e - deploy] says: rolling back old version'
+mv space/app space/app_rollforward
+mv space/app_rollback space/app

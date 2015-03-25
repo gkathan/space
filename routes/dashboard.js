@@ -6,32 +6,51 @@ var config = require('config');
 
 
 var avService = require('../services/AvailabilityService');
+var targetService = require('../services/TargetService');
 
-
+var winston=require('winston');
+var logger = winston.loggers.get('space_log');
 
 //
 router.get('/', function(req, res) {
-    //if (!req.session.AUTH){
-	if (!req.session.AUTH){	
+
+	var _context;
+	if (req.session.CONTEXT){
+		_context = req.session.CONTEXT;
+	}
+	else
+	{
+		_context = config.context;
+	}
+
+
+	  //if (!req.session.AUTH){
+	if (!req.session.AUTH){
 			req.session.ORIGINAL_URL = req.originalUrl;
-			console.log("no req.session.AUTH found: ");
+			logger.debug("no req.session.AUTH found: ");
 			res.redirect("/login");
 		}
 	else{
-		 avService.getLatest(function(av){
-			
+
+
+		avService.getLatest(function(av){
+
 			res.locals.availability = av;
+
 			res.locals.downtime = avService.getDowntimeYTD(av.unplannedYTD,av.week);
 			res.locals.targetDowntime = avService.getDowntimeYTD(av,52);
 			res.locals.leftDowntime = avService.getDowntimeYTD(av,52);
-			res.render('dashboard', { title: 's p a c e - dashboards' });
-		 });
+
+			targetService.getL1(_context,function(l1targets){
+					res.locals.l1targets=l1targets;
+
+					logger.debug("l1 targets: "+ l1targets);
+
+					res.render('dashboard', { title: 's p a c e - dashboards' });
+			})
+
+		});
 	}
 });
 
 module.exports = router;
-
-
-
-
-

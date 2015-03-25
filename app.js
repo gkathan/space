@@ -133,6 +133,13 @@ app.use('/content', content);
 var v1SyncService = require('./services/V1SyncService');
 v1SyncService.init();
 
+var avSyncService = require('./services/AvailabilitySyncService');
+avSyncService.init();
+
+var incidentSyncService = require('./services/IncidentSyncService');
+incidentSyncService.init();
+
+
 // https
 // Enable reverse proxy support in Express. This causes the
 // the "X-Forwarded-Proto" header field to be trusted so its

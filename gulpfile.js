@@ -98,9 +98,11 @@ gulp.task('buildfile', function () {
 
 
 gulp.task('package', function () {
-    var _src = ['./**','!logs','!.git','!public/files','!temp','!Dockerfile'];
+    var _src = ['./**','!logs','!.git','!public/files/**','!temp','!Dockerfile'];
     gutil.log('[s p a c e -deploy] package stuff together - ', '_src:'+_src.join(","));
     gutil.log('[s p a c e -deploy] package name: ', PACKAGE+PACKAGE_EXTENSION);
+    gutil.log('[s p a c e -deploy] destination: ', DIST);
+
     return gulp.src(_src)
     .pipe(zip(PACKAGE+PACKAGE_EXTENSION))
     .pipe(gulp.dest(DIST));

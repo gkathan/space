@@ -23,8 +23,4 @@ html(lang='en')
 		
 		p.text-muted(style="font-size:8px;color:grey;margin-left:20px")
 			| s p a c e  
-			| version: #{config.version} :: build: #{config.build} :: env: #{config.env} :: transcoder: #{config.transcoder.url} :: mailer: #{config.mailer.host} :: v1.SyncEpics: #{config.v1.syncEpics.mode}, every #{config.v1.syncEpics.intervalMinutes} minutes from #{config.v1.syncEpics.url}  
-
-
-
-
+			| version: #{config.version} :: build: #{config.build} :: env: #{config.env} :: transcoder: #{config.transcoder.url} :: mailer: #{config.mailer.host} :: v1.SyncEpics: #{config.sync.v1Epics.mode}, every #{config.sync.v1Epics.intervalMinutes} minutes from #{config.sync.v1Epics.url}  

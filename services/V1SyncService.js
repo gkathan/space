@@ -15,12 +15,12 @@ var logger = winston.loggers.get('space_log');
 exports.init = function(callback){
 	var rule = new schedule.RecurrenceRule();
 	// every 10 minutes
-	rule.minute = new schedule.Range(0, 59, config.v1.syncEpics.intervalMinutes);
-	logger.info("[s p a c e] V1SyncService init(): "+config.v1.syncEpics.intervalMinutes+" minutes");
-	if (config.v1.syncEpics.mode!="off"){
+	rule.minute = new schedule.Range(0, 59, config.sync.v1Epics.intervalMinutes);
+	logger.info("[s p a c e] V1SyncService init(): "+config.sync.v1Epics.intervalMinutes+" minutes");
+	if (config.sync.v1Epics.mode!="off"){
 		var j = schedule.scheduleJob(rule, function(){
 			logger.debug('...going to sync V1 ....');
-			_syncV1(config.v1.syncEpics.url);
+			_syncV1(config.sync.v1Epics.url);
 		});
 	}
 }
@@ -32,13 +32,13 @@ function _syncV1(url){
 	// call v1 rest service
     var Client = require('node-rest-client').Client;
    client = new Client();
-	// direct way 
+	// direct way
 	client.get(url, function(data, response){
-		// parsed response body as js object 
+		// parsed response body as js object
 		console.log(data);
-		// raw response 
+		// raw response
 		console.log(response);
-		// and insert 
+		// and insert
 		var v1epics =  db.collection('v1epics');
 		v1epics.drop();
 		v1epics.insert({createDate:new Date(),epics:JSON.parse(data)}	 , function(err , success){

@@ -8,7 +8,6 @@ if [ -a $PACKAGE ]; then
 	rm -Rf space/scripts
 	mkdir space/scripts -p
 	mkdir space/app -p
-	mkdir space/dump -p
 	unzip -u ./space_scripts.zip -d space/scripts/
 	chmod 755 ./space/scripts/*.sh
 	rm $PACKAGE

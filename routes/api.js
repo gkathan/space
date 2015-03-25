@@ -30,6 +30,8 @@ var PATH = {
 						REST_INITIATIVES : BASE+'/space/rest/initiatives',
 						REST_METRICS : BASE+'/space/rest/metrics',
 						REST_TARGETS : BASE+'/space/rest/targets',
+						REST_TARGETS_TYPE : BASE+'/space/rest/targets/:type',
+
 						REST_BOARDS : BASE+'/space/rest/boards',
 
 
@@ -103,6 +105,7 @@ router.delete(PATH.REST_METRICS, function(req, res, next) {remove(req,res,next);
 router.get(PATH.REST_TARGETS, function(req, res, next) {findAllByName(req,res,next);});
 router.post(PATH.REST_TARGETS, function(req, res, next) {save(req,res,next); });
 router.delete(PATH.REST_TARGETS, function(req, res, next) {remove(req,res,next); });
+router.get(PATH.REST_TARGETS_TYPE, function(req, res, next) {findByKey("type",req,res,next);});
 
 
 router.get(PATH.REST_BOARDS, function(req, res, next) {findAllByName(req,res,next);});
@@ -338,12 +341,15 @@ function findByKey(key,req, res , next){
 	logger.debug("findbyKey: key: "+key+" value: "+req.params[key]);
 	logger.debug("collection: "+collection);
 
+	var _query = {};
+	_query[key]=req.params[key];
 
-    db.collection(collection).find({key:req.params[key]} , function(err , success){
-        logger.debug('Response success '+success);
+    db.collection(collection).find(_query , function(err , success){
+
         logger.debug('Response error '+err);
         if(success){
-            res.send(success);
+            logger.debug('Response success '+success);
+						res.send(success);
             return;
         }
         return next(err);
@@ -437,71 +443,71 @@ function save(req, res , next){
     var _timestamp = new Date();
     // now lets iterate over the array
     var async = require('async');
-	async.each(items, function (item, callback){
-		logger.debug("[async.series: now lets do what we havto do :-) ...*item: "+item); // print the key
+		async.each(items, function (item, callback){
+			logger.debug("[async.series: now lets do what we havto do :-) ...*item: "+item); // print the key
 
-		var _old;
-		var _diff;
+			var _old;
+			var _diff;
 
-		async.series([
-			function(callback){
-				logger.debug("[async.series - 1] preparing stuff ...");
-				//0 fixing some _id shit
-				// http://stackoverflow.com/questions/13031541/mongoerror-cannot-change-id-of-a-document
-				if ( item._id && ( typeof(item._id) === 'string' ) ) {
-					logger.debug("[DEBUG] fixing mongDB _id issue....");
-					item._id = mongojs.ObjectId.createFromHexString(item._id)
+			async.series([
+				function(callback){
+					logger.debug("[async.series - 1] preparing stuff ...");
+					//0 fixing some _id shit
+					// http://stackoverflow.com/questions/13031541/mongoerror-cannot-change-id-of-a-document
+					if ( item._id && ( typeof(item._id) === 'string' ) ) {
+						logger.debug("[DEBUG] fixing mongDB _id issue....");
+						item._id = mongojs.ObjectId.createFromHexString(item._id)
+					}
+					// 1) setting timestamps
+					if (!(item.createDate)){
+						item.createDate=_timestamp;
+						console.log("--->>>>>>>>>>no create date found: "+item.createDate);
+					}
+					else console.log("[DEBUG] createDate: "+item.createDate);
+					item.changeDate=_timestamp;
+					// 2) get old value before update
+					db.collection(_collection).findOne({_id:mongojs.ObjectId(item._id)}, function(err , success){
+						_old=success;
+						logger.debug("************_old: "+JSON.stringify(_old));
+						_diff = jsondiffpatch.diff(_old,item);
+						logger.debug("************diff: "+JSON.stringify(_diff));
+						callback();
+					});
+
+				},
+				function(callback){
+					// 2) and update stuff
+					logger.debug("[async.series - 2] going to update collection ...");
+					db.collection(_collection).update({_id:mongojs.ObjectId(item._id)},item,{upsert:true} , function(err , success){
+						if(success){
+							logger.info("[success] updatedExisting: "+success.updatedExisting);
+						}
+						else {
+							logger.error("[error]  no success returned.. what to do now ????"+JSON.stringify(err));
+						}
+						callback();
+					});
+
+				},
+				function(callback){
+					logger.debug("[async.series - 3] going to insert trail ...");
+					db.collection(_collection+"_diff_trail").insert({timestamp:_timestamp,refId:_old._id,diff:_diff,old:_old}	 , function(err , success){
+						logger.debug('Response success '+success);
+						logger.debug('Response error '+err);
+						if(success){
+							logger.info("[DEBUG] SUCCESS insert trail: ");
+						}
+						else {
+							logger.error("[DEBUG] ERROR insert trail failed"+JSON.stringify(err));
+						}
+						callback();
+					});
+
 				}
-				// 1) setting timestamps
-				if (!(item.createDate)){
-					item.createDate=_timestamp;
-					console.log("--->>>>>>>>>>no create date found: "+item.createDate);
-				}
-				else console.log("[DEBUG] createDate: "+item.createDate);
-				item.changeDate=_timestamp;
-				// 2) get old value before update
-				db.collection(_collection).findOne({_id:mongojs.ObjectId(item._id)}, function(err , success){
-					_old=success;
-					logger.debug("************_old: "+JSON.stringify(_old));
-					_diff = jsondiffpatch.diff(_old,item);
-					logger.debug("************diff: "+JSON.stringify(_diff));
-					callback();
-				});
-
-			},
-			function(callback){
-				// 2) and update stuff
-				logger.debug("[async.series - 2] going to update collection ...");
-				db.collection(_collection).update({_id:mongojs.ObjectId(item._id)},item,{upsert:true} , function(err , success){
-					if(success){
-						logger.info("[success] updatedExisting: "+success.updatedExisting);
-					}
-					else {
-						logger.error("[error]  no success returned.. what to do now ????"+JSON.stringify(err));
-					}
-					callback();
-				});
-
-			},
-			function(callback){
-				logger.debug("[async.series - 3] going to insert trail ...");
-				db.collection(_collection+"_diff_trail").insert({timestamp:_timestamp,refId:_old._id,diff:_diff,old:_old}	 , function(err , success){
-					logger.debug('Response success '+success);
-					logger.debug('Response error '+err);
-					if(success){
-						logger.info("[DEBUG] SUCCESS insert trail: ");
-					}
-					else {
-						logger.error("[DEBUG] ERROR insert trail failed"+JSON.stringify(err));
-					}
-					callback();
-				});
-
-			}
-		]);
+			]);
 
 
-		callback(); // tell async that the iterator has completed
+			callback(); // tell async that the iterator has completed
 	}, function(err) {
 		logger.debug('iterating done');
 		res.send({});

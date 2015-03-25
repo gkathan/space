@@ -108,20 +108,32 @@
 	],
 
 
-
-
-    "v1" : {
-
+  "v1" : {
 		"url" : "http://v1.bwinparty.corp/V1-Production/",
-
-		"proxy" : "http://knbnprxy.ea.bwinparty.corp/rest/epics",
-
-		"syncEpics": {
-			"mode": "off",
-			"intervalMinutes" :0,
-			"url" : "localhost/v1sync"
-			}
+		"proxy" : "http://knbnprxy.ea.bwinparty.corp/rest/epics"
 	},
+
+  "sync": {
+		"v1Epics" : {
+			"mode": "off",
+			"intervalMinutes" :60,
+			"url" : "http://knbnprxy.ea.bwinparty.corp/rest/epics"
+
+		},
+		"availability" : {
+			"mode": "on",
+			"intervalMinutes" :1 	,
+			"url" : ["http://avreport.bwinparty.corp/API/AvReoprtingService.svc/getYTDDatapoint","http://avreport.bwinparty.corp/API/AvReoprtingService.svc/GetAVGraphDatapoints"]
+		},
+		"incident" : {
+			"mode": "on",
+			"intervalMinutes" :1 	,
+			"url" : "http://snow.bwinparty.corp/incident_list.do?JSON&sysparm_query="
+		}
+	},
+
+
+
 
     "database": {
         "type" : "mongo",

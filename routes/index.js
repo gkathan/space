@@ -2,7 +2,7 @@ var express = require('express');
 
 var mongojs = require("mongojs");
 
-//underscore 
+//underscore
 var _ = require('lodash');
 
 var router = express.Router();
@@ -15,19 +15,20 @@ var HOST = config.database.host;
 var connection_string = HOST+'/'+DB;
 var db = mongojs(connection_string, [DB]);
 
-
+var winston=require('winston');
+var logger = winston.loggers.get('space_log');
 
 
 /* GET home page. */
 router.get('/', function(req, res) {
-    
+
     var cms = require ('../services/ContentService');
-    
+
     cms.getLatestSpaceNews(config.context,function(content){
-	
+
 	res.locals.spaceNews = content;
 	res.locals.moment = require('moment');
-		
+
 	res.render('index', { title: 's p a c e' });
 	});
 });
@@ -54,11 +55,11 @@ router.get('/chromeonly', function(req, res) {
 
 router.get('/config', function(req, res) {
 	ensureAuthenticated(req,res);
-	
+
 	var orgService = require('../services/OrganizationService');
 	orgService.findEmployeeByFirstLastName(config.test.user.firstname,config.test.user.lastname,function(employee){
 		var os = require('os');
-		res.locals.os = os;	
+		res.locals.os = os;
 		res.locals.employee = employee[0];
 		res.render('config');
 	});
@@ -118,14 +119,14 @@ router.get('/admin', function(req, res) {
 
 router.get('/playbooks', function(req, res) {
 	res.render('playbooks', { title: 's p a c e - playbooks' });
-		
+
 });
 
 
 
 router.get('/boards', function(req, res) {
     ensureAuthenticated(req,res);
-    	
+
 	var boards =  db.collection('boards');
 	boards.find({}, function (err, docs){
 		res.locals.boards=docs;
@@ -134,22 +135,22 @@ router.get('/boards', function(req, res) {
 	});
 });
 
-	
+
 
 router.get('/sync/v1/epics', function(req, res) {
     // call v1 rest service
     var Client = require('node-rest-client').Client;
- 
+
 	client = new Client();
- 
+
 	V1_DATA_URL = "http://knbnprxy.ea.bwinparty.corp/rest/epics";
-	// direct way 
+	// direct way
 	client.get(V1_DATA_URL, function(data, response){
-		// parsed response body as js object 
+		// parsed response body as js object
 		console.log(data);
-		// raw response 
+		// raw response
 		console.log(response);
-		// and insert 
+		// and insert
 		var v1epics =  db.collection('v1epics');
 		v1epics.drop();
 		v1epics.insert({createDate:new Date(),epics:JSON.parse(data)}	 , function(err , success){
@@ -185,14 +186,14 @@ router.get('/kanban/:id', function(req, res) {
 		v1epics.find({}, function (err, docs){
 		res.locals.kanbanId = id;
 		res.locals.epics = docs[0].epics;
-		res.render('kanban', { title: 's p a c e - kanban board' })	
+		res.render('kanban', { title: 's p a c e - kanban board' })
 	});
 });
 
 
 router.get('/logout', function(req, res) {
     console.log("req.session: "+req.session);
-    
+
     if (req.session){
 		console.log("...we have a session...");
 		req.session.destroy();

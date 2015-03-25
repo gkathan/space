@@ -5,7 +5,12 @@ PACKAGE='space.zip'
 
 # first check whether we have a deploy package..
 if [ -a $PACKAGE ]; then
-	rm -Rf space/app_rollback
+	rm -Rf space/app_rollback_old
+
+	if  [ -d "space/app_rollback" ]; then
+		mv space/app_rollback space/app_rollback_old
+	fi
+
 	echo '[s p a c e - deploy] says: parking old version in "space_rollback" folder...'
 	mv  space/app space/app_rollback
 	echo "[s p a c e - deploy] says: going to unpack and deploy from: $PACKAGE"
@@ -17,6 +22,8 @@ if [ -a $PACKAGE ]; then
 
 	if [ -d "space/app_rollback/public/files" ]; then
 		echo "handle firereports"
+		mkdir space/app/public/files -p
+		cp -r space/app_rollback/public/files space/app/public/files
 	fi
 
 	cd space/app
