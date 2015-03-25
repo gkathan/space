@@ -1,0 +1,30 @@
+include kanban_menu
+
+
+block content
+
+	
+div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;background-color:white;;width:1000px;text-align: center;margin: 10px auto;")
+	div(style="margin: 10px auto;")
+		form.form-horizontal(id="createboardform" action="" method="" autocomplete="off" ) 
+			div(style="margin-left:5px;width:900px;height:40px")
+				input.form-control.floating-label(id="headline" name="headline" type="text" placeholder="headline" autocomplete="off" data-hint="headline")
+			div(style="margin-left:5px;width:900px;height:40px")
+				textarea.form-control.floating-label(id="content" rows="3" name="content" type="text" placeholder="content" autocomplete="off" data-hint="content" )
+			
+			br
+			br
+			
+			div.togglebutton(style="margin-left:5px;width:400px;height:80px")
+				label 
+					input(type="checkbox")
+					text text
+
+			button.btn.btn-default.btn-xs(type="button" )
+				span Cancel
+			button.btn.btn-info.btn-xs(id="createboardsubmit" type="button")
+				span Create
+
+script.
+	$('#content').wysihtml5();
+include includes/material
