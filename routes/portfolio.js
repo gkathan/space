@@ -13,7 +13,6 @@ var HOST = config.database.host;
 var connection_string = HOST+'/'+DB;
 var db = mongojs(connection_string, [DB]);
 
-
 // logger
 var winston = require('winston');
 var logger = winston.loggers.get('space_log');
@@ -24,25 +23,23 @@ router.get('/', function(req, res) {
 	// join pgates with epics
 	var pgates =  db.collection('portfoliogate');
 	var initiatives = db.collection('v1epics');
-		
-	/* find and mark deltas 		
-	=> if we have 3 snapshots (dates) online 
+
+	/* find and mark deltas
+	=> if we have 3 snapshots (dates) online
 	=> we will have 2 deltas to calculate
-		for every state 
+		for every state
 			for every item
-				check item.STATE from previous date 
+				check item.STATE from previous date
 				if (==) nothing
-				if (!) mark and add previous state 
+				if (!) mark and add previous state
 	*/
 	pgates.find().sort({pDate:-1}, function (err, docs){
 	var _gates = docs;
-	// find all initiatives which have ExtNumber set 
+	// find all initiatives which have ExtNumber set
 	//initiatives.find({ExtNumber:{$exists:1}},function (err,docs){
 	initiatives.find({},function (err,docs){
 	var _initiatives = docs[0].epics;
 	var _V1lastUpdate = docs[0].createDate;
-	// and lets join some data :-)
-	logger.debug("===================== initiatives: "+_initiatives);
 	// set colors
 	var _color ={};
 	_color["Understanding"] = "#aaaaaa";
@@ -56,13 +53,12 @@ router.get('/', function(req, res) {
 		//collect the changed items per date in a bucket for later display
 		var _stateChangeBucket=[];
 		var _healthChangeBucket=[];
-		
+
 		_gates[_date]["stateChangeBucket"]=_stateChangeBucket;
 		_gates[_date]["healthChangeBucket"]=_healthChangeBucket;
 		_gates[_date].pDate=moment(_gates[_date].pDate).format('LL');
 		_gates[_date].pBoardDate=moment(_gates[_date].pBoardDate).format('LL');
-		logger.debug("----------------------------------------------------------------"+_gates[_date].pDate);
-		// sort the states by 
+		// sort the states by
 		// NEW -> UNDERSTANDING -> CONCEPTION -> IMPLEMENTATION -> MONITORING -> CLOSED
 		// pg state
 		for (var _state in _gates[_date].pItems){
@@ -74,37 +70,21 @@ router.get('/', function(req, res) {
 				  return obj.Number == _epic.EpicRef;
 				});
 				// and enrich
-				//logger.debug("***** checking gate: "+ggg+" - "+_gate.EpicRef);
-				//logger.debug"******* against initiative: "+_item[0]);
-				
 				if (_item[0]) {
 					_epic["name"] = _item[0].Name;
-					
 					// stuff needed for sorting
 					if (_epic.Health=="Green") _epic["HealthRank"]=1;
 					else if (_epic.Health=="Amber") _epic["HealthRank"]=2;
 					else if (_epic.Health=="Red") _epic["HealthRank"]=3;
 					else if (_epic.Health==undefined) _epic["HealthRank"]=0;
-					
-					
-					
-					
 					var _attachments = _parseAttachments(_item[0].EpicAttachments,_item[0].EpicAttachmentNames);
-					
+
 					_epic["attachmentProposal"]=_.find(_attachments,function(d){return d.type=="proposal";})
 					_epic["attachmentClosing"]=_.find(_attachments,function(d){return d.type=="closing";})
-					
-					
-					
-					
-					
 				}
 				else _epic["name"] = "<not synced>";
-				
-				
 				// v1 epic.ID comes in format Epic:2783462387
 				if (_item[0]) {_epic["id"] = _item[0].ID.split(":")[1];}
-				
 				// and now check whether something changed since last date
 				// do not check for last date - as there is nothing to check against ;-)
 				if (_date < _gates.length-1){
@@ -130,35 +110,20 @@ router.get('/', function(req, res) {
 				}
 			}
 			// and now lets sort the array
-			logger.debug("array[0]: "+_gates[_date].pItems[_state][0].id);
-			// sort by id
-			//_.map(_.sortByAll(_gates[_date].pItems[_state],['EpicRef']),_.values);
-			
-			
-			
-			//_gates[_date].pItems[_state].sort(function(a,b){return b.id - a.id; });
-			
-			
-			
-			// sort by swag
-			//_gates[_date].pItems[_state].sort(function(a,b){return b.swag - a.swag; });
-			// sort by health
-			
+			//logger.debug("array[0]: "+_gates[_date].pItems[_state][0].id);
 			_gates[_date].pItems[_state].sort(function(a,b){
-				console.log("-------------------- sorting by health: a.health: "+a.Health+" b.health: "+b.Health);
 				if (a.HealthRank<b.HealthRank) return 1;
 				else if (a.HealthRank>b.HealthRank) return -1;
 				else return 0
-				
-				});
-			
-			//_gates[_date].pItems[_state].sort();
-			}
+			});
 		}
+		}
+
+
+
 		res.locals.pgates=_gates;
 		res.locals.colors=_color;
 		res.locals.v1LastUpdate=_V1lastUpdate;
-		
 
 		res.render('portfoliogate'), { title: 's p a c e - portfoliogate' }
 		});
@@ -170,28 +135,28 @@ router.get('/', function(req, res) {
 /**
  * @param array of EpicAttachments (_item[0].EpicAttachments);
  * @param array of EpicAttachmentsName (_item[0].EpicAttachmentNames)
- * 
- * 
+ *
+ *
  * @return collection of attachement data [{type:"Proposal",oid:823749283},{type:"Closing",oid:28374382},{type:"Scope",oid:28975}
  */
 function _parseAttachments(_epicAttachments, _epicAttachmentNames){
 	var _attachments = [];
-	
+
 	var _oids = _parseAttachmentOIDs(_epicAttachments);
-	console.log("_oids length:"+_oids.length)
-	
+	//console.log("_oids length:"+_oids.length)
+
 	var _names = _parseAttachmentNames(_epicAttachmentNames);
-	console.log("_names length:"+_names.length)
-	
+	//console.log("_names length:"+_names.length)
+
 	for (var i=0; i<_oids.length;i++){
-		console.log("* constructing...."+i)
-		
+		//console.log("* constructing...."+i)
+
 		var _attachment = {};
 		_attachment["type"]=_names[i];
 		_attachment["oid"]=_oids[i];
 		_attachments.push(_attachment);
 	}
-	
+
 	return _attachments;
 }
 
@@ -200,7 +165,7 @@ function _parseAttachments(_epicAttachments, _epicAttachmentNames){
 /**
  * @param _attachment: "EpicAttachments":"[{_oid\u003dAttachment:6439285}, {_oid\u003dAttachment:6439339}]"
  *
- * @return: array of OIDs 
+ * @return: array of OIDs
  */
 function _parseAttachmentOIDs(_attachment){
 	var _ids = [];
@@ -221,7 +186,7 @@ function _parseAttachmentOIDs(_attachment){
 /**
  * @param _attachmentName: "EpicAttachmentNames":"[Scope for closure, IP for closure]"},
  *
- * @return: array of names 
+ * @return: array of names
  */
 function _parseAttachmentNames(_attachmentName){
 	var _names = [];
@@ -230,13 +195,13 @@ function _parseAttachmentNames(_attachmentName){
 		for (var i in _split1){
 			// strip out the brackets
 			var _name = _split1[i].replace("[","").replace("]","");
-			
+
 			var _type="";
 			// and now check for patterns
 			if (_name.toLowerCase().indexOf("closing")>=0) _type = "closing";
 			else if (_name.toLowerCase().indexOf("proposal")>=0) _type = "proposal";
 			else if (_name.toLowerCase().indexOf("scope")>=0) _type = "scope";
-			
+
 			_names.push(_type);
 		}
 	}
