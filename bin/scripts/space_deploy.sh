@@ -22,8 +22,8 @@ if [ -a $PACKAGE ]; then
 
 	if [ -d "space/app_rollback/public/files" ]; then
 		echo "handle firereports"
-		mkdir space/app/public/files -p
-		cp -r space/app_rollback/public/files space/app/public/files
+		mkdir space/app/public/files/firereports -p
+		cp -r space/app_rollback/public/files/firereports/* space/app/public/files/firereports/
 	fi
 
 	cd space/app

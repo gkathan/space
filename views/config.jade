@@ -9,6 +9,9 @@ div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;back
 		i.glyphicon.glyphicon-barcode(style="font-size:15px")
 		span(style="font-size:20px")&nbsp; CONFIG 
 	.panel-body
+		
+		|#{configHtml}
+		
 		ul(style="text-align:left;font-size:10px")
 			li version:
 				b #{config.version}-#{config.build}
@@ -19,25 +22,9 @@ div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;back
 			li session.CONTEXT: 
 				b #{session.CONTEXT}
 			
-			li v1:
-				ul
-					li url: 
-						b #{config.v1.url}
-					li proxy: 
-						b #{config.v1.proxy}
-					li syncEpics: <b>#{config.v1.syncEpics.mode}</b> every <b>#{config.v1.syncEpics.intervalMinutes}</b> minutes
-			li transcoder: 
-				b #{config.transcoder.url}
-			li mailer: 
-				b #{config.mailer.host}
-				br
-				b notifications:
-				ul
-					li portfolioupdate: 
-						b #{config.notifications.portfolioupdate}
-					li mailertest: 
-						b #{config.notifications.mailertest}
-
+			
+			
+		
 			li os: 
 				ul 
 					li platform: 
@@ -57,23 +44,17 @@ div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;back
 						
 		br
 		a.btn.btn-xs.btn-warning(id="sendtestnotification" href="#" ) send testmail
-		a.btn.btn-xs.btn-danger(id="switchcontext_bpty" href="#" ) switch context --> bpty
-		a.btn.btn-xs.btn-danger(id="switchcontext_studios" href="#" ) switch context --> bpty.studios
-		a.btn.btn-xs.btn-danger(id="switchcontext_bwin" href="#" ) switch context --> bpty.bwin
-		a.btn.btn-xs.btn-danger(id="switchcontext_kalixa" href="#" ) switch context --> bpty.kalixa
+		a.btn.btn-xs.btn-info(id="switchcontext_bpty" href="#" ) switch context --> bpty
+		a.btn.btn-xs.btn-info(id="switchcontext_studios" href="#" ) switch context --> bpty.studios
+		a.btn.btn-xs.btn-info(id="switchcontext_bwin" href="#" ) switch context --> bpty.bwin
+		a.btn.btn-xs.btn-info(id="switchcontext_kalixa" href="#" ) switch context --> bpty.kalixa
 		
 		br
 		a.btn.btn-xs.btn-danger(id="sync_employeeimages" href="#" ) sync employeeimages 
-		
 		br
-		if employee
-			|employee:
-			|number: #{employee.Title}
-			div(style="font-size:8px")
-				img.img-circle(src='http://my.bwinparty.com/api/people/images/#{employee["Employee Number"]}' height="50" width="50")
-				|#{JSON.stringify(employee)}
-		else
-			|hmmmm
+		a.btn.btn-xs.btn-danger(id="sync_availability" href="#" ) force sync availability 
+
+		
 
 	include includes/material
 	
@@ -104,10 +85,21 @@ div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;back
 
 		$('#sync_employeeimages').on('click', function () {
 			$.ajax({
-			  url: '/api/space/rest/syncemployeeimages',
+			  url: '/api/space/rest/sync/employeeimages',
 			  type: 'POST',
 			  data: { 
 					 
+					}
+			});
+			//location.reload();
+		});
+
+		$('#sync_availability').on('click', function () {
+			$.ajax({
+				url: '/api/space/rest/sync/availability',
+				type: 'POST',
+				data: { 
+					
 					}
 			});
 			//location.reload();

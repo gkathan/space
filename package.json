@@ -31,6 +31,7 @@
     "mongodb": "^2.0.21",
     "mongojs": "~0.18",
     "multer": "~0.1.6",
+    "node-json2html": "^1.0.0",
     "node-rest-client": "^1.4.4",
     "node-schedule": "^0.1.16",
     "npmlog": "^1.0.0",

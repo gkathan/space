@@ -55,8 +55,9 @@ var PATH = {
 						REST_AVAILABILITY : BASE+'/space/rest/availability',
 						REST_FIREREPORT : BASE+'/space/rest/firereport',
 						REST_CONTENT : BASE+'/space/rest/content',
-						REST_SYNCEMPLOYEEIMAGES : BASE+'/space/rest/syncemployeeimages',
-
+						REST_SYNCEMPLOYEEIMAGES : BASE+'/space/rest/sync/employeeimages',
+						REST_SYNCAVAILABILITY : BASE+'/space/rest/sync/availability',
+						REST_SYNCINCIDENTS : BASE+'/space/rest/sync/incidents',
 
 						REST_INITIATIVES_DIFF_TRAIL : BASE+'/space/rest/initiatives_diff_trail',
 						REST_ORGANIZATION : BASE+'/space/rest/organization',
@@ -167,6 +168,9 @@ router.delete(PATH.REST_CONTENT, function(req, res, next) {remove(req,res,next);
 router.post(PATH.REST_MAIL, function(req, res, next) {mail(req,res,next); });
 
 router.post(PATH.REST_SYNCEMPLOYEEIMAGES, function(req, res, next) {syncEmployeeImages(req,res,next); });
+router.post(PATH.REST_SYNCAVAILABILITY, function(req, res, next) {syncAvailability(req,res,next); });
+router.post(PATH.REST_SYNCINCIDENTS, function(req, res, next) {syncIncidents(req,res,next); });
+
 
 router.post(PATH.REST_SWITCHCONTEXT, function(req, res, next) {switchcontext(req,res,next); });
 router.get(PATH.REST_SWITCHCONTEXT, function(req, res, next) {switchcontext(req,res,next); });
@@ -548,9 +552,28 @@ function syncEmployeeImages(req,res,next){
 
 		logger.debug("???");
 	});
-
-
 }
+
+function syncAvailability(req,res,next){
+    logger.debug("*********************** lets sync availability from avreports service... ");
+
+    var avSyncService = require ('../services/AvailabilitySyncService');
+    avSyncService.sync(function(av){
+
+		logger.debug("av:"+JSON.stringify(av));
+	});
+}
+
+function syncIncidents(req,res,next){
+    logger.debug("*********************** lets sync incidents from snow... ");
+
+    var incSyncService = require ('../services/IncidentSyncService');
+    incSyncService.sync(function(){
+
+		logger.debug("???");
+	});
+}
+
 
 
 

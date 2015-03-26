@@ -7,46 +7,14 @@ link(rel='stylesheet', href='/stylesheets/flip.css')
 script.
 	$(document).ready(function(){
 
-		// set up hover panels
-		// although this can be done without JavaScript, we've attached these events
-		// because it causes the hover to be triggered when the element is tapped on a touch device
-		$('.hover').hover(function(){
-			$(this).addClass('flip');
-		},function(){
-			$(this).removeClass('flip');
-		});
-
-		// set up click/tap panels
-		$('.click').toggle(function(){
-			$(this).addClass('flip');
-		},function(){
-			$(this).removeClass('flip');
-		});
-
-		// set up block configuration
-		$('.block .action').click(function(){
-			$('.block').addClass('flip');
-		});
-		$('.block .edit-submit').click(function(e){
-			$('.block').removeClass('flip');
-
-			// why not update that list for fun?
-			$('#list-title').text($('#form_title').val());
-			$('#list-items').empty();
-			for (var num = $('#form_items').val(); num >= 1; num--) {
-				$('#list-items').append('<li>Super seller</li>');
-			}
-			e.preventDefault();
-		});
-
 		// set up flip form link
-		$('.flip .action').click(function(e){
-			$('.flip').addClass('flip');
+		$('.fliptarget .turnback').click(function(e){
+			$('.fliptarget').addClass('flip');
 			e.preventDefault();
 		});
 		//back flip
-		$('.flip .edit-submit').click(function(e){
-			$('.flip').removeClass('flip');
+		$('.fliptarget .turnfront').click(function(e){
+			$('.fliptarget').removeClass('flip');
 			e.preventDefault();
 		});
 
@@ -57,7 +25,7 @@ script.
 
 // ------------------ mixin start ----------------------------
 mixin renderTarget(target)
-	div.flip.panel
+	div.fliptarget.panel
 		div.front
 			div.panel(style="position: relative;background-color:white;width:250px;text-align: left;")
 				.panel-heading(style="")
@@ -66,8 +34,8 @@ mixin renderTarget(target)
 							td(style=";width:20px;font-size:9px;height:20px;text-align:justify;vertical-align:middle;") 
 								i.glyphicon.glyphicon-record(style="font-size:12px")
 							td(style="width:220px;font-size:15px;vertical-align:middle;font-weight:bold;;height:20px;") 
-								|TARGET TITLE bla bla bla 
-								a.action(href="") flip
+								|TARGET TITLE #{target.name}
+								a.turnback(id="#{target.id}" href="#test") flip
 					
 				.panel-body
 					table(style="")
@@ -96,15 +64,18 @@ mixin renderTarget(target)
 								i.glyphicon.glyphicon-record(style="font-size:12px")
 							td(style="width:220px;font-size:15px;vertical-align:middle;font-weight:bold;;height:20px;") 
 								|TARGET BACKSIDE :-) 
+									
 					
 				.panel-body
 					table(style="")
 						tr(style="line-height:10px;")
 							td(style="width:160px;font-size:9px;height:30px;text-align:justify;vertical-align:middle;border-bottom: 1px solid lightgrey") 
 								backside stuff......
-							td(style="text-align:center;width:70px;font-size:30px;vertical-align:middle;font-weight:bold;;height:30px;border-bottom: 1px solid lightgrey") 
+							td(style="text-align:center;width:70px;font-size:10px;vertical-align:middle;font-weight:bold;;height:30px;border-bottom: 1px solid lightgrey") 
 								|50
 								span(style="font-size:10px;font-weight:normal") %
+								
+								a.turnfront(id="#{target.id}" href="#test") flip back
 								
 						
 
@@ -126,13 +97,13 @@ div(style="margin-left:20px")
 			.panel-body(style="margin-left:50px;margin-top:-50px")
 				div.row(style="font-size:11px;margin-left:2px")
 					div.col-sm-2.col-md-3.col-lg5
-						+renderTarget(target)
+						+renderTarget({"id":1,name:"target1"})
 					div.col-sm-2.col-md-3.col-lg5
-						+renderTarget(target)
+						+renderTarget({"id":2,name:"target2"})
 					div.col-sm-2.col-md-3.col-lg5
-						+renderTarget(target)
+						+renderTarget({"id":3,name:"target3"})
 					div.col-sm-2.col-md-3.col-lg5
-						+renderTarget(target)
+						+renderTarget({"id":4,name:"target4"})
 			
 			
 	

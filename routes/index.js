@@ -54,15 +54,18 @@ router.get('/chromeonly', function(req, res) {
 });
 
 router.get('/config', function(req, res) {
-	ensureAuthenticated(req,res);
+	if (ensureAuthenticated(req,res)){
+    var os = require('os');
+    var json2html = require('node-json2html');
+    var configHtml = json2html.transform(JSON.stringify(config));
 
-	var orgService = require('../services/OrganizationService');
-	orgService.findEmployeeByFirstLastName(config.test.user.firstname,config.test.user.lastname,function(employee){
-		var os = require('os');
+    logger.debug("config:"+config)
+    logger.debug("configHtml:"+configHtml)
+
 		res.locals.os = os;
-		res.locals.employee = employee[0];
+    res.locals.configHtml = configHtml;
 		res.render('config');
-	});
+  }
 });
 
 router.get('/labels', function(req, res) {
@@ -112,8 +115,9 @@ router.get('/competitors', function(req, res) {
 
 /* GET the admin page. */
 router.get('/admin', function(req, res) {
-	ensureAuthenticated(req,res);
-	res.render('admin/admin', { title: 's p a c e - admin' });
+	if (ensureAuthenticated(req,res)){
+	   res.render('admin/admin', { title: 's p a c e - admin' });
+  }
 });
 
 
@@ -125,14 +129,14 @@ router.get('/playbooks', function(req, res) {
 
 
 router.get('/boards', function(req, res) {
-    ensureAuthenticated(req,res);
-
-	var boards =  db.collection('boards');
-	boards.find({}, function (err, docs){
-		res.locals.boards=docs;
-		console.log(": "+boards[0]);
-		res.render('boards', { title: 's p a c e - kanbanboards' });
-	});
+  if (ensureAuthenticated(req,res)){
+  	var boards =  db.collection('boards');
+  	boards.find({}, function (err, docs){
+  		res.locals.boards=docs;
+  		console.log(": "+boards[0]);
+  		res.render('boards', { title: 's p a c e - kanbanboards' });
+  	});
+  }
 });
 
 
@@ -179,33 +183,34 @@ router.get('/signup', function(req, res) {
 
 
 router.get('/kanban/:id', function(req, res) {
-	ensureAuthenticated(req,res);
-
+	if (ensureAuthenticated(req,res)){
 	var id = req.params.id;
-	var v1epics =  db.collection('v1epics');
-		v1epics.find({}, function (err, docs){
-		res.locals.kanbanId = id;
-		res.locals.epics = docs[0].epics;
-		res.render('kanban', { title: 's p a c e - kanban board' })
-	});
+  	var v1epics =  db.collection('v1epics');
+  		v1epics.find({}, function (err, docs){
+  		res.locals.kanbanId = id;
+  		res.locals.epics = docs[0].epics;
+  		res.render('kanban', { title: 's p a c e - kanban board' })
+  	});
+  }
 });
 
 
 router.get('/logout', function(req, res) {
-    console.log("req.session: "+req.session);
-
-    if (req.session){
-		console.log("...we have a session...");
-		req.session.destroy();
-		res.redirect('/login');
-	}
+    if (ensureAuthenticated(req,res)){
+		    req.session.destroy();
+		    res.redirect('/login');
+	  }
 });
 
 
 
 function ensureAuthenticated(req, res) {
-	if (!req.session.AUTH){
-		  req.session.ORIGINAL_URL = req.originalUrl;
+	logger.debug("[CHECK AUTHENTICATED]");
+  if (!req.session.AUTH){
+		  logger.debug("[*** NOT AUTHENTICATED **]");
+      req.session.ORIGINAL_URL = req.originalUrl;
 		  res.redirect("/login");
+      return false
 	}
+  return true;
 }
