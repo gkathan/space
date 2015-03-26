@@ -25,14 +25,14 @@ exports.init = function(callback){
 	var rule = new schedule.RecurrenceRule();
 	// every 10 minutes
 	rule.minute = new schedule.Range(0, 59, config.sync.availability.intervalMinutes);
-	logger.info("[s p a c e] AvailabilitySyncService init(): "+config.sync.availability.intervalMinutes+" minutes");
+	logger.info("[s p a c e] AvailabilitySyncService init(): "+config.sync.availability.intervalMinutes+" minutes - mode: "+config.sync.availability.mode );
 	if (config.sync.availability.mode!="off"){
 		var j = schedule.scheduleJob(rule, function(){
 			logger.debug('...going to sync Availability stuff ....');
 
 			var _urls = config.sync.availability.url;
 
-			_syncAvailability(_urls);
+			_syncAvailability(_urls,callback);
 
 		});
 	}
@@ -42,7 +42,7 @@ exports.init = function(callback){
 exports.sync=_syncAvailability;
 
 
-function _syncAvailability(urls){
+function _syncAvailability(urls,callback){
 
 	var avData={};
 
@@ -50,7 +50,7 @@ function _syncAvailability(urls){
 	var async=require('async');
 
 	async.series([
-		function(callback){
+		function(done){
 					logger.debug("1) ************************************** STEP-1");
 					// call availability rest service
 					var Client = require('node-rest-client').Client;
@@ -79,16 +79,18 @@ function _syncAvailability(urls){
 								if(success){
 									logger.info("sync availability [DONE]");
 								}
-								//return next(err);
+
 							})
 						})
 				});
-			callback();
+			done();
 		},
-		function(callback){
+		function(done){
 					logger.debug("2) ************************************** STEP-2");
 					// store
-					callback();
+					done();
 		}
 		]);
+
+		callback(avData);
 }

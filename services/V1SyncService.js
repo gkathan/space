@@ -16,7 +16,7 @@ exports.init = function(callback){
 	var rule = new schedule.RecurrenceRule();
 	// every 10 minutes
 	rule.minute = new schedule.Range(0, 59, config.sync.v1Epics.intervalMinutes);
-	logger.info("[s p a c e] V1SyncService init(): "+config.sync.v1Epics.intervalMinutes+" minutes");
+	logger.info("[s p a c e] V1SyncService init(): "+config.sync.v1Epics.intervalMinutes+" minutes - mode: "+config.sync.v1Epics.mode);
 	if (config.sync.v1Epics.mode!="off"){
 		var j = schedule.scheduleJob(rule, function(){
 			logger.debug('...going to sync V1 ....');

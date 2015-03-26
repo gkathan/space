@@ -20,7 +20,7 @@ exports.init = function(callback){
 	var rule = new schedule.RecurrenceRule();
 	// every 10 minutes
 	rule.minute = new schedule.Range(0, 59, config.sync.incident.intervalMinutes);
-	logger.info("[s p a c e] IncidentSyncService init(): "+config.sync.incident.intervalMinutes+" minutes");
+	logger.info("[s p a c e] IncidentSyncService init(): "+config.sync.incident.intervalMinutes+" minutes - mode: "+config.sync.incident.mode);
 	if (config.sync.incident.mode!="off"){
 		var j = schedule.scheduleJob(rule, function(){
 			logger.debug('...going to sync Incident stuff ....');

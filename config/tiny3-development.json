@@ -1,10 +1,31 @@
 {
 	"env": "tiny3-development",
 
-    "v1" : {
-			"url" : "data/json/epics.json",
-			"proxy" : "/local/proxy"
-	},
+  "v1" : {
+		"url" : "data/json/epics.json",
+		"proxy" : "/local/proxy"
+},
+
+	  "sync": {
+  		"v1Epics" : {
+  			"mode": "off",
+  			"intervalMinutes" :10,
+  			"url" : "http://knbnprxy.ea.bwinparty.corp/rest/epics"
+  		},
+  		"availability" : {
+  			"mode": "on",
+  			"intervalMinutes" :1,
+  			"url" : ["http://avreport.bwinparty.corp/API/AvReoprtingService.svc/getYTDDatapoint","http://avreport.bwinparty.corp/API/AvReoprtingService.svc/GetAVGraphDatapoints"]
+  		},
+  		"incident" : {
+  			"mode": "off",
+  			"intervalMinutes" :10,
+  			"url" : "http://snow.bwinparty.corp/incident_list.do?JSON&sysparm_query="
+  		}
+  	},
+
+
+
 	"gulp":{
 		"baseDir" : "/home/cactus/",
 		"deployTarget" : "pi",
