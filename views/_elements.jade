@@ -39,13 +39,14 @@ script.
 			e.preventDefault();
 		});
 
-		// set up contact form link
-		$('.contact .action').click(function(e){
-			$('.contact').addClass('flip');
+		// set up flip form link
+		$('.flip .action').click(function(e){
+			$('.flip').addClass('flip');
 			e.preventDefault();
 		});
-		$('.contact .edit-submit').click(function(e){
-			$('.contact').removeClass('flip');
+		//back flip
+		$('.flip .edit-submit').click(function(e){
+			$('.flip').removeClass('flip');
 			e.preventDefault();
 		});
 
@@ -56,7 +57,7 @@ script.
 
 // ------------------ mixin start ----------------------------
 mixin renderTarget(target)
-	div.hover.panel
+	div.flip.panel
 		div.front
 			div.panel(style="position: relative;background-color:white;width:250px;text-align: left;")
 				.panel-heading(style="")
@@ -66,6 +67,7 @@ mixin renderTarget(target)
 								i.glyphicon.glyphicon-record(style="font-size:12px")
 							td(style="width:220px;font-size:15px;vertical-align:middle;font-weight:bold;;height:20px;") 
 								|TARGET TITLE bla bla bla 
+								a.action(href="") flip
 					
 				.panel-body
 					table(style="")
@@ -114,24 +116,25 @@ div(style="margin-left:20px")
 	// ************ target card ******************
 
 	
-	
-	div.panel
-		.panel-heading(style="-webkit-transform: translateX(-100%) rotate(-90deg);-webkit-transform-origin: right top;-moz-transform: translateX(-100%) rotate(-90deg); width:190px;text-align:center;font-weight:bold ")
-			span(style="font-size:25px") RUN 
-			br
-			span(style="font-size:12px") OPERATIONAL EXCELLENCE
-		.panel-body(style="margin-left:50px;margin-top:-50px")
-			div.row(style="font-size:11px;margin-left:2px")
-				div.col-sm-2.col-md-3.col-lg5
-					+renderTarget(target)
-				div.col-sm-2.col-md-3.col-lg5
-					+renderTarget(target)
-				div.col-sm-2.col-md-3.col-lg5
-					+renderTarget(target)
-				div.col-sm-2.col-md-3.col-lg5
-					+renderTarget(target)
-		
-		
+	.row
+		h3 flip cards
+		div.panel(style="height:300px")
+			.panel-heading(style="-webkit-transform: translateX(-100%) rotate(-90deg);-webkit-transform-origin: right top;-moz-transform: translateX(-100%) rotate(-90deg); width:190px;text-align:center;font-weight:bold ")
+				span(style="font-size:25px") RUN 
+				br
+				span(style="font-size:12px") OPERATIONAL EXCELLENCE
+			.panel-body(style="margin-left:50px;margin-top:-50px")
+				div.row(style="font-size:11px;margin-left:2px")
+					div.col-sm-2.col-md-3.col-lg5
+						+renderTarget(target)
+					div.col-sm-2.col-md-3.col-lg5
+						+renderTarget(target)
+					div.col-sm-2.col-md-3.col-lg5
+						+renderTarget(target)
+					div.col-sm-2.col-md-3.col-lg5
+						+renderTarget(target)
+			
+			
 	
 	// ************ toggle ******************
 	.row
