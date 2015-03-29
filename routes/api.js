@@ -439,62 +439,77 @@ function findTrailByNameForId(req, res , next){
  * generic save handler
  */
 function save(req, res , next){
-    logger.debug("*********************** save POST: action= "+req.body.action);
-    var jsondiffpatch=require('jsondiffpatch');
+		var context;
+		if (req.session.CONTEXT) context = req.session.CONTEXT;
+		else context = res.config.context;
+
+		var jsondiffpatch=require('jsondiffpatch');
     var path = req.path.split("/");
-	var _collection = _.last(path);
+		var _collection = _.last(path);
     var items = JSON.parse(req.body.itemJson);
     var _timestamp = new Date();
     // now lets iterate over the array
-    var async = require('async');
-		async.each(items, function (item, callback){
-			logger.debug("[async.series: now lets do what we havto do :-) ...*item: "+item); // print the key
+    logger.debug("*********************** save POST _collection: "+_collection);
+		var _newid;
 
+		var async = require('async');
+		async.eachSeries(items, function (item, done){
+			logger.debug("[async.series: now lets do what we havto do :-) ...*item: "+JSON.stringify(item)); // print the key
+			logger.debug(">>>>> setting context of item: "+context);
+			item.context = context;
 			var _old;
 			var _diff;
 
 			async.series([
-				function(callback){
-					logger.debug("[async.series - 1] preparing stuff ...");
-					//0 fixing some _id shit
-					// http://stackoverflow.com/questions/13031541/mongoerror-cannot-change-id-of-a-document
-					if ( item._id && ( typeof(item._id) === 'string' ) ) {
-						logger.debug("[DEBUG] fixing mongDB _id issue....");
-						item._id = mongojs.ObjectId.createFromHexString(item._id)
-					}
-					// 1) setting timestamps
-					if (!(item.createDate)){
-						item.createDate=_timestamp;
-						console.log("--->>>>>>>>>>no create date found: "+item.createDate);
-					}
-					else console.log("[DEBUG] createDate: "+item.createDate);
-					item.changeDate=_timestamp;
+			function(callback){
+				logger.debug("[async.series - 1] preparing stuff ...");
+				//0 fixing some _id shit
+				// http://stackoverflow.com/questions/13031541/mongoerror-cannot-change-id-of-a-document
+				if ( item._id && ( typeof(item._id) === 'string' ) ) {
+					logger.debug("[DEBUG] fixing mongDB _id issue....");
+					item._id = mongojs.ObjectId.createFromHexString(item._id)
+				}
+				logger.debug("[DEBUG] createDate: "+item.createDate);
+				item.changeDate=_timestamp;
+
+				// 1) setting timestamps
+				if (!(item.createDate)){
+					item.createDate=_timestamp;
+					logger.debug("--->>>>>>>>>>no create date found: "+item.createDate);
+					callback(null,'one');
+				}
+				else {
 					// 2) get old value before update
 					db.collection(_collection).findOne({_id:mongojs.ObjectId(item._id)}, function(err , success){
 						_old=success;
 						logger.debug("************_old: "+JSON.stringify(_old));
 						_diff = jsondiffpatch.diff(_old,item);
 						logger.debug("************diff: "+JSON.stringify(_diff));
-						callback();
+						callback(null,'one');
 					});
+				}
+			},
 
-				},
-				function(callback){
-					// 2) and update stuff
-					logger.debug("[async.series - 2] going to update collection ...");
-					db.collection(_collection).update({_id:mongojs.ObjectId(item._id)},item,{upsert:true} , function(err , success){
-						if(success){
-							logger.info("[success] updatedExisting: "+success.updatedExisting);
+			function (callback){
+				// 2) and update stuff
+				logger.debug("[async.series - 2] going to update collection ...");
+				db.collection(_collection).update({_id:mongojs.ObjectId(item._id)},item,{upsert:true} , function(err , success){
+					if(success){
+						logger.info("[success] updatedExisting: "+success.updatedExisting+ " success:"+JSON.stringify(success));
+							if(success.updatedExisting==false){
+								_newid = success.upserted[0]._id;
+								logger.info("[success] _newid = "+_newid);
+								callback(null,'two');
+							}
 						}
-						else {
-							logger.error("[error]  no success returned.. what to do now ????"+JSON.stringify(err));
-						}
-						callback();
-					});
+				});
+			},
 
-				},
-				function(callback){
-					logger.debug("[async.series - 3] going to insert trail ...");
+			function(callback){
+				logger.debug("[async.series - 3] going to insert trail ..."+_collection+"_diff_trail");
+
+				if(_old){
+					logger.debug("[async.series - 3] trail ..._old: "+_old);
 					db.collection(_collection+"_diff_trail").insert({timestamp:_timestamp,refId:_old._id,diff:_diff,old:_old}	 , function(err , success){
 						logger.debug('Response success '+success);
 						logger.debug('Response error '+err);
@@ -504,23 +519,26 @@ function save(req, res , next){
 						else {
 							logger.error("[DEBUG] ERROR insert trail failed"+JSON.stringify(err));
 						}
-						callback();
+						callback(null,'three');
 					});
-
 				}
-			]);
-
-
-			callback(); // tell async that the iterator has completed
-	}, function(err) {
-		logger.debug('iterating done');
-		res.send({});
-		return;
+				else{
+					logger.debug("on INSERT NEW - we have no trail..._newid: "+_newid);
+					callback(null,'three');
+				}
+				done();
+			}
+		]);
+		},function(err){
+		if(err){
+			logger.error(err);
+		}
+		else{
+			logger.debug('------------------------- asyn.each ALL done: _newid: '+_newid);
+			res.send({_id:_newid});
+			return;
+		}
 	});
-		logger.debug('done');
-		res.send({});
-		return;
-
 }
 
 
@@ -680,6 +698,7 @@ function excelRoadmaps(req, res , next){
     conf.stylesXmlFile = "views/excel_export/styles.xml";
     conf.cols = [
 		{caption:'_id',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'context',type:'string',width:12,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'area',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'lane',type:'string',width:15,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'name',type:'string',width:10,captionStyleIndex:2,beforeCellWrite:_formatCell},
@@ -706,6 +725,7 @@ function excelMetrics(req, res , next){
     conf.stylesXmlFile = "views/excel_export/styles.xml";
     conf.cols = [
 		{caption:'_id',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'context',type:'string',width:12,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'id',type:'number',width:5,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'dimension',type:'string',width:10,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'class',type:'string',width:8,captionStyleIndex:2,beforeCellWrite:_formatCell},
@@ -735,6 +755,7 @@ function excelBoards(req, res , next){
     conf.stylesXmlFile = "views/excel_export/styles.xml";
     conf.cols = [
 		{caption:'_id',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'context',type:'string',width:12,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'name',type:'sring',width:15,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'vision',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'subvision',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
@@ -762,6 +783,7 @@ function excelV1Epics(req, res , next){
     conf.stylesXmlFile = "views/excel_export/styles.xml";
     conf.cols = [
 		{caption:'_id',type:'string',width:8,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'context',type:'string',width:12,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'Number',type:'string',width:10,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'Name',type:'string',width:40,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'Status',type:'string',width:12,captionStyleIndex:2,beforeCellWrite:_formatCell},
@@ -796,6 +818,7 @@ function excelProductCatalog(req, res , next){
     conf.stylesXmlFile = "views/excel_export/styles.xml";
     conf.cols = [
 		{caption:'_id',type:'string',width:8,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'context',type:'string',width:12,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'Type',type:'string',width:10,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'Offering',type:'string',width:40,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'Family',type:'string',width:12,captionStyleIndex:2,beforeCellWrite:_formatCell},
@@ -826,6 +849,7 @@ function excelScrumTeams(req, res , next){
     conf.stylesXmlFile = "views/excel_export/styles.xml";
     conf.cols = [
 		{caption:'_id',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'context',type:'string',width:12,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'Teamname',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'Location',type:'string',width:5,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'Vertical',type:'string',width:8,captionStyleIndex:2,beforeCellWrite:_formatCell},
@@ -858,6 +882,7 @@ function excelFirereport(req, res , next){
     conf.stylesXmlFile = "views/excel_export/styles.xml";
     conf.cols = [
 		{caption:'_id',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'context',type:'string',width:12,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'type',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'path',type:'string',width:5,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'year',type:'string',width:8,captionStyleIndex:2,beforeCellWrite:_formatCell},
@@ -883,6 +908,7 @@ function excelV1Teams(req, res , next){
     conf.stylesXmlFile = "views/excel_export/styles.xml";
     conf.cols = [
 		{caption:'_id',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'context',type:'string',width:12,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'Title',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'Business Backlog',type:'string',width:5,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'Program',type:'string',width:8,captionStyleIndex:2,beforeCellWrite:_formatCell},
@@ -906,6 +932,7 @@ function excelIncidenttracker(req, res , next){
     conf.stylesXmlFile = "views/excel_export/styles.xml";
     conf.cols = [
 		{caption:'_id',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'context',type:'string',width:12,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'date',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'P1',type:'string',width:5,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'P8',type:'string',width:8,captionStyleIndex:2,beforeCellWrite:_formatCell}
@@ -946,6 +973,7 @@ function excelLabels(req, res , next){
     conf.stylesXmlFile = "views/excel_export/styles.xml";
     conf.cols = [
 		{caption:'_id',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'context',type:'string',width:12,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'market',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'brand',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'label',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell}
@@ -962,6 +990,7 @@ function excelAvailability(req, res , next){
     conf.stylesXmlFile = "views/excel_export/styles.xml";
     conf.cols = [
 		{caption:'_id',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'context',type:'string',width:12,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'year',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'week',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'unplannedYTD',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
@@ -981,6 +1010,7 @@ function excelCustomers(req, res , next){
     conf.stylesXmlFile = "views/excel_export/styles.xml";
     conf.cols = [
 		{caption:'_id',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'context',type:'string',width:12,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'name',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'type',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'status',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
@@ -1003,6 +1033,7 @@ function excelCompetitors(req, res , next){
     conf.stylesXmlFile = "views/excel_export/styles.xml";
     conf.cols = [
 		{caption:'_id',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'context',type:'string',width:12,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'name',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'offer',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'description',type:'string',width:50,captionStyleIndex:2,beforeCellWrite:_formatCell},
@@ -1029,6 +1060,7 @@ function excelInitiatives(req, res , next){
     conf.stylesXmlFile = "views/excel_export/styles.xml";
     conf.cols = [
  		{caption:'_id',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'context',type:'string',width:12,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'id',type:'number',width:5,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'ExtId',type:'string',width:10,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'ExtNumber',type:'string',width:10,captionStyleIndex:2,beforeCellWrite:_formatCell},

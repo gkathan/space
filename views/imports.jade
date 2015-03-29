@@ -54,8 +54,8 @@ script(src="/javascripts/kanban/kanban_addons.js")
 
 script(src="/javascripts/whiteboard/whiteboard.js")
 
-//stylesheets 
- 
+//stylesheets
+
 link(rel='stylesheet', href='/javascripts/components/font-awesome/css/font-awesome.min.css')
 link(rel='stylesheet', href='/javascripts/components/bootstrap/dist/css/bootstrap.min.css')
 link(rel='stylesheet', href='/javascripts/components/jasny-bootstrap/dist/css/jasny-bootstrap.min.css')
@@ -70,7 +70,7 @@ link(href='/javascripts/components/bootstrap3-wysiwyg/dist/bootstrap3-wysihtml5.
 if session.CONTEXT
 	link(rel="stylesheet"  href="/stylesheets/#{session.CONTEXT}-material.css")
 else
-	link(rel="stylesheet"  href="/stylesheets/bpty-material.css")
+	link(rel="stylesheet"  href="/stylesheets/#{config.context}-material.css")
 
 link(href="/javascripts/components/bootstrap-material-design/dist/css/ripples.min.css" rel="stylesheet")
 

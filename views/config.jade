@@ -7,62 +7,63 @@ block content
 div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;background-color:white;width:400px;text-align: left;margin: 10px auto;")
 	.panel-heading
 		i.glyphicon.glyphicon-barcode(style="font-size:15px")
-		span(style="font-size:20px")&nbsp; CONFIG 
+		span(style="font-size:20px")&nbsp; CONFIG
 	.panel-body
-		
+
 		|#{configHtml}
-		
+
 		ul(style="text-align:left;font-size:10px")
 			li version:
 				b #{config.version}-#{config.build}
-			
-			li environment: 
+
+			li environment:
 				b #{config.env}
-			
-			li session.CONTEXT: 
+
+			li session.CONTEXT:
 				b #{session.CONTEXT}
-			
-			
-			
-		
-			li os: 
-				ul 
-					li platform: 
+
+
+
+
+			li os:
+				ul
+					li platform:
 						b #{os.platform()}
-					li arch: 
+					li arch:
 						b #{os.arch()}
-					li release: 
+					li release:
 						b #{os.release()}
-					li uptime: 
+					li uptime:
 						b #{os.uptime()}
-					li loadavg: 
+					li loadavg:
 						b #{os.loadavg()}
-					li freemem: 
+					li freemem:
 						b #{os.freemem()}
-					li cpus: 
+					li cpus:
 						b #{os.cpus().length}
-						
+
 		br
 		a.btn.btn-xs.btn-warning(id="sendtestnotification" href="#" ) send testmail
 		a.btn.btn-xs.btn-info(id="switchcontext_bpty" href="#" ) switch context --> bpty
 		a.btn.btn-xs.btn-info(id="switchcontext_studios" href="#" ) switch context --> bpty.studios
 		a.btn.btn-xs.btn-info(id="switchcontext_bwin" href="#" ) switch context --> bpty.bwin
 		a.btn.btn-xs.btn-info(id="switchcontext_kalixa" href="#" ) switch context --> bpty.kalixa
-		
-		br
-		a.btn.btn-xs.btn-danger(id="sync_employeeimages" href="#" ) sync employeeimages 
-		br
-		a.btn.btn-xs.btn-danger(id="sync_availability" href="#" ) force sync availability 
+		a.btn.btn-xs.btn-info(id="switchcontext_generic" href="#" ) switch context --> generic.example
 
-		
+		br
+		a.btn.btn-xs.btn-danger(id="sync_employeeimages" href="#" ) sync employeeimages
+		br
+		a.btn.btn-xs.btn-danger(id="sync_availability" href="#" ) force sync availability
+
+
 
 	include includes/material
-	
+
 	script.
 		$('#sendtestnotification').on('click', function () {
-			
+
 			console.log("trying to send mail: ");
-			
+
 			var content = {};
 
 			content.from = "space@bwinparty.corp";
@@ -74,9 +75,9 @@ div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;back
 			$.ajax({
 			  url: '/api/space/rest/mail',
 			  type: 'POST',
-			  data: { 
+			  data: {
 					  mail: JSON.stringify(content)
-					  
+
 					}
 			});
 
@@ -87,8 +88,8 @@ div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;back
 			$.ajax({
 			  url: '/api/space/rest/sync/employeeimages',
 			  type: 'POST',
-			  data: { 
-					 
+			  data: {
+
 					}
 			});
 			//location.reload();
@@ -98,18 +99,21 @@ div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;back
 			$.ajax({
 				url: '/api/space/rest/sync/availability',
 				type: 'POST',
-				data: { 
-					
+				data: {
+
 					}
 			});
 			//location.reload();
 		});
 
-		
+
 		$('#switchcontext_bpty').on('click', function () {
 			_switch("bpty");
 		});
 
+		$('#switchcontext_generic').on('click', function () {
+			_switch("generic.example");
+		});
 
 		$('#switchcontext_studios').on('click', function () {
 			_switch("bpty.studios");
@@ -125,16 +129,15 @@ div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;back
 
 		function _switch(context){
 			console.log("switch context to "+context+" : ");
-			
-			
+
+
 			$.ajax({
 			  url: '/api/space/rest/switchcontext',
 			  type: 'POST',
-			  data: { 
+			  data: {
 					  context: context
 					}
 			});
 			location.reload();
 
-		}	
-		
+		}

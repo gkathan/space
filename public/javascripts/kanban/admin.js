@@ -98,38 +98,39 @@ function getInitiativeConfig(){
 	var _initiatives = [
 
 		{ id:"_id", name: "_id", field: "_id",sortable:true,width:150,cssClass:"onKanbanImmutable" },
-        { id:"id", name: "id", field: "id",sortable:true,width:40,cssClass:"onKanbanImmutable"},
-        { id:"ExtId", name: "ExtId", field: "ExtId",sortable:true,cssClass:"onKanbanImmutable",width:50 },
+    { id:"context", name: "context", field: "context",sortable:true,width:80,cssClass:"onKanbanImmutable"},
+    { id:"id", name: "id", field: "id",sortable:true,width:40,cssClass:"onKanbanImmutable"},
+    { id:"ExtId", name: "ExtId", field: "ExtId",sortable:true,cssClass:"onKanbanImmutable",width:50 },
 		{ id:"ExtNumber", name: "v1.number", field: "ExtNumber",sortable:true,cssClass:"onV1"},
-        { id: "name", name: "name", field: "name", editor: Slick.Editors.Text ,width:300, cssClass: "cell-title"},
-        { id: "name2", name: "name2",  field: "name2",width:150 , editor: Slick.Editors.Text, cssClass: "cell-standard"},
-        { id: "backlog", name: "backlog",  field: "backlog",width:200, editor: Slick.Editors.Text, cssClass: "cell-standard"  },
-        { id: "startDate", name: "initial.start", field: "startDate", editor: Slick.Editors.Date,formatter: Slick.Formatters.SimpleDate,sortable:true, cssClass: "cell-standard" },
+    { id: "name", name: "name", field: "name", editor: Slick.Editors.Text ,width:300, cssClass: "cell-title"},
+    { id: "name2", name: "name2",  field: "name2",width:150 , editor: Slick.Editors.Text, cssClass: "cell-standard"},
+    { id: "backlog", name: "backlog",  field: "backlog",width:200, editor: Slick.Editors.Text, cssClass: "cell-standard"  },
+    { id: "startDate", name: "initial.start", field: "startDate", editor: Slick.Editors.Date,formatter: Slick.Formatters.SimpleDate,sortable:true, cssClass: "cell-standard" },
 		{ id: "planDate", name: "initial.plan", field: "planDate", editor: Slick.Editors.Date,formatter: Slick.Formatters.SimpleDate,sortable:true ,width:100, cssClass: "cell-standard"},
 		{ id: "actualDate", name: "actual.plan", field: "actualDate", editor: Slick.Editors.Date,formatter: Slick.Formatters.SimpleDate,sortable:true,width:100, cssClass: "cell-standard" },
-	    { id: "v1plannedStart", name: "v1.start", field: "v1plannedStart", sortable:true,cssClass:"onKanbanImmutable",width:80 },
+    { id: "v1plannedStart", name: "v1.start", field: "v1plannedStart", sortable:true,cssClass:"onKanbanImmutable",width:80 },
 		{ id: "v1plannedEnd", name: "v1.end", field: "v1plannedEnd", sortable:true ,cssClass:"onKanbanImmutable",width:80},
 		{ id: "v1launchDate", name: "v1.launch", field: "v1launchDate", sortable:true ,cssClass:"onKanbanImmutable",width:80},
-	    { id: "state", name: "state",  field: "state" ,editor: Slick.Editors.SelectCell,options:{"planned":"planned","todo":"todo","done":"done","killed":"killed","onhold":"onhold", cssClass: "cell-standard"}},
-        { id: "isCorporate", name: "isCorporate",  field: "isCorporate",width:50 , cssClass: "cell-standard"},
-        { id: "onKanban", name: "onKanban",  field: "onKanban",width:50,formatter: Slick.Formatters.Checkmark,editor:Slick.Editors.YesNoSelect, cssClass: "cell-standard" },
-        { id: "progress", name: "progress",  field: "progress" ,width:50,editor:Slick.Editors.Integer, cssClass: "cell-standard"},
-        { id: "health", name: "health",  field: "health",formatter: Slick.Formatters.RAG,width:50 },
+    { id: "state", name: "state",  field: "state" ,editor: Slick.Editors.SelectCell,options:{"planned":"planned","todo":"todo","done":"done","killed":"killed","onhold":"onhold", cssClass: "cell-standard"}},
+    { id: "isCorporate", name: "isCorporate",  field: "isCorporate",width:50 , cssClass: "cell-standard"},
+    { id: "onKanban", name: "onKanban",  field: "onKanban",width:50,formatter: Slick.Formatters.Checkmark,editor:Slick.Editors.YesNoSelect, cssClass: "cell-standard" },
+    { id: "progress", name: "progress",  field: "progress" ,width:50,editor:Slick.Editors.Integer, cssClass: "cell-standard"},
+    { id: "health", name: "health",  field: "health",formatter: Slick.Formatters.RAG,width:50 },
 		{ id: "healthComment", name: "healthComment",  field: "healthComment" , editor: Slick.Editors.LongText,width:300, cssClass: "cell-standard"},
-        { id: "Swag", name: "Swag", field: "Swag",width:50,editor:Slick.Editors.Integer, cssClass: "cell-standard" },
+    { id: "Swag", name: "Swag", field: "Swag",width:50,editor:Slick.Editors.Integer, cssClass: "cell-standard" },
 		{ id: "status", name: "status",  field: "status" ,width:50,editor: Slick.Editors.Text, cssClass: "cell-standard"},
-        { id: "Type", name: "Type",  field: "Type" ,width:50,editor: Slick.Editors.Text, cssClass: "cell-standard"},
-        { id: "cost", name: "cost",  field: "cost" ,width:50,editor:Slick.Editors.Integer, cssClass: "cell-standard"},
+    { id: "Type", name: "Type",  field: "Type" ,width:50,editor: Slick.Editors.Text, cssClass: "cell-standard"},
+    { id: "cost", name: "cost",  field: "cost" ,width:50,editor:Slick.Editors.Integer, cssClass: "cell-standard"},
 		{ id: "benefit", name: "benefit",  field: "benefit",width:50 ,editor:Slick.Editors.Integer, cssClass: "cell-standard"},
-        { id: "dependsOn", name: "dependsOn",  field: "dependsOn" ,editor: Slick.Editors.Text, cssClass: "cell-standard"},
-        { id: "accuracy", name: "accuracy",  field: "accuracy" ,width:50,editor:Slick.Editors.Integer,width:50, cssClass: "cell-standard"},
-        { id: "productOwner", name: "productOwner",  field: "productOwner",editor: Slick.Editors.Text,width:150, cssClass: "cell-standard" },
-        { id: "businessOwner", name: "businessOwner",  field: "businessOwner" ,editor: Slick.Editors.Text,width:150, cssClass: "cell-standard"},
-        { id: "programLead", name: "programLead",  field: "programLead",editor: Slick.Editors.Text,width:150, cssClass: "cell-standard" },
+    { id: "dependsOn", name: "dependsOn",  field: "dependsOn" ,editor: Slick.Editors.Text, cssClass: "cell-standard"},
+    { id: "accuracy", name: "accuracy",  field: "accuracy" ,width:50,editor:Slick.Editors.Integer,width:50, cssClass: "cell-standard"},
+    { id: "productOwner", name: "productOwner",  field: "productOwner",editor: Slick.Editors.Text,width:150, cssClass: "cell-standard" },
+    { id: "businessOwner", name: "businessOwner",  field: "businessOwner" ,editor: Slick.Editors.Text,width:150, cssClass: "cell-standard"},
+    { id: "programLead", name: "programLead",  field: "programLead",editor: Slick.Editors.Text,width:150, cssClass: "cell-standard" },
 		{ id: "DoD", name: "DoD", field: "DoD", editor: Slick.Editors.LongText,width:300, cssClass: "cell-standard"},
-        { id: "DoR", name: "DoR",  field: "DoR", cssClass: "cell-standard" },
-        { id: "createDate", name: "createDate", field: "createDate", cssClass: "cell-standard"},
-        { id: "changeDate", name: "changeDate",  field: "changeDate",width:150 , cssClass: "cell-standard"},
+    { id: "DoR", name: "DoR",  field: "DoR", cssClass: "cell-standard" },
+    { id: "createDate", name: "createDate", field: "createDate", cssClass: "cell-standard"},
+    { id: "changeDate", name: "changeDate",  field: "changeDate",width:150 , cssClass: "cell-standard"},
     ];
 	var _config ={};
 		_config.mode="editable";
@@ -164,7 +165,8 @@ function getMetricConfig(){
 function getProductCatalogConfig(){
 	var _productcatalog = [
         { id:"id", name: "id", field: "_id",sortable:true,cssClass:"onKanbanImmutable" },
-        { id: "type", name: "type",  field: "Type",sortable:true, cssClass: "cell-standard" },
+      { id:"context", name: "context", field: "context",sortable:true,width:80,cssClass:"onKanbanImmutable"},
+      { id: "type", name: "type",  field: "Type",sortable:true, cssClass: "cell-standard" },
         { id: "offering", name: "offering",  field: "Offering" ,width:200,sortable:true, editor: Slick.Editors.Text, cssClass: "cell-standard"},
 		{ id: "family", name: "family",  field: "Family" ,sortable:true,width:200, editor: Slick.Editors.Text, cssClass: "cell-standard"},
 		{ id: "name", name: "name",  field: "Name",sortable:true,width:200, editor: Slick.Editors.Text, cssClass: "cell-standard" },
@@ -184,6 +186,7 @@ function getProductCatalogConfig(){
 function getAvailabilityConfig(){
 	var _availability = [
         { id:"id", name: "id", field: "_id",sortable:true,cssClass:"onKanbanImmutable" },
+    { id:"context", name: "context", field: "context",sortable:true,width:80,cssClass:"onKanbanImmutable"},
         { id: "year", name: "year",  field: "year",sortable:true, cssClass: "cell-standard" },
         { id: "week", name: "week",  field: "week" ,width:200,sortable:true, editor: Slick.Editors.Text, cssClass: "cell-standard"},
 		{ id: "unplannedYTD", name: "unplannedYTD",  field: "unplannedYTD" ,sortable:true,width:200, editor: Slick.Editors.Text, cssClass: "cell-standard"},
@@ -198,6 +201,7 @@ function getAvailabilityConfig(){
 function getFirereportConfig(){
 	var _firereport = [
         { id:"id", name: "id", field: "_id",sortable:true,cssClass:"onKanbanImmutable" },
+    { id:"context", name: "context", field: "context",sortable:true,width:80,cssClass:"onKanbanImmutable"},
         { id: "year", name: "year",  field: "year" ,width:70,sortable:true, editor: Slick.Editors.Text, cssClass: "cell-standard"},
 		{ id: "type", name: "type",  field: "type",sortable:true, cssClass: "cell-standard" },
         { id: "count", name: "count",  field: "count" ,sortable:true,width:50, editor: Slick.Editors.Text, cssClass: "cell-standard"},
@@ -235,6 +239,7 @@ function getBoardConfig(){
 	//lanetext
 	var _boards = [
         { id:"_id", name: "_id", field: "_id",sortable:true,width:150,cssClass:"onKanbanImmutable" },
+    { id:"context", name: "context", field: "context",sortable:true,width:80,cssClass:"onKanbanImmutable"},
         { id:"id", name: "id", field: "id",sortable:true ,width:15, cssClass: "cell-standard"},
         { id: "name", name: "name",  field: "name",sortable:false, editor: Slick.Editors.Text,cssClass: "cell-title",width:200 },
         { id: "vision", name: "vision",  field: "vision" ,sortable:true, editor: Slick.Editors.LongText,width:300, cssClass: "cell-standard"},
@@ -295,6 +300,7 @@ function getRoadmapConfig(){
 		//targets
 	var _target =[
     { id:"id", name: "id", field: "_id",sortable:true,width:20,cssClass:"onKanbanImmutable"},
+    { id:"context", name: "context", field: "context",sortable:true,width:80,cssClass:"onKanbanImmutable"},
     { id:"area", name: "area", field: "area",width:80, editor: Slick.Editors.Text, cssClass: "cell-standard" },
     { id: "lane", name: "lane", field: "lane",sortable:true, editor: Slick.Editors.Text ,width:80, cssClass: "cell-title"},
     { id: "name", name: "name",  field: "name",width:200,sortable:true, editor: Slick.Editors.Text , cssClass: "cell-standard"},
@@ -316,6 +322,7 @@ function getIncidenttrackerConfig(){
 		//targets
 	var _incidenttracker =[
     { id:"id", name: "id", field: "_id",sortable:true,width:20,cssClass:"onKanbanImmutable"},
+    { id:"context", name: "context", field: "context",sortable:true,width:80,cssClass:"onKanbanImmutable"},
     { id:"date", name: "date", field: "date",sortable:true,width:80, editor: Slick.Editors.Text, cssClass: "cell-standard" },
     { id: "P1", name: "P1", field: "P1", editor: Slick.Editors.Number ,width:80, cssClass: "cell-standard"},
     { id: "P8", name: "P8",  field: "P8",width:80, editor: Slick.Editors.Number , cssClass: "cell-standard"}
@@ -335,6 +342,7 @@ function getTeamConfig(){
 		//scrumteams
 	var _teams =[
         { id:"id", name: "id", field: "_id",sortable:true,width:30 ,cssClass:"onKanbanImmutable"},
+    { id:"context", name: "context", field: "context",sortable:true,width:80,cssClass:"onKanbanImmutable"},
         { id:"teamname", name: "teamname", field: "Teamname",sortable:true,width:150, editor: Slick.Editors.Text,cssClass: "cell-title" },
 	    { id: "location", name: "location", field: "Location",sortable:true, editor: Slick.Editors.Text, cssClass: "cell-standard"},
         { id: "vertical", name: "vertical", field: "Vertical", editor: Slick.Editors.Text ,width:150, cssClass: "cell-title",sortable:true},
@@ -364,6 +372,7 @@ function getTeamConfig(){
 function getV1TeamConfig(){
 	var _v1teams =[
         { id:"id", name: "id", field: "_id",sortable:true,width:30 ,cssClass:"onKanbanImmutable"},
+    { id:"context", name: "context", field: "context",sortable:true,width:80,cssClass:"onKanbanImmutable"},
         { id:"Title", name: "Title", field: "Title",sortable:true,width:250, editor: Slick.Editors.Text,cssClass: "cell-title" },
 	    { id: "Business Backlog", name: "Business Backlog", field: "Business Backlog",width:200,sortable:true, editor: Slick.Editors.Text, cssClass: "cell-standard"},
 		{ id: "Sprint Schedule", name: "Sprint Schedule",  field: "Sprint Schedule",editor: Slick.Editors.Text,width:150, cssClass: "cell-standard"},
@@ -381,6 +390,7 @@ function getV1EpicsConfig(){
 		//v1 epics
 	var _v1Epics =[
         { id:"id", name: "id", field: "_id",sortable:true,width:20,cssClass:"onKanbanImmutable"},
+    { id:"context", name: "context", field: "context",sortable:true,width:80,cssClass:"onKanbanImmutable"},
         { id: "number", name: "number", field: "Number",width:50, cssClass: "cell-standard",sortable:true},
         { id: "name", name: "name", field: "Name",sortable:true,width:350,cssClass: "cell-title" },
         { id: "status", name: "status", field: "Status", width:150 ,sortable:true, cssClass: "cell-standard"},
@@ -409,6 +419,7 @@ function getV1EpicsConfig(){
 function getIncidentsConfig(){
 	var _incidents =[
         { id:"id", name: "id", field: "Number",sortable:true,width:30,cssClass:"onKanbanImmutable" },
+    { id:"context", name: "context", field: "context",sortable:true,width:80,cssClass:"onKanbanImmutable"},
         { id:"Description", name: "Description", field: "Short description",sortable:true,width:150, editor: Slick.Editors.Text,cssClass: "cell-standard" },
         { id: "Urgency", name: "Urgency", field: "Urgency", editor: Slick.Editors.Text ,width:150, cssClass: "cell-standard",sortable:true},
         { id: "Impact", name: "Impact",  field: "Impact",width:150 ,sortable:true, cssClass: "cell-standard"},
@@ -423,6 +434,7 @@ function getIncidentsConfig(){
 function getLabelsConfig(){
 	var _labels =[
         { id:"id", name: "id", field: "_id",sortable:true,width:30,cssClass:"onKanbanImmutable" },
+    { id:"context", name: "context", field: "context",sortable:true,width:80,cssClass:"onKanbanImmutable"},
         { id:"market", name: "market", field: "market",sortable:true,width:150, editor: Slick.Editors.Text, cssClass: "cell-standard"},
         { id: "brand", name: "brand", field: "brand", editor: Slick.Editors.Text ,width:150,sortable:true, cssClass: "cell-standard"},
         { id: "label", name: "label",  field: "label", editor: Slick.Editors.Text ,width:150 ,cssClass: "cell-title"}];
@@ -436,6 +448,7 @@ function getLabelsConfig(){
 function getCustomersConfig(){
 	var _customers =[
         { id:"id", name: "id", field: "_id",sortable:true,width:30,cssClass:"onKanbanImmutable" },
+    { id:"context", name: "context", field: "context",sortable:true,width:80,cssClass:"onKanbanImmutable"},
         { id:"name", name: "name", field: "name",sortable:true,width:150, editor: Slick.Editors.Text, cssClass: "cell-title"},
         { id: "type", name: "type", field: "type", editor: Slick.Editors.Text ,width:150,sortable:true, cssClass: "cell-standard"},
         { id: "status", name: "status",  field: "status", editor: Slick.Editors.Text ,sortable:true,width:150 ,cssClass: "cell-standard"},
@@ -455,6 +468,7 @@ function getCustomersConfig(){
 function getCompetitorsConfig(){
 	var _competitors =[
         { id: "id", name: "id", field: "_id",sortable:true,width:30,cssClass:"onKanbanImmutable" },
+    { id:"context", name: "context", field: "context",sortable:true,width:80,cssClass:"onKanbanImmutable"},
         { id: "name", name: "name", field: "name",sortable:true,width:150, editor: Slick.Editors.Text, cssClass: "cell-title"},
         { id: "offer", name: "offer", field: "offer", editor: Slick.Editors.Text ,width:150,sortable:true, cssClass: "cell-standard"},
         { id: "description", name: "description",  field: "description", editor: Slick.Editors.LongText ,width:150 ,cssClass: "cell-standard"},
@@ -477,6 +491,7 @@ function getCompetitorsConfig(){
 function getOrganizationConfig(){
 	var _organization =[
         { id: "id", name: "id", field: "_id",sortable:true,width:30,cssClass:"onKanbanImmutable" },
+    { id:"context", name: "context", field: "context",sortable:true,width:80,cssClass:"onKanbanImmutable"},
         {id: "Employee Number", name:"Employee Number" , field: "Employee Number", editor: Slick.Editors.Text ,width:50,sortable:true, cssClass: "cell-standard"},
 		//{id: "Full Name", name:"Full Name" , field: "Full Name", editor: Slick.Editors.Text ,width:150,sortable:true, cssClass: "cell-standard"},
 		{id: "Last Name", name:"Last Name" , field: "Last Name", editor: Slick.Editors.Text ,width:150,sortable:true, cssClass: "cell-standard"},
