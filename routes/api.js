@@ -499,8 +499,8 @@ function save(req, res , next){
 							if(success.updatedExisting==false){
 								_newid = success.upserted[0]._id;
 								logger.info("[success] _newid = "+_newid);
-								callback(null,'two');
 							}
+							callback(null,'two');
 						}
 				});
 			},
