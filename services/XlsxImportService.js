@@ -36,6 +36,7 @@ exports.convertXlsx2Json = function convertXlsx2Json (filename,done) {
 	}, function(err, json) {
 		if(err) {
 			logger.error(err);
+			done(err,false);
 		}
 		else{
 			logger.debug("***and inserting into mongoDB...");

@@ -20,7 +20,11 @@ router.use(multer({ dest: appRoot+'/temp/',
 		  logger.error("***************SHIT ERROR HAPPENED" +err);
 	  },
 	onFileUploadStart: function (file) {
-	  logger.debug(file.originalname + ' is starting ...')
+	  logger.debug("....and here we check some stuff...");
+		logger.debug(file.originalname + ' is starting ...');
+
+		logger.debug("mimetype: " + file.mimetype);
+		logger.debug("extension: " + file.extension);
 	},
 	onParseEnd: function (req, next) {
 	  logger.debug('Form parsing completed at: ', new Date());
@@ -42,7 +46,7 @@ router.use(multer({ dest: appRoot+'/temp/',
 
 
 
-router.get('/plain', function(req, res) {
+router.get('/xlsx/plain', function(req, res) {
    if (!req.session.AUTH){
 		req.session.ORIGINAL_URL = req.originalUrl;
 		res.redirect("/login");
@@ -51,7 +55,7 @@ router.get('/plain', function(req, res) {
     res.render('upload/plain',{title:'upload plain .xlsx'});
 });
 
-router.get('/pi', function(req, res) {
+router.get('/xlsx/pi', function(req, res) {
    if (!req.session.AUTH){
 		req.session.ORIGINAL_URL = req.originalUrl;
 		res.redirect("/login");
@@ -60,7 +64,7 @@ router.get('/pi', function(req, res) {
     res.render('upload/pi',{title:'upload pi .xlsx'});
 });
 
-router.get('/portfolio', function(req, res) {
+router.get('/xlsx/portfolio', function(req, res) {
    if (!req.session.AUTH){
 		req.session.ORIGINAL_URL = req.originalUrl;
 		res.redirect("/login");
@@ -83,15 +87,14 @@ router.get('/firereport', function(req, res) {
 router.post('/process/xlsx',function(req,res){
    var _type = req.query.type;
     console.log("**************************************** req.query.type: "+_type);
+    console.log("**************************************** req.originalUrl: "+req.originalUrl);
 
   if(req.files){
 
     debugger;
     logger.debug(req.files);
 
-
-
-    // [TODO]and put some message in the locals....
+// [TODO]and put some message in the locals....
     //res.locals.message="[SUCCESS] File uploaded, converted to json and imported to mongoDB";
     //res.send({msg:"[SUCCESS] File uploaded, converted to json and imported to mongoDB"});
     logger.info("...........upload done: now we should process the shit ....: "+req.files);
@@ -103,16 +106,39 @@ router.post('/process/xlsx',function(req,res){
 		logger.info("  ** file: : "+_filename);
 	}
 
-    // lets take the first
-    // and do the json
-    var xlsximport = require('../services/XlsxImportService');
-    xlsximport.convertXlsx2Json(_filename,function(err,success){
-			  res.locals.success=success;
+  if (_filename==undefined){
+		res.locals.success=false;
+		logger.debug("no filename: sending back...");
+		res.locals.message="[s p a c e] says: come on - you should pick a file to upload ;-)";
+    res.render("upload/"+_type, { title: 's p a c e - import' });
+		return;
+	}
+
+	if (_.last(_filename.split("."))!="xlsx"){
+		res.locals.success=false;
+		logger.debug("no xlsx file ....");
+		res.locals.message="[s p a c e] says: "+_filename+" seems not to be a valid .xlsx file...";
+		res.render("upload/"+_type, { title: 's p a c e - import' });
+		return;
+	}
+
+
+  // lets take the first
+  // and do the json
+  var xlsximport = require('../services/XlsxImportService');
+  xlsximport.convertXlsx2Json(_filename,function(err,success){
+		  if(success){
+				res.locals.success=success;
 		    res.locals.uploadfilename= _filename;
-		    res.render("upload/plain", { title: 's p a c e - import' });
+		    res.render("upload/"+_type, { title: 's p a c e - import '+_type });
+			}
+			else{
+				res.locals.success=false;
+		    res.locals.message= "[s p a c e] says: no way....."+err;
+		    res.render("upload/"+_type, { title: 's p a c e - import '+_type });
 
-
-		});
+			}
+	});
 
 
   }
@@ -138,13 +164,27 @@ router.post('/process/firereport',function(req,res){
     var _filename;
 
     for (var f in req.files){
-		_filename = req.files[f].name;
-		logger.info("  ** file: : "+_filename);
-	}
-
+			_filename = req.files[f].name;
+			logger.info("  ** file: : "+_filename);
+		}
+		logger.debug("_filename: "+_filename)
     // lets take the first
     // and do the json
-    var pdfimport = require('../services/PdfImportService');
+    if (_filename==undefined){
+			res.locals.success=false;
+			logger.debug("no filename: sending back...");
+			res.locals.message="[s p a c e] says: come on ! - you should pick a valid firereport file to upload ;-)";
+      res.render("upload/firereport", { title: 's p a c e - import' });
+			return;
+		}
+		if (_.last(_filename.split("."))!="pdf"){
+			res.locals.success=false;
+			logger.debug("no pdf file ....");
+			res.locals.message="[s p a c e] says: "+_filename+" seems not to be a valid .pdf firereport file...";
+			res.render("upload/firereport", { title: 's p a c e - import' });
+			return;
+		}
+		var pdfimport = require('../services/PdfImportService');
     pdfimport.store(_filename,"firereports");
 
     res.locals.success=true;
