@@ -1,12 +1,12 @@
-var express = require('express')
+var express = require('express');
 
 var path = require('path');
 var favicon = require('serve-favicon');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-var session = require('express-session')
+var session = require('express-session');
 var mongojs = require("mongojs");
-var fs = require('fs')
+var fs = require('fs');
 var config = require('config');
 
 var app = express();
@@ -14,7 +14,7 @@ var app = express();
 // passport stuff
 var passport = require('passport'),
  LocalStrategy = require('passport-local');
-var flash = require('connect-flash')
+var flash = require('connect-flash');
 
 // routes
 var routes = require('./routes/index');
@@ -70,7 +70,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(session({
   secret: 'keyboard cat',resave: false,saveUninitialized: true
-}))
+}));
 
 app.use(passport.initialize());
 app.use(passport.session()); // persistent login sessions
@@ -103,7 +103,7 @@ app.use(function(req, res, next){
 app.use(function(req, res, next) {
     req.getBaseUrl = function() {
       return req.protocol + "://" + req.get('host');
-    }
+    };
     return next();
   });
 
@@ -115,7 +115,6 @@ app.use(addconfig());
 logger.debug("**** ENV: "+app.get('env'));
 logger.debug("[CONFIG] "+JSON.stringify(config));
 
-debugger;
 
 app.use('/', routes);
 app.use('/api', api);
