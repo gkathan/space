@@ -16,8 +16,13 @@ checkout space from git
 --------------------
 * git clone https://github.com/gkathan/space
 * cd space
-* npm install 
+* npm install
 * bower install
 * npm run-script startDEV
- 
- 
+
+
+
+
+additional stuff
+-----------------
+* npm install jscs -g

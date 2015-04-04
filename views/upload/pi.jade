@@ -25,7 +25,7 @@ div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;back
 				td(colspan="2")
 			
 		div.form-box
-			form(id="uploadForm" enctype="multipart/form-data" action="/upload/process/xlsx" method="post")
+			form(id="uploadForm" enctype="multipart/form-data" action="/upload/process/xlsx?type=pi" method="post")
 				
 				
 				.fileinput.fileinput-new.input-group(data-provides="fileinput")
@@ -43,13 +43,23 @@ div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;back
 				
 				input.btn.btn-primary.btn-block(id="uploadxlsxsubmit" type="submit" value="Upload xlsx" data-loading-text="...processing..." name="submit" data-toggle="tooltip" data-placement="top" title="......explanaotry stuff")
 		
-				if success && uploadfilename
-					.alert.alert-success(role="alert" style="font-size:10px; font-weight:normal")
-						|[SUCCESS] File: #{uploadfilename} uploaded, converted and imported to DB
-				else if !success && uploadfilename
-					.alert.alert-warning(role="alert" style="font-size:10px; font-weight:normal")
-						|[ERROR] File upload failed !
-
+			if success && uploadfilename
+				.alert.alert-success(role="alert" style="font-size:10px; font-weight:normal")
+					i.glyphicon.glyphicon-ok
+					br
+					|[s p a c e ] says:  File: #{uploadfilename} uploaded, converted and imported to DB
+			else if !success && uploadfilename
+				.alert.alert-warning(role="alert" style="font-size:10px; font-weight:normal")
+					i.glyphicon.glyphicon-flash
+					br
+					|[ERROR] File upload failed !
+			else if !success &&message
+				.alert.alert-warning(role="alert" style="font-size:10px; font-weight:normal")
+					i.glyphicon.glyphicon-flash
+					br
+					|#{message}
+			
+				
 include ../includes/material
 
 

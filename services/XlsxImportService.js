@@ -21,7 +21,7 @@ var appRoot = require('app-root-path');
  *
  * converts xlsx to json
  */
-exports.convertXlsx2Json = function convertXlsx2Json (filename) {
+exports.convertXlsx2Json = function convertXlsx2Json (filename,done) {
 	// here we can do our processing
 	var _originalFilename = filename;
 	var _jsonfilename = filename+".json";
@@ -36,6 +36,7 @@ exports.convertXlsx2Json = function convertXlsx2Json (filename) {
 	}, function(err, json) {
 		if(err) {
 			logger.error(err);
+			done(err,false);
 		}
 		else{
 			logger.debug("***and inserting into mongoDB...");
@@ -63,6 +64,14 @@ exports.convertXlsx2Json = function convertXlsx2Json (filename) {
 			else if (_.indexOf(_plainElements,_collection) >-1){
 				 _handlers = [_handlePlain];
 				 _dropBeforeInsert = true;
+			}
+			else{
+				// not valid filename/collection;
+				var err="[XlsxImportService] says: no valid collection: "+_collection;
+				logger.warn(err);
+				done(err,false);
+				return;
+
 			}
 			logger.info("***************** [DEBUG]: _collection: "+_collection+" _date: "+_date);
 
@@ -102,7 +111,7 @@ exports.convertXlsx2Json = function convertXlsx2Json (filename) {
 								db.collection(_collection).insert(_data);
 
 
-								done = true;
+								//done = true;
 								callback();
 							},
 							function(callback){
@@ -126,12 +135,13 @@ exports.convertXlsx2Json = function convertXlsx2Json (filename) {
 						]);
 					callback();
 					});
-
+					done(false,"success");
 				});
 			}
 			else{
-				logger.debug("NONO - wrong file and name!!!");
-				done = false;
+				var err="wrong filename !!!!";
+				logger.warn("NONO "+err);
+				done(err,false);
 			}
 		}
 	});

@@ -10,22 +10,22 @@ mixin board(board)
 			a(href="/kanban/#{board._id}")
 				img.img-thumbnail(src="/images/boards/thumbs/#{board._id}.png"  style=" height:100px"  alt="...")
 			br
-			h4 
-				small #{board.vision} 
+			h4
+				small #{board.vision}
 			span(style="font-size:10px; color:#999999") created by: <b>cactus</b> [2015-01-23]
 			br
 			a.btn.btn-primary.btn-xs(href="/kanban/#{board._id}" role="button") View
 			a.btn.btn-default.btn-xs(href="/admin?type=boards" role="button") Edit
-			a.delete_board.btn.btn-link(id="delete_modal" data-id="#{board._id}" data-name="#{board.name}" href="#deleteBoard" role="button") 
-			
+			a.delete_board.btn.btn-link(id="delete_modal" data-id="#{board._id}" data-name="#{board.name}" href="#deleteBoard" role="button")
+
 				span(style="color:red;font-size:10px") Delete
-					
+
 
 block content
 	div.panel.panel-default
 		div.panel-heading ...select a board
 		div.panel-body
-			
+
 			// new board
 			div.col-sm-1.col-md-3
 				div.panel(style=" position: relative;padding: 10px 10px 10px;display: block;background-color:white;;width:250px;height:320px;text-align: center;margin: 10px auto;")
@@ -33,7 +33,7 @@ block content
 					a(data-toggle="modal" data-target="#createBoardModal")
 						img.img-thumbnail(src="/images/boards/s2t_board_new.png"  style=" height:100px"  alt="...")
 					br
-					h4 
+					h4
 						small &nbsp;
 					br
 					button.btn.btn-info.btn-xs(type="button" data-toggle="modal" data-target="#createBoardModal")
@@ -41,7 +41,7 @@ block content
 			each val in boards
 				+board(val)
 
-							
+
 			// ************ remove modal  ******************
 			.modal.fade.bs-example-modal-sm(id="deleteBoard" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true")
 				.modal-dialog.modal-sm
@@ -51,21 +51,21 @@ block content
 								span(aria-hidden="true") &times;
 							h4.modal-title(id="myModalLabel") Are your sure ??
 							br
-							span(style="color:red; text-align:center") this will <b>permanently</b> delete 
+							span(style="color:red; text-align:center") this will <b>permanently</b> delete
 							br
-							|board: 
+							|board:
 							span(id="boardName" style="font-weight:bold")
 							br
-							|id: 
+							|id:
 							span(id="boardId" style="font-size:10px;color:grey;font-style:italic")
 						.modal-body
 							div.panel(style=" position: relative;padding: 10px 10px 10px;display: block;background-color:white;;width:250px;text-align: center;margin: 10px auto;")
 								input(type="hidden" id="deleteBoardId" name="deleteBoardId" value="")
-								button.btn.btn-danger(id="removeboardsubmit" type="button" ) 
-									span.glyphicon.glyphicon-flash 
-									span delete now 
+								button.btn.btn-danger(id="removeboardsubmit" type="button" )
+									span.glyphicon.glyphicon-flash
+									span delete now
 
-			
+
 
 
 	//Modal
@@ -78,15 +78,15 @@ block content
 					img.img-thumbnail(src="/images/boards/s2t_board_new.png"  style=" height:60px" )
 				div.modal-body
 					include ./board/forms/form_create
-			
+
 include includes/material
 
 // some code ;-)
 script(type='text/javascript').
-	
+
 	$("#removeboardsubmit").click(function() { console.log("########KCHING");submitRemove(); });
-	
-	$("#createboardsubmit").click(function() { submitCreate(); });
+
+	$("#createboardsubmit").click(function() {console.log("create board submit pressed"); submitCreate(); });
 
 
 	/**
@@ -102,27 +102,27 @@ script(type='text/javascript').
 
 		var _id = _self.data('id');
 		var _name = _self.data('name');
-		
-		
+
+
 		console.log("**************** id: "+_id+" *************************");
-		
+
 		$(".modal-header #boardId").text(_id);
 		$(".modal-header #boardName").text(_name);
 		$(".modal-body #removeboardsubmit").val(_id);
-		
+
 		console.log("+++++"+_self.attr('href'));
 		console.log("+++++"+$(_self.attr('href')).modal);
 
 		$(_self.attr('href')).modal('show');
 	});
-	
-	
+
+
 	function submitCreate() {
 		var form = document.getElementById("createboardform");
-		
+
 
 		var _board = {};
-		
+
 		// default viewconfig
 		var _viewconfig ={};
 		_viewconfig.vision="show";
@@ -131,9 +131,9 @@ script(type='text/javascript').
 		_viewconfig.targets="off";
 		_viewconfig.initiatives="off";
 		_viewconfig.guides="show";
-		
-		
-		
+
+
+
 		_board.name = form.name.value;
 		_board.vision = form.vision.value;
 		_board.subvision = form.subvision.value;
@@ -149,12 +149,12 @@ script(type='text/javascript').
 		_board.viewConfig = _viewconfig;
 		var _boards = [];
 		_boards.push(_board);
-		
+
 		var _json = JSON.stringify(_boards);
-		
-		var _url = "/api/kanbanv2/rest/boards";
-		
-		//form.ajax call 
+
+		var _url = "/api/space/rest/boards";
+
+		//form.ajax call
 		$.ajax({
 			type: "POST",
 			url: _url,
@@ -180,20 +180,20 @@ script(type='text/javascript').
 		return false;
 	}
 
-								
+
 
 	function submitRemove() {
-		
+
 		var _id = $(".modal-body #removeboardsubmit").val();
-		
+
 		console.log("------------------- and now lets remove : _id = "+_id);
-		
+
 		var _ids = [];
 		_ids.push(_id);
 		var _json = JSON.stringify(_ids);
-		var _url = "/api/kanbanv2/rest/boards";
-		
-		//form.ajax call 
+		var _url = "/api/space/rest/boards";
+
+		//form.ajax call
 		$.ajax({
 			type: "DELETE",
 			url: _url,
@@ -208,6 +208,7 @@ script(type='text/javascript').
 				},
 			error: function(msg)
 				{
+					console.log("***** error "+msg);
 					//if (afterHandlerCallback !=undefined)
 					$('.top-left').notify({
 							message: { html: "<span class=\"glyphicon glyphicon-fire\"></span><span style=\"font-size:10px;font-weight:bold\"> ajaxCall.("+_url+") says:</span> <br/><div style=\"font-size:10px;font-weight:normal;margin-left:20px\">"+JSON.stringify(msg)+"</div>" },
@@ -216,10 +217,6 @@ script(type='text/javascript').
 						  }).show(); // for the ones that aren't closable and don't fade out there is a .hide() function.
 				}
 			});
-		
+
 		return false;
 	}
-
-
-	
-

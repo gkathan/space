@@ -1,4 +1,4 @@
-/** NG version (2.0) based on node.js express and new data structures 
+/** NG version (2.0) based on node.js express and new data structures
 * depends on:
 	+ kanban_core.js
 	+ kanban_util.js
@@ -11,39 +11,39 @@
 * @version: 2.0
  * @author: Gerold Kathan
  * @date: 2015-01-23
- * @copyright: 
- * @license: 
+ * @copyright:
+ * @license:
  * @website: www.kathan.at
  */
 
 
 /**
 	 -------------------- HOWTO HIDE elements of a lane ----------------------------
-	
+
 	 d3.select("#items").selectAll("g").filter(function(d){return d.lane=="bwin"}).style("visibility","hidden")
-	
+
 	 d3.select("#items").selectAll("g").filter(function(d){return ((d.sublane=="touch")&&(d.lane=="bwin"))}).style("visibility","visible")
-	
+
 	 d3.select("#items").selectAll("g").filter(function(d){return ((d.theme=="topline"))}).style("visibility","hidden")
 	 d3.select("#items").selectAll("g").filter(function(d){return ((true))}).style("visibility","hidden")
-	
+
 	 -------------------- HOWTO HIDE elements of a column ----------------------------
-	
+
 	 d3.select("#items").selectAll("g").filter(function(d){return (new Date(d.planDate)>WIP_END)}).style("visibility","hidden")
 
 
 	---------------------- power of css3 selectors
 	* d3.selectAll("[id*=item]").style("visibility","hidden") (wildcard *= all "*item*")
 
-	----------------------- hide all results metrics 
+	----------------------- hide all results metrics
 	* hideMetrics([{"name":"goal","hide":true}])
 	* d3.selectAll("[id*=NGR]").style("visibility","hidden")
 
-	----------------------- hide all corporate total  metrics 
+	----------------------- hide all corporate total  metrics
 	* hideMetrics([{"name":"goal","hide":true}])
 	 d3.selectAll("[id*=corp_metrics]").style("visibility","hidden")
 	 d3.selectAll("[id*=metric_date]").transition().duration(300).attr("transform","translate(0,150)")
-	* show 
+	* show
 	 d3.selectAll("[id*=corp_metrics]").style("visibility","visible")
 	 d3.selectAll("[id*=metric_date]").transition().duration(300).attr("transform","translate(0,0)")
 
@@ -51,16 +51,16 @@
 d3.select("#metrics_forecast1").transition().delay(300).style("visibility","hidden");d3.select("#metrics_forecast2").transition().duration(300).attr("transform","translate(-150,0)")
 * d3.select("#metrics_forecast1").transition().delay(300).style("visibility","visible");d3.select("#metrics_forecast2").transition().duration(300).attr("transform","translate(0,0)")
 	--------------------- HOWTO runtime change e.g. lanedistribution --------------------
-	
+
 	1) remove groups
 		d3.select("#axes").remove()
 		d3.select("#lanes").remove()
 		d3.select("#queues").remove()
 		d3.select("#items").remove()
-		
+
 	2) change data - e.g. reset lanePercentagesOverride
 		lanePercentagesOverride=null
-	
+
 	3) re-create lane distribution
 		createLaneDistribution();
 
@@ -69,24 +69,24 @@ d3.select("#metrics_forecast1").transition().delay(300).style("visibility","hidd
 		drawLanes();
 		drawQueues();
 		drawItems();
-	
-	
+
+
 	OR EVEN COOLER
 	1) change data e.g. WIP_WINDOW
 	2) drawAll()
-	
-	
-	
-	
+
+
+
+
 	highlight metrics
 	* ===============
-	1)dim all 
+	1)dim all
 	* d3.select("#metrics_forecast1").selectAll("[id*=metric_]").style("opacity",0.2)
 	* d3.select("#metrics").selectAll("[id*=metric_]").style("opacity",0.2)
 	2) highlight a specific one
 	* d3.selectAll("[id*=metric_701]").style("opacity",1)
-	
-	
+
+
 */
 
 
@@ -117,7 +117,7 @@ var WHITEBOARD_WIDTH =1400;
 var WHITEBOARD_HEIGHT = 900;
 
 
-// height of the timeline header block where the dates are in 
+// height of the timeline header block where the dates are in
 var TIMELINE_HEIGHT = 20;
 
 
@@ -148,7 +148,7 @@ var KANBAN_END;
 // 1 pixel (WIDTH = 1500) would be 29.779.200 units
 
 //domain for y-axis => i am using percentage as domain => meaning "100"%
-var Y_MAX =100; 
+var Y_MAX =100;
 var Y_MIN=0;
 
 
@@ -177,21 +177,21 @@ var tooltip;
 function setMargin(){
 	var _marginXRight = 20;
 	var _marginXLeft = 20;
-	
+
 	var _offsetXLeft=0;
 	var _offsetXRight=0;
 	var _offsetYTop =0;
-	
+
 	var _offsetXLeftBaseline = 100;
 	var _offsetXLeftForecast1 = 150;
 	var _offsetXLeftForecast2 =150;
 	var _offsetXLeftGoal = 120;
 	var _offsetYTopCorporate =150;
-	
+
 	_offsetXLeft = _marginXLeft+ (SHOW_METRICS_BASELINE*_offsetXLeftBaseline);
 	_offsetXRight= _marginXRight + (SHOW_METRICS_FORECAST1*_offsetXLeftForecast1)+(SHOW_METRICS_FORECAST2*_offsetXLeftForecast2)+(SHOW_METRICS_GOAL*_offsetXLeftGoal);//+ (SHOW_METRICS_FORECAST1_ACTUAL*_offsetXLeftForecast1)+(SHOW_METRICS_FORECAST2_ACTUAL*_offsetXLeftForecast2)
 	_offsetYTop = (SHOW_METRICS_CORPORATE*_offsetYTopCorporate);
-	
+
 	margin = {top: 100+_offsetYTop, right: _offsetXRight+LANE_LABELBOX_RIGHT_WIDTH, bottom: 100, left: _offsetXLeft+150};
 }
 
@@ -200,7 +200,7 @@ function setMargin(){
 */
 function init(){
 	d3.select("#kanban").remove()
-	
+
 	setMargin();
 
 	width = WIDTH - margin.left - margin.right,
@@ -213,7 +213,7 @@ function init(){
 
 	console.log(">>>>>>>>>>>>>>>>>>>> KANBAN_START: "+KANBAN_START);
 	console.log(">>>>>>>>>>>>>>>>>>>> KANBAN_END: "+KANBAN_END);
-	
+
 	x = d3.time.scale()
 		.domain([KANBAN_START, KANBAN_END])
 		.range([0, width]);
@@ -228,7 +228,7 @@ function init(){
 	tooltip = d3.select("body")
 		.append("div")
 		.attr("id","tooltip");
-	
+
 
 	// zoom experiment
 	//svg.call(d3.behavior.zoom().on("zoom", redraw));
@@ -256,58 +256,42 @@ function redraw() {
 
 
 /** main etry point
- * 
+ *
  */
 function render(svgFile){
-	
 	checkServices();
 	initShortcuts();
-	
+
 	d3.xml(svgFile, function(xml) {
 		document.body.appendChild(document.importNode(xml.documentElement, true));
-	
 		var _boardId;
 		//var _boardId="54bba57720f4764e7e797849";
 		_boardId = _.last(window.location.href.split("/"));
-	
-					
-	
-		$.when($.getJSON(dataSourceFor("lanetext")),
-				$.getJSON(dataSourceFor("initiatives")),
+		console.log("kanban.js render: _boardId: "+_boardId);
+		$.when($.getJSON(dataSourceFor("initiatives")),
 				$.getJSON(dataSourceFor("metrics")),
 				$.getJSON(dataSourceFor("releases")),
-				$.getJSON(dataSourceFor("postits")),
 				$.getJSON(dataSourceFor("boards/"+_boardId)),
-				$.getJSON(dataSourceFor("targets")),
-				$.getJSON(dataSourceFor("lanes")),
-				$.getJSON("/data/laneTextTargetPillars.json"))
+				$.getJSON(dataSourceFor("targets"))
 
-			.done(function(lanetext,initiatives,metrics,releases,postits,board,targets,lanes,pillars){
-					if (lanetext[1]=="success") laneTextData=lanetext[0];
-					else throw new Exception("error loading lanetext");
+				)
+
+			.done(function(initiatives,metrics,releases,board,targets){
 					if (initiatives[1]=="success") initiativeData=initiatives[0];
 					else throw new Exception("error loading initiatives");
 					if (metrics[1]=="success") metricData=metrics[0];
 					else throw new Exception("error loading metrics");
 					if (releases[1]=="success") releaseData=releases[0];
 					else throw new Exception("error loading releases");
-					if (postits[1]=="success") postitData=postits[0];
-					else throw new Exception("error loading postits");
 					if (board[1]=="success") boardData=board[0];
 					else throw new Exception("error loading postits");
 					if (targets[1]=="success") targetData=targets[0];
 					else throw new Exception("error loading targets");
-					if (lanes[1]=="success") laneData=lanes[0];
-					else throw new Exception("error loading lanes");
-					if (pillars[1]=="success") pillarData=pillars[0];
-					else throw new Exception("error loading pillars");
-					
-					
-					renderBoard(_boardId);
-					
-				});
-	}); // end xml load anonymous 
 
+					console.log("kanban.js loading data done..");
+					renderBoard(_boardId);
+				});
+	}); // end xml load anonymous
 }
 
 
@@ -315,13 +299,13 @@ function render(svgFile){
 
 function joinBoard2Initiatives(board,initiatives){
 		var _items = board.items;
-		
+
 		var _join = [];
-		
+
 		for (var i in _items){
 			var _initiative = getItemByKey(initiatives,"_id",_items[i].itemRef);
 			if (_initiative){
-				
+
 				for (ii in _items[i].itemView){
 						var _view = _items[i].itemView[ii];
 						_initiative[ii]=_view;
@@ -329,7 +313,7 @@ function joinBoard2Initiatives(board,initiatives){
 				_join.push(_initiative);
 			}
 		}
-		//set global 
+		//set global
 		initiativeData = _join;
 		return _join;
 
@@ -338,7 +322,7 @@ function joinBoard2Initiatives(board,initiatives){
 /**generic render method for NG board handling
  */
 function renderBoard(id){
-		
+
 		HEIGHT= parseInt(boardData.height);
 		WIDTH = parseInt(boardData.width);
 		ITEM_SCALE = parseFloat(boardData.itemScale);
@@ -348,24 +332,24 @@ function renderBoard(id){
 
 		KANBAN_START= new Date(boardData.startDate);
 		KANBAN_END= new Date(boardData.endDate);
-		
+
 		BOARD = boardData;
 		CONTEXT = boardData.name;
 		// we have to now join boardData and initiative Data
 		boardItems =joinBoard2Initiatives(boardData,initiativeData);
-		
+
 		// with drawAll() refresh without postback possible ;-)
-		
+
 		enableAllMetrics();
-		
+
 		q1_2014_reviewMetrics();
-					
+
 		drawAll();
 		//drawCustomPostits();
 		//initHandlers();
-		
+
 		if (AUTH=="bpty") hideNGR();
-} 
+}
 
 
 
@@ -374,23 +358,23 @@ function renderBoard(id){
  * renders the custom postits which can be created manually
  */
 function drawCustomPostits(){
-	
+
 	var gCustomPostits = d3.select("#kanban").append("g").attr("id","customPostits");
 	for (var i in postitData){
 		var p = new Postit(postitData[i].id,postitData[i].text,postitData[i].x,postitData[i].y,postitData[i].scale,postitData[i].size,postitData[i].color,postitData[i].textcolor);
 		p.draw(gCustomPostits);
 	}
 }
-	
+
 
 /**
 */
 function drawInitiatives(){
-	
+
 	drawLanes();
 	drawWC2014();
 	drawItems();
-	
+
 }
 
 
@@ -410,26 +394,26 @@ function joinInitiatives2LanesSort(){
 				}
 			}
 	}
-	
+
 }
 /* ------------------------ EXPERIMENT -----------------------*/
 
 
 function drawAll(){
 	init();
-	
-		
+
+
 	// 1) draw static stuff
 	if (BOARD.viewConfig.queues!="off") drawGuides();
 	drawAxes();
-	
+
 	if (BOARD.viewConfig.queues!="off") drawQueues();
 	if (BOARD.viewConfig.vision!="off") drawVision();
 	drawVersion();
 	drawLegend();
 
-	// 2) check if board empty 
-	
+	// 2) check if board empty
+
 	if (initiativeData.length>0){
 
 		/** multi column sort
@@ -463,21 +447,21 @@ function drawAll(){
 		if (BOARD.viewConfig.initiatives!="off") drawInitiatives();
 		// kanban_items.js
 		//if (BOARD.viewConfig.targets!="off") drawTargets();
-	
-		if (BOARD.viewConfig.metrics!="off") drawMetrics();
-	
-	}
-	
-	
-	//drawOverviewMetaphors(svg);
-	
-	
-	drawReleases();
-	
 
-	
+		if (BOARD.viewConfig.metrics!="off") drawMetrics();
+
+	}
+
+
+	//drawOverviewMetaphors(svg);
+
+
+	drawReleases();
+
+
+
 	d3.select("#whiteboard").style("visibility","hidden");
-	
+
 // --------------------------------------------------------------------------------------------------
 }
 
@@ -499,7 +483,7 @@ function timeMachine(date){
 	drawAll();
 	calculateQueueMetrics();
 	drawAll();
-	
+
 }
 
 /** whenever we use the TODAY.add() function we need to set back TODAY to original value...

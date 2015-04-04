@@ -49,5 +49,7 @@ function _syncV1(url){
 			}
 			//return next(err);
 		})
+	}).on('error',function(err){
+			logger.warn('[V1SyncService] says: something went wrong on the request', err.request.options,err.message);
 	});
 }

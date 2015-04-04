@@ -56,33 +56,40 @@ function _syncAvailability(urls,callback){
 					var Client = require('node-rest-client').Client;
 					client = new Client();
 					// direct way
-					client.get(urls[0], function(data, response,callback){
-						// parsed response body as js object
-						var _endpoint = _.last(urls[0].split("/"));
-						logger.debug("...get data..: endpoint: "+_endpoint);
-						logger.debug(data);
-						avData[_endpoint]=data;
-						// nested callback
-						client.get(urls[1], function(data, response,callback){
+
+						client.get(urls[0], function(data, response,callback){
 							// parsed response body as js object
-							var _endpoint = _.last(urls[1].split("/"));
+							var _endpoint = _.last(urls[0].split("/"));
 							logger.debug("...get data..: endpoint: "+_endpoint);
 							logger.debug(data);
 							avData[_endpoint]=data;
+							// nested callback
+							client.get(urls[1], function(data, response,callback){
+								// parsed response body as js object
+								var _endpoint = _.last(urls[1].split("/"));
+								logger.debug("...get data..: endpoint: "+_endpoint);
+								logger.debug(data);
+								avData[_endpoint]=data;
 
-							// and store it
-							var availability =  db.collection('availability');
-							availability.drop();
-							availability.insert({createDate:new Date(),avReport:avData}	 , function(err , success){
-								//console.log('Response success '+success);
-								logger.debug('Response error '+err);
-								if(success){
-									logger.info("sync availability [DONE]");
-								}
+								// and store it
+								var availability =  db.collection('availability');
+								availability.drop();
+								availability.insert({createDate:new Date(),avReport:avData}	 , function(err , success){
+									//console.log('Response success '+success);
+									logger.debug('Response error '+err);
+									if(success){
+										logger.info("sync availability [DONE]");
+									}
+								})
+							}).on('error',function(err){
+	            		logger.warn('[AvailabiltySyncService] says: something went wrong on the request', err.request.options,err.message);
+	        		})
+						}).on('error',function(err){
+								logger.warn('[AvailabiltySyncService] says: something went wrong on the request', err.request.options,err.message);
+							});
 
-							})
-						})
-				});
+
+
 			done();
 		},
 		function(done){

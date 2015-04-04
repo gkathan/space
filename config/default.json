@@ -51,6 +51,19 @@
 
     "entities" : [
 		{
+			"name": "generic.example",
+			"skin": {
+				"colors" : {
+					"primary" :"rgb(99,99,99)",
+					"secondary" :"rgb(0,184,228)",
+					"secondary2" :"rgb(249,157,28)",
+					"secondary3" :"rgb(176,172,213)",
+					"secondary4" :"rgb(130,206,193)",
+					"secondary5" :"rgb(255,203,5)"
+				}
+			}
+		},
+		{
 			"name": "bpty",
 			"skin": {
 				"colors" : {

@@ -9,12 +9,21 @@ script.
 
 		// set up flip form link
 		$('.fliptarget .turnback').click(function(e){
-			$('.fliptarget').addClass('flip');
+			var _id = e.target.toString().split('#')[1];
+			
+			console.log("flip to back: _id: "+_id);
+			$('#'+_id).addClass('flip');
+			//$('.fliptarget').addClass('flip');
 			e.preventDefault();
 		});
 		//back flip
 		$('.fliptarget .turnfront').click(function(e){
-			$('.fliptarget').removeClass('flip');
+			var _id = e.target.toString().split('#')[1];
+			console.log("flip to back: _id: "+_id);
+			//$('.fliptarget').removeClass('flip');
+			$('#'+_id).removeClass('flip');
+
+		//	console.log("flip back to front: "+e);
 			e.preventDefault();
 		});
 
@@ -25,7 +34,7 @@ script.
 
 // ------------------ mixin start ----------------------------
 mixin renderTarget(target)
-	div.fliptarget.panel
+	div.fliptarget.panel(id="#{target.id}")
 		div.front
 			div.panel(style="position: relative;background-color:white;width:250px;text-align: left;")
 				.panel-heading(style="")
@@ -35,7 +44,7 @@ mixin renderTarget(target)
 								i.glyphicon.glyphicon-record(style="font-size:12px")
 							td(style="width:220px;font-size:15px;vertical-align:middle;font-weight:bold;;height:20px;") 
 								|TARGET TITLE #{target.name}
-								a.turnback(id="#{target.id}" href="#test") flip
+								a.turnback(id="#{target.id}" href="##{target.id}") flip
 					
 				.panel-body
 					table(style="")
@@ -75,7 +84,7 @@ mixin renderTarget(target)
 								|50
 								span(style="font-size:10px;font-weight:normal") %
 								
-								a.turnfront(id="#{target.id}" href="#test") flip back
+								a.turnfront(id="#{target.id}" href="##{target.id}") flip back
 								
 						
 
