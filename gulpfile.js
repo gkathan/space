@@ -6,7 +6,9 @@ var rename = require('gulp-rename');
 var gutil = require('gulp-util');
 var runSequence = require('run-sequence');
 var zip = require('gulp-zip');
-var tar = require('gulp-tar');
+
+var jshint = require('gulp-jshint');
+var stylish = require('jshint-stylish');
 
 var config = require('config');
 
@@ -304,6 +306,14 @@ gulp.task('remoteunpackscripts', function () {
     .exec(REMOTE_SETUP,{filePath: 'logs/space_remotesetup.log'})
     .pipe(gulp.dest('logs'));
 });
+
+
+gulp.task('lint', function() {
+  return gulp.src(['./routes/**.js','./services/**.js','./public/javascripts/kanban/**.js',])
+    .pipe(jshint())
+    .pipe(jshint.reporter(stylish));
+});
+
 
 
 /**

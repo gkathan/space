@@ -3,17 +3,17 @@
  * NG version, branched off for express nodejs version
  * depends on:
  * @version: 2.0
- * @author: Gerold Kathan 
+ * @author: Gerold Kathan
  * @date: 2015-01-23
- * @copyright: 
- * @license: 
+ * @copyright:
+ * @license:
  * @website: www.github.com/gkathan/kanban
  */
 
 
 
 /** config (former override)
- * 
+ *
  */
 function getConfigByLevel(level){
 		for (var i in itemDataConfig){
@@ -39,15 +39,15 @@ function getConfigModeByLevel(level){
 }
 
 function getConfigByName(name){
-	var _config = new Array();
+	var _config = [];
 	for (var i in itemDataConfig){
-		if (itemDataConfig[i].name==name ||itemDataConfig[i].name=="*") _config.push(itemDataConfig[i])
+		if (itemDataConfig[i].name==name ||itemDataConfig[i].name=="*") _config.push(itemDataConfig[i]);
 	}
 	return _config;
 }
 
 /**
-calculates the offset to center elements / text per sublane 
+calculates the offset to center elements / text per sublane
 */
 function getSublaneCenterOffset(sublane){
 	if(sublane){
@@ -66,7 +66,6 @@ function getItemByKey(data,key,value){
 	for (var _item=0; _item< data.length;_item++){
 			if (data[_item][key] == value){
 				return data[_item];
-				break;
 			}
 	}
 }
@@ -78,8 +77,7 @@ function getItemByID(data,id){
 	if (!data) return;
 	for (var _item=0; _item< data.length;_item++){
 			if (data[_item].id == id){
-				return _dependingItem=data[_item];
-				break;
+				return data[_item];
 			}
 	}
 }
@@ -88,7 +86,7 @@ function getItemsBySublane(sublane){
 	var _sub = getSublaneByNameNEW(sublane);
 	if (_sub && _sub.children){
 		return _sub.children;
-	} 
+	}
 }
 
 
@@ -103,7 +101,7 @@ function getLanesNEW(){
  */
 function getLaneByNameNEW(name){
 	var _lanes = getLanesNEW();
-	for (i in _lanes){
+	for (var i in _lanes){
 		if ((_lanes[i].name).indexOf(name)>=0) return _lanes[i];
 	}
 	return null;
@@ -112,7 +110,7 @@ function getLaneByNameNEW(name){
 
 
 function getSublanesNEW(lane){
-	if (lane) 
+	if (lane)
 		return getLaneByNameNEW(lane).children;
 	else{
 			return getElementsByDepth(3);
@@ -121,7 +119,7 @@ function getSublanesNEW(lane){
 
 function getSublaneByNameNEW(name){
 	var _sublanes = getSublanesNEW();
-	for (i in _sublanes){
+	for (var i in _sublanes){
 		if (_sublanes[i].name.indexOf(name)>=0) return _sublanes[i];
 	}
 	return null;
@@ -129,11 +127,11 @@ function getSublaneByNameNEW(name){
 
 function getThemesNEW(){
 	return getElementsByDepth(0);
-	
+
 }
 
 function getElementsByDepth(depth){
-	var _elements = new Array();
+	var _elements = [];
 	traverse(itemTree,0,depth,_elements);
 	return _elements;
 }
@@ -143,12 +141,12 @@ function getElementsByDepth(depth){
 
 
 
-/** start=0, stop=1 should give me the 2 top elements in hierarchy 
+/** start=0, stop=1 should give me the 2 top elements in hierarchy
  */
 function traverse(_itemData,_start,_stop,_list){
 	if (_itemData.children){
 		_start++;
-		for (i in _itemData.children){
+		for (var i in _itemData.children){
 			if (_itemData.children[i].children && _stop >_start){
 				traverse(_itemData.children[i],_start,_stop,_list);
 			}
@@ -163,7 +161,7 @@ function traverse(_itemData,_start,_stop,_list){
 		console.log("....no more children found..");
 	}
 }
-	
+
 
 
 /** Calculate the difference of two dates in total days
@@ -182,15 +180,15 @@ function diffDays(d1, d2){
 	var timeDifferenceInDays = timeDifferenceInHours  / 24;
 
 	return timeDifferenceInDays;
-}	
+}
 
 /**
 * helper methods
 */
 function getInt(_value){
 	var _int =0;
-	if (parseInt(_value)) _int = parseInt(_value); 
-	return _int;				
+	if (parseInt(_value)) _int = parseInt(_value);
+	return _int;
 }
 
 function timeFormat(formats) {
@@ -205,8 +203,8 @@ function timeFormat(formats) {
  */
 function getFQName(d){
 	if (d){
-		
-			return d.lanePath;	
+
+			return d.lanePath;
 	}
 }
 
@@ -215,15 +213,15 @@ function getFQName(d){
 
 /**
 * taken from http://stackoverflow.com/questions/17140711/how-to-show-a-list-or-array-into-a-tree-structure-in-javascript
-* 
+*
 * path array has to have an item named path="/bb/aa/.."
-* 
+*
 */
 function buildTreeFromPathArray(paths){
 
 	// needs to be called on the input string array
 	//paths = paths.map(function(d) { return d.split('/'); });
-	
+
 	var items = [];
 	for(var i = 0, l = paths.length; i < l; i++) {
 		var path = paths[i];
@@ -244,13 +242,13 @@ function buildTreeFromPathArray(paths){
 			item.children.push(rest);
 		}
 	}
-	
-	
-	for(i = 0, l = items.length; i < l; i++) {
+
+
+	for(var i = 0, l = items.length; i < l; i++) {
 		item = items[i];
 		item.children = buildTreeFromPathArray(item.children);
 	}
-	
+
 	return items;
 }
 
@@ -266,19 +264,19 @@ function printItems(items){
 		console.log("* items["+p+"]: id: "+items[p].id+" planDate: "+items[p].planDate);
 	}
 }
-	
+
 /**
  * takes an array of items and splits it up in segmented arrays by same planDates (current impl)
  *
- */	
+ */
 function segmentItemsByDate(items){
-	// first let's sort 
+	// first let's sort
 	console.log("***before sort***");
 	printItems(items);
-	
-	
+
+
 	items.sort(function(a,b){return new Date(a.planDate).getTime()-new Date(b.planDate).getTime();})
-	
+
 	console.log("***after sort***");
 	printItems(items);
 	var _segments=new Array();
@@ -286,7 +284,7 @@ function segmentItemsByDate(items){
 	while(items.length>0){
 		console.log("in outer loop - e: "+e);
 		_segments[e] = new Array();
-			
+
 		for (var i=0 ;i<items.length;i++){
 			//console.log("in inner loop - i: "+i+  " i.planDate: "+items[i].planDate+"(e: "+e+") e.planDate: "+items[e].planDate);
 			if (items[0].planDate == items[i].planDate){
@@ -303,11 +301,11 @@ function segmentItemsByDate(items){
 			console.log("e="+e);
 			items.splice(0,1);
 		}
-	e++;			
+	e++;
 	}
 	console.log("...and now ? e="+e);
 
-	
+
 	return _segments;
 }
 
@@ -316,13 +314,13 @@ function segmentItemsByDate(items){
  * */
 function getElements(items){
 		var _ids = new Array();
-		
+
 		var _elements = new Array();
 		console.log("*** getElements() called for items.lenght:"+items.length);
 		for (var i in items){
 			_ids.push(items[i].id);
 			_elements.push(d3.select("#item_"+items[i].id));
-			console.log("************ in getElements(): pushing - id:"+items[i].id);	
+			console.log("************ in getElements(): pushing - id:"+items[i].id);
 
 		}
 		//var _ids=new Array(200,201,208,209)
@@ -330,7 +328,7 @@ function getElements(items){
 		var _elements = d3.select("#items").selectAll("g").filter(function(d){return _ids.indexOf(d.id)>=0;});
 		*/
 		console.log("*** returning "+_elements.length+" elements");
-		
+
 		return _elements;
 }
 
@@ -340,7 +338,7 @@ function autoLayout(){
 	for (l in _lanes){
 		autoLayoutByLane(_lanes[l].name);
 	}
-	
+
 }
 
 function autoLayoutByLane(lane){
@@ -353,16 +351,16 @@ function autoLayoutByLane(lane){
 function autoLayoutBySublane(sublane){
 	var _items = getItemsBySublane(sublane);
 	var _segments = segmentItemsByDate(_items);
-	
+
 	var yBase=margin.top+y(getSublaneByNameNEW(sublane).yt1);
-	
+
 	for (var s in _segments){
 		layout(getElements(_segments[s]),yBase);
 	}
 }
 
 /**
- * layout core algorithm 
+ * layout core algorithm
  * uses _getMetrics function to get proper info about transformed svg elements (getBBox is not sufficient...)
  * @yBase the yt1 of lane context we are in
  */
@@ -370,9 +368,9 @@ function layout(elements,yBase){
 	console.log("in layout()...yBase="+yBase);
 	var _total =0;
 	var _number = 0;
-	
+
 	// TODO: get the y1 of according lanecontext and start from top
-	
+
 
 
 	var _yList =new Array();
@@ -397,7 +395,7 @@ function layout(elements,yBase){
 
 	var i=0;
 	var _space =1;
-	
+
 	for (var e in elements){
 		if (elements[e].node()) {
 			var _m =get_metrics(elements[e].node());
@@ -418,15 +416,15 @@ function wrapText(caption,maxChars){
 	var line = "";
 
 	var wrap = new Array();
-	
+
 	for (var n = 0; n < words.length; n++) {
 		var testLine = line + words[n] + " ";
 		if (testLine.length > maxChars || words[n]=="|")
 		{
 			wrap.push(line);
-  
+
 			if (words[n]=="|") words[n]="";
-  
+
 			line = words[n] + " ";
 		}
 		else {
@@ -531,22 +529,22 @@ function redirect(location){
 /**
 * helper class for ajax calls
 *  verb: "POST", "DELETE",...
-*  action = what to do 
+*  action = what to do
 * _type = type of object (e.g. initiatives)
-* 
+*
 * referenced from admin.php
 */
 function ajaxCall(verb,action,itemList,_type,afterHandlerCallback){
-	
+
 		console.log("++ verb: "+verb);
 		console.log("++ action: "+action);
 		console.log("++ _type: "+_type);
-		
-		
+
+
 		var _json = JSON.stringify(itemList);
-		
+
 		console.log("JSON.stringify tha shit..."+_json);
-		
+
 		// and send to backend ! :-)
 		$.ajax({
 		type: verb,
@@ -564,15 +562,15 @@ function ajaxCall(verb,action,itemList,_type,afterHandlerCallback){
 					//console.log("*****i: "+i+" - "+itemList[i].name);
 					if (i< itemList.length-1) _items+=", "
 				}
-				
+
 				console.log("==== and now lets notify...");
 				$('.top-left').notify({
 						message: { html: "<span class=\"glyphicon glyphicon-ok\"></span><span style=\"font-size:10px;font-weight:bold\"> ajaxCall.("+action+") says:</span> <br/><div style=\"font-size:10px;font-weight:normal;margin-left:20px\">* "+action+": "+_type+": [SUCCESS]  </div>" },
 						fadeOut: {enabled:true,delay:3000},
 						type: "success"
 					  }).show(); // for the ones that aren't closable and don't fade out there is a .hide() function.
-				
-				
+
+
 			},
 		error: function(msg)
 			{
@@ -582,11 +580,11 @@ function ajaxCall(verb,action,itemList,_type,afterHandlerCallback){
 						fadeOut: {enabled:false},
 						type: "danger"
 					  }).show(); // for the ones that aren't closable and don't fade out there is a .hide() function.
-				
-				
+
+
 			}
 		});
-		
+
 }
 
 
@@ -597,6 +595,3 @@ function ajaxCall(verb,action,itemList,_type,afterHandlerCallback){
  function getAUTH(){
 	 return sessionStorage.getItem("AUTH");
  }
-
-
-

@@ -323,9 +323,9 @@ function getIncidenttrackerConfig(){
 	var _incidenttracker =[
     { id:"id", name: "id", field: "_id",sortable:true,width:20,cssClass:"onKanbanImmutable"},
     { id:"context", name: "context", field: "context",sortable:true,width:80,cssClass:"onKanbanImmutable"},
-    { id:"date", name: "date", field: "date",sortable:true,width:80, editor: Slick.Editors.Text, cssClass: "cell-standard" },
-    { id: "P1", name: "P1", field: "P1", editor: Slick.Editors.Number ,width:80, cssClass: "cell-standard"},
-    { id: "P8", name: "P8",  field: "P8",width:80, editor: Slick.Editors.Number , cssClass: "cell-standard"}
+    { id:"date", name: "date", field: "date",sortable:true,width:80, editor: Slick.Editors.Text, formatter:Slick.Formatters.SimpleDate,cssClass: "cell-standard" },
+    { id: "P1", name: "P1", field: "P1", editor: Slick.Editors.Number ,width:40, cssClass: "cell-title"},
+    { id: "P8", name: "P8",  field: "P8",width:40, editor: Slick.Editors.Number , cssClass: "cell-title"}
 
         ];
 	var _config ={};
