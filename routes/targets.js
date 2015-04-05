@@ -64,6 +64,15 @@ res.locals._=require('lodash');
 			// take the first for the globals...
 			var _target = L2targetsClustered.children[0].children[0].children[0].children[0];
 			res.locals.vision=_target.vision;
+			var _colors = _.findWhere(config.entities,{'name':_context}).skin.colors;
+			logger.debug("colors: "+_colors.secondary);
+			res.locals.colors= _colors;
+
+			res.locals.color_PL = _colors.primary;
+			res.locals.color_RUN = _colors.secondary;
+			res.locals.color_GROW= _colors.secondary2;
+			res.locals.color_TRANSFORM = _colors.secondary3;
+
 			res.locals.start=moment(_target.start).format();
 			res.locals.end=moment(_target.end).format();
 			res.locals.period = "targets :: "+new moment(_target.start).format('MMMM').toLowerCase()+" - "+new moment(_target.end).format('MMMM').toLowerCase()+" "+new moment(_target.start).format('YYYY');

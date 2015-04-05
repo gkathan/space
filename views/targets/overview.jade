@@ -1,28 +1,5 @@
 include ../kanban_menu
 
-// bpty primary
-- var color1 = "#174D75";
-
-// bpty secondary
-- var color2 = "rgb(0,184,228)";
-
-// bpty orange
-- var color3 = "rgb(249,157,28)";
-
-// bpty pink
-- var color4 = "rgb(176,172,213)";
-
-//bpty green
-- var color5 = "rgb(130,206,193)";
-
-//bpty yellow
-- var color6 = "rgb(255,203,5)";
-
-- var color_RUN = color2;
-- var color_GROW = color5;
-- var color_TRANSFORM = color3;
-- var color_PL = color1;
-
 //
 	var COLOR_PRIMARY = "#174D75";
 	var COLOR_PRIMARY2 = "#00b8e4";
@@ -81,7 +58,7 @@ style.
 mixin renderL1Targets(target)
 	// div.table-responsive
 	td(style="text-align:center;padding:10px")
-		div(style=";color:white;background-color:#{color1}")
+		div(style=";color:white;background-color:#{color_PL}")
 			span(style="line-height:28px;font-size:24px;font-weight:bold")
 				|#{target.directMetric}
 			span(style="line-height:12px;font-size:11px;font-weight:normal")
@@ -297,12 +274,12 @@ div(style="margin-left:5px")
 	// ------------------------------ main view -------------------------------
 	div.container-fluid(style="max-width:1600px")
 		div.row
-			div(style="font-weight:bold;font-size:20px;color:#174D75;text-align:center") "#{vision}"
-			div(style="font-weight:normal;font-size:14px;color:#174D75;text-align:center") #{period}
+			div(style="font-weight:bold;font-size:20px;color:#{color_PL};text-align:center") "#{vision}"
+			div(style="font-weight:normal;font-size:14px;color:#{color_PL};text-align:center") #{period}
 			div(style="margin-top:10px;margin-bottom:10px")
 				img(src="/images/space_triangle_bpty_up.png" style="vertical-align:middle;display:block;margin: auto auto" height="20px" width="300px"  )
 
-			div(style=";color:white;background-color:#{color1};text-align:center;font-size:18px;font-weight:bold;margin-left:10px;margin-right:10px;line-height:48px") Studios P&L
+			div(style=";color:white;background-color:#{color_PL};text-align:center;font-size:18px;font-weight:bold;margin-left:10px;margin-right:10px;line-height:48px") Studios P&L
 			
 			
 		div.row(style="text-align:center")
@@ -427,11 +404,19 @@ script.
 	}
 
 
-		function mapRAG2Color(rag){
-			// there is no amber css color ;-)
-			if (rag=="amber") return "gold";
-			if (rag=="green") return "limegreen";
-			if (!rag) return "lightgrey"
-			// red and green are ok
-			return rag;
-		}
+	function mapRAG2Color(rag){
+		// there is no amber css color ;-)
+		if (rag=="amber") return "gold";
+		if (rag=="green") return "limegreen";
+		if (!rag) return "lightgrey"
+		// red and green are ok
+		return rag;
+	}
+
+	function loadColors(context,callback){
+			$.get( "/api/space/config", function( data ) {
+	  		var c = _.findWhere(data.entities,{'name':context});
+				
+				callback(c.skin.colors);
+			});
+	}	
