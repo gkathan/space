@@ -2,15 +2,13 @@
 
 include kanban_menu
 
-link(rel='stylesheet', href='/stylesheets/flip.css')
+//link(rel='stylesheet', href='/stylesheets/flip.css')
 
 script.
 	$(document).ready(function(){
-
 		// set up flip form link
 		$('.fliptarget .turnback').click(function(e){
 			var _id = e.target.toString().split('#')[1];
-			
 			console.log("flip to back: _id: "+_id);
 			$('#'+_id).addClass('flip');
 			//$('.fliptarget').addClass('flip');
@@ -22,11 +20,9 @@ script.
 			console.log("flip to back: _id: "+_id);
 			//$('.fliptarget').removeClass('flip');
 			$('#'+_id).removeClass('flip');
-
 		//	console.log("flip back to front: "+e);
 			e.preventDefault();
 		});
-
 	});
 
 
@@ -45,7 +41,6 @@ mixin renderTarget(target)
 							td(style="width:220px;font-size:15px;vertical-align:middle;font-weight:bold;;height:20px;") 
 								|TARGET TITLE #{target.name}
 								a.turnback(id="#{target.id}" href="##{target.id}") flip
-					
 				.panel-body
 					table(style="")
 						tr(style="line-height:10px;")
@@ -54,16 +49,12 @@ mixin renderTarget(target)
 							td(style="text-align:center;width:70px;font-size:30px;vertical-align:middle;font-weight:bold;;height:30px;border-bottom: 1px solid lightgrey") 
 								|50
 								span(style="font-size:10px;font-weight:normal") %
-								
-						
 						tr(style="height:18px;border-bottom: 1px solid black;")
 							td(style="width:200px;font-size:12px;vertical-align:middle;height:20px")
 								target2 - bla bla
 							td(style="text-align:center;width:80px;font-size:30px;vertical-align:middle;font-weight:bold;;height:30px") 
 								|50
 								span(style="font-size:10px;font-weight:normal") %
-		
-		
 		div.back
 			div.panel(style="position: relative;background-color:white;width:250px;text-align: left;")
 				.panel-heading(style="")
@@ -73,8 +64,6 @@ mixin renderTarget(target)
 								i.glyphicon.glyphicon-record(style="font-size:12px")
 							td(style="width:220px;font-size:15px;vertical-align:middle;font-weight:bold;;height:20px;") 
 								|TARGET BACKSIDE :-) 
-									
-					
 				.panel-body
 					table(style="")
 						tr(style="line-height:10px;")
@@ -85,9 +74,6 @@ mixin renderTarget(target)
 								span(style="font-size:10px;font-weight:normal") %
 								
 								a.turnfront(id="#{target.id}" href="##{target.id}") flip back
-								
-						
-
 
 block content
 div(style="margin-left:20px")

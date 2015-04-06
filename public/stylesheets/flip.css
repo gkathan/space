@@ -23,7 +23,7 @@
 		border: 0px solid #ccc;
 		background: white;
 		text-align: center;
-		
+
 		-webkit-transform: rotateX(0deg) rotateY(0deg);
 			 -moz-transform: rotateX(0deg) rotateY(0deg);
 						transform: rotateX(0deg) rotateY(0deg);
@@ -42,7 +42,7 @@
 	}
 	.panel.flip .front {
 		z-index: 900;
-		
+
 		-webkit-transform: rotateY(180deg);
 			 -moz-transform: rotateY(180deg);
 						transform: rotateY(180deg);
@@ -56,7 +56,7 @@
 		z-index: 800;
 		width: inherit;
 		height: inherit;
-		
+
 		-webkit-transform: rotateY(-180deg);
 			 -moz-transform: rotateY(-179deg); /* setting to 180 causes an unnatural-looking half-flip */
 						transform: rotateY(-179deg);
@@ -76,12 +76,12 @@
 
 	.panel.flip .back {
 		z-index: 1000;
-		
+
 		-webkit-transform: rotateX(0deg) rotateY(0deg);
 			 -moz-transform: rotateX(0deg) rotateY(0deg);
 						transform: rotateX(0deg) rotateY(0deg);
 
-		
+
 	}
 
 	/* -- X axis rotation for click panel -- */

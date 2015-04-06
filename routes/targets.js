@@ -73,6 +73,8 @@ res.locals._=require('lodash');
 			res.locals.color_GROW= _colors.secondary2;
 			res.locals.color_TRANSFORM = _colors.secondary3;
 
+			res.locals.context=_context;
+
 			res.locals.start=moment(_target.start).format();
 			res.locals.end=moment(_target.end).format();
 			res.locals.period = "targets :: "+new moment(_target.start).format('MMMM').toLowerCase()+" - "+new moment(_target.end).format('MMMM').toLowerCase()+" "+new moment(_target.start).format('YYYY');

@@ -1,5 +1,6 @@
 include ../kanban_menu
 
+
 //
 	var COLOR_PRIMARY = "#174D75";
 	var COLOR_PRIMARY2 = "#00b8e4";
@@ -52,6 +53,8 @@ style.
 -		return rag;
 -	}
 
+link(rel='stylesheet', href='/stylesheets/flip.css')
+
 // -----------------------------------------------------------------------
 // ------------------ mixin L1 targets ----------------------------
 // -----------------------------------------------------------------------
@@ -67,10 +70,8 @@ mixin renderL1Targets(target)
 				span(style="line-height:20px;font-weight:normal;font-size:11px") #{target.directTarget}
 			div
 				span(style="line-height:16px;font-weight:bold;font-size:14px") #{target.directTime}
-				
 		div(style="margin-top:10px;margin-bottom:10px")
 			img(src="/images/space_arrow_bpty_up.png" style="vertical-align:middle;display:block;margin: auto auto" height="30px" width="35px"  )
-		
 
 // -----------------------------------------------------------------------
 // ------------------ mixin target lane start ----------------------------
@@ -78,15 +79,10 @@ mixin renderL1Targets(target)
 mixin renderTargetLane(lane)
 	div.col-sm-2.col-md-4.col-lg-4
 		div(style="min-width:350px;max-width:600px" class="panel-body-lane")
-			
-			
 			div(class="box-#{lane.name.toLowerCase()}" style="text-align:center;line-height:50px;vertical-align:middle")
 				img(src="/images/targets/#{lane.name}_white_circle.png" height="40px" style="vertical-align:middle;margin-bottom:8px")
-				
-					
 				//span(class="text-heading-#{lane.name.toLowerCase()}" style="margin-left:2px;font-size:26px;color:black;font-weight:bold")  #{lane.name}
 				span(style="margin-left:2px;font-size:28px;color:white;font-weight:bold")  #{lane.name}
-					
 					//span(class="text-heading-#{lane.name.toLowerCase()}" style="font-size:14px;color:black;font-weight:normal") #{lane.children[0].name.toUpperCase()}
 				//span(style="font-size:14px;color:white;font-weight:normal") #{lane.children[0].name.toUpperCase()}
 			br
@@ -100,65 +96,68 @@ mixin renderTargetLane(lane)
 // ------------------ mixin target card start ----------------------------
 // -----------------------------------------------------------------------
 mixin renderTarget(target)
-	div.panel( style="margin-left:-10px;position: relative;background-color:white;width:230px;text-align: left;height:280px")
-		.panel-heading(class="panel-#{target.children[0].theme.toLowerCase()}")
-			table
-				tr(style="line-height:12px")
-					td(style="width:30px;text-align:left")
-						//i.glyphicon.glyphicon-record(style="font-size:13px")
-						img(src="/images/targets/#{target.name}.png" height="25px" style="vertical-align:top" )
-					td(style="width:150px;font-size:13px;vertical-align:middle;font-weight:normal;")
-						|#{target.name.split(" ")[0].toUpperCase()}
-						br
-						b #{_.rest(target.name.split(" ")).join(" ").toUpperCase()}
-					td(style="width:20px;font-size:16px;vertical-align:top;font-weight:normal;vertical-align:middle")
-						|#{target.children[0].id.split(".")[0]}
-		.panel-body
-			table(style="")
-				each line in target.children
-					tr(style="line-height:15px")
-						td(style="width:205px;font-size:10px;text-align:left;vertical-align:top;border-bottom: 1px solid lightgrey")
-							table(style="width:190px")
-								tr(style="line-height:15px")
-									td(style="width:10px;font-size:10px;text-align:left")
-										|-
-									td(style="width:145px;font-size:11px;font-weight:bold")
-										div(style="width:140px")
-											//a(style="color:black" id="#{line.id}" href="" title="show more details...") #{line.target}
-											a.targetDetail(style="color:black" id="targetDetail" href="#targetDetail" title="show more details..."
-												data-_id="#{line._id}"
-												data-id="#{line.id}"
-												data-name="#{line.target}"
-												data-rag="#{line.rag}"
-												data-ragComment="#{line.ragComment}"
-												data-outcome="#{line.outcome}"
-												data-bywhen="#{line.bywhen}"
-												data-description="#{line.description}"
-												data-baseline="#{line.baseline}"
-												data-measure="#{line.measure}"
-												data-link="#{line.link}"
-												data-comments="#{line.comments}"
-												data-sponsor="#{line.sponsor}"
-												data-contributors="#{line.contributors}"
-												data-start="#{line.start}"
-												data-end="#{line.end}"
-												data-group="#{line.group}"
-												data-theme="#{line.theme}"
-												data-cluster="#{line.cluster}"
-												) #{line.target}
-									td(style="width:10px;font-size:10px;font-style:italic")
+	div.fliptarget(id="#{target.name}")
+		div.front
+			div.panel(style="margin-left:-10px;position: relative;background-color:white;width:230px;text-align: left;height:280px")
+				.panel-heading(class="panel-#{target.children[0].theme.toLowerCase()}")
+					table
+						tr(style="line-height:12px")
+							td(style="width:30px;text-align:left")
+								//i.glyphicon.glyphicon-record(style="font-size:13px")
+								a.turnback(id="#{target.name}" href="##{target.name}") 
+									img(src="/images/targets/#{target.name}.png" height="25px" style="vertical-align:top" )
+							td(style="width:150px;font-size:13px;vertical-align:middle;font-weight:normal;")
+								|#{target.name.split(" ")[0].toUpperCase()}
+								br
+								b #{_.rest(target.name.split(" ")).join(" ").toUpperCase()}
+								
+							td(style="width:20px;font-size:16px;vertical-align:top;font-weight:normal;vertical-align:middle")
+								|#{target.children[0].id.split(".")[0]}
+				.panel-body
+					table(style="")
+						each line in target.children
+							tr(style="line-height:15px")
+								td(style="width:205px;font-size:10px;text-align:left;vertical-align:top;border-bottom: 1px solid lightgrey")
+									table(style="width:190px")
+										tr(style="line-height:15px")
+											td(style="width:10px;font-size:10px;text-align:left")
+												|-
+											td(style="width:145px;font-size:11px;font-weight:bold")
+												div(style="width:140px")
+													//a(style="color:black" id="#{line.id}" href="" title="show more details...") #{line.target}
+													a.targetDetail(style="color:black" id="targetDetail" href="#targetDetail" title="show more details..."
+														data-_id="#{line._id}"
+														data-id="#{line.id}"
+														data-name="#{line.target}"
+														data-rag="#{line.rag}"
+														data-ragComment="#{line.ragComment}"
+														data-outcome="#{line.outcome}"
+														data-bywhen="#{line.bywhen}"
+														data-description="#{line.description}"
+														data-baseline="#{line.baseline}"
+														data-measure="#{line.measure}"
+														data-link="#{line.link}"
+														data-comments="#{line.comments}"
+														data-sponsor="#{line.sponsor}"
+														data-contributors="#{line.contributors}"
+														data-start="#{line.start}"
+														data-end="#{line.end}"
+														data-group="#{line.group}"
+														data-theme="#{line.theme}"
+														data-cluster="#{line.cluster}"
+														) #{line.target}
+											td(style="width:10px;font-size:10px;font-style:italic")
 
-									td(style="width:15px;font-size:8px;vertical-align:top")
-										
-										div(style="margin-left:2px;width: 8px;height: 8px;-moz-border-radius: 50%; -webkit-border-radius: 50%; border-radius: 50%;background-color:#{mapRAG2Color(line.rag)};margin-top:2px")
-											
-									td(style="width:25px;font-size:10px;vertical-align:top")
-										|#{line.id}
-					tr(style="line-height:3px")
-						td
-							|&nbsp;
-
-
+											td(style="width:15px;font-size:8px;vertical-align:top")
+												
+												div(style="margin-left:2px;width: 8px;height: 8px;-moz-border-radius: 50%; -webkit-border-radius: 50%; border-radius: 50%;background-color:#{mapRAG2Color(line.rag)};margin-top:2px")
+													
+											td(style="width:25px;font-size:10px;vertical-align:top")
+												|#{line.id}
+							tr(style="line-height:3px")
+								td
+									|&nbsp;
+		
 // -----------------------------------------------------------------------
 // ------------------ mixin target detail modal ----------------------------
 // -----------------------------------------------------------------------
@@ -257,44 +256,67 @@ mixin renderTargetDetail(target)
 // ------------------ main target template ----------------------------
 // -----------------------------------------------------------------------
 block content
-div(style="margin-left:5px")
 	
-	div(style="text-align:right")
-		a(href="/api/space/export/xlsx/targets" title="export targets as xlsx")
-			span(style="font-size:10px;text-align:right") >> export targets xlsx &nbsp;
-			img(src="/images/space/logo_msexcel.png" height="30px")
+div(style="text-align:right")
+	a(href="/api/space/export/xlsx/targets" title="export targets as xlsx")
+		span(style="font-size:10px;text-align:right") >> export targets xlsx &nbsp;
+		img(src="/images/space/logo_msexcel.png" height="30px")
 
 
-	// ------------------------------ target detail modal -------------------------------
-	div.modal.fade(id="targetDetail" tabindex="-1" role="dialog" aria-labelledby="targetDetailModal" aria-hidden="true" )
-		div.modal-dialog
-			div.modal-content(style="opacity:1")
-				+renderTargetDetail()
+// ------------------------------ target detail modal -------------------------------
+div.modal.fade(id="targetDetail" tabindex="-1" role="dialog" aria-labelledby="targetDetailModal" aria-hidden="true" )
+	div.modal-dialog
+		div.modal-content(style="opacity:1")
+			+renderTargetDetail()
 
-	// ------------------------------ main view -------------------------------
-	div.container-fluid(style="max-width:1600px")
-		div.row
-			div(style="font-weight:bold;font-size:20px;color:#{color_PL};text-align:center") "#{vision}"
-			div(style="font-weight:normal;font-size:14px;color:#{color_PL};text-align:center") #{period}
-			div(style="margin-top:10px;margin-bottom:10px")
-				img(src="/images/space_triangle_bpty_up.png" style="vertical-align:middle;display:block;margin: auto auto" height="20px" width="300px"  )
+// ------------------------------ main view -------------------------------
+div.container-fluid(style="max-width:1600px")
+	div.row
+		div(style="font-weight:bold;font-size:20px;color:#{color_PL};text-align:center") "#{vision}"
+		div(style="font-weight:normal;font-size:14px;color:#{color_PL};text-align:center") #{period}
+		div(style="margin-top:10px;margin-bottom:10px")
+			img(src="/images/space_triangle_bpty_up.png" style="vertical-align:middle;display:block;margin: auto auto" height="20px" width="300px"  )
 
-			div(style=";color:white;background-color:#{color_PL};text-align:center;font-size:18px;font-weight:bold;margin-left:10px;margin-right:10px;line-height:48px") Studios P&L
-			
-			
-		div.row(style="text-align:center")
-			table.table.table-borderless(style="background-color:transparent")
-				tr
-					each target in L1targets
-						+renderL1Targets(target)
+		div(style=";color:white;background-color:#{color_PL};text-align:center;font-size:16px;font-weight:normal;margin-left:10px;margin-right:10px;line-height:32px") #{context} P&L
+		
+		
+	div.row(style="text-align:center")
+		table.table.table-borderless(style="background-color:transparent")
+			tr
+				each target in L1targets
+					+renderL1Targets(target)
 
-		div.row(style="vertical-align:top")
-				each lane in targets
-					if lane.name != "P&L"
-						+renderTargetLane(lane)
+	div.row(style="vertical-align:top")
+			each lane in targets
+				if lane.name != "P&L"
+					+renderTargetLane(lane)
 
 
 script.
+
+	$(document).ready(function(){
+		// set up flip form link
+		$('.fliptarget .turnback').click(function(e){
+			var _id = e.target.toString().split('#')[1];
+			console.log("flip to back: _id: "+_id);
+			$('#'+_id).addClass('flip');
+			//$('.fliptarget').addClass('flip');
+			e.preventDefault();
+		});
+		//back flip
+		$('.fliptarget .turnfront').click(function(e){
+			var _id = e.target.toString().split('#')[1];
+			console.log("flip to back: _id: "+_id);
+			//$('.fliptarget').removeClass('flip');
+			$('#'+_id).removeClass('flip');
+		//	console.log("flip back to front: "+e);
+			e.preventDefault();
+		});
+	});
+
+
+
+
 	/**
 	* passing parameters to my modal
 	* http://stackoverflow.com/questions/20723111/passing-data-to-bootstrap-3-modal
@@ -420,3 +442,5 @@ script.
 				callback(c.skin.colors);
 			});
 	}	
+	
+	
