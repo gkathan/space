@@ -43,8 +43,7 @@ mixin renderEpic(epic)
 			if epic.id
 				td(style="width:15px;vertical-align:middle")
 					if epic.Status != "Monitoring"
-						span(style="background-color:#{mapHealth2Color(epic.Health)}")
-							| &nbsp;&nbsp;&nbsp;&nbsp;   
+						div(style="margin-left:5px;width: 10px;height: 10px;-moz-border-radius: 50%; -webkit-border-radius: 50%; border-radius: 50%;background-color:#{mapHealth2Color(epic.Health)};margin-top:2px")
 				td(style="font-weight:normal;font-size:8px;width:35px;height:14px;vertical-align:middle")
 					| #{epic.EpicRef} 
 				td(style="font-weight:bold;font-size:9px;width:180px;vertical-align:middle;white-space:nowrap")
@@ -67,14 +66,17 @@ mixin renderEpic(epic)
 				
 			else
 				td(style="width:15px;vertical-align:middle") 
-				td(style="font-weight:normal;font-size:8px;width:250px;height:14px;vertical-align:middle")
-					span  #{epic.EpicRef} * not synced
+					div(style="margin-left:5px;width: 10px;height: 10px;-moz-border-radius: 50%; -webkit-border-radius: 50%; border-radius: 50%;background-color:lightgrey;margin-top:2px")
+				td(style="font-weight:normal;font-size:8px;width:35px;height:14px;vertical-align:middle")
+					span  #{epic.EpicRef} 
+				td(style="font-weight:normal;font-size:8px;color:grey;width:180px;vertical-align:middle;white-space:nowrap")
+					|* not synced | not an initiative *
 				
 // ------------------ mixin end ----------------------------
 
 block content
-	span(style="color:#999999;font-size:8px") #{pgates.length} [portfolio board] snapshots online | last v1.epics sync #{v1LastUpdate}
 	div.container-fluid
+		span(style="color:#999999;font-size:8px") #{pgates.length} [portfolio board] snapshots online | last v1.epics sync #{v1LastUpdate}
 		each _date in pgates
 			div.panel(style="max-width:1400px")
 				div.panel-heading(style="font-size:16px; color:black") 
@@ -86,13 +88,11 @@ block content
 					if _date.stateChangeBucket.length == 0 && _date.healthChangeBucket.length == 0
 						span(style="font-size:11px;font-weight:normal;color:black;text-align:center") <b>NO CHANGES</b>: 
 					else
-						span(style="font-size:11px;font-weight:normal;color:black;text-align:center") <b>CHANGES</b>:
+						span(style="font-size:11px;font-weight:normal;color:black;text-align:center") <b>STATUS CHANGES</b>:
 					br
 
 
 					if _date.stateChangeBucket.length > 0
-						span(style="font-size:11px;font-weight:normal;color:black;text-align:center") STATUS:
-						br
 						table(style="width:600px")
 							// state changes
 							each _change in _date.stateChangeBucket
@@ -106,27 +106,6 @@ block content
 										td(style="width:420px;font-size:10px;vertical-align:middle;height:14px")
 											a(href="http://v1.bwinparty.corp/V1-Production/Epic.mvc/Summary?oidToken=Epic%3A"+_change.id target="_new" )
 												| <span style="font-size:9px">#{_change.EpicRef}</span>  <b>#{_change.name}</b>  
-				
-					// health changes
-					if _date.healthChangeBucket.length > 0
-						span(style="font-size:11px;font-weight:normal;color:black;text-align:center") HEALTH:
-						each _change in _date.healthChangeBucket
-							li.list-unstyled(style="font-size:10px;color:black") 
-								
-								
-								span(style="background-color:#{mapHealth2Color(_change.oldHealth)}")
-									| &nbsp;&nbsp;&nbsp;   
-								|&nbsp;
-								span.glyphicon.glyphicon-arrow-right 
-								
-								span(style="background-color:#{mapHealth2Color(_change.Health)}")
-									| &nbsp;&nbsp;&nbsp;   
-								| &nbsp;
-								a(href="http://v1.bwinparty.corp/V1-Production/Epic.mvc/Summary?oidToken=Epic%3A"+_change.id target="_new" )
-									| #{_change.EpicRef} <b>#{_change.name}</b>  
-					
-					
-					
 				div.panel-body
 					each status in _date.pItems
 						// no NEW items for now
