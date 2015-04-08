@@ -3,7 +3,7 @@
 var chart3 = c3.generate({
     bindto : '#c3_mobile_spline',
     size: {
-      height:180,
+      height:140,
       width:190
     },
     data: {

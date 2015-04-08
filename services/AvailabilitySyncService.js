@@ -57,19 +57,19 @@ function _syncAvailability(urls,callback){
 					client = new Client();
 					// direct way
 
-						client.get(urls[0], function(data, response,callback){
+						client.get(urls[0], function(data, response){
 							// parsed response body as js object
 							var _endpoint = _.last(urls[0].split("/"));
 							logger.debug("...get data..: endpoint: "+_endpoint);
 							logger.debug(data);
-							avData[_endpoint]=data;
+							avData[_endpoint]=JSON.parse(data);
 							// nested callback
-							client.get(urls[1], function(data, response,callback){
+							client.get(urls[1], function(data, response){
 								// parsed response body as js object
 								var _endpoint = _.last(urls[1].split("/"));
 								logger.debug("...get data..: endpoint: "+_endpoint);
 								logger.debug(data);
-								avData[_endpoint]=data;
+								avData[_endpoint]=JSON.parse(data);
 
 								// and store it
 								var availability =  db.collection('availability');
@@ -79,6 +79,8 @@ function _syncAvailability(urls,callback){
 									logger.debug('Response error '+err);
 									if(success){
 										logger.info("sync availability [DONE]");
+										callback(avData);
+
 									}
 								})
 							}).on('error',function(err){
@@ -91,13 +93,8 @@ function _syncAvailability(urls,callback){
 
 
 			done();
-		},
-		function(done){
-					logger.debug("2) ************************************** STEP-2");
-					// store
-					done();
 		}
 		]);
 
-		callback(avData);
+
 }

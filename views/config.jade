@@ -7,7 +7,7 @@ block content
 div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;background-color:white;width:400px;text-align: left;margin: 10px auto;")
 	.panel-heading
 		i.glyphicon.glyphicon-barcode(style="font-size:15px")
-		span(style="font-size:20px")&nbsp; CONFIG
+		span(style="font-size:20px") &nbsp;CONFIG
 	.panel-body
 
 		|#{configHtml}
@@ -96,12 +96,19 @@ div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;back
 		});
 
 		$('#sync_availability').on('click', function () {
+			console.log("avreport request called...");
 			$.ajax({
 				url: '/api/space/rest/sync/availability',
 				type: 'POST',
 				data: {
 
-					}
+					},
+				success: function(data){
+					alert("data: "+JSON.stringify(data));
+				},
+				error: function(err){
+					alert("err: "+JSON.stringify(err));
+				}
 			});
 			//location.reload();
 		});

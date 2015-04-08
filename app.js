@@ -157,7 +157,7 @@ app.use (function (req, res, next) {
 		next();
 	} else {
 		// request was via http, so redirect to https
-		logger.debug("[http] forwarding to ssl call"+ req.headers.host + req.url);
+		//logger.debug("[http] forwarding to ssl call"+ req.headers.host + req.url);
 		res.redirect('https://' + req.headers.host+":3443" + req.url);
 	}
 });

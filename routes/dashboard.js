@@ -3,6 +3,7 @@ var router = express.Router();
 var _ = require('lodash');
 
 var config = require('config');
+var moment = require('moment');
 
 
 var avService = require('../services/AvailabilityService');
@@ -40,6 +41,7 @@ router.get('/', function(req, res) {
 			res.locals.downtime = avService.getDowntimeYTD(av.unplannedYTD,av.week);
 			res.locals.targetDowntime = avService.getDowntimeYTD(av,52);
 			res.locals.leftDowntime = avService.getDowntimeYTD(av,52);
+			res.locals.moment = moment;
 
 			targetService.getL1(_context,function(l1targets){
 					res.locals.l1targets=l1targets;

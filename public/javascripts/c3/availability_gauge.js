@@ -3,7 +3,7 @@ var availability;//={unplannedYTD:99.61,targetYTD:99.75};
 // do a ajax call
 $.get( "/api/space/rest/availability", function( data ) {
   console.log("ajax call to get av data: "+JSON.stringify(data));
-  var av = JSON.parse(data[0].avReport.getYTDDatapoint);
+  var av = data[0].avReport.getYTDDatapoint;
 
   // do another ajax call to get target values
   $.get( "/api/space/rest/targets/L1", function( l1targets ) {
@@ -27,7 +27,7 @@ $.get( "/api/space/rest/availability", function( data ) {
         gauge: {
             label: {
                 format: function(value, ratio) {
-                    return value+" YTD";
+                    return value;
                 },
                 show: true // to turn off the min/max labels.
             },

@@ -20,8 +20,9 @@ html(lang='en')
 		}
 
 	footer.footer
-		
-		
-		p(style="font-size:8px;color:grey;margin-top:20px;text-align:center")
+		div(style="font-size:8px;color:grey;text-align:center")
 			| s p a c e  
 			| :: version: <b>#{config.version}</b> :: build: <b>#{config.build}</b> :: env: <b>#{config.env}</b> :: transcoder: #{config.transcoder.url} :: mailer: #{config.mailer.host} :: v1.SyncEpics: #{config.sync.v1Epics.mode}, every #{config.sync.v1Epics.intervalMinutes} minutes from #{config.sync.v1Epics.url}  
+			br
+			| :: 
+			a(href="http://scrumblr.space.bwinparty.corp/spacebacklog" target="_blank") backlog kanban board ::

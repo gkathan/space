@@ -169,6 +169,7 @@ router.post(PATH.REST_MAIL, function(req, res, next) {mail(req,res,next); });
 
 router.post(PATH.REST_SYNCEMPLOYEEIMAGES, function(req, res, next) {syncEmployeeImages(req,res,next); });
 router.post(PATH.REST_SYNCAVAILABILITY, function(req, res, next) {syncAvailability(req,res,next); });
+router.get(PATH.REST_SYNCAVAILABILITY, function(req, res, next) {syncAvailability(req,res,next); });
 router.post(PATH.REST_SYNCINCIDENTS, function(req, res, next) {syncIncidents(req,res,next); });
 
 
@@ -573,13 +574,19 @@ function syncEmployeeImages(req,res,next){
 }
 
 function syncAvailability(req,res,next){
-    logger.debug("*********************** lets sync availability from avreports service... ");
 
     var avSyncService = require ('../services/AvailabilitySyncService');
-    avSyncService.sync(function(av){
+		var _urls = config.sync.availability.url;
+		logger.debug("*********************** lets sync availability from avreports service... urls: "+_urls);
 
-		logger.debug("av:"+JSON.stringify(av));
+
+	  avSyncService.sync(_urls,function(av){
+
+			logger.debug("av:"+JSON.stringify(av));
+			res.send("availability: "+JSON.stringify(av));
 	});
+
+
 }
 
 function syncIncidents(req,res,next){

@@ -33,8 +33,8 @@ console.log("weekly aggregation: "+JSON.stringify(weeks));
   var chart2 = c3.generate({
       bindto : '#c3_incident_barchart',
       size: {
-        height:180,
-        width:190
+        height:140,
+        width:180
       },
       data: {
           json: weeks,

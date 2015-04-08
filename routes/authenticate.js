@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-//underscore 
+//underscore
 var _ = require('lodash');
 
 var config = require('config');
@@ -15,29 +15,29 @@ var user = require('../services/UserService');
 passport.use('local-signin', new LocalStrategy(
 	{passReqToCallback : true}, // allows us to pass back the request to the callback
 	function(req,username, password, done) {
-		
+
 		console.log("....trying to authenticate");
 		debugger;
-		
+
 		user.findByUsername(username, function (err, user) {
 			console.log("...in find");
-			if (err) { 
+			if (err) {
 				console.log("...error");
-				return done(err); 
+				return done(err);
 			}
-			if (!user) { 
+			if (!user) {
 				console.log("...invalid user");
 				return done(null, false, { message: 'Unknown user ' + username });
 			}
 			if (user.password != password) {
 				 console.log("...wrong password");
-				 return done(null, false, { message: 'Invalid password' }); 
+				 return done(null, false, { message: 'Invalid password' });
 			}
 			console.log("...[OK]");
 			return done(null, user);
-		  
+
 		});
-		
+
   }
 ));
 
@@ -48,7 +48,7 @@ passport.serializeUser(function(user, done) {
 });
 
 passport.deserializeUser(function(obj, done) {
-  console.log("deserializing " + JSON.stringify(obj));
+  //console.log("deserializing " + JSON.stringify(obj));
   done(null, obj);
 });
 
@@ -63,7 +63,7 @@ router.post('/', function(req,res,next){
 	debugger;
 	passport.authenticate('local-signin', function(err,user,info){
 		if (err) { return next(err); }
-			if (!user) { //return res.render('login'); 
+			if (!user) { //return res.render('login');
 				return;}
 			req.logIn(user, function(err) {
 				if (err) { return next(err); }
@@ -79,8 +79,3 @@ router.post('/', function(req,res,next){
 });
 
 module.exports = router;
-
-
-
-
-
