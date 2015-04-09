@@ -67,6 +67,8 @@ function getConfig(collection){
 		case "firereport":  return getFirereportConfig();
 		case "content":  return getContentConfig();
     case "incidenttracker":  return getIncidenttrackerConfig();
+		case "domains":  return getDomainsConfig();
+
 
 
 	}
@@ -183,12 +185,30 @@ function getProductCatalogConfig(){
 }
 
 
+
+function getDomainsConfig(){
+	var _domains = [
+    { id:"id", name: "id", field: "_id",sortable:true,cssClass:"onKanbanImmutable" },
+    { id: "domainName", name: "domainName",  field: "domainName",sortable:true, cssClass: "cell-standard",width:250 },
+    { id: "aRecords", name: "aRecords",  field: "aRecords",sortable:true, cssClass: "cell-standard",width:250 },
+    { id: "httpLogStatus", name: "httpLogStatus",  field: "httpLogStatus" ,width:200,sortable:true, cssClass: "cell-standard"},
+		{ id: "httpLogRedirec", name: "httpLogRedirect",  field: "httpLogRedirect" ,width:200,sortable:true, cssClass: "cell-standard"},
+		{ id: "httpsLogStatus", name: "httpsLogStatus",  field: "httpsLogStatus" ,sortable:true,width:200, cssClass: "cell-standard"}
+	];
+
+	var _config ={};
+		_config.mode="readonly";
+		_config.fields = _domains;
+	return _config;
+}
+
+
 function getAvailabilityConfig(){
 	var _availability = [
-        { id:"id", name: "id", field: "_id",sortable:true,cssClass:"onKanbanImmutable" },
+    { id:"id", name: "id", field: "_id",sortable:true,cssClass:"onKanbanImmutable" },
     { id:"context", name: "context", field: "context",sortable:true,width:80,cssClass:"onKanbanImmutable"},
-        { id: "year", name: "year",  field: "year",sortable:true, cssClass: "cell-standard" },
-        { id: "week", name: "week",  field: "week" ,width:200,sortable:true, editor: Slick.Editors.Text, cssClass: "cell-standard"},
+    { id: "year", name: "year",  field: "year",sortable:true, cssClass: "cell-standard" },
+    { id: "week", name: "week",  field: "week" ,width:200,sortable:true, editor: Slick.Editors.Text, cssClass: "cell-standard"},
 		{ id: "unplannedYTD", name: "unplannedYTD",  field: "unplannedYTD" ,sortable:true,width:200, editor: Slick.Editors.Text, cssClass: "cell-standard"},
 		{ id: "plannedYTD", name: "plannedYTD",  field: "plannedYTD",sortable:true,width:200, editor: Slick.Editors.Text, cssClass: "cell-standard" },
 		{ id: "totalYTD", name: "totalYTD",  field: "totalYTD",width:200,sortable:true,editor:Slick.Editors.Text, cssClass: "cell-standard"}];
@@ -200,11 +220,11 @@ function getAvailabilityConfig(){
 
 function getFirereportConfig(){
 	var _firereport = [
-        { id:"id", name: "id", field: "_id",sortable:true,cssClass:"onKanbanImmutable" },
+    { id:"id", name: "id", field: "_id",sortable:true,cssClass:"onKanbanImmutable" },
     { id:"context", name: "context", field: "context",sortable:true,width:80,cssClass:"onKanbanImmutable"},
-        { id: "year", name: "year",  field: "year" ,width:70,sortable:true, editor: Slick.Editors.Text, cssClass: "cell-standard"},
+    { id: "year", name: "year",  field: "year" ,width:70,sortable:true, editor: Slick.Editors.Text, cssClass: "cell-standard"},
 		{ id: "type", name: "type",  field: "type",sortable:true, cssClass: "cell-standard" },
-        { id: "count", name: "count",  field: "count" ,sortable:true,width:50, editor: Slick.Editors.Text, cssClass: "cell-standard"},
+    { id: "count", name: "count",  field: "count" ,sortable:true,width:50, editor: Slick.Editors.Text, cssClass: "cell-standard"},
 		{ id: "path", name: "path",  field: "path",width:250,sortable:true,editor:Slick.Editors.Text, cssClass: "cell-standard"},
 		{ id: "contact", name: "contact",  field: "contact",width:200,sortable:true,editor:Slick.Editors.Text, cssClass: "cell-standard"}];
 

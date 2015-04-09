@@ -1,8 +1,8 @@
 div.orgChart {
     border                : 1px solid #cccccc;
-    background-color      : #ffffe8;
-    margin                : 10px;
-    padding               : 20px;
+    background-color      : #ffffff;
+    margin                : 5px;
+    padding               : 10px;
 }
 
 div.orgChart h2 {
@@ -13,9 +13,9 @@ div.orgChart h2 {
 
 div.orgChart ul {
     list-style            : none;
-    margin                : 4px;
+    margin                : 2px;
     padding               : 0px;
-    font-size             : 0.8em;
+    font-size             : 8px;
     text-align            : left;
 }
 
@@ -30,19 +30,19 @@ div.orgChart table {
 
 div.orgChart tr.lines td.line {
     width                 : 1px;
-    height                : 20px;
+    height                : 10px;
 }
 
 div.orgChart tr.lines td.top {
-    border-top            : 3px solid black;
+    border-top            : 2px solid grey;
 }
 
 div.orgChart tr.lines td.left {
-    border-right          : 2px solid black;
+    border-right          : 1px solid grey;
 }
 
 div.orgChart tr.lines td.right {
-    border-left           : 2px solid black;
+    border-left           : 1px solid grey;
 }
 
 div.orgChart td {
@@ -53,19 +53,19 @@ div.orgChart td {
 
 div.orgChart div.node {
     cursor                : default;
-    border                : 2px solid black;
+    border                : 1px solid grey;
     display               : inline-block;
     padding               : 0 4px;
-    width                 : 96px;
-    height                : 60px;
+    width                 : 90px;
+    height                : 40px;
     background-color      : #ffffcf;
     line-height           : 1.3em;
-    border-radius         : 8px;
-    box-shadow            : 4px 4px 6px #888888;
-    -moz-border-radius    : 8px;
-    -moz-box-shadow       : 4px 4px 6px #888888;
-    -webkit-border-radius : 8px;
-    -webkit-box-shadow    : 4px 4px 6px #888888;
+    border-radius         : 4px;
+    box-shadow            : 4px 4px 6px #cccccc;
+    -moz-border-radius    : 4px;
+    -moz-box-shadow       : 4px 4px 6px #cccccc;
+    -webkit-border-radius : 4px;
+    -webkit-box-shadow    : 4px 4px 6px #cccccc;
 }
 
 div.orgChart div.hasChildren {

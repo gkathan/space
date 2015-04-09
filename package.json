@@ -42,6 +42,7 @@
     "request": "^2.53.0",
     "serve-favicon": "~2.2.0",
     "sha1": "^1.1.0",
+    "supergroup": "0.0.4",
     "tablesorter": "^2.20.1",
     "underscore": "^1.8.2",
     "underscore.nest": "^0.1.1",

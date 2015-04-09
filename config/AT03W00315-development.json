@@ -49,8 +49,14 @@
 	},
 
 	"notifications" : {
-		"portfolioupdate": "gerold.kathan@bwinparty.com",
-		"mailertest":"gerold.kathan@bwinparty.com"
+		"portfolioupdate": {
+				"to":"gerold.kathan@bwinparty.com",
+				"subject" : "[portfolio gate] update notification",
+				"text" : "hej,\nthere is an updated portfolio gate view available under \n\n http://space.bwinparty.corp/portfolio \n\ncheerz.",
+				"url" : "http://space.bwinparty.corp/portfolio"
+			},
+			"mailertest":"gerold.kathan@bwinparty.com"
+
 	}
 
 }

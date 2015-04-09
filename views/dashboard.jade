@@ -19,7 +19,10 @@ block content
 							div(id="c3_availability_gauge")
 							div(style="font-size:10px;text-align:center")
 								br
-								|last update: #{moment(availability.createDate).format('YYYY-MM-DD hh:mm:ss')}
+								|last update: #{moment(availability.createDate).format('YYYY-MM-DD HH:mm:ss')}
+								br
+								a(href="http://dashboard.bwin.corp/" target="_blank") :: appdynamics dashboard
+									
 								
 					div.col-md-2.col-lg3(style="width:220px")
 						.panel.panel-default(style="width:200px;margin:0px;height:300px ")

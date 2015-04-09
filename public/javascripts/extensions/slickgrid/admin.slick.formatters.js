@@ -71,6 +71,7 @@
     return value ? d3.time.format("%Y-%m-%d")(new Date(value)) : "";
   }
 
+
   /** version1 - epic URL
    **/
    http://v1.bwinparty.corp/V1-Production/Epic.mvc/Summary?oidToken=Epic%3A3394319

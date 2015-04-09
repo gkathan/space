@@ -41,11 +41,10 @@ exports.convertXlsx2Json = function convertXlsx2Json (filename,done) {
 		else{
 			logger.debug("***and inserting into mongoDB...");
 			logger.debug("***************** [DEBUG]: _originalFilename: "+_originalFilename);
-			// check is an object with 4 fields; {data,date,boardDate,fillblanks}
+			// check is an object with 4 fields; {data,date,fillblanks}
 			var _check = _validateName(_originalFilename);
 			var _collection = _check.collection;
 			var _date = _check.date;
-			var _boarddate = _check.boarddate;
 			var _fillblanks = _check.fillblanks;
 			var _handlers =[];
 			var _dropBeforeInsert=false;
@@ -80,7 +79,7 @@ exports.convertXlsx2Json = function convertXlsx2Json (filename,done) {
 				var async = require('async');
 				// execute all handlers specified
 				async.each(_handlers, function (_handler, callback){
-					_handler(json,_date,_boarddate,_fillblanks,function(_data){
+					_handler(json,_date,_fillblanks,function(_data){
 
 						async.series([
 							function(callback){
@@ -170,8 +169,6 @@ function _validateName(fileName){
 	var _date = new Date(_parts[1]);
 	if ( Object.prototype.toString.call(_date) !== "[object Date]" ) _date = null;
 
-	var _boarddate = new Date(_parts[2]);
-	if ( Object.prototype.toString.call(_boarddate) !== "[object Date]" ) _boarddate = null;
 
 	_check.collection=_parts[0];
 	if (_parts.indexOf("fillblanks")>=0){
@@ -182,7 +179,6 @@ function _validateName(fileName){
 	}
 
 	if (_date) _check.date= _parts[1];
-	if (_boarddate) _check.boarddate = _boarddate;
 
 	return _check;
 }
@@ -192,7 +188,7 @@ function _validateName(fileName){
  * pre-process portfolio gate data
  * takes a json object and does some processing before it gets stored
  */
-function _handlePortfolioGate(json,date,boardDate,fillblanks,callback){
+function _handlePortfolioGate(json,date,fillblanks,callback){
 	var v1Service = require('../services/V1Service');
 
 	v1Service.findEpics(function(_epics){
@@ -236,7 +232,6 @@ function _handlePortfolioGate(json,date,boardDate,fillblanks,callback){
 			map2[key].push(map.pItems[i]);
 		}
 		map.pItems=map2;
-		map.pBoardDate = boardDate;
 
 		callback(map);
 		return;
@@ -246,7 +241,7 @@ function _handlePortfolioGate(json,date,boardDate,fillblanks,callback){
 /**
  * pre-process HR data
  */
-function _handleOrganizationHistory(json,date,boardDate,fillblanks,callback){
+function _handleOrganizationHistory(json,date,fillblanks,callback){
 	//group by Date
 	logger.debug("######################## _handleOrganizationHistory called with date: "+date);
 	var map = _clusterBy(json,"oDate",date,"oItems");
@@ -259,7 +254,7 @@ function _handleOrganizationHistory(json,date,boardDate,fillblanks,callback){
 /**
  * pre-process HR data
  */
-function _handleOrganization(json,date,boardDate,fillblanks,callback){
+function _handleOrganization(json,date,fillblanks,callback){
 	//group by Date
 	logger.debug("######################## _handleOrganization called with date: "+date);
 
@@ -275,7 +270,7 @@ function _handleOrganization(json,date,boardDate,fillblanks,callback){
  * generic pre-process data
  * takes a json object and does some processing before it gets stored
  */
-function _handlePlain(json,date,boardDate,fillblanks,callback){
+function _handlePlain(json,date,fillblanks,callback){
 	logger.debug("######################## _handlePlain called with date: "+date);
 	if (fillblanks){
 		var _rows = json.length;

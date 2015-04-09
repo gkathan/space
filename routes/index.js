@@ -46,6 +46,11 @@ router.get('/test/elements', function(req, res) {
 	res.render('_elements');
 });
 
+router.get('/test/sunburst', function(req, res) {
+	res.sendfile('public/sunburst.html');
+});
+
+
 
 
 //unsupported browser landing page

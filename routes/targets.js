@@ -26,6 +26,13 @@ router.get('/overview', function(req, res, next) {
 	_handleTargetView(req,res,next,"./targets/overview");
 });
 
+/* GET targets . */
+router.get('/sunburst', function(req, res, next) {
+	res.render('targets/sunburst')
+});
+
+
+
 
 router.get('/overview/old', function(req, res, next) {
 	_handleTargetView(req,res,next,"targets/overview_old");

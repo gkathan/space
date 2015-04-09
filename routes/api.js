@@ -31,6 +31,7 @@ var PATH = {
 						REST_METRICS : BASE+'/space/rest/metrics',
 						REST_TARGETS : BASE+'/space/rest/targets',
 						REST_TARGETS_TYPE : BASE+'/space/rest/targets/:type',
+						REST_TARGETSTREE : BASE+'/space/rest/targetstree',
 
 						REST_BOARDS : BASE+'/space/rest/boards',
 
@@ -48,6 +49,7 @@ var PATH = {
 						REST_INCIDENTTRACKER_DATE : BASE+'/space/rest/incidenttracker/:date',
 						REST_V1EPICS : BASE+'/space/rest/v1epics',
 						REST_LABELS : BASE+'/space/rest/labels',
+						REST_DOMAINS : BASE+'/space/rest/domains',
 						REST_CUSTOMERS : BASE+'/space/rest/customers',
 						REST_COMPETITORS : BASE+'/space/rest/competitors',
 						REST_PRODUCTCATALOG : BASE+'/space/rest/productcatalog',
@@ -75,6 +77,7 @@ var PATH = {
 						EXPORT_BOARDS : BASE+'/space/export/xlsx/boards',
 						EXPORT_V1EPICS : BASE+'/space/export/xlsx/v1epics',
 						EXPORT_LABELS : BASE+'/space/export/xlsx/labels',
+						EXPORT_DOMAINS : BASE+'/space/export/xlsx/domains',
 						EXPORT_CUSTOMERS : BASE+'/space/export/xlsx/customers',
 						EXPORT_COMPETITORS : BASE+'/space/export/xlsx/competitors',
 						EXPORT_ORGANIZATION : BASE+'/space/export/xlsx/organization',
@@ -107,6 +110,7 @@ router.get(PATH.REST_TARGETS, function(req, res, next) {findAllByName(req,res,ne
 router.post(PATH.REST_TARGETS, function(req, res, next) {save(req,res,next); });
 router.delete(PATH.REST_TARGETS, function(req, res, next) {remove(req,res,next); });
 router.get(PATH.REST_TARGETS_TYPE, function(req, res, next) {findByKey("type",req,res,next);});
+router.get(PATH.REST_TARGETSTREE, function(req, res, next) {getTargetsTree(req,res,next);});
 
 
 router.get(PATH.REST_BOARDS, function(req, res, next) {findAllByName(req,res,next);});
@@ -134,6 +138,8 @@ router.get(PATH.REST_V1EPICS, function(req, res, next) {findAllByName(req,res,ne
 router.get(PATH.REST_LABELS, function(req, res, next) {findAllByName(req,res,next);});
 router.post(PATH.REST_LABELS, function(req, res, next) {save(req,res,next); });
 router.delete(PATH.REST_LABELS, function(req, res, next) {remove(req,res,next); });
+
+router.get(PATH.REST_DOMAINS, function(req, res, next) {findDomains(req,res,next); });
 
 router.get(PATH.REST_CUSTOMERS, function(req, res, next) {findAllByName(req,res,next);});
 router.post(PATH.REST_CUSTOMERS, function(req, res, next) {save(req,res,next); });
@@ -201,6 +207,7 @@ router.get(PATH.EXPORT_BOARDS, function(req, res, next) {excelBoards(req,res,nex
 router.get(PATH.EXPORT_SCRUMTEAMS, function(req, res, next) {excelScrumTeams(req,res,next);});
 router.get(PATH.EXPORT_V1EPICS, function(req, res, next) {excelV1Epics(req,res,next);});
 router.get(PATH.EXPORT_LABELS, function(req, res, next) {excelLabels(req,res,next);});
+router.get(PATH.EXPORT_DOMAINS, function(req, res, next) {excelDomains(req,res,next);});
 router.get(PATH.EXPORT_CUSTOMERS, function(req, res, next) {excelCustomers(req,res,next);});
 router.get(PATH.EXPORT_COMPETITORS, function(req, res, next) {excelCompetitors(req,res,next);});
 router.get(PATH.EXPORT_PRODUCTCATALOG, function(req, res, next) {excelProductCatalog(req,res,next);});
@@ -386,6 +393,77 @@ function findBy_id(req, res , next){
         }
         return next(err);
     })
+}
+
+
+
+/**
+*/
+function findDomains(req,res,next){
+	  logger.debug("findDomains() called");
+		db.collection("domains").find().sort({id : 1} , function(err , success){
+        if(success){
+            res.send(_transformDomains(success));
+            return ;//next();
+        }else{
+            return next(err);
+        }
+    });
+
+}
+
+
+function _transformDomains(data){
+		var _domains = [];
+
+		for (var d in data){
+			var _d = {};
+			_d._id = data[d]._id;
+			_d.domainName = data[d].domainName;
+
+			if (data[d].httpLog !== undefined) _d.httpLogStatus = data[d].httpLog.statusCode;
+			if (data[d].httpLog !== undefined) _d.httpLogRedirect = data[d].httpLog.redirectTarget;
+			if (data[d].httpsLog !== undefined) _d.httpsLogStatus = data[d].httpsLog.statusCode;
+			_d.aRecords = data[d].aRecords;
+
+			_domains.push(_d)
+		}
+		return _domains;
+
+}
+
+/**
+*/
+function getTargetsTree(req,res,next){
+	  logger.debug("getTargetsTree() called");
+		db.collection("targets").find().sort({id : 1} , function(err , success){
+        //console.log("[DEBUG] findAllByName() for: "+_name+", Response success: "+JSON.stringify(success));
+        //console.log('Response error '+err);
+        if(success){
+
+						for (var s in success){
+							console.log("name: "+success[s].name);
+							if (success[s].name ===undefined) success[s].name=success[s].id;
+							console.log("** name: "+success[s].name);
+						}
+
+						var us = require('underscore');
+						us.nst = require('underscore.nest');
+						//var tree = _.nest(success);
+
+						var nestLevels = ["context","theme","group"];
+
+						var tree = us.nst.nest(success,nestLevels);
+
+						logger.debug("******************* success: "+tree);
+
+            res.send(tree.children);
+            return ;//next();
+        }else{
+            return next(err);
+        }
+    });
+
 }
 
 /**
@@ -989,6 +1067,26 @@ function excelLabels(req, res , next){
     _generateAndSendExcel("labels",conf,req,res,next);
 }
 
+
+/**
+ * generate domains excel
+ */
+function excelDomains(req, res , next){
+	console.log("******************* domain excel export");
+	var conf ={};
+    conf.stylesXmlFile = "views/excel_export/styles.xml";
+    conf.cols = [
+		{caption:'_id',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'domainName',type:'string',width:12,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'aRecords',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'httpLogStatus',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'httpLogRedirect',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'httpsLogStatus',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell}
+	];
+
+    _generateAndSendExcel("domains",conf,req,res,next);
+}
+
 /**
  * generate availability excel
  */
@@ -1118,8 +1216,11 @@ function _generateAndSendExcel(collection,conf,req,res,next){
 	db.collection(collection).find().sort({_id : 1} , function(err , success){
 		if(success){
 
-			if (conf._field){
+			if (collection=="domains"){
+				success = _transformDomains(success);
+			}
 
+			if (conf._field){
 				conf.rows = _createDataRows(conf,success[0][conf._field]);
 			}
 			else {
@@ -1209,10 +1310,10 @@ function _createDataRows(conf,data){
 
 	for (var d in data){
 		var _row = new Array();
-		//logger.debug("JSON: "+JSON.stringify(success[m]));
+		//logger.debug("JSON: "+JSON.stringify(data[d]));
 		for (var f in _fields){
 			var _column = _fields[f];
-			//logger.debug("+ column: "+_column);
+			//logger.debug("+ column: "+_column+ "... data: "+data[d][_column]);
 			if (! data[d][_column]) _row.push("");
 			else _row.push(data[d][_column]);
 		}
