@@ -1,0 +1,54 @@
+include ../kanban_menu
+
+link(rel='stylesheet', href='/stylesheets/jquery.orgchart.css')
+script(src="/javascripts/organization/jquery-orgchart/jquery.orgchart.min.js")
+
+style.
+	.long-name {
+		font-size: 12px;
+		font-weight:bold;
+		font-style:italic;
+	}
+	
+	div.orgChart div.node.level0,
+	div.orgChart div.node.level2 {
+		background-color: rgb(244, 227, 116);
+	}
+
+
+block content
+	
+div.btn-group-xs(style="margin-left:20px;")
+	span(style="font-family:arial;font-weight:normal;font-size:50px;color:lightgrey") #{config.context} simple chart 
+
+div.hide
+	ul(id="simpleorg")
+		li.long-name 
+			|norbert teufelberger
+			br
+			|CEO
+			br
+			|xxx
+			
+			ul
+				li joachim baca <adjunct><i>Kobayashi</i></adjunct>
+					ul
+						li marc lange
+						li christoph haas
+						li sandeep tiku
+				li martin weigold
+				li kathy swindley
+				li ed chandler
+				li bla
+				
+div(id="main" style="max-width:1600px")				
+
+include ../includes/material					
+
+
+script.
+	
+	$("#simpleorg").orgChart({container: $("#main"), stack: true, depth: 3,fade:true,interactive:true,showLevels:1,replace:true});
+
+							
+	
