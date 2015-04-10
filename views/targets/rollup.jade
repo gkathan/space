@@ -33,6 +33,22 @@ style.
 	.box-run {background-color: #{color_RUN}!important}
 	.box-grow {background-color: #{color_GROW}!important}
 	.box-transform {background-color: #{color_TRANSFORM}!important}
+	.box-guidance {background-color: #{color_RUN}!important}
+	.box-report {background-color: #{color_RUN}!important}
+	.box-advise {background-color: #{color_RUN}!important}
+	.box-efficiency {background-color: #{color_RUN}!important}
+	.box-governance {background-color: #{color_RUN}!important}
+	.box-efficiency {background-color: #{color_GROW}!important}
+	.box-service {background-color: #{color_GROW}!important}
+	.box-governance {background-color: #{color_GROW}!important}
+	.box-guidance {background-color: #{color_GROW}!important}
+	.box-opportunities {background-color: #{color_GROW}!important}
+	
+	
+	.box-service {background-color: #{color_TRANSFORM}!important}
+	
+
+
 
 
 	.panel-run {border-left: solid 5px #{color_RUN}!important;}
@@ -54,6 +70,69 @@ style.
 -	}
 
 link(rel='stylesheet', href='/stylesheets/flip.css')
+
+
+
+// -----------------------------------------------------------------------
+// ------------------ mixin contexts ----------------------------
+// -----------------------------------------------------------------------
+mixin renderContext(context)
+	div.table-responsive
+		td(style="text-align:center;padding:10px;width:100px")
+			div(style="margin-bottom:10px")
+				img(src="/images/space_triangle_grey_up.png" style="vertical-align:middle;display:block;margin: auto auto" height="8px" width="30px"  )
+			div(style=";color:white;background-color:#{color_PL};line-height:40px")
+				span(style="line-height:28px;font-size:16px;font-weight:normal")
+					|#{_.last(context.split("."))}
+			div(style="margin-top:10px")
+				img(src="/images/space_triangle_grey_up.png" style="vertical-align:middle;display:block;margin: auto auto" height="8px" width="30px"  )
+
+// -----------------------------------------------------------------------
+// ------------------ mixin kpis ----------------------------
+// -----------------------------------------------------------------------
+mixin renderKPIs(data)
+	div.table-responsive
+		td(style="text-align:center;padding:10px;width:100px")
+			
+			each theme in data.children
+				if theme.name == 'KPI'
+					each kpi in theme.children[0].children
+						div(style=";color:white;background-color:#{color_PL};margin-bottom:5px;font-size:10px;font-weight:normal;height:40px;display:flex;justify-content:center;align-content:center;flex-direction:column;")
+							|#{kpi.name}
+						
+			
+// -----------------------------------------------------------------------
+// ------------------ mixin target groups ----------------------------
+// -----------------------------------------------------------------------
+mixin renderTargets(data)
+	div.table-responsive
+		td(style="text-align:center;padding:10px;width:100px")
+			
+			div(style="margin-bottom:10px")
+				img(src="/images/space_triangle_grey_up.png" style="vertical-align:middle;display:block;margin: auto auto" height="8px" width="30px"  )
+
+			each theme in data.children
+				if theme.name != 'KPI'
+					div(class="box-#{theme.name.toLowerCase()}" style=";color:white;margin-bottom:5px;font-size:12px;font-weight:normal;height:25px;display:flex;justify-content:center;align-content:center;flex-direction:column;")
+						|#{theme.name}
+					
+					each target in theme.children
+						//img(src="/images/iconexp/#{target.children[0].icon}" width="30px" height="30px")
+						div(style=";color:black;margin-bottom:5px;font-size:10px;font-weight:normal;text-align:left")
+							|#{target.name.split(" ")[0]}
+							br
+							b #{_.rest(target.name.split(" ")).join(" ")}
+							br
+							|icon: #{target.children[0]["theme"]}
+							
+						
+			
+
+
+
+
+
+
 
 // -----------------------------------------------------------------------
 // ------------------ mixin L1 targets ----------------------------
@@ -199,7 +278,8 @@ mixin renderTargetDetail(target)
 					td(style="text-align:right;font-style:italic;color:grey;font-size:10px;vertical-align:middle")
 						|RAG
 					td
-						div(id ="targetRag")
+						span(id ="targetRag" style="")
+							|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp
 				tr(style="vertical-align:middle")
 					td(style="text-align:right;font-style:italic;color:grey;font-size:10px;vertical-align:top")
 						|outcome
@@ -276,23 +356,32 @@ div.container-fluid(style="max-width:1600px")
 		div(style="margin-top:10px;margin-bottom:10px")
 			img(src="/images/space_triangle_bpty_up.png" style="vertical-align:middle;display:block;margin: auto auto" height="20px" width="300px"  )
 
-		div(style=";color:white;background-color:#{color_PL};text-align:center;font-size:16px;font-weight:normal;margin-left:10px;margin-right:10px;line-height:32px") #{context} P&L
+		div(style=";color:white;background-color:#{color_PL};text-align:center;font-size:16px;font-weight:normal;margin-left:10px;margin-right:10px;line-height:32px") #{context} group
 		
 		
-	div.row(style="text-align:center")
-		table.table.table-borderless(style="background-color:transparent")
-			tr
-				each target in L1targets
-					+renderL1Targets(target)
-
-	div.row(style="vertical-align:top")
-			each lane in targets
-				if lane.name != "P&L"
-					+renderTargetLane(lane)
-
+		// units / contetxs
+		div.row(style="text-align:center")
+			table.table.table-borderless(style="background-color:transparent")
+				tr
+					each context in contexts
+						+renderContext(context)
+		// KPIs
+		div.row(style="text-align:center")
+			table.table.table-borderless(style="background-color:transparent")
+				tr
+					each kpi in targetsClustered.children
+						+renderKPIs(kpi)
+		//targets
+		div.row(style="text-align:center")
+			table.table.table-borderless(style="background-color:transparent")
+				tr
+					each target in targetsClustered.children
+						+renderTargets(target)
+	
 
 script.
-
+	
+	
 	$(document).ready(function(){
 		// set up flip form link
 		$('.fliptarget .turnback').click(function(e){
@@ -391,27 +480,21 @@ script.
 
 		$("#targetTheme").attr("style","font-weight:bold;font-size:32px;color:"+_getColor(_theme));
 		$("#targetCluster").attr("style","font-weight:bold;font-size:18px;color:"+_getColor(_theme));
-		$("#targetRag").attr("style","background-color:"+mapRAG2Color(_rag)+";border-radius: 100%;width:20px;height:20px;");
+		$("#targetRag").attr("style","background-color:"+mapRAG2Color(_rag)+";border-radius: 100%;width:25px;height:25px;");
 		if (_ragComment){
 			//write text after RAG indicator
 		}
 
-		
-		if (_sponsor){
-			$.get( "/api/space/rest/organization/employee/"+_sponsor, function( data ) {
-				//$( ".result" ).html( data );
-				console.log("**** employee: "+data["Employee Number"]);
-				if (data) {
-					var _url = "http://my.bwinparty.com/api/people/images/"+data["Employee Number"];
-					console.log("url: "+_url);
-					$("#modal_sponsor_icon").attr("src",_url);
-				}
-				$(_self.attr('href')).modal('show');
-			});
-		}
-		else {
+		$.get( "/api/space/rest/organization/employee/"+_sponsor, function( data ) {
+			//$( ".result" ).html( data );
+			console.log("**** employee: "+data["Employee Number"]);
+			if (data) {
+				var _url = "http://my.bwinparty.com/api/people/images/"+data["Employee Number"];
+				console.log("url: "+_url);
+				$("#modal_sponsor_icon").attr("src",_url);
+			}
 			$(_self.attr('href')).modal('show');
-		}
+		});
 	});
 
 	/** 
@@ -425,7 +508,7 @@ script.
 				return "#{color_GROW}";
 			case "TRANSFORM":
 				return "#{color_TRANSFORM}";
-			case "P&L":
+			case "KPI":
 				return "#{color_PL}";
 		}
 	}

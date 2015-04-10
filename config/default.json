@@ -85,6 +85,123 @@
 			}
 		},
 		{
+			"name": "bpty.corp.comms",
+			"skin": {
+				"colors" : {
+					"primary" : "#174D75",
+					"secondary" : "#00b8e4",
+					"secondary2" : "#82cec1",
+					"secondary3" : "#f99d1c",
+					"secondary4" : "#b0acd5",
+					"secondary5" : "#ffcd03"
+				}
+			}
+		},
+		{
+			"name": "bpty.corp.finance",
+			"skin": {
+				"colors" : {
+					"primary" : "#174D75",
+					"secondary" : "#00b8e4",
+					"secondary2" : "#82cec1",
+					"secondary3" : "#f99d1c",
+					"secondary4" : "#b0acd5",
+					"secondary5" : "#ffcd03"
+				}
+			}
+		},
+		{
+			"name": "bpty.corp.hr",
+			"skin": {
+				"colors" : {
+					"primary" : "#174D75",
+					"secondary" : "#00b8e4",
+					"secondary2" : "#82cec1",
+					"secondary3" : "#f99d1c",
+					"secondary4" : "#b0acd5",
+					"secondary5" : "#ffcd03"
+				}
+			}
+		},
+		{
+			"name": "bpty.corp.legal",
+			"skin": {
+				"colors" : {
+					"primary" : "#174D75",
+					"secondary" : "#00b8e4",
+					"secondary2" : "#82cec1",
+					"secondary3" : "#f99d1c",
+					"secondary4" : "#b0acd5",
+					"secondary5" : "#ffcd03"
+				}
+			}
+		},
+		{
+			"name": "bpty.corp.regaffairs",
+			"skin": {
+				"colors" : {
+					"primary" : "#174D75",
+					"secondary" : "#00b8e4",
+					"secondary2" : "#82cec1",
+					"secondary3" : "#f99d1c",
+					"secondary4" : "#b0acd5",
+					"secondary5" : "#ffcd03"
+				}
+			}
+		},
+		{
+			"name": "bpty.corp.cosec",
+			"skin": {
+				"colors" : {
+					"primary" : "#174D75",
+					"secondary" : "#00b8e4",
+					"secondary2" : "#82cec1",
+					"secondary3" : "#f99d1c",
+					"secondary4" : "#b0acd5",
+					"secondary5" : "#ffcd03"
+				}
+			}
+		},
+		{
+			"name": "bpty.corp.facilities",
+			"skin": {
+				"colors" : {
+					"primary" : "#174D75",
+					"secondary" : "#00b8e4",
+					"secondary2" : "#82cec1",
+					"secondary3" : "#f99d1c",
+					"secondary4" : "#b0acd5",
+					"secondary5" : "#ffcd03"
+				}
+			}
+		},
+		{
+			"name": "bpty.labels.games",
+			"skin": {
+				"colors" : {
+					"primary" : "#174D75",
+					"secondary" : "#00b8e4",
+					"secondary2" : "#82cec1",
+					"secondary3" : "#f99d1c",
+					"secondary4" : "#b0acd5",
+					"secondary5" : "#ffcd03"
+				}
+			}
+		},
+		{
+			"name": "bpty.cs",
+			"skin": {
+				"colors" : {
+					"primary" : "#174D75",
+					"secondary" : "#00b8e4",
+					"secondary2" : "#82cec1",
+					"secondary3" : "#f99d1c",
+					"secondary4" : "#b0acd5",
+					"secondary5" : "#ffcd03"
+				}
+			}
+		},
+		{
 
 			"name": "bpty.kalixa",
 

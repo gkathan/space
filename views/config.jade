@@ -48,6 +48,19 @@ div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;back
 		a.btn.btn-xs.btn-info(id="switchcontext_studios" href="#" ) switch context --> bpty.studios
 		a.btn.btn-xs.btn-info(id="switchcontext_bwin" href="#" ) switch context --> bpty.bwin
 		a.btn.btn-xs.btn-info(id="switchcontext_kalixa" href="#" ) switch context --> bpty.kalixa
+		
+		a.btn.btn-xs.btn-info(id="switchcontext_games" href="#" ) switch context --> bpty.games
+		a.btn.btn-xs.btn-info(id="switchcontext_legal" href="#" ) switch context --> bpty.legal
+		a.btn.btn-xs.btn-info(id="switchcontext_cs" href="#" ) switch context --> bpty.cs
+		a.btn.btn-xs.btn-info(id="switchcontext_comms" href="#" ) switch context --> bpty.comms
+		a.btn.btn-xs.btn-info(id="switchcontext_finance" href="#" ) switch context --> bpty.finance
+		a.btn.btn-xs.btn-info(id="switchcontext_hr" href="#" ) switch context --> bpty.hr
+		a.btn.btn-xs.btn-info(id="switchcontext_regaffairs" href="#" ) switch context --> bpty.regaffairs
+		a.btn.btn-xs.btn-info(id="switchcontext_cosec" href="#" ) switch context --> bpty.cosec
+		a.btn.btn-xs.btn-info(id="switchcontext_facilities" href="#" ) switch context --> bpty.facilities
+		
+		
+		
 		a.btn.btn-xs.btn-info(id="switchcontext_generic" href="#" ) switch context --> generic.example
 
 		br
@@ -133,6 +146,43 @@ div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;back
 		$('#switchcontext_kalixa').on('click', function () {
 			_switch("bpty.kalixa");
 		});
+		
+		
+		$('#switchcontext_games').on('click', function () {
+			_switch("bpty.labels.games");
+		});
+		$('#switchcontext_legal').on('click', function () {
+			_switch("bpty.corp.legal");
+		});
+		$('#switchcontext_cs').on('click', function () {
+			_switch("bpty.cs");
+		});
+		$('#switchcontext_comms').on('click', function () {
+			_switch("bpty.corp.comms");
+		});
+		$('#switchcontext_finance').on('click', function () {
+			_switch("bpty.corp.finance");
+		});
+		$('#switchcontext_hr').on('click', function () {
+			_switch("bpty.corp.hr");
+		});
+		$('#switchcontext_regaffairs').on('click', function () {
+			_switch("bpty.corp.regaffairs");
+		});
+		$('#switchcontext_cosec').on('click', function () {
+			_switch("bpty.corp.cosec");
+		});
+		$('#switchcontext_facilities').on('click', function () {
+			_switch("bpty.corp.facilities");
+		});
+		
+		
+		
+		
+		
+			
+		
+		
 
 		function _switch(context){
 			console.log("switch context to "+context+" : ");
@@ -145,6 +195,7 @@ div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;back
 					  context: context
 					}
 			});
+			
 			location.reload();
 
 		}

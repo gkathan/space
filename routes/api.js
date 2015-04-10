@@ -749,6 +749,7 @@ function excelTargets(req, res , next){
 		{caption:'cluster',type:'string',width:15,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'theme',type:'string',width:10,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'group',type:'string',width:30,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'icon',type:'string',width:30,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'target',type:'string',width:30,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'directMetric',type:'string',width:10,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'directMetricScale',type:'string',width:5,captionStyleIndex:2,beforeCellWrite:_formatCell},

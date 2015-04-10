@@ -55,7 +55,10 @@ exports.getL2 = function (context,callback) {
 
 exports.getAll = function (context,callback) {
 	var targets =  db.collection('targets');
-	targets.find({context:context}).sort({$natural:1}, function (err, docs){
+
+
+
+	targets.find({context:{$regex: '^'+context}}).sort({$natural:1}, function (err, docs){
 
 			callback(docs);
 			return;

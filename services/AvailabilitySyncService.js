@@ -55,14 +55,14 @@ function _syncAvailability(urls,callback){
 						var _endpoint = _.last(urls[0].split("/"));
 						logger.debug("...get data..: endpoint: "+_endpoint);
 						logger.debug(data);
-						avData[_endpoint]=data;
+						avData[_endpoint]=JSON.parse(data);
 						// nested callback
 						client.get(urls[1], function(data, response,callback){
 							// parsed response body as js object
 							var _endpoint = _.last(urls[1].split("/"));
 							logger.debug("...get data..: endpoint: "+_endpoint);
 							logger.debug(data);
-							avData[_endpoint]=data;
+							avData[_endpoint]=JSON.parse(data);
 
 							// and store it
 							var availability =  db.collection('availability');

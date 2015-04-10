@@ -293,6 +293,7 @@ function getTargetConfig(){
         { id: "cluster", name: "cluster", field: "cluster",sortable:true, editor: Slick.Editors.Text ,width:200, cssClass: "cell-title"},
 		{ id: "theme", name: "theme",  field: "theme",sortable:true, editor: Slick.Editors.Text , cssClass: "cell-standard"},
 		{ id: "group", name: "group",  field: "group",sortable:true,editor: Slick.Editors.Text,width:150, cssClass: "cell-standard"},
+	  { id: "icon", name: "icon",  field: "icon",sortable:true,editor: Slick.Editors.Text,width:150, cssClass: "cell-standard"},
 	    { id: "target", name: "target", field: "target", editor: Slick.Editors.LongText,width:150, cssClass: "cell-standard" },
 	    { id: "directMetric", name: "directMetric", field: "directMetric", editor: Slick.Editors.Text,width:100, cssClass: "cell-standard" },
 	    { id: "directMetricScale", name: "directMetricScale", field: "directMetricScale", editor: Slick.Editors.Text,width:50, cssClass: "cell-standard" },

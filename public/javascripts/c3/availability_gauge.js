@@ -8,10 +8,14 @@ $.get( "/api/space/rest/availability", function( data ) {
   // do another ajax call to get target values
   $.get( "/api/space/rest/targets/L1", function( l1targets ) {
     console.log("ajax call to get L1target data: "+JSON.stringify(l1targets));
-    var _s1 = _.findWhere(l1targets,{id:'S1'});
+    var _s1 = _.findWhere(l1targets,{id:'K1'});
 
-  //availability={unplannedYTD:99.61,targetYTD:99.75};
-  availability={unplannedYTD:av.unplanned,targetYTD:_s1.directMetric};
+    //availability={unplannedYTD:99.61,targetYTD:99.75};
+    availability={unplannedYTD:av.unplanned,targetYTD:_s1.directMetric};
+    console.log("===================== "+JSON.stringify(av));
+
+    console.log("===================== "+JSON.stringify(availability));
+
 
     var chart1 = c3.generate({
         bindto : '#c3_availability_gauge',
@@ -33,7 +37,7 @@ $.get( "/api/space/rest/availability", function( data ) {
             },
         min: 99, // 0 is default, //can handle negative min e.g. vacuum / voltage / current flow / rate of change
         max: 99.9, // 100 is default
-        units: ' %',
+        units: '%',
         width: 39 // for adjusting arc thickness
         },
         color: {
@@ -45,7 +49,7 @@ $.get( "/api/space/rest/availability", function( data ) {
             }
         },
         size: {
-            height: 130
+            height: 110
         }
     });
 

@@ -9,12 +9,12 @@ block content
 				if l1targets.length>0
 					div.col-md-2.col-lg3(style="width:220px")
 						.panel.panel-default(style="width:200px;margin:0px;height:300px ")
-							.panel-heading(style="text-align:center;font-weight:bold") #{_.findWhere(l1targets,{id:'S1'}).id}  - #{_.findWhere(l1targets,{id:'S1'}).directTarget} 
+							.panel-heading(style="text-align:center;font-weight:bold") #{_.findWhere(l1targets,{id:'K1'}).id}  - #{_.findWhere(l1targets,{id:'K1'}).directTarget} 
 							.panel-body
 							div(style="font-weight:normal;font-size:12px;text-align:center")
-								|target | #{_.findWhere(l1targets,{id:'S1'}).directTime} 
+								|target | #{_.findWhere(l1targets,{id:'K1'}).directTime} 
 							div(style="font-weight:bold;font-size:28px;text-align:center")
-								|#{_.findWhere(l1targets,{id:'S1'}).directMetric} 
+								|#{_.findWhere(l1targets,{id:'K1'}).directMetric} 
 							
 							div(id="c3_availability_gauge")
 							div(style="font-size:10px;text-align:center")
@@ -81,66 +81,7 @@ block content
 								a(href="" target="_blank") as per some source
 
 			
-		div.panel.panel-default
-			div.panel-heading ...dashboard
-			div.panel-body
-				div.col-md-3.col-lg4
-					.panel.panel-default(style="width:250px;margin:0px;height:300px ")
-						.panel-heading(style="font-weight:bold") kpi-5
-						.panel-body
-							h3 some big numbers
-							h2(style="font-size:80px") 100%
-				div.col-md-3.col-lg4
-					.panel.panel-default(style="width:250px;margin:0px;height:300px ")
-						.panel-heading(style="font-weight:bold") kpi-6
-						.panel-body
-							h3 some big numbers
-							h2(style="font-size:80px") 100%
-				div.col-md-3.col-lg4
-					.panel.panel-default(style="width:250px;margin:0px;height:300px ")
-						.panel-heading(style="font-weight:bold") kpi-7
-						.panel-body
-							h3 some big numbers
-							h2(style="font-size:80px") 100%
-
-				div.col-md-3.col-lg4
-					.panel.panel-default(style="width:250px;margin:0px;height:300px ")
-						.panel-heading(style="font-weight:bold") kpi-8
-						.panel-body
-							h3 some big numbers
-							h2(style="font-size:80px") 100%
-					
-		
-		div.panel.panel-default
-			div.panel-heading ...dashboard
-			div.panel-body
-				div.col-md-3.col-lg4
-					.panel.panel-default(style="width:250px;margin:0px ")
-						.panel-heading(style="font-weight:bold") kpi-9
-						.panel-body
-							h3 some big numbers
-							h2(style="font-size:80px") 100%
-				div.col-md-3.col-lg4
-					.panel.panel-default(style="width:250px;margin:0px ")
-						.panel-heading(style="font-weight:bold") kpi-10
-						.panel-body
-							h3 some big numbers
-							h2(style="font-size:80px") 100%
-				div.col-md-3.col-lg4
-					.panel.panel-default(style="width:250px;margin:0px ")
-						.panel-heading(style="font-weight:bold") kpi-11
-						.panel-body
-							h3 some big numbers
-							h2(style="font-size:80px") 100%
-
-				div.col-md-3.col-lg4
-					.panel.panel-default(style="width:250px;margin:0px ")
-						.panel-heading(style="font-weight:bold") kpi-12
-						.panel-body
-							h3 some big numbers
-							h2(style="font-size:80px") 100%
-					
-		
+	
 script(src='/javascripts/c3/availability_gauge.js')
 script(src='/javascripts/c3/incident_barchart.js')
 script(src='/javascripts/c3/mobile_spline.js')

@@ -20,7 +20,7 @@ html(lang='en')
 		}
 
 	footer.footer
-		div(style="font-size:8px;color:grey;text-align:center")
+		div(style="font-size:8px;color:grey;text-align:center;")
 			| s p a c e  
 			| :: version: <b>#{config.version}</b> :: build: <b>#{config.build}</b> :: env: <b>#{config.env}</b> :: transcoder: #{config.transcoder.url} :: mailer: #{config.mailer.host} :: v1.SyncEpics: #{config.sync.v1Epics.mode}, every #{config.sync.v1Epics.intervalMinutes} minutes from #{config.sync.v1Epics.url}  
 			br
