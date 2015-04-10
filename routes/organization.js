@@ -13,12 +13,6 @@ var HOST = config.database.host;
 var connection_string = HOST+'/'+DB;
 var db = mongojs(connection_string, [DB]);
 
-
-
-
-
-
-
 router.get("/", function(req, res, next) {
 	res.send("org base page");
 });
@@ -41,9 +35,7 @@ router.get("/history/tree/:date", function(req, res, next) {
 });
 
 router.get("/history/radial", function(req, res, next) {
-
 	res.send("org radial");
-
 });
 
 router.get("/force", function(req, res, next) {
@@ -56,24 +48,17 @@ router.get("/simple", function(req, res, next) {
 });
 
 
-
 router.get("/circlecontain/:collection", function(req, res, next) {
-
 	res.locals.collection=req.params.collection;
 	res.render("organization/circlecontain",{ title: "s p a c e - "+req.params.collection });
-
 });
 
 router.get("/experiement", function(req, res, next) {
-
 	res.send("experiment");
-
 });
 
 router.get("/experiement2", function(req, res, next) {
-
 	res.send("experiement2");
-
 });
 
 module.exports = router;

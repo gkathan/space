@@ -21,10 +21,8 @@ var logger = winston.loggers.get('space_log');
 
 /* GET home page. */
 router.get('/', function(req, res) {
-
-    var cms = require ('../services/ContentService');
-
-    cms.getLatestSpaceNews(config.context,function(content){
+  var cms = require ('../services/ContentService');
+  cms.getLatestSpaceNews(config.context,function(content){
 
 	res.locals.spaceNews = content;
 	res.locals.moment = require('moment');
@@ -46,8 +44,8 @@ router.get('/test/elements', function(req, res) {
 	res.render('_elements');
 });
 
-router.get('/test/sunburst', function(req, res) {
-	res.sendfile('public/sunburst.html');
+router.get('/test/partition', function(req, res) {
+	res.sendfile('public/partition.html');
 });
 
 
