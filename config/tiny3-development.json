@@ -13,7 +13,7 @@
   			"url" : "http://knbnprxy.ea.bwinparty.corp/rest/epics"
   		},
   		"availability" : {
-  			"mode": "on",
+  			"mode": "off",
   			"intervalMinutes" :1,
   			"url" : ["http://avreport.bwinparty.corp/API/AvReoprtingService.svc/getYTDDatapoint","http://avreport.bwinparty.corp/API/AvReoprtingService.svc/GetAVGraphDatapoints"]
   		},

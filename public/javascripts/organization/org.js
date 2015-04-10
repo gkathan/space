@@ -1,28 +1,19 @@
 // global variables
 var CONTEXT="CONTEXT";
 
-
-
 var orgData;
 var orgTree;
 
-
-
-
 // raster px configuration
-
 var WIDTH =1100;
 var HEIGHT = 1000;
-
 
 var margin;
 var width,height;
 
 var outerDiameter,innerDiameter;
 
-
 var x,y,svg,whiteboard,drag,drag_x;
-
 
 var COLOR_BPTY="#174D75";
 /*
@@ -30,10 +21,9 @@ var COLOR_BPTY="#174D75";
 #f99d1c orange
 #82cec1 lind
 #ffcd03 yellow
-#b0acd5 pink 
+#b0acd5 pink
 */
 var COLOR_TARGET = COLOR_BPTY;
-
 
 var color;
 var pack;
@@ -41,25 +31,18 @@ var nodes;
 
 var depth;
 
-
-
-
-
 //flippant test
 var back;
 
 var tooltip;
 
 function setMargin(){
-	
 	margin = {top: 20, right: 20, bottom: 20, left: 40};
 }
 
-
 function init(){
-	 
 	 setMargin();
-	 
+
 	 margin = 10,
 		outerDiameter = 1000,
 		innerDiameter = outerDiameter+100 ;
@@ -69,10 +52,10 @@ function init(){
 
 	 y = d3.scale.linear()
 		.range([0, innerDiameter]);
-		
+
 		color = d3.scale.linear()
 		.domain([0, depth])
-		 
+
 		 // https://github.com/mbostock/d3/wiki/Ordinal-Scales
 		 // http://colorbrewer2.org/
 		 //.range(colorbrewer.bpty_primary[5])
@@ -82,13 +65,13 @@ function init(){
 	 pack = d3.layout.pack()
 		.padding(5)
 		.size([innerDiameter, innerDiameter])
-		.value(function(d) { 
+		.value(function(d) {
 			/*
 			var count = getInt(d["Backlog Item Count"]);
 			if (count ==0) return 10;
 			else return count;
 			 */
-			
+
 			return 25;
 			 })
 
@@ -96,31 +79,30 @@ function init(){
 	 svg = d3.select("#d3container").append("svg")
     .attr("width", outerDiameter*2)
     .attr("height", outerDiameter)
-	.attr("id","org")
-	.attr("version","1.1")
-	.attr("xmlns","http://www.w3.org/2000/svg")
-	.style("background","white")
-    .attr("xml:space","preserve");  
+		.attr("id","org")
+		.attr("version","1.1")
+		.attr("xmlns","http://www.w3.org/2000/svg")
+		.style("background","white")
+    .attr("xml:space","preserve");
 
 	svg = d3.select("svg")
 		.attr("width", WIDTH)
 		.attr("height", HEIGHT)
 
-  
   svg.append("g")
     .attr("transform", "translate(" + margin + "," + margin + ")");
-
 }
 
 
 function render(collection){
+	console.log("render collection= "+collection);
 	d3.json(dataSourceFor(collection),function(data){
-	
+
 	orgData = data;
-	
+
 	var nestLevels=[];
-	
-	
+
+
 	if (collection=="productportfolio"){
 		nestLevels = ["Market","Suite / Brand","Label (Wallet)","ProductArea","Product"];
 		root = _.nest(orgData,nestLevels);
@@ -141,16 +123,16 @@ function render(collection){
 		nestLevels = ["Incident state", "Category","Priority","IT-Service" ];
 		root = _.nest(orgData,nestLevels);
 	}
-	
-	
-	depth = nestLevels.length //number of nest levels 
-				 
+
+
+	depth = nestLevels.length //number of nest levels
+
 	count (root,0);
 
 	treeData = root;
 
 	init();
- 
+
    focus = root,
       nodes = pack.nodes(root);
 
@@ -165,14 +147,14 @@ function render(collection){
 
 
   var _leafTextFields="";
-  
+
   console.log("***** collection: "+collection);
-  
+
   if (collection=="targets") _leafTextFields=["target","outcome","description","measure","by when"];
   if (collection=="productcatalog") _leafTextFields=["Name","Version","Comments","Owner","Description","DependsOn","ConsumedBy"];
-  
-  
-  
+
+
+
 	var _g = svg.append("g").selectAll("text")
 		.data(nodes)
 		.enter();
@@ -189,7 +171,7 @@ function render(collection){
 			}
 			return _leafText;
 			}});
-	   
+
 	   /*
 		textarea(_text,function(d) { if (d.children && d.depth<=depth) {return d.name +" ("+d.overallReports+")";} else {
 			var _leafText="";
@@ -199,8 +181,8 @@ function render(collection){
 			return _leafText;
 			}},_itemXPlanned,_itemY,ITEM_TEXT_SWAG_MAX_CHARS,(5+d.Swag/500));
 */
-	
-  
+
+
   d3.select(window)
       .on("click", function() { zoom(root); });
 
@@ -232,4 +214,3 @@ function render(collection){
 	console.log("cactus.D3.render says: huh ?");
 
 }
-

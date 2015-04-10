@@ -59,8 +59,6 @@ router.get("/simple", function(req, res, next) {
 
 router.get("/circlecontain/:collection", function(req, res, next) {
 
-
-
 	res.locals.collection=req.params.collection;
 	res.render("organization/circlecontain",{ title: "s p a c e - "+req.params.collection });
 

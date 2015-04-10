@@ -20,8 +20,12 @@ var db = mongojs(connection_string, [DB]);
 var winston = require('winston');
 var logger = winston.loggers.get('space_log');
 
+exports.init = _init;
+exports.sync=_syncAvailability;
 
-exports.init = function(callback){
+
+
+function _init(callback){
 	var rule = new schedule.RecurrenceRule();
 	// every 10 minutes
 	rule.minute = new schedule.Range(0, 59, config.sync.availability.intervalMinutes);
@@ -29,25 +33,15 @@ exports.init = function(callback){
 	if (config.sync.availability.mode!="off"){
 		var j = schedule.scheduleJob(rule, function(){
 			logger.debug('...going to sync Availability stuff ....');
-
 			var _urls = config.sync.availability.url;
-
 			_syncAvailability(_urls,callback);
-
 		});
 	}
 }
 
-
-exports.sync=_syncAvailability;
-
-
 function _syncAvailability(urls,callback){
-
-	var avData={};
-
-
 	var async=require('async');
+	var avData={};
 
 	async.series([
 		function(done){
@@ -56,45 +50,39 @@ function _syncAvailability(urls,callback){
 					var Client = require('node-rest-client').Client;
 					client = new Client();
 					// direct way
-
-						client.get(urls[0], function(data, response){
+					client.get(urls[0], function(data, response,callback){
+						// parsed response body as js object
+						var _endpoint = _.last(urls[0].split("/"));
+						logger.debug("...get data..: endpoint: "+_endpoint);
+						logger.debug(data);
+						avData[_endpoint]=data;
+						// nested callback
+						client.get(urls[1], function(data, response,callback){
 							// parsed response body as js object
-							var _endpoint = _.last(urls[0].split("/"));
+							var _endpoint = _.last(urls[1].split("/"));
 							logger.debug("...get data..: endpoint: "+_endpoint);
 							logger.debug(data);
-							avData[_endpoint]=JSON.parse(data);
-							// nested callback
-							client.get(urls[1], function(data, response){
-								// parsed response body as js object
-								var _endpoint = _.last(urls[1].split("/"));
-								logger.debug("...get data..: endpoint: "+_endpoint);
-								logger.debug(data);
-								avData[_endpoint]=JSON.parse(data);
+							avData[_endpoint]=data;
 
-								// and store it
-								var availability =  db.collection('availability');
-								availability.drop();
-								availability.insert({createDate:new Date(),avReport:avData}	 , function(err , success){
-									//console.log('Response success '+success);
-									logger.debug('Response error '+err);
-									if(success){
-										logger.info("sync availability [DONE]");
-										callback(avData);
-
-									}
-								})
-							}).on('error',function(err){
-	            		logger.warn('[AvailabiltySyncService] says: something went wrong on the request', err.request.options,err.message);
-	        		})
-						}).on('error',function(err){
-								logger.warn('[AvailabiltySyncService] says: something went wrong on the request', err.request.options,err.message);
-							});
-
-
-
+							// and store it
+							var availability =  db.collection('availability');
+							availability.drop();
+							availability.insert({createDate:new Date(),avReport:avData}	 , function(err , success){
+								//console.log('Response success '+success);
+								logger.debug('Response error '+err);
+								if(success){
+									logger.info("sync availability [DONE]");
+								}
+							})
+						})
+				});
 			done();
+		},
+		function(done){
+					logger.debug("2) ************************************** STEP-2");
+					// store
+					done();
 		}
 		]);
-
-
+		callback(avData);
 }
