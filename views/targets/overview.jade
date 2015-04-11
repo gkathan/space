@@ -105,7 +105,8 @@ mixin renderTarget(target)
 							td(style="width:30px;text-align:left")
 								//i.glyphicon.glyphicon-record(style="font-size:13px")
 								a.turnback(id="#{target.name}" href="##{target.name}") 
-									img(src="/images/targets/#{target.name}.png" height="25px" style="vertical-align:top" )
+									img(src="/images/iconexp/#{target.children[0].icon}" width="25px" height="25px" )
+									//img(src="/images/targets/#{target.name}.png" height="25px" style="vertical-align:top" )
 							td(style="width:150px;font-size:13px;vertical-align:middle;font-weight:normal;")
 								|#{target.name.split(" ")[0].toUpperCase()}
 								br
@@ -143,6 +144,7 @@ mixin renderTarget(target)
 														data-start="#{line.start}"
 														data-end="#{line.end}"
 														data-group="#{line.group}"
+														data-icon="#{line.icon}"
 														data-theme="#{line.theme}"
 														data-cluster="#{line.cluster}"
 														) #{line.target}
@@ -271,14 +273,20 @@ div.modal.fade(id="targetDetail" tabindex="-1" role="dialog" aria-labelledby="ta
 // ------------------------------ main view -------------------------------
 div.container-fluid(style="max-width:1600px")
 	div.row
+		div(style=";color:white;background-color:#{color_PL};text-align:center;font-size:16px;font-weight:normal;margin-left:10px;margin-right:10px;line-height:32px;") 
+			span(style="line-height:28px;font-size:16px;font-weight:normal")
+				a(href="/targets/rollup" style="line-height:28px;font-size:16px;font-weight:normal;color:white") #{_.first(context.split("."))} group
+		div(style="margin-top:10px;margin-bottom:10px")
+			img(src="/images/space_arrow_bpty_up.png" style="vertical-align:middle;display:block;margin: auto auto" height="30px" width="30px" )
+
 		div(style="font-weight:bold;font-size:20px;color:#{color_PL};text-align:center") "#{vision}"
 		div(style="font-weight:normal;font-size:14px;color:#{color_PL};text-align:center") #{period}
 		div(style="margin-top:10px;margin-bottom:10px")
 			img(src="/images/space_triangle_bpty_up.png" style="vertical-align:middle;display:block;margin: auto auto" height="20px" width="300px"  )
 
 		div(style=";color:white;background-color:#{color_PL};text-align:center;font-size:16px;font-weight:normal;margin-left:10px;margin-right:10px;line-height:32px") 
-			span(style="line-height:28px;font-size:16px;font-weight:normal")
-				a(href="/targets/rollup" style="line-height:28px;font-size:16px;font-weight:normal;color:white") #{context} group
+			span(style="line-height:28px;font-size:16px;font-weight:normal;color:white") #{_.last(context.split("."))} P&L
+				//a(href="/targets/rollup" style="line-height:28px;font-size:16px;font-weight:normal;color:white") #{context} group
 			
 		
 		
@@ -357,6 +365,7 @@ script.
 		var _time = _m1 +' - '+_m2+' '+_y;
 
 		var _group = _self.data('group');
+		var _icon = _self.data('icon');
 		var _theme = _self.data('theme');
 		var _cluster = _self.data('cluster');
 
@@ -390,7 +399,7 @@ script.
 
 
 		$("#modal_theme_icon").attr("src","/images/targets/"+_theme+".png");
-		$("#modal_group_icon").attr("src","/images/targets/"+_group+".png");
+		$("#modal_group_icon").attr("src","/images/iconexp/"+_icon);
 
 		$("#targetTheme").attr("style","font-weight:bold;font-size:32px;color:"+_getColor(_theme));
 		$("#targetCluster").attr("style","font-weight:bold;font-size:18px;color:"+_getColor(_theme));

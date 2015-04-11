@@ -4,19 +4,6 @@ include ../kanban_menu
 
 
 style.
-	.panel-heading-run {background-color: #{color_RUN}!important}
-	.panel-heading-grow {background-color: #{color_GROW}!important}
-	.panel-heading-transform {background-color: #{color_TRANSFORM}!important}
-	.panel-heading-pl {background-color: #{color_PL}!important}
-
-
-	.left-border-RUN {border-left:solid 10px #{color_RUN}!important}
-	.left-border-GROW {border-left:solid 10px #{color_GROW}!important}
-	.left-border-TRANSFORM {border-left:solid 10px #{color_TRANSFORM}!important}
-
-
-	.panel-body-lane {background-color: #f9f9f9!important}
-
 	.text-heading-run {color: #{color_RUN}!important}
 	.text-heading-grow {color: #{color_GROW}!important}
 	.text-heading-transform {color: #{color_TRANSFORM}!important}
@@ -24,32 +11,16 @@ style.
 	.box-run {background-color: #{color_RUN}!important}
 	.box-grow {background-color: #{color_GROW}!important}
 	.box-transform {background-color: #{color_TRANSFORM}!important}
-	.box-guidance {background-color: #{color_RUN}!important}
+	.box-guidance {background-color: #{color_GROW}!important}
 	.box-report {background-color: #{color_RUN}!important}
 	.box-advise {background-color: #{color_RUN}!important}
 	.box-efficiency {background-color: #{color_RUN}!important}
 	.box-governance {background-color: #{color_RUN}!important}
-	.box-efficiency {background-color: #{color_GROW}!important}
-	.box-service {background-color: #{color_GROW}!important}
-	.box-governance {background-color: #{color_GROW}!important}
-	.box-guidance {background-color: #{color_GROW}!important}
+	.box-service {background-color: #{color_TRANSFORM}!important}
 	.box-opportunities {background-color: #{color_GROW}!important}
 	
 	
-	.box-service {background-color: #{color_TRANSFORM}!important}
 	
-
-
-
-
-	.panel-run {border-left: solid 5px #{color_RUN}!important;}
-	.panel-grow {border-left: solid 5px #{color_GROW}!important;}
-	.panel-transform {border-left: solid 5px #{color_TRANSFORM}!important;}
-
-	.panel-lane-heading-run {border-left: solid 5px #{color_RUN}!important;}
-	.panel-lane-heading-grow {border-left: solid 5px #{color_GROW}!important;}
-	.panel-lane-heading-transform {border-left: solid 5px #{color_TRANSFORM}!important;}
-
 
 -	function mapRAG2Color(rag){
 -		// there is no amber css color ;-)
@@ -72,9 +43,9 @@ mixin renderContext(context)
 		td(style="text-align:center;padding:10px;width:100px")
 			div(style="margin-bottom:10px")
 				img(src="/images/space_triangle_grey_up.png" style="vertical-align:middle;display:block;margin: auto auto" height="8px" width="30px"  )
-			div(style=";color:white;background-color:#{color_PL};line-height:40px")
+			div(style=";color:white;background-color:steelblue;line-height:40px")
 				span(style="line-height:28px;font-size:16px;font-weight:normal")
-					a(href="/targets/overview" style="line-height:28px;font-size:16px;font-weight:normal;color:white") #{_.last(context.split("."))}
+					a(href="/targets/overview?context=#{context}" style="line-height:28px;font-size:16px;font-weight:normal;color:white") #{_.rest(context.split(".")).join(".")}
 			div(style="margin-top:10px")
 				img(src="/images/space_triangle_grey_up.png" style="vertical-align:middle;display:block;margin: auto auto" height="8px" width="30px"  )
 
@@ -159,8 +130,8 @@ div.container-fluid(style="max-width:1600px")
 		div.row(style="text-align:center")
 			table.table.table-borderless(style="background-color:transparent")
 				tr
-					each target in targetsClustered.children
-						+renderTargets(target)
+					each context in targetsClustered.children
+						+renderTargets(context)
 	
 
 script.
@@ -189,97 +160,6 @@ script.
 
 
 
-	/**
-	* passing parameters to my modal
-	* http://stackoverflow.com/questions/20723111/passing-data-to-bootstrap-3-modal
-	*/
-	$(document).on("click", ".targetDetail", function (e) {
-		console.log("**************** targetDetail called *************************");
-		e.preventDefault();
-
-		var _self = $(this);
-
-		var __id = _self.data('_id');
-
-		var _id = _self.data('id');
-		var _name = _self.data('name');
-		var _rag = _self.data('rag');
-		var _ragComment = _self.data('ragComment');
-		var _outcome = _self.data('outcome');
-		var _bywhen = _self.data('bywhen');
-		var _description = _self.data('description');
-		var _baseline = _self.data('baseline');
-		var _measure = _self.data('measure');
-		var _link = _self.data('link');
-		var _comments = _self.data('comments');
-		var _sponsor = _self.data('sponsor');
-		var _contributors = _self.data('contributors');
-		var _start = _self.data('start');
-		var _end = _self.data('end');
-
-		var _m1 = moment(_start).format("MMMM");
-		var _m2 = moment(_end).format("MMMM");
-		var _y1 = moment(_start).format("YYYY");
-		var _y2 = moment(_end).format("YYYY");
-		var _y = _y1;
-		if (_y1 != _y2) _y+='/'+_y2;
-
-		var _time = _m1 +' - '+_m2+' '+_y;
-
-		var _group = _self.data('group');
-		var _theme = _self.data('theme');
-		var _cluster = _self.data('cluster');
-
-
-
-		console.log("**************** _id: "+__id+" *************************");
-		console.log("**************** outcome: "+_outcome+" *************************");
-		console.log("**************** description: "+_description+" *************************");
-		console.log("**************** sponsor: "+_sponsor+" *************************");
-
-		$(".modal-header #targetId").text(_id);
-		$(".modal-header #targetTheme").text(_theme);
-		$(".modal-header #targetCluster").text(_cluster);
-		$(".modal-header #targetGroup").text(_group);
-
-		$(".modal-body #targetId").text(_id);
-		$(".modal-header #targetName").text(_name);
-		$(".modal-body #targetName").text(_name);
-		$(".modal-body #targetOutcome").text(_outcome);
-		$(".modal-body #targetByWhen").text(_bywhen);
-		$(".modal-body #targetDescription").text(_description);
-		$(".modal-body #targetBaseline").text(_baseline);
-		$(".modal-body #targetMeasure").text(_measure);
-		$(".modal-body #targetLink").text(_link);
-		$(".modal-body #targetComments").text(_comments);
-		$(".modal-body #targetSponsor").text(_sponsor);
-		$(".modal-body #targetContributors").text(_contributors);
-		$(".modal-body #targetTime").text(_time);
-		$(".modal-body #targetRAGComment").text(_ragComment);
-
-
-
-		$("#modal_theme_icon").attr("src","/images/targets/"+_theme+".png");
-		$("#modal_group_icon").attr("src","/images/targets/"+_group+".png");
-
-		$("#targetTheme").attr("style","font-weight:bold;font-size:32px;color:"+_getColor(_theme));
-		$("#targetCluster").attr("style","font-weight:bold;font-size:18px;color:"+_getColor(_theme));
-		$("#targetRag").attr("style","background-color:"+mapRAG2Color(_rag)+";border-radius: 100%;width:25px;height:25px;");
-		if (_ragComment){
-			//write text after RAG indicator
-		}
-
-		$.get( "/api/space/rest/organization/employee/"+_sponsor, function( data ) {
-			//$( ".result" ).html( data );
-			console.log("**** employee: "+data["Employee Number"]);
-			if (data) {
-				var _url = "http://my.bwinparty.com/api/people/images/"+data["Employee Number"];
-				console.log("url: "+_url);
-				$("#modal_sponsor_icon").attr("src",_url);
-			}
-			$(_self.attr('href')).modal('show');
-		});
-	});
 
 	/** 
 	* helper to get colors

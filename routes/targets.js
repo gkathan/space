@@ -60,6 +60,8 @@ res.locals._=require('lodash');
 		_context = config.context;
 	}
 
+	var viewContext = req.query.context;
+	if (viewContext) _context = viewContext;
 
 	logger.debug("-------------------------");
 
