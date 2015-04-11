@@ -1,15 +1,6 @@
 include ../kanban_menu
 
 
-//
-	var COLOR_PRIMARY = "#174D75";
-	var COLOR_PRIMARY2 = "#00b8e4";
-	var COLOR_SECONDARY = "#82cec1";
-	var COLOR_SECONDARY2 = "#f99d1c";
-	var COLOR_SECONDARY3 = "#b0acd5";
-	var COLOR_SECONDARY4 = "#ffcd03";
-
-
 
 
 style.
@@ -83,7 +74,7 @@ mixin renderContext(context)
 				img(src="/images/space_triangle_grey_up.png" style="vertical-align:middle;display:block;margin: auto auto" height="8px" width="30px"  )
 			div(style=";color:white;background-color:#{color_PL};line-height:40px")
 				span(style="line-height:28px;font-size:16px;font-weight:normal")
-					|#{_.last(context.split("."))}
+					a(href="/targets/overview" style="line-height:28px;font-size:16px;font-weight:normal;color:white") #{_.last(context.split("."))}
 			div(style="margin-top:10px")
 				img(src="/images/space_triangle_grey_up.png" style="vertical-align:middle;display:block;margin: auto auto" height="8px" width="30px"  )
 
@@ -117,219 +108,15 @@ mixin renderTargets(data)
 						|#{theme.name}
 					
 					each target in theme.children
-						//img(src="/images/iconexp/#{target.children[0].icon}" width="30px" height="30px")
-						div(style=";color:black;margin-bottom:5px;font-size:10px;font-weight:normal;text-align:left")
-							|#{target.name.split(" ")[0]}
-							br
-							b #{_.rest(target.name.split(" ")).join(" ")}
-							br
-							|icon: #{target.children[0]["theme"]}
-							
-						
-			
-
-
-
-
-
-
-
-// -----------------------------------------------------------------------
-// ------------------ mixin L1 targets ----------------------------
-// -----------------------------------------------------------------------
-mixin renderL1Targets(target)
-	// div.table-responsive
-	td(style="text-align:center;padding:10px")
-		div(style=";color:white;background-color:#{color_PL}")
-			span(style="line-height:28px;font-size:24px;font-weight:bold")
-				|#{target.directMetric}
-			span(style="line-height:12px;font-size:11px;font-weight:normal")
-				|&nbsp;#{target.directMetricScale}
-			div
-				span(style="line-height:20px;font-weight:normal;font-size:11px") #{target.directTarget}
-			div
-				span(style="line-height:16px;font-weight:bold;font-size:14px") #{target.directTime}
-		div(style="margin-top:10px;margin-bottom:10px")
-			img(src="/images/space_arrow_bpty_up.png" style="vertical-align:middle;display:block;margin: auto auto" height="30px" width="35px"  )
-
-// -----------------------------------------------------------------------
-// ------------------ mixin target lane start ----------------------------
-// -----------------------------------------------------------------------
-mixin renderTargetLane(lane)
-	div.col-sm-2.col-md-4.col-lg-4
-		div(style="min-width:350px;max-width:600px" class="panel-body-lane")
-			div(class="box-#{lane.name.toLowerCase()}" style="text-align:center;line-height:50px;vertical-align:middle")
-				img(src="/images/targets/#{lane.name}_white_circle.png" height="40px" style="vertical-align:middle;margin-bottom:8px")
-				//span(class="text-heading-#{lane.name.toLowerCase()}" style="margin-left:2px;font-size:26px;color:black;font-weight:bold")  #{lane.name}
-				span(style="margin-left:2px;font-size:28px;color:white;font-weight:bold")  #{lane.name}
-					//span(class="text-heading-#{lane.name.toLowerCase()}" style="font-size:14px;color:black;font-weight:normal") #{lane.children[0].name.toUpperCase()}
-				//span(style="font-size:14px;color:white;font-weight:normal") #{lane.children[0].name.toUpperCase()}
-			br
-			div.row(style="font-size:11px")
-				each t in lane.children[0].children
-					center
-						div.col-xs-6.col-sm-6.col-md-6.col-lg6
-							+renderTarget(t)
-
-// -----------------------------------------------------------------------
-// ------------------ mixin target card start ----------------------------
-// -----------------------------------------------------------------------
-mixin renderTarget(target)
-	div.fliptarget(id="#{target.name}")
-		div.front
-			div.panel(style="margin-left:-10px;position: relative;background-color:white;width:230px;text-align: left;height:280px")
-				.panel-heading(class="panel-#{target.children[0].theme.toLowerCase()}")
-					table
-						tr(style="line-height:12px")
-							td(style="width:30px;text-align:left")
-								//i.glyphicon.glyphicon-record(style="font-size:13px")
-								a.turnback(id="#{target.name}" href="##{target.name}") 
-									img(src="/images/targets/#{target.name}.png" height="25px" style="vertical-align:top" )
-							td(style="width:150px;font-size:13px;vertical-align:middle;font-weight:normal;")
-								|#{target.name.split(" ")[0].toUpperCase()}
-								br
-								b #{_.rest(target.name.split(" ")).join(" ").toUpperCase()}
-								
-							td(style="width:20px;font-size:16px;vertical-align:top;font-weight:normal;vertical-align:middle")
-								|#{target.children[0].id.split(".")[0]}
-				.panel-body
-					table(style="")
-						each line in target.children
-							tr(style="line-height:15px")
-								td(style="width:205px;font-size:10px;text-align:left;vertical-align:top;border-bottom: 1px solid lightgrey")
-									table(style="width:190px")
-										tr(style="line-height:15px")
-											td(style="width:10px;font-size:10px;text-align:left")
-												|-
-											td(style="width:145px;font-size:11px;font-weight:bold")
-												div(style="width:140px")
-													//a(style="color:black" id="#{line.id}" href="" title="show more details...") #{line.target}
-													a.targetDetail(style="color:black" id="targetDetail" href="#targetDetail" title="show more details..."
-														data-_id="#{line._id}"
-														data-id="#{line.id}"
-														data-name="#{line.target}"
-														data-rag="#{line.rag}"
-														data-ragComment="#{line.ragComment}"
-														data-outcome="#{line.outcome}"
-														data-bywhen="#{line.bywhen}"
-														data-description="#{line.description}"
-														data-baseline="#{line.baseline}"
-														data-measure="#{line.measure}"
-														data-link="#{line.link}"
-														data-comments="#{line.comments}"
-														data-sponsor="#{line.sponsor}"
-														data-contributors="#{line.contributors}"
-														data-start="#{line.start}"
-														data-end="#{line.end}"
-														data-group="#{line.group}"
-														data-theme="#{line.theme}"
-														data-cluster="#{line.cluster}"
-														) #{line.target}
-											td(style="width:10px;font-size:10px;font-style:italic")
-
-											td(style="width:15px;font-size:8px;vertical-align:top")
-												
-												div(style="margin-left:2px;width: 8px;height: 8px;-moz-border-radius: 50%; -webkit-border-radius: 50%; border-radius: 50%;background-color:#{mapRAG2Color(line.rag)};margin-top:2px")
-													
-											td(style="width:25px;font-size:10px;vertical-align:top")
-												|#{line.id}
-							tr(style="line-height:3px")
-								td
-									|&nbsp;
-		
-// -----------------------------------------------------------------------
-// ------------------ mixin target detail modal ----------------------------
-// -----------------------------------------------------------------------
-mixin renderTargetDetail(target)
-	div.modal-header
-		button.close(type="button" data-dismiss="modal" aria-label="Close")
-			span(aria-hidden="true") &times
-		h4.modal-title(id="myModalLabel")
-			table.table.table-borderless(style="width:450px;vertical-align:middle")
-				tr(style="vertical-align:middle")
-					td(style="width:70px;text-align:right;font-style:italic;color:black;font-size:12px;vertical-align:middle")
-						img(id="modal_theme_icon" src="" height="60px")
-					td(style="width:350px;vertical-align:middle")
-						div(id="targetTheme" style="")
-						div(id="targetCluster" style="")
-				tr(style="vertical-align:middle")
-					td
-					td(style="text-align:left;color:black;font-size:12px;vertical-align:top")
-						img(id="modal_group_icon" src="" height="35px")
-						|&nbsp;&nbsp;
-						span(id="targetGroup" style="font-weight:bold;font-size:14px")
-	div.modal-body
-		div
-			table.table(style="width:450px;vertical-align:middle")
-				tr(style="vertical-align:middle")
-					td(style="width:70px;text-align:right;font-style:italic;color:grey;font-size:10px;vertical-align:top")
-						|target
-					td(style="width:350px")
-						span(id="targetId" style=";font-size:12px;vertical-align:top")
-						| &nbsp; - &nbsp;
-						span(id="targetName" style="font-weight:bold;font-size:12px;vertical-align:top")
-				tr(style="vertical-align:middle")
-					td(style="width:70px;text-align:right;font-style:italic;color:grey;font-size:10px;vertical-align:middle")
-						|sponsor
-					td(style="width:350px;vertical-align:middle")
-						img.img-circle(id ="modal_sponsor_icon" src="" height="30" width="30")
-						span(id="targetSponsor" style="font-weight:normal;vertical-align:middle;margin-left:10px;font-size:12px")
-				tr(style="vertical-align:top")
-					td(style="text-align:right;font-style:italic;color:grey;font-size:10px;vertical-align:middle")
-						|RAG
-					td
-						span(id ="targetRag" style="")
-							|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp
-				tr(style="vertical-align:middle")
-					td(style="text-align:right;font-style:italic;color:grey;font-size:10px;vertical-align:top")
-						|outcome
-					td
-						span(id="targetOutcome" style=";font-size:12px;vertical-align:top")
-				tr(style="vertical-align:middle")
-					td(style="text-align:right;font-style:italic;color:grey;font-size:10px;vertical-align:top")
-						|by when
-					td
-						span(id="targetByWhen" style=";font-size:12px;vertical-align:top")
-				tr(style="vertical-align:middle")
-					td(style="text-align:right;font-style:italic;color:grey;font-size:10px;vertical-align:top")
-						|description
-					td
-						span(id="targetDescription" style=";font-size:12px;vertical-align:top")
-				tr(style="vertical-align:middle")
-					td(style="text-align:right;font-style:italic;color:grey;font-size:10px;vertical-align:top")
-						|baseline
-					td
-						span(id="targetBaseline" style=";font-size:12px;vertical-align:top")
-				tr(style="vertical-align:middle")
-					td(style="text-align:right;font-style:italic;color:grey;font-size:10px;vertical-align:top")
-						|measure
-					td
-						span(id="targetMeasure" style=";font-size:12px;vertical-align:top")
-				tr(style="vertical-align:middle")
-					td(style="text-align:right;font-style:italic;color:grey;font-size:10px;vertical-align:top")
-						|link
-					td
-						span(id="targetLink" style=";font-size:12px;vertical-align:top")
-				tr(style="vertical-align:middle")
-					td(style="text-align:right;font-style:italic;color:grey;font-size:10px;vertical-align:top")
-						|comments
-					td
-						span(id="targetComments" style=";font-size:12px;vertical-align:top")
-				tr(style="vertical-align:middle")
-					td(style="text-align:right;font-style:italic;color:grey;font-size:10px;vertical-align:top")
-						|contributors
-					td
-						span(id="targetContributors" style=";font-size:12px;vertical-align:top")
-				tr(style="vertical-align:middle")
-					td(style="text-align:right;font-style:italic;color:grey;font-size:10px;vertical-align:top")
-						|time period
-					td
-						span(id="targetTime" style=";font-size:12px;vertical-align:top")
-
-	div.modal-footer
-		button.btn.btn-default.btn-xs(type="button" data-dismiss="modal")
-			span Close
-
+						table
+							tr
+								td(style="width:24%;vertical-align:top")
+									img(src="/images/iconexp/#{target.children[0].children[0].icon}" width="20px" height="20px")
+								td(style="width:76%;line-height:11px;;vertical-align:top")
+									div(style=";color:black;margin-bottom:5px;font-size:10px;font-weight:normal;text-align:left")
+										|#{target.name.split(" ")[0]}
+										br
+										b #{_.rest(target.name.split(" ")).join(" ")}
 
 // -----------------------------------------------------------------------
 // ------------------ main target template ----------------------------
@@ -342,21 +129,18 @@ div(style="text-align:right")
 		img(src="/images/space/logo_msexcel.png" height="30px")
 
 
-// ------------------------------ target detail modal -------------------------------
-div.modal.fade(id="targetDetail" tabindex="-1" role="dialog" aria-labelledby="targetDetailModal" aria-hidden="true" )
-	div.modal-dialog
-		div.modal-content(style="opacity:1")
-			+renderTargetDetail()
-
 // ------------------------------ main view -------------------------------
 div.container-fluid(style="max-width:1600px")
 	div.row
-		div(style="font-weight:bold;font-size:20px;color:#{color_PL};text-align:center") "#{vision}"
+		div(style="font-weight:bold;font-size:20px;color:#{color_PL};text-align:center") 
+			img(src="/images/#{context}_logo.png" height="3	0px")
+		
+		div(style="font-weight:bold;font-size:20px;color:#{color_PL};text-align:center") "let the world play for real"
 		div(style="font-weight:normal;font-size:14px;color:#{color_PL};text-align:center") #{period}
 		div(style="margin-top:10px;margin-bottom:10px")
 			img(src="/images/space_triangle_bpty_up.png" style="vertical-align:middle;display:block;margin: auto auto" height="20px" width="300px"  )
 
-		div(style=";color:white;background-color:#{color_PL};text-align:center;font-size:16px;font-weight:normal;margin-left:10px;margin-right:10px;line-height:32px") #{context} group
+		div.row(style=";color:white;background-color:#{color_PL};text-align:center;font-size:16px;font-weight:normal;margin-left:-5px;margin-right:-5px;line-height:32px") #{context} group
 		
 		
 		// units / contetxs
