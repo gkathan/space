@@ -195,4 +195,8 @@ script.
 			});
 	}	
 	
+	function getSkin(config,context){
+		return _.findWhere(config.entities,{'name':context}).skin;
+	}
+	
 	

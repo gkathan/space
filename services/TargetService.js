@@ -58,9 +58,14 @@ exports.getAll = function (context,callback) {
 
 
 
-	targets.find({context:{$regex: '^'+context}}).sort({$natural:1}, function (err, docs){
-
+	targets.find({context:{$regex: '^'+context}}).sort({context:-1}, function (err, docs){
+		if(err){
+			logger.info("error:"+err);
+		}
+		else if(docs){
+			logger.debug("find targets: "+docs);
 			callback(docs);
-			return;
+		}
+		return;
 	});
 }

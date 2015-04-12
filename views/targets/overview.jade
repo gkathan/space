@@ -71,7 +71,7 @@ mixin renderL1Targets(target)
 			div
 				span(style="line-height:16px;font-weight:bold;font-size:14px") #{target.directTime}
 		div(style="margin-top:10px;margin-bottom:10px")
-			img(src="/images/space_arrow_bpty_up.png" style="vertical-align:middle;display:block;margin: auto auto" height="30px" width="35px"  )
+			img(src="/images/space_triangle_grey_up.png" style="vertical-align:middle;display:block;margin: auto auto" height="10px" width="80px"  )
 
 // -----------------------------------------------------------------------
 // ------------------ mixin target lane start ----------------------------
@@ -273,16 +273,18 @@ div.modal.fade(id="targetDetail" tabindex="-1" role="dialog" aria-labelledby="ta
 // ------------------------------ main view -------------------------------
 div.container-fluid(style="max-width:1600px")
 	div.row
-		div(style=";color:white;background-color:#{color_PL};text-align:center;font-size:16px;font-weight:normal;margin-left:10px;margin-right:10px;line-height:32px;") 
+		div(style=";color:white;background-color:#{color_PARENT};text-align:center;font-size:16px;font-weight:normal;margin-left:10px;margin-right:10px;line-height:32px;") 
 			span(style="line-height:28px;font-size:16px;font-weight:normal")
 				a(href="/targets/rollup" style="line-height:28px;font-size:16px;font-weight:normal;color:white") #{_.first(context.split("."))} group
 		div(style="margin-top:10px;margin-bottom:10px")
-			img(src="/images/space_arrow_bpty_up.png" style="vertical-align:middle;display:block;margin: auto auto" height="30px" width="30px" )
+			img(src="/images/space_triangle_grey_up.png" style="vertical-align:middle;display:block;margin: auto auto" height="10px" width="80px" )
 
+		div(style="margin-top:10px;margin-bottom:10px")
+			img(src="/images/#{context}_logo.png" style="vertical-align:middle;display:block;margin: auto auto" height="40px"  )
 		div(style="font-weight:bold;font-size:20px;color:#{color_PL};text-align:center") "#{vision}"
 		div(style="font-weight:normal;font-size:14px;color:#{color_PL};text-align:center") #{period}
 		div(style="margin-top:10px;margin-bottom:10px")
-			img(src="/images/space_triangle_bpty_up.png" style="vertical-align:middle;display:block;margin: auto auto" height="20px" width="300px"  )
+			img(src="/images/space_triangle_grey_up.png" style="vertical-align:middle;display:block;margin: auto auto" height="20px" width="300px"  )
 
 		div(style=";color:white;background-color:#{color_PL};text-align:center;font-size:16px;font-weight:normal;margin-left:10px;margin-right:10px;line-height:32px") 
 			span(style="line-height:28px;font-size:16px;font-weight:normal;color:white") #{_.last(context.split("."))} P&L

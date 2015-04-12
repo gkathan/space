@@ -75,6 +75,9 @@ res.locals._=require('lodash');
 				if (data[i].type=="L1") _L1targets.push(data[i]);
 			}
 			var L2targetsClustered = _.nst.nest(_L2targets,["theme","cluster","group"]);
+
+			logger.debug("****L2targetsClustered: "+JSON.stringify(L2targetsClustered));
+
 			res.locals.targets=L2targetsClustered.children;
 			res.locals.L1targets=_L1targets;
 
@@ -82,13 +85,22 @@ res.locals._=require('lodash');
 			logger.debug("L1targets: "+_L1targets.length);
 
 			// take the first for the globals...
-			var _target = L2targetsClustered.children[0].children[0].children[0].children[0];
-			res.locals.vision=_target.vision;
+			var _target;
+			if (L2targetsClustered.children.length>0){
+				 _target= L2targetsClustered.children[0].children[0].children[0].children[0];
+				res.locals.vision=_target.vision;
+				res.locals.start=moment(_target.start).format();
+				res.locals.end=moment(_target.end).format();
+				res.locals.period = "targets :: "+new moment(_target.start).format('MMMM').toLowerCase()+" - "+new moment(_target.end).format('MMMM').toLowerCase()+" "+new moment(_target.start).format('YYYY');
+
+			}
 
 			var _colors = _.findWhere(config.entities,{'name':_context}).skin.colors;
 			logger.debug("colors: "+_colors.secondary);
 			res.locals.colors= _colors;
 
+			//;-) hardcoded for now....
+			res.locals.color_PARENT = "#174D75";
 			res.locals.color_PL = _colors.primary;
 			res.locals.color_RUN = _colors.secondary;
 			res.locals.color_GROW= _colors.secondary2;
@@ -96,9 +108,6 @@ res.locals._=require('lodash');
 
 			res.locals.context=_context;
 
-			res.locals.start=moment(_target.start).format();
-			res.locals.end=moment(_target.end).format();
-			res.locals.period = "targets :: "+new moment(_target.start).format('MMMM').toLowerCase()+" - "+new moment(_target.end).format('MMMM').toLowerCase()+" "+new moment(_target.start).format('YYYY');
 
 			avService.getLatest(function(av){
 				res.locals.availability = av;

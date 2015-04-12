@@ -207,27 +207,26 @@
 
 			"skin": {
 				"colors" : {
-					"primary" :"rgb(50,57,99)",
-					"secondary" :"rgb(0,184,228)",
-					"secondary2" :"rgb(249,157,28)",
-					"secondary3" :"rgb(176,172,213)",
-					"secondary4" :"rgb(130,206,193)",
-					"secondary5" :"rgb(255,203,5)"
+					"primary" : "rgb(230,44,62)",
+					"secondary" : "#00b8e4",
+					"secondary2" : "#82cec1",
+					"secondary3" : "#f99d1c",
+					"secondary4" : "#b0acd5",
+					"secondary5" : "#ffcd03"
 				}
 			}
 		},
 		{
-			"name": "bpty.bwin",
+			"name": "bpty.labels.bwin",
 
 			"skin": {
 				"colors" : {
-					"primary" :"rgb(50,57,99)",
-					"secondary" :"rgb(0,184,228)",
-					"secondary2" :"rgb(249,157,28)",
-					"secondary3" :"rgb(176,172,213)",
-					"secondary4" :"rgb(130,206,193)",
-					"secondary5" :"rgb(255,203,5)"
-				}
+					"primary" : "#000000",
+					"secondary" : "#00b8e4",
+					"secondary2" : "#82cec1",
+					"secondary3" : "#f99d1c",
+					"secondary4" : "#b0acd5",
+					"secondary5" : "#ffcd03"				}
 			}
 		}
 	],
