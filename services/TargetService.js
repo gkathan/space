@@ -65,6 +65,7 @@ exports.getAll = function (context,callback) {
 		else if(docs){
 			logger.debug("find targets: "+docs);
 			callback(docs);
+			return;
 		}
 		return;
 	});

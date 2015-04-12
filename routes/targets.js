@@ -83,6 +83,7 @@ res.locals._=require('lodash');
 
 
 			logger.debug("L1targets: "+_L1targets.length);
+			logger.debug("L2targets: "+L2targetsClustered.children.length);
 
 			// take the first for the globals...
 			var _target;
