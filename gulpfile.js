@@ -4,6 +4,7 @@ var tar = require('gulp-tar');
 var untar = require('gulp-untar');
 var rename = require('gulp-rename');
 var gutil = require('gulp-util');
+var concat = require('gulp-concat');
 var runSequence = require('run-sequence');
 var zip = require('gulp-zip');
 
@@ -314,6 +315,11 @@ gulp.task('lint', function() {
     .pipe(jshint.reporter(stylish));
 });
 
+gulp.task('concat', function() {
+  return gulp.src(['./public/javascripts/**/**.js',])
+    .pipe(concat('space.js'))
+    .pipe(gulp.dest('.'));
+});
 
 
 /**

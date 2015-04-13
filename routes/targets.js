@@ -169,8 +169,10 @@ res.locals._=require('lodash');
 			logger.debug("contexts: "+_contexts.length);
 
 			var _targetsClustered = _.nst.nest(data,["context","theme","group","target"]);
-			debugger;
+			var _targetsClusteredTheme= _.nst.nest(data,["theme","context","target"]);
+
 			res.locals.targetsClustered = _targetsClustered;
+			res.locals.targetsClusteredTheme = _targetsClusteredTheme;
 
 
 
