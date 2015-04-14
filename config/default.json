@@ -88,7 +88,7 @@
 			"name": "bpty.corp.comms",
 			"skin": {
 				"colors" : {
-					"primary" : "#174D75",
+					"primary" : "#666666",
 					"secondary" : "#00b8e4",
 					"secondary2" : "#82cec1",
 					"secondary3" : "#f99d1c",
@@ -101,7 +101,7 @@
 			"name": "bpty.corp.finance",
 			"skin": {
 				"colors" : {
-					"primary" : "#174D75",
+					"primary" : "#666666",
 					"secondary" : "#00b8e4",
 					"secondary2" : "#82cec1",
 					"secondary3" : "#f99d1c",
@@ -114,7 +114,7 @@
 			"name": "bpty.corp.hr",
 			"skin": {
 				"colors" : {
-					"primary" : "#174D75",
+					"primary" : "#666666",
 					"secondary" : "#00b8e4",
 					"secondary2" : "#82cec1",
 					"secondary3" : "#f99d1c",
@@ -127,7 +127,7 @@
 			"name": "bpty.corp.legal",
 			"skin": {
 				"colors" : {
-					"primary" : "#174D75",
+					"primary" : "#666666",
 					"secondary" : "#00b8e4",
 					"secondary2" : "#82cec1",
 					"secondary3" : "#f99d1c",
@@ -140,7 +140,7 @@
 			"name": "bpty.corp.regaffairs",
 			"skin": {
 				"colors" : {
-					"primary" : "#174D75",
+					"primary" : "#666666",
 					"secondary" : "#00b8e4",
 					"secondary2" : "#82cec1",
 					"secondary3" : "#f99d1c",
@@ -153,7 +153,7 @@
 			"name": "bpty.corp.cosec",
 			"skin": {
 				"colors" : {
-					"primary" : "#174D75",
+					"primary" : "#666666",
 					"secondary" : "#00b8e4",
 					"secondary2" : "#82cec1",
 					"secondary3" : "#f99d1c",
@@ -166,7 +166,7 @@
 			"name": "bpty.corp.facilities",
 			"skin": {
 				"colors" : {
-					"primary" : "#174D75",
+					"primary" : "#666666",
 					"secondary" : "#00b8e4",
 					"secondary2" : "#82cec1",
 					"secondary3" : "#f99d1c",
@@ -241,7 +241,20 @@
 					"secondary4" : "#b0acd5",
 					"secondary5" : "#ffcd03"				}
 			}
-		}
+		},
+			{
+				"name": "bpty.labels.premium",
+
+				"skin": {
+					"colors" : {
+						"primary" : "#000000",
+						"secondary" : "#00b8e4",
+						"secondary2" : "#82cec1",
+						"secondary3" : "#f99d1c",
+						"secondary4" : "#b0acd5",
+						"secondary5" : "#ffcd03"				}
+				}
+			}
 
 	],
 

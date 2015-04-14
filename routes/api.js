@@ -35,7 +35,6 @@ var PATH = {
 
 						REST_BOARDS : BASE+'/space/rest/boards',
 
-
 						REST_RELEASES : BASE+'/space/rest/releases',
 						REST_LANETEXT : BASE+'/space/rest/lanetext',
 						REST_POSTITS : BASE+'/space/rest/postits',
@@ -86,8 +85,6 @@ var PATH = {
 						EXPORT_AVAILABILITY : BASE+'/space/export/xlsx/availability',
 						EXPORT_FIREREPORT : BASE+'/space/export/xlsx/firereport',
 						EXPORT_CONTENT : BASE+'/space/export/xlsx/content',
-
-
 
 						CONFIG : BASE+'/space/config',
 
@@ -743,6 +740,7 @@ function excelTargets(req, res , next){
 		{caption:'_id',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'id',type:'string',width:5,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'context',type:'string',width:12,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'profit',type:'string',width:12,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'type',type:'string',width:8,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'rag',type:'string',width:8,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'vision',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
@@ -750,6 +748,7 @@ function excelTargets(req, res , next){
 		{caption:'theme',type:'string',width:10,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'group',type:'string',width:30,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'icon',type:'string',width:30,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'icon_theme',type:'string',width:30,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'target',type:'string',width:30,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'directMetric',type:'string',width:10,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'directMetricScale',type:'string',width:5,captionStyleIndex:2,beforeCellWrite:_formatCell},

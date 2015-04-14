@@ -155,22 +155,21 @@ res.locals._=require('lodash');
 	targetService.getAll(_context,function(data){
 		var _L2targets = [];
 		var _L1targets = [];
-		var _contexts = [];
 
 		if (data.length>0){
 			for (var i in data){
 				if (data[i].type=="L2") _L2targets.push(data[i]);
 				if (data[i].type=="L1") _L1targets.push(data[i]);
-				if (_contexts.indexOf(data[i].context)<0) _contexts.push(data[i].context);
+
 			}
 
-			res.locals.contexts = _contexts;
 
-			logger.debug("contexts: "+_contexts.length);
-
+			//var _targetsClustered = _.nst.nest(data,["profit","context","theme","group","target"]);
+			//var _targetsClusteredTheme= _.nst.nest(data,["profit","theme","context","target"]);
 			var _targetsClustered = _.nst.nest(data,["context","theme","group","target"]);
 			var _targetsClusteredTheme= _.nst.nest(data,["theme","context","target"]);
 
+			//res.locals.targetsClustered = _targetsClustered.children[1];
 			res.locals.targetsClustered = _targetsClustered;
 			res.locals.targetsClusteredTheme = _targetsClusteredTheme;
 

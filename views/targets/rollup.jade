@@ -43,12 +43,30 @@ mixin renderContext(context)
 		td(style="text-align:center;padding:10px;width:100px")
 			div(style="margin-bottom:10px")
 				img(src="/images/space_triangle_grey_up.png" style="vertical-align:middle;display:block;margin: auto auto" height="8px" width="30px"  )
-			div(style=";color:white;background-color:#{_.findWhere(config.entities,{'name':context}).skin.colors.primary};line-height:40px")
+			div(style=";color:white;background-color:#{_.findWhere(config.entities,{'name':context.name}).skin.colors.primary};line-height:40px")
 				span(style="line-height:28px;font-size:16px;font-weight:normal")
-					a(href="/targets/overview?context=#{context}" style="line-height:28px;font-size:16px;font-weight:normal;color:white") #{_.rest(context.split(".")).join(".")}
+					a(href="/targets/overview?context=#{context.name}" style="line-height:28px;font-size:12px;font-weight:bold;color:white;") #{_.capitalize(_.rest(context.name.split(".")).join("."))}
 			div(style="margin-top:10px")
 				img(src="/images/space_triangle_grey_up.png" style="vertical-align:middle;display:block;margin: auto auto" height="8px" width="30px"  )
 				
+
+
+// -----------------------------------------------------------------------
+// ------------------ mixin kpis ----------------------------
+// -----------------------------------------------------------------------
+mixin renderKPIsRoot(data)
+
+	div.table-responsive
+		each theme in data.children
+			if theme.name == 'KPI'
+				each kpi in theme.children[0].children
+					td(style="text-align:center;padding:10px;width:100px")
+						div(style="margin-bottom:10px")
+							img(src="/images/space_triangle_grey_up.png" style="vertical-align:middle;display:block;margin: auto auto" height="8px" width="30px"  )
+
+						div(style=";color:white;background-color:#{_.findWhere(config.entities,{'name':kpi.children[0].context}).skin.colors.primary};margin-bottom:5px;font-size:10px;font-weight:normal;height:40px;display:flex;justify-content:center;align-content:center;flex-direction:column;")
+							|#{_.capitalize(kpi.name)}
+
 
 // -----------------------------------------------------------------------
 // ------------------ mixin kpis ----------------------------
@@ -56,13 +74,11 @@ mixin renderContext(context)
 mixin renderKPIs(data)
 	div.table-responsive
 		td(style="text-align:center;padding:10px;width:100px")
-			
 			each theme in data.children
 				if theme.name == 'KPI'
 					each kpi in theme.children[0].children
 						div(style=";color:white;background-color:#{_.findWhere(config.entities,{'name':kpi.children[0].context}).skin.colors.primary};margin-bottom:5px;font-size:10px;font-weight:normal;height:40px;display:flex;justify-content:center;align-content:center;flex-direction:column;")
-							|#{kpi.name}
-						
+							|#{_.capitalize(kpi.name)}
 			
 // -----------------------------------------------------------------------
 // ------------------ mixin target groups ----------------------------
@@ -86,9 +102,9 @@ mixin renderTargets(data)
 									img(src="/images/iconexp/#{target.children[0].children[0].icon}" width="20px" height="20px")
 								td(style="width:76%;line-height:11px;;vertical-align:top")
 									div(style=";color:black;margin-bottom:5px;font-size:10px;font-weight:normal;text-align:left")
-										|#{target.name.split(" ")[0]}
+										|#{_.capitalize(target.name.split(" ")[0])}
 										br
-										b #{_.rest(target.name.split(" ")).join(" ")}
+										b #{_.capitalize(_.rest(target.name.split(" ")).join(" "))}
 
 // -----------------------------------------------------------------------
 // ------------------ main target template ----------------------------
@@ -98,11 +114,11 @@ block content
 div(style="text-align:right")
 	a(href="/api/space/export/xlsx/targets" title="export targets as xlsx")
 		span(style="font-size:10px;text-align:right") >> export targets xlsx &nbsp;
-		img(src="/images/space/logo_msexcel.png" height="30px")
+		img(src="/images/space/logo_msexcel.png" height="20px")
 
 
 // ------------------------------ main view -------------------------------
-div.container-fluid(style="max-width:1600px")
+div.container-fluid(style="max-width:1800px")
 	div.row
 		div(style="font-weight:bold;font-size:20px;color:#{color_PL};text-align:center") 
 			img(src="/images/#{context}_logo.png" height="30px")
@@ -112,29 +128,44 @@ div.container-fluid(style="max-width:1600px")
 		div(style="margin-top:10px;margin-bottom:10px")
 			img(src="/images/space_triangle_bpty_up.png" style="vertical-align:middle;display:block;margin: auto auto" height="20px" width="300px"  )
 
-		div.row(style=";color:white;background-color:#{color_PL};text-align:center;font-size:16px;font-weight:normal;margin-left:-5px;margin-right:-5px;line-height:32px") #{context} group
+		div.row(style=";color:white;background-color:#{color_PL};text-align:center;font-size:16px;font-weight:normal;margin-left:-5px;margin-right:-5px;line-height:48px") #{context} group
+		
+		// holding KPIs
+		div.row(style="text-align:center")
+			table.table.table-borderless(style="background-color:transparent")
+				tr
+					each kpi in targetsClustered.children
+						// just the root ("bpty" KPIs)
+						if kpi.children[0].children[0].children[0].children[0].context.split(".").length ==1
+							+renderKPIsRoot(kpi)
+		
 		
 		
 		// units / contetxs
 		div.row(style="text-align:center")
 			table.table.table-borderless(style="background-color:transparent")
 				tr
-					each context in contexts
-						+renderContext(context)
+					each context in targetsClustered.children
+						// filter out the root node "bpty"
+						if context.children[0].children[0].children[0].children[0].context.split(".").length >1
+							+renderContext(context)
 		// KPIs
 		div.row(style="text-align:center")
 			table.table.table-borderless(style="background-color:transparent")
 				tr
 					each kpi in targetsClustered.children
-						+renderKPIs(kpi)
+						// filter out the root node "bpty"
+						if kpi.children[0].children[0].children[0].children[0].context.split(".").length >1
+							+renderKPIs(kpi)
 		//targets
 		div.row(style="text-align:center")
 			table.table.table-borderless(style="background-color:transparent")
 				tr
 					//each element in targetsClusteredTheme.children
 					each element in targetsClustered.children
-						//|#{element.name}
-						+renderTargets(element)
+						// filter out the root node "bpty"
+						if element.children[0].children[0].children[0].children[0].context.split(".").length >1
+							+renderTargets(element)
 	
 
 script.
