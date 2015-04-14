@@ -131,8 +131,10 @@ div.container-fluid(style="max-width:1600px")
 		div.row(style="text-align:center")
 			table.table.table-borderless(style="background-color:transparent")
 				tr
-					each context in targetsClustered.children
-						+renderTargets(context)
+					//each element in targetsClusteredTheme.children
+					each element in targetsClustered.children
+						//|#{element.name}
+						+renderTargets(element)
 	
 
 script.
