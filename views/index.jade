@@ -5,23 +5,24 @@ block content
 		.jumbotron(style="background:#ffffff")
 			div(style="text-align:center")
 				if session.CONTEXT
-					img(src="images/space_big_#{session.CONTEXT}.png" width="200px" style="")
+					img(src="images/space_big_#{session.CONTEXT}.png" width="150px" style="")
 				else
-					img(src="images/space_big_bpty.png" width="200px" style="")
+					img(src="images/space_big_bpty.png" width="150px" style="")
 			h2(style="margin:5px auto") 
 				small
 					div(style="font-size:12px;color:#174D75;text-align:center") <b>strategy</b> » <b>performance</b> and <b>change</b> explorer
 				hr
 				if spaceNews
 					div(style="width:300px;text-align:left;margin-left:20px;margin-right:20px")
-						div(style="font-size:14px;color:#174D75;font-weight:bold;text-align:left") 
+						div(style="font-size:14px;color:#174D75;font-weight:bold;text-align:left;line-height:30px") 
 							|#{spaceNews.headline}
-						div(style="font-size:12px;color:#174D75;text-align:left") 
-							|#{spaceNews.content}
-						div(style="font-size:10px;color:lightgrey") 
+						div(style="font-size:12px;color:#174D75;text-align:left;margin-bottom:10px") 
+							|!{spaceNews.content}
+						
+						div(style="font-size:10px;color:grey") 
 							|published on: #{moment(spaceNews.date).format("YYYY-MM-DD")}
-				hr
-				span(style="color:grey;font-size:10px;text-align:left;margin-left:20px") bpty studios | <b>commercial management</b> | #{moment().format("MMMM")} #{moment().format("YYYY")}  
+				
+				span(style="color:grey;font-size:10px;text-align:left;margin-left:20px") bpty studios | <a style ="color:grey" href="mailto:gerold.kathan@bwinparty.com"><b>commercial management</b></a> | #{moment().format("MMMM")} #{moment().format("YYYY")}  
 
 	include includes/material
 
