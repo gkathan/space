@@ -1,16 +1,16 @@
 /**
  * shared org functions
  * used by org.html, org_tree.html, org_radial.html
- * 
+ *
  */
 function getSize(data,tresholdMax,tresholdMin){
 	if (!tresholdMax) tresholdMax = 30;
 	if (!tresholdMin) tresholdMin = 4;
-	
+
 	var _size=data.overallReports?(Math.sqrt(data.overallReports)):tresholdMin;
 		  if (_size>tresholdMax) _size = tresholdMax;
 		  if (_size<tresholdMin) _size = tresholdMin;
-		  
+
 	//if (data.depth &&data.depth<=4 && data.depth>=3) _size = _size*((4-data.depth));
 	return _size;
 }
@@ -19,57 +19,57 @@ function getSize(data,tresholdMax,tresholdMin){
 function getSize(data,tresholdMax,tresholdMin){
 	//if (!tresholdMax) tresholdMax = 100;
 	if (!tresholdMin) tresholdMin = 5;
-	
+
 	var _levelQuotient=(MAX_LEVEL-data.level)/MAX_LEVEL;
 	var _countQoutient=1;
 	if (data.overallReports) _countQoutient =(data.overallReports/MAX_COUNT);
 	//if (_countQoutient<0.1)_countQoutient*=9;
-	
+
 	tresholdMax = 30;
-	
+
 	var _size=tresholdMax*_levelQuotient*_countQoutient;
 	//leaf nodes
 	if (!data.overallReports) _size=tresholdMin;;
-	
-	
+
+
 		  //if (_size>tresholdMax) _size = tresholdMax;
 		  if (_size<tresholdMin) _size = tresholdMin;
-		  
+
 	//if (data.depth &&data.depth<=4 && data.depth>=3) _size = _size*((4-data.depth));
 	return _size;
 }
 */
 
 /*
- 
+
  MAX_LEVEL is 100% of fontsize in all views
  * e.g. root: MAX =9  (overall = 3000) => fontsize should be 50
- * drill-in to level 6 => MAX=3  (overall =50) => should also be 50 (currently will be 
+ * drill-in to level 6 => MAX=3  (overall =50) => should also be 50 (currently will be
 
   MAX=3
   LEVEL =3
   * abweichung (3/3)= 1 => size =100%
-  * 
+  *
   MAX=3
   LEVEL=2
-  * abweichung =(2/3)= 67% => 
-  
-   
+  * abweichung =(2/3)= 67% =>
+
+
    => currently just mapped to overall size...
    => overallsize should just be an "on-top multiplicator"
-   in both cases we want top level with similar relative fontsize 
+   in both cases we want top level with similar relative fontsize
 
    => furtheron it depends on:
    * level and number on nodes per level compared to HEIGHT
    * e.g. top level, number of nodes = 1 and HEIGHT = 1000 => MAX size possible (no issue)
-   * e.g. leaf level: number of nodes 100, HEIGHT =1000 => quotient =10 ... hmm still fine 
+   * e.g. leaf level: number of nodes 100, HEIGHT =1000 => quotient =10 ... hmm still fine
 
 */
 
 /**
  * prepares the flat array for input into tree creation
- * @param:name defines the mapping attribute for name 
- * @param:parent defines the mapping attribute for parent 
+ * @param:name defines the mapping attribute for name
+ * @param:parent defines the mapping attribute for parent
  * @param:parentBase: fallback if parent has no value
  * */
 function createList(data,name,parent,parentBase){
@@ -79,10 +79,10 @@ function createList(data,name,parent,parentBase){
 		var row ={};
 		row["name"]=data[d][name];
 		row["parent"]=data[d][parent]?data[d][parent]:data[d][parentBase];
-		
+
 		row["employee"]=data[d]["First Name"]+" "+data[d]["Last Name"];;//data[d]["Full Name"];
 		row["supervisor"]=data[d][parent];
-		
+
 		row["function"]=data[d]["Function"];
 		row["position"]=data[d]["Position"];
 		row["vertical"]=data[d]["Vertical"];
@@ -96,17 +96,17 @@ function createList(data,name,parent,parentBase){
 		row["jobTitleLocal"]=data[d]["Local Job Title"];
 		row["jobTitle"]=data[d]["Corporate Job Title"];
 		row["job"]=data[d]["Job"];
-		
+
 		row["scrum1"]=data[d]["Scrum Team 1"];
 		row["scrumMaster"]=data[d]["Scrum Master Name"];
 		row["contractType"]=data[d]["Contract Type"];
 		row["dateHired"]=data[d]["Date First Hired"];
 		row["dateTermination"]= data[d]["Actual Termination Date"];
-		
+
 		_list.push(row);
 	}
 	return _list;
-		
+
 }
 
 function findNorbert(data){
@@ -123,13 +123,13 @@ function findAndreas(data){
 		//if (data[d]["name"]=="Mr. Andreas Meinrad") return data[d];
 		if (data[d]["name"]=="E2874") return data[d];
 	}
-	
+
 }
 function findGuy(data){
 	for (d in data){
 		if (data[d]["name"]=="Mr. Guy Duncan") return data[d];
 	}
-	
+
 }
 
 
@@ -138,14 +138,14 @@ function findJochen(data){
 		//if (data[d]["name"]=="Mr. Joachim Baca") return data[d];
 		if (data[d]["name"]=="E2873") return data[d];
 	}
-	
+
 }
 
 
-/** 
- * builds a tree structure from flat array which has parent information 
+/**
+ * builds a tree structure from flat array which has parent information
  */
- 
+
 function makeTree(data){
 	// *********** Convert flat data into a nice tree ***************
 	// create a name: node map
@@ -153,45 +153,54 @@ function makeTree(data){
 		map[node.name] = node;
 		return map;
 	}, {});
-	
+
 	this.dataMap = dataMap;
 
 	// create the tree array
 	var treeData = [];
 	data.forEach(function(node) {
 		// add to parent
+		//console.log("------------------------  [forEach] node:"+JSON.stringify(node));
+
 		var parent = dataMap[node.parent];
+		//console.log("[parent]:"+JSON.stringify(parent));
+
 		if (parent) {
 			// create child array if it doesn't exist
 			(parent.children || (parent.children = []))
 				// add node to child array
 				.push(node);
 		} else {
+			console.log("******************************** no parent found - push to treeData !!!"+JSON.stringify(node));
+
 			// parent is null or missing
 			treeData.push(node);
 		}
 	});
+
+	console.log("[treeData]: "+treeData.length);
+
 	this.treeData = treeData;
 	return treeData;
-	
+
 }
 
 
 
 /**
  * calculates the total cumulative "weight" (=sum of all descendants in a tree)
- * and attaches this as attribute "sumDescendants" in the array 
+ * and attaches this as attribute "sumDescendants" in the array
  */
 function count(tree,sum){
 	console.log("(debug)...in count: "+tree.name);
 	if (!tree.children){
-		
+
 		//console.log("-- leaf: "+tree.name+" supervisor: "+tree.parent.name+"  has "+tree.parent.children.length+" direct reports");
 		console.log("-- leaf: "+tree.name+" supervisor: "+tree.parent);
-		
+
 		return 1;
 	}
-	
+
 	var _s =1;
 	var _leafOnly=0;
 	for (var c in tree.children){
@@ -201,10 +210,10 @@ function count(tree,sum){
 	var _overall=sum+_s-1;
 	tree.overallReports=_overall;
 	tree.leafOnly=_leafOnly;
-	
+
 	tree.directReports=tree.children.length;
 	tree.averageSubordinates = Math.round((_overall-tree.directReports)/tree.directReports);
-	
+
 	console.log(tree.name+" (level: "+tree.depth+" - has: "+tree.children.length+" children"+" ...overall below reports: = "+(_overall));
 	return (sum+_s);
 }
@@ -215,16 +224,16 @@ function enrich(tree,level){
 	console.log("*start enrich...");
 	if (!level) level=0;
 	tree.level=level;
-	
+
 	if (!tree.children) return level ;
 	else level++;
 	for (var c in tree.children){
 		enrich(tree.children[c],level);
 	}
-	
+
 	// at this point we just have "text reference" to parent, not yet an object ....
 	var _parent = searchBy(orgTree,"name",tree.parent);
-	
+
 	if (_parent){
 		tree.averageDeviation= tree.overallReports-_parent.averageSubordinates;
 		console.log("----setting deviation: "+tree.averageDeviation);
@@ -232,7 +241,7 @@ function enrich(tree,level){
 	//return level;
 }
 
-/** doing some calculations 
+/** doing some calculations
  * 1) counts the number of nodes overall per depth level
  */
 function calculateTreeStats(tree){
@@ -259,10 +268,10 @@ function calculateTreeStats(tree){
  */
 function searchBy(tree,searchName,searchValue){
 	if (tree[searchName] == searchValue) return tree;
-	
+
 	var temp;
 	var children = tree.children;
-	
+
 	if (children){
 		for (var i in children){
 			temp=searchBy(children[i],searchName,searchValue);
@@ -284,7 +293,7 @@ function find (name){
 function getUniqueByColumn(inputArray,attribute)
 {
     var outputArray = [];
-    
+
     for (var i = 0; i < inputArray.length; i++)
     {
         if ((jQuery.inArray(inputArray[i][attribute], outputArray)) == -1)
@@ -292,7 +301,7 @@ function getUniqueByColumn(inputArray,attribute)
             outputArray.push(inputArray[i][attribute]);
         }
     }
-   
+
     return outputArray;
 }
 
@@ -305,18 +314,18 @@ function countEmployees(inputArray){
 }
 
 function countMaxDepth(inputTree,count){
-		
+
 		var level = inputTree.level;
 		if (!inputTree.children) return ++count;
 		if (inputTree.children){
 			count++;
-			
+
 			console.log("* has children.. count: "+count);
 			for (var i in inputTree.children){
 					count=countMaxDepth(inputTree.children[i],count);
 			}
 		}
-			
+
 		return count;
 }
 
@@ -330,9 +339,9 @@ function _isLeaf(tree){
 	if (!tree.children){
 		 console.log(tree.name+": IS leaf");
 	 }
-	console.log("** "+tree.name+" NOT leaf");	
+	console.log("** "+tree.name+" NOT leaf");
 	return 1;
-	
+
 	return 0;
 }
 
@@ -348,7 +357,7 @@ function traverseDF(node,func){
 	if (func) {
         func(node);
     }
- 
+
     _.each(node.children, function (child) {
         traverseDF(child, func);
     });
@@ -364,7 +373,7 @@ function traverseBF(node,func){
 	var q = [node];
 	var levels = new Array();
 	var count=0;
-		
+
     while (q.length > 0) {
         count++;
         node = q.shift();
@@ -373,15 +382,15 @@ function traverseBF(node,func){
         if (func) {
             func(node);
         }
- 
+
         _.each(node.children, function (child) {
             q.push(child);
         });
 	}
-	
+
 	console.log("MAX level = "+levels.length+" --- count="+count);
 	return levels;
-	
+
 }
 
 

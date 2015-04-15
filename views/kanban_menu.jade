@@ -127,6 +127,9 @@ block content
 									span.caret
 
 								ul.dropdown-menu(role="menu" aria-labelledby="org")
+									li(role="presentation")
+										a(role="menuitem" tabindex="-1" href="/organization/tree") tree
+
 									each _date in organizationhistoryDates
 										li(role="presentation")
 											a(role="menuitem" tabindex="-1" href="/organization/history/tree/#{_date.oDate}") tree [#{_date.oDate}]
