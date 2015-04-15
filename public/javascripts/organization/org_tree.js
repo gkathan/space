@@ -81,18 +81,17 @@ var _tree;
 function render(date){
 	org_date = date;
 	if (date){
-		 ORG_DATA="organization/history/"+date;
+		 ORG_DATA="organization/history/";
 	}
 	else{
 		 ORG_DATA="organization";
 	}
 
 	console.log("** render(): date = "+date);
-	console.log("** current path: "+window.location.pathname);
 
-	console.log("dataSourceFor(ORG_DATA+date):  "+dataSourceFor(ORG_DATA+date));
 
-	d3.json(dataSourceFor(ORG_DATA),function(data){
+
+	d3.json(dataSourceFor(ORG_DATA+date),function(data){
 	//d3.json(dataSourceFor("org2013april"),function(data){
 		// that is needed for historized orgdata
 		if (ORG_DATA=="organization/history/"){
