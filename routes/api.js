@@ -174,6 +174,7 @@ router.post(PATH.REST_SYNCEMPLOYEEIMAGES, function(req, res, next) {syncEmployee
 router.post(PATH.REST_SYNCAVAILABILITY, function(req, res, next) {syncAvailability(req,res,next); });
 router.get(PATH.REST_SYNCAVAILABILITY, function(req, res, next) {syncAvailability(req,res,next); });
 router.post(PATH.REST_SYNCINCIDENTS, function(req, res, next) {syncIncidents(req,res,next); });
+router.get(PATH.REST_SYNCINCIDENTS, function(req, res, next) {syncIncidents(req,res,next); });
 
 
 router.post(PATH.REST_SWITCHCONTEXT, function(req, res, next) {switchcontext(req,res,next); });
@@ -212,6 +213,8 @@ router.get(PATH.EXPORT_ROADMAPS, function(req, res, next) {excelRoadmaps(req,res
 router.get(PATH.EXPORT_AVAILABILITY, function(req, res, next) {excelAvailability(req,res,next);});
 router.get(PATH.EXPORT_FIREREPORT, function(req, res, next) {excelFirereport(req,res,next);});
 router.get(PATH.EXPORT_CONTENT, function(req, res, next) {excelContent(req,res,next);});
+router.get(PATH.EXPORT_ORGANIZATION, function(req, res, next) {excelOrganization(req,res,next);});
+
 
 router.post(PATH.TRANSCODE_BOARDS, function(req, res, next) {transcode(req,res,next); });
 
@@ -666,11 +669,12 @@ function syncAvailability(req,res,next){
 
 function syncIncidents(req,res,next){
     logger.debug("*********************** lets sync incidents from snow... ");
-
+		var _url = config.sync.incident.url;
     var incSyncService = require ('../services/IncidentSyncService');
-    incSyncService.sync(function(){
+    incSyncService.sync(_url,function(data){
 
-		logger.debug("???");
+			logger.debug("???");
+			res.send("incidents: "+JSON.stringify(data));
 	});
 }
 
@@ -1086,6 +1090,63 @@ function excelDomains(req, res , next){
 
     _generateAndSendExcel("domains",conf,req,res,next);
 }
+
+
+
+/**
+ * generate organization excel
+ */
+function excelOrganization(req, res , next){
+	console.log("******************* organization excel export");
+	var conf ={};
+    conf.stylesXmlFile = "views/excel_export/styles.xml";
+    conf.cols = [
+		{caption:'_id',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'context',type:'string',width:12,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'Employee Number',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'Last Name',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'First Name',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'Gender',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'Email Address',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'Contract Type',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'Person Type',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'Assignment Category',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'Job',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'Corporate Job Title',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'Local Job Title',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'Contractual Job Title',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'Position',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'Function',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'Vertical',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'Location',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'Employing Legal Entity',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'Organization',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'Organization Type',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'Employee is a Supervisor?',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'Cost Centre',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'Assignment Cost Code',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'Supervisor Employee Number',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'Supervisor Full Name',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'Supervisor E-Mail',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'HRBP Employee Number',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'HRBP Full Name',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'Scrum Master Number',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'Scrum Master Name',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'Scrum Team 1',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'Scrum Team 2',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'Scrum Team 3',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'Date First Hired',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'Projected Termination Date',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'Actual Termination Date',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell}
+	];
+
+    _generateAndSendExcel("organization",conf,req,res,next);
+}
+
+
+
+
+
 
 /**
  * generate availability excel

@@ -67,6 +67,8 @@ div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;back
 		a.btn.btn-xs.btn-danger(id="sync_employeeimages" href="#" ) sync employeeimages
 		br
 		a.btn.btn-xs.btn-danger(id="sync_availability" href="#" ) force sync availability
+		br
+		a.btn.btn-xs.btn-danger(id="sync_incidents" href="#" ) force sync incidents
 
 
 
@@ -112,6 +114,24 @@ div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;back
 			console.log("avreport request called...");
 			$.ajax({
 				url: '/api/space/rest/sync/availability',
+				type: 'POST',
+				data: {
+
+					},
+				success: function(data){
+					alert("data: "+JSON.stringify(data));
+				},
+				error: function(err){
+					alert("err: "+JSON.stringify(err));
+				}
+			});
+			//location.reload();
+		});
+		
+		$('#sync_incidents').on('click', function () {
+			console.log("incidentsync request called...");
+			$.ajax({
+				url: '/api/space/rest/sync/incidents',
 				type: 'POST',
 				data: {
 

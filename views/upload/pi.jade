@@ -12,7 +12,7 @@ div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;back
 		
 		table.table
 			tr
-				td.td(style="width:70px")
+				td.td(style="width:80px")
 					img(src="/images/pi/logo.gif") 
 				td.td(style="font-size:14px;font-weight:bold;vertical-align:middle")
 					span Assignment Report
@@ -21,6 +21,11 @@ div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;back
 					|format:
 				td(style="font-style:italic;font-size:12px;vertical-align:middle")
 					|organization_{YYYY}-{MM}-{DD}.xlsx
+			tr
+				td(style="font-size:12px;vertical-align:middle")
+					|important!
+				td(style="font-style:italic;font-size:12px;vertical-align:middle")
+					|strip all "." out of the columnheader names !!!!! (e.g. bwin.party Assignment Cost Center)
 			tr
 				td(colspan="2")
 			

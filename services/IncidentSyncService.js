@@ -33,8 +33,9 @@ exports.init = function(callback){
 	}
 }
 
+exports.sync = _syncIncident;
 
-function _syncIncident(url){
+function _syncIncident(url,done){
 
 /*
 	// 1) fetch the data from the 2 endpoints
@@ -59,16 +60,22 @@ function _syncIncident(url){
 	async.series([
 		function(callback){
 					logger.debug("1) ************************************** STEP-1");
-					_getData(url,1,"2015-03-25",function(data){
+					// priority 1 & 2 = P1, / P8
+					_getData(url,2,"2015-03-25",function(data){
 						logger.debug("-----------------------------------------data: "+data);
+							callback();
+
 					})
 
-					callback();
+
 		},
 		function(callback){
 					logger.debug("2) ************************************** STEP-2");
+
 					callback();
+						done("????");
 		}
+
 
 
 		]);
@@ -97,12 +104,15 @@ function _getData(url,priority,date,callback){
 		client = new Client();
 		// direct way
 
-		url+="u_priority="+priority+"^opened_at>"+date;
+		url+="priority<="+priority+"^opened_at>"+date;
 
-		client.get(url, function(data, response){
+		logger.debug("*** client.get data : url = "+url);
+
+
+		client.get(url, function(data, response,callback){
 			// parsed response body as js object
 			logger.debug("...data:"+data);
-			logger.debug("...response:"+response);
+			logger.debug("...response:"+response.records);
 
 			logger.debug("...get data..: _url:"+url);
 			callback(data);

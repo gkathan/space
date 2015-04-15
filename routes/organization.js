@@ -30,9 +30,18 @@ router.get("/facebook", function(req, res, next) {
 router.get("/history/tree/:date", function(req, res, next) {
 	console.log("------------- :date = "+req.params.date);
 	res.locals.orgdate=req.params.date;
-	res.render("organization/org_tree", { title: 's p a c e - organizationchart' });
+	res.render("organization/org_tree", { title: 's p a c e - organizationchart - history: '+req.params.date });
 
 });
+
+router.get("/tree", function(req, res, next) {
+
+
+	res.render("organization/org_tree", { title: 's p a c e - organizationchart - current' });
+
+});
+
+
 
 router.get("/history/radial", function(req, res, next) {
 	res.send("org radial");

@@ -25,7 +25,7 @@
   		},
   		"availability" : {
   			"mode": "on",
-  			"intervalMinutes" :10,
+  			"intervalMinutes" :1440,
   			"url" : ["http://avreport.bwinparty.corp/API/AvReoprtingService.svc/getYTDDatapoint","http://avreport.bwinparty.corp/API/AvReoprtingService.svc/GetAVGraphDatapoints"]
   		},
   		"incident" : {

@@ -6,6 +6,7 @@ var mongo = require('mongodb');
 var mongojs = require('mongojs');
 var _ = require('lodash');
 
+
 var DB=config.database.db;
 var HOST = config.database.host;
 var connection_string = HOST+'/'+DB;
@@ -54,9 +55,7 @@ exports.convertXlsx2Json = function convertXlsx2Json (filename,done) {
 			if (_collection=="portfoliogate") _handlers = [_handlePortfolioGate];
 			else if (_collection=="organization"){
 
-				// 1) add to organizationhistory
-				// 2) and overwrite latest into organization
-				_handlers = [_handleOrganization,_handleOrganizationHistory];
+				_handlers = [_handleOrganization];
 
 
 			}
@@ -99,15 +98,30 @@ exports.convertXlsx2Json = function convertXlsx2Json (filename,done) {
 							},
 							function(callback){
 
-								// ok - this is not beautiful - but for now it works
-								// some more generic way of handling historization of data like orga.....
-								if (_getFunctionName(_handler) == "_handleOrganizationHistory") {
-									_collection="organizationhistory";
-								}
+
 								logger.debug("****async.series: 2) insert stuff: "+_collection);
 								logger.debug("****async.series: 2) _data.length: "+_data.length);
 
 								db.collection(_collection).insert(_data);
+
+								// ok - this is not beautiful - but for now it works
+								// some more generic way of handling historization of data like orga.....
+								if (_getFunctionName(_handler) == "_handleOrganization") {
+									logger.debug("________________________________ and in addition we insert the same shit into the history table...");
+									_collection="organizationhistory";
+									var _orghistory = {};
+									_orghistory.oDate = _date;
+									_orghistory.oItems = _data;
+
+									logger.debug("_orghistory: "+_orghistory);
+									logger.debug("_orghistory: oDate="+_orghistory.oDate);
+									logger.debug("_orghistory: oItems="+_orghistory.oItems);
+
+									db.collection(_collection).insert(_orghistory);
+
+
+
+								}
 
 
 								//done = true;
@@ -240,7 +254,7 @@ function _handlePortfolioGate(json,date,fillblanks,callback){
 
 /**
  * pre-process HR data
- */
+ *
 function _handleOrganizationHistory(json,date,fillblanks,callback){
 	//group by Date
 	logger.debug("######################## _handleOrganizationHistory called with date: "+date);
@@ -250,12 +264,16 @@ function _handleOrganizationHistory(json,date,fillblanks,callback){
 	callback(map);
 	return;
 }
+*/
+
 
 /**
  * pre-process HR data
  */
 function _handleOrganization(json,date,fillblanks,callback){
-	//group by Date
+		// 1) overwrite latest into organization
+		// 2) add the same with date to organizationhistory
+
 	logger.debug("######################## _handleOrganization called with date: "+date);
 
 

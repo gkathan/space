@@ -19,7 +19,7 @@ var MARGIN_TOP = 150;
 
 //default is "hr" ... HR line superivisor
 // alternative is "bp" ...business process / functional superivisor
-var HIERARCHY_TYPE ="bp";
+var HIERARCHY_TYPE ="hr";
 
 var ROLE_TYPE="position";
 
@@ -31,7 +31,8 @@ var MAX_COUNT;
 
 // set by multiselect box to switch data
 // default
-var ORG_DATA="organization/history/";
+//var ORG_DATA="organization/history/";
+var ORG_DATA="organization/";
 
 
 //fixed distance between depth levels
@@ -73,77 +74,97 @@ var org_date;
 
 var _tree;
 
+/** main entry
+* called from .jade views
 
+*/
 function render(date){
 	org_date = date;
-	//d3.xml("data/external_org.svg", function(xml) {
-	//	document.body.appendChild(document.importNode(xml.documentElement, true));
+	if (date){
+		 ORG_DATA="organization/history/"+date;
+	}
+	else{
+		 ORG_DATA="organization";
+	}
 
-		d3.json(dataSourceFor(ORG_DATA+date),function(data){
-		//d3.json(dataSourceFor("org2013april"),function(data){
+	console.log("** render(): date = "+date);
+	console.log("** current path: "+window.location.pathname);
+
+	console.log("dataSourceFor(ORG_DATA+date):  "+dataSourceFor(ORG_DATA+date));
+
+	d3.json(dataSourceFor(ORG_DATA),function(data){
+	//d3.json(dataSourceFor("org2013april"),function(data){
+		// that is needed for historized orgdata
+		if (ORG_DATA=="organization/history/"){
 			orgData = data.oItems;
+		}
+		else if (ORG_DATA=="organization"){
+			orgData = data;
+		}
+
+		console.log("dataSourceFor(ORG_DATA+date):  "+dataSourceFor(ORG_DATA+date));
 
 
 
-			//root = findAndreas(findNorbert(makeTree(createList(data,"Employee Number","Supervisor Employee Number"))).children);
-			//root = findNorbert(makeTree(createList(data,"Employee Number","Supervisor Employee Number")));
+		//root = findAndreas(findNorbert(makeTree(createList(data,"Employee Number","Supervisor Employee Number"))).children);
+		//root = findNorbert(makeTree(createList(data,"Employee Number","Supervisor Employee Number")));
 
-			var _parent,_parentBase;
-			if (HIERARCHY_TYPE=="hr") _parent = "Supervisor Employee Number";
-			else if (HIERARCHY_TYPE=="bp") {
-				_parent = "Business Process Flow Manager Employee Number";
-				_parentBase = "Supervisor Employee Number";
-			}
+		var _parent,_parentBase;
+		if (HIERARCHY_TYPE=="hr") _parent = "Supervisor Employee Number";
+		else if (HIERARCHY_TYPE=="bp") {
+			_parent = "Business Process Flow Manager Employee Number";
+			_parentBase = "Supervisor Employee Number";
+		}
 
-			var _list = createList(data.oItems,"Employee Number",_parent,_parentBase);
-			console.log("[OK] createList()");
-			_tree = makeTree(_list);
+		var _list = createList(orgData,"Employee Number",_parent,_parentBase);
+		console.log("[OK] createList()");
+		_tree = makeTree(_list);
 
-			if (_tree.length>0){
-				console.log("[OK] makeTree()");
-			}
-			else{
-				console.log("[FAILED] makeTree()");
-			}
+		if (_tree.length>0){
+			console.log("[OK] makeTree()");
+		}
+		else{
+			console.log("[FAILED] makeTree()");
+		}
 
-			root = findNorbert(_tree);
-			console.log("[OK] findNorbert()"+root);
-
-
-
-			//root = _.nest(orgData,["Location","Function"]);
-
-			orgTree = root;
+		root = findNorbert(_tree);
+		console.log("[OK] findNorbert()"+root);
 
 
-			if (ROOT_NAME) root = searchBy(orgTree,"employee",ROOT_NAME);
+
+		//root = _.nest(orgData,["Location","Function"]);
+
+		orgTree = root;
 
 
-			console.log("***** before count");
+		if (ROOT_NAME) root = searchBy(orgTree,"employee",ROOT_NAME);
 
-			if (root){
-				MAX_COUNT=count(root,0);
-				enrich(root);
 
-				statLevels = calculateTreeStats(root);
+		console.log("***** before count");
 
-				SIZE=300+MAX_COUNT+(MAX_LEVEL*300);
-				console.log("***** MAX_LEVEL: "+MAX_LEVEL);
-				WIDTH=4000;
-				HEIGHT=SIZE;
+		if (root){
+			MAX_COUNT=count(root,0);
+			enrich(root);
 
-				//set current size in orgmenu
-				//if (!HEIGHT_OVERRIDE) document.getElementById("input_height").value=HEIGHT;
-				//else HEIGHT = getInt(HEIGHT_OVERRIDE);
+			statLevels = calculateTreeStats(root);
 
-				_init();
-				_renderBackground(root);
-				_render(root);
-			}
-			else{
-				console.log("[hmmmmm] no root object......");
-			}
-		});
+			SIZE=300+MAX_COUNT+(MAX_LEVEL*300);
+			console.log("***** MAX_LEVEL: "+MAX_LEVEL);
+			WIDTH=4000;
+			HEIGHT=SIZE;
+
+			//set current size in orgmenu
+			//if (!HEIGHT_OVERRIDE) document.getElementById("input_height").value=HEIGHT;
+			//else HEIGHT = getInt(HEIGHT_OVERRIDE);
+
+			_init();
+			_renderBackground(root);
+			_render(root);
+		}
+		else{
+			console.log("[hmmmmm] no root object......");
+		}
+	});
 	//});
 }
 

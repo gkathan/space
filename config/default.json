@@ -291,13 +291,13 @@
 		},
 		"availability" : {
 			"mode": "off",
-			"intervalMinutes" :1 	,
+			"intervalMinutes" :1440,
 			"url" : ["http://avreport.bwinparty.corp/API/AvReoprtingService.svc/getYTDDatapoint","http://avreport.bwinparty.corp/API/AvReoprtingService.svc/GetAVGraphDatapoints"]
 		},
 		"incident" : {
 			"mode": "off",
 			"intervalMinutes" :1 	,
-			"url" : "http://snow.bwinparty.corp/incident_list.do?JSON&sysparm_query="
+			"url" : "https://bwinparty.service-now.com/ess/incident_list.do?JSONv2&sysparm_action=getRecords&sysparm_query="
 		}
 	},
 
