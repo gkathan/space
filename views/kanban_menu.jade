@@ -135,8 +135,12 @@ block content
 											a(role="menuitem" tabindex="-1" href="/organization/history/tree/#{_date.oDate}") tree [#{_date.oDate}]
 									li(role="presentation")
 										a(role="menuitem" tabindex="-1" href="/organization/history/radial") radial
+								
 									li(role="presentation")
-										a(role="menuitem" tabindex="-1" href="/organization/circlecontain/organization") circle contain
+										a(role="menuitem" tabindex="-1" href="/organization/circlecontain") circle contain
+									each _date in organizationhistoryDates
+										li(role="presentation")
+											a(role="menuitem" tabindex="-1" href="/organization/history/circlecontain/#{_date.oDate}") circlecontain [#{_date.oDate}]	
 									li(role="presentation")
 										a(role="menuitem" tabindex="-1" href="/organization/history/force") force map experiments
 									li(role="presentation")
@@ -223,8 +227,5 @@ block content
 									li(role="presentation")
 										a(role="menuitem" tabindex="-1" href="/config") -- show config --
 									
-
-
-
 
 	include includes/material

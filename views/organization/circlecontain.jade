@@ -22,6 +22,9 @@ block content
 		.panel-heading
 			i.glyphicon.glyphicon-book(style="font-size:15px")
 			span(style="font-size:20px")&nbsp; #{collection.toUpperCase()} 
+			if orgdate
+				span(style="font-size:20px")&nbsp; #{orgdate.toUpperCase()} 
+			
 		.panel-body
 			div(id="d3container")
 
@@ -42,4 +45,4 @@ block content
 		var _date = '#{orgdate}'
 		var _collection = '#{collection}'
 		
-		render(_collection);
+		render(_collection,_date);

@@ -1,5 +1,6 @@
 doctype html
 html(lang='en')
+	block vars
 	head
 		title= title
 		meta( charset='utf-8' )
@@ -11,7 +12,6 @@ html(lang='en')
 		
 	body
 		block content
-	
 	
 	script.
 		if (isIE()) window.location.href='/chromeonly';

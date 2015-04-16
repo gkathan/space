@@ -1,11 +1,6 @@
 // global variables
-
-
 // http://www.d3noob.org/2014/01/tree-diagrams-in-d3js_11.html
-
 var CONTEXT="CONTEXT";
-
-
 
 var orgData;
 var orgTree;
@@ -16,13 +11,10 @@ var SIZE ;
 var MARGIN_LEFT = 800;
 var MARGIN_TOP = 150;
 
-
 //default is "hr" ... HR line superivisor
 // alternative is "bp" ...business process / functional superivisor
 var HIERARCHY_TYPE ="hr";
-
 var ROLE_TYPE="position";
-
 
 var MAX_DEPTH= 10;
 
@@ -33,7 +25,6 @@ var MAX_COUNT;
 // default
 //var ORG_DATA="organization/history/";
 var ORG_DATA="organization/";
-
 
 //fixed distance between depth levels
 var DEPTH_WIDTH = 200;
@@ -48,30 +39,20 @@ var WIDTH =SIZE;
 var HEIGHT = SIZE;
 var HEIGHT_OVERRIDE;
 
-
 var duration=750;
-
 
 var _tree;
 
 var x,y,svg,tree,diagonal;
 
-
-
-
-
 var COLOR_BPTY="#174D75";
-
 var COLOR_TARGET = COLOR_BPTY;
-
 
 var color;
 var pack;
 var nodes;
 
-
 var org_date;
-
 var _tree;
 
 /** main entry
@@ -86,10 +67,7 @@ function render(date){
 	else{
 		 ORG_DATA="organization";
 	}
-
 	console.log("** render(): date = "+date);
-
-
 
 	d3.json(dataSourceFor(ORG_DATA+date),function(data){
 	//d3.json(dataSourceFor("org2013april"),function(data){

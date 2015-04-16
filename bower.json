@@ -36,5 +36,10 @@
   "resolutions": {
     "bootstrap-multiselect": "~0.9.10",
     "jquery": "~2.1.1"
+  },
+  "devDependencies": {
+    "nvd3": "~1.7.1",
+    "c3": "~0.4.10",
+    "d3": "~3.5.5"
   }
 }

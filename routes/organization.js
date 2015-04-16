@@ -31,16 +31,32 @@ router.get("/history/tree/:date", function(req, res, next) {
 	console.log("------------- :date = "+req.params.date);
 	res.locals.orgdate=req.params.date;
 	res.render("organization/org_tree", { title: 's p a c e - organizationchart - history: '+req.params.date });
-
 });
 
 router.get("/tree", function(req, res, next) {
-
-
 	res.render("organization/org_tree", { title: 's p a c e - organizationchart - current' });
-
 });
 
+
+router.get("/history/circlecontain/:date", function(req, res, next) {
+	console.log("------------- :date = "+req.params.date);
+	res.locals.orgdate=req.params.date;
+	res.locals.collection="organization";
+	res.render("organization/circlecontain", { title: 's p a c e - organizationchart - history: '+req.params.date });
+});
+
+router.get("/circlecontain", function(req, res, next) {
+	res.locals.collection="organization";
+	res.render("organization/circlecontain", { title: 's p a c e - circlecontain chart - current' });
+});
+
+
+
+// for the other circlecontains....
+router.get("/circlecontain/:collection", function(req, res, next) {
+	res.locals.collection=req.params.collection;
+	res.render("organization/circlecontain",{ title: "s p a c e - "+req.params.collection });
+});
 
 
 router.get("/history/radial", function(req, res, next) {
@@ -57,10 +73,8 @@ router.get("/simple", function(req, res, next) {
 });
 
 
-router.get("/circlecontain/:collection", function(req, res, next) {
-	res.locals.collection=req.params.collection;
-	res.render("organization/circlecontain",{ title: "s p a c e - "+req.params.collection });
-});
+
+
 
 router.get("/experiement", function(req, res, next) {
 	res.send("experiment");

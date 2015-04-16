@@ -64,6 +64,7 @@ var PATH = {
 						REST_ORGANIZATION : BASE+'/space/rest/organization',
 						REST_ORGANIZATION_EMPLOYEE : BASE+'/space/rest/organization/employee/:name',
 						REST_ORGANIZATIONHISTORY : BASE+'/space/rest/organization/history/:date',
+						REST_ORGANIZATIONSNAPSHOTDATES : BASE+'/space/rest/organization/snapshotdates',
 
 						REST_MAIL : BASE+'/space/rest/mail',
 						REST_SWITCHCONTEXT : BASE+'/space/rest/switchcontext',
@@ -182,6 +183,7 @@ router.get(PATH.REST_SWITCHCONTEXT, function(req, res, next) {switchcontext(req,
 
 router.get(PATH.REST_ORGANIZATION, function(req, res, next) {findAllByName(req,res,next); });
 router.get(PATH.REST_ORGANIZATION_EMPLOYEE, function(req, res, next) {findEmployeeByName(req,res,next); });
+router.get(PATH.REST_ORGANIZATIONSNAPSHOTDATES, function(req, res, next) {getOrganizationSnapshotDates(req,res,next); });
 
 router.get(PATH.REST_ORGANIZATIONHISTORY, function(req, res, next) {
 	db.collection("organizationhistory").findOne({oDate:req.params.date} , function(err , success){
@@ -671,13 +673,28 @@ function syncIncidents(req,res,next){
     logger.debug("*********************** lets sync incidents from snow... ");
 		var _url = config.sync.incident.url;
     var incSyncService = require ('../services/IncidentSyncService');
-    incSyncService.sync(_url,function(data){
+    logger.debug("*********************** incservice instantiated ");
+	  incSyncService.sync(_url,function(data){
 
 			logger.debug("???");
 			res.send("incidents: "+JSON.stringify(data));
 	});
 }
 
+
+
+function getOrganizationSnapshotDates(req,res,next){
+	// get all org instance dates for the menu
+	// ** this should go somewhere else ;-)
+	logger.debug("getsnapshot dates....");
+	orgService = require('../services/OrganizationService');
+	orgService.getOrganizationHistoryDates(function(data){
+		logger.debug("data: "+data);
+		res.send(data);
+	});
+
+
+}
 
 
 

@@ -54,12 +54,11 @@ app.set('view engine', 'jade');
 
 app.locals.title="s p a c e ";
 
-// get all org instance dates for the menu
-// ** this should go somewhere else ;-)
 orgService = require('./services/OrganizationService');
 orgService.getOrganizationHistoryDates(function(data){
 	app.locals.organizationhistoryDates=data;
-});
+ });
+
 
 app.use(favicon(path.join(__dirname,'public','images','favicon.ico')));
 app.use(bodyParser.json());

@@ -1,6 +1,8 @@
 // global variables
 var CONTEXT="CONTEXT";
 
+var DATA;
+
 var orgData;
 var orgTree;
 
@@ -94,44 +96,64 @@ function init(){
 }
 
 
-function render(collection){
-	console.log("render collection= "+collection);
-	d3.json(dataSourceFor(collection),function(data){
-
-	orgData = data;
-
-	var nestLevels=[];
-
-
-	if (collection=="productportfolio"){
-		nestLevels = ["Market","Suite / Brand","Label (Wallet)","ProductArea","Product"];
-		root = _.nest(orgData,nestLevels);
+function render(collection,date){
+	console.log("****** render collection= "+collection);
+	org_date = date;
+	if (date){
+		 DATA=collection+"/history/";
 	}
-	else if (collection=="productcatalog"){
-		nestLevels = ["Type","Offering","Family","Name"];
-		root = _.nest(orgData,nestLevels);
+	else{
+		DATA=collection;
+		date="";
 	}
-	else if (collection=="targets"){
-		nestLevels = ["cluster","group","target"];
-		root = _.nest(orgData,nestLevels);
-	}
-	else if (collection=="organization"){
-		nestLevels = ["Location","Cost Centre","Function","Supervisor Full Name"];
-		root = _.nest(orgData,nestLevels);
-	}
-	else if (collection=="incidents"){
-		nestLevels = ["Incident state", "Category","Priority","IT-Service" ];
-		root = _.nest(orgData,nestLevels);
-	}
+	console.log("** render(): date = "+date);
+	console.log("** datasource: "+dataSourceFor(DATA+date));
+
+	d3.json(dataSourceFor(DATA+date),function(data){
+			if (DATA=="organization/history/"){
+				orgData = data.oItems;
+			}
+			else {
+				orgData = data;
+			}
+
+		console.log("data.length: "+orgData.length);
+
+		//orgData = data;
+
+		var nestLevels=[];
+
+		if (collection=="productportfolio"){
+			nestLevels = ["Market","Suite / Brand","Label (Wallet)","ProductArea","Product"];
+			root = _.nest(orgData,nestLevels);
+		}
+		else if (collection=="productcatalog"){
+			nestLevels = ["Type","Offering","Family","Name"];
+			root = _.nest(orgData,nestLevels);
+		}
+		else if (collection=="targets"){
+			nestLevels = ["cluster","group","target"];
+			root = _.nest(orgData,nestLevels);
+		}
+		else if (collection=="organization"){
+			nestLevels = ["Location","Cost Centre","Function","Supervisor Full Name"];
+			console.log("...nesting organization by "+nestLevels);
+			root = _.nest(orgData,nestLevels);
+			console.log("...root "+JSON.stringify(root));
+		}
+		else if (collection=="incidents"){
+			nestLevels = ["Incident state", "Category","Priority","IT-Service" ];
+			root = _.nest(orgData,nestLevels);
+		}
 
 
-	depth = nestLevels.length //number of nest levels
+		depth = nestLevels.length //number of nest levels
 
-	count (root,0);
+		count (root,0);
 
-	treeData = root;
+		treeData = root;
 
-	init();
+		init();
 
    focus = root,
       nodes = pack.nodes(root);
@@ -211,6 +233,6 @@ function render(collection){
 });
 
 	d3.select(self.frameElement).style("height", outerDiameter + "px");
-	console.log("cactus.D3.render says: huh ?");
+	//console.log("cactus.D3.render says: huh ?");
 
 }

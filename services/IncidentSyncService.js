@@ -36,6 +36,28 @@ exports.init = function(callback){
 exports.sync = _syncIncident;
 
 function _syncIncident(url,done){
+	logger.debug("**** _syncIncident, url: "+url);
+
+		var Client = require('node-rest-client').Client;
+		client = new Client();
+		// direct way
+		logger.debug("**** node rest client: "+client);
+
+		url+="priority<=2";
+
+		logger.debug("*** client.get data : url = "+url);
+
+
+		client.get(url, function(data, response,callback){
+			// parsed response body as js object
+			logger.debug("...data:"+data);
+			logger.debug("...response:"+response.records);
+
+			logger.debug("...get data..: _url:"+url);
+			done(data);
+		})
+
+
 
 /*
 	// 1) fetch the data from the 2 endpoints
@@ -54,20 +76,21 @@ function _syncIncident(url,done){
 	});
 */
 
-
+/*
 	var async=require('async');
 
 	async.series([
-		function(callback){
+		function(done){
+*/
 					logger.debug("1) ************************************** STEP-1");
 					// priority 1 & 2 = P1, / P8
-					_getData(url,2,"2015-03-25",function(data){
-						logger.debug("-----------------------------------------data: "+data);
-							callback();
+//					_getData(url,2,"2015-03-25",function(data,done){
+//						logger.debug("-----------------------------------------data: "+data);
+//							done();
 
-					})
+	//				})
 
-
+/*
 		},
 		function(callback){
 					logger.debug("2) ************************************** STEP-2");
@@ -79,7 +102,7 @@ function _syncIncident(url,done){
 
 
 		]);
-
+*/
 
 
 
