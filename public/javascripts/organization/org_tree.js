@@ -55,9 +55,30 @@ var nodes;
 var org_date;
 var _tree;
 
+
+function _init(){
+	// ************** Generate the tree diagram	 *****************
+	var margin = {top: MARGIN_TOP, right: 120, bottom: 20, left: MARGIN_LEFT},
+		width = WIDTH - margin.right - margin.left,
+		height = HEIGHT - margin.top - margin.bottom;
+
+	tree = d3.layout.tree()
+		.size([height, width]);
+
+	diagonal = d3.svg.diagonal()
+		.projection(function(d) { return [d.y, d.x]; });
+		//.projection(function(d) { return [d.x, d.y]; });
+
+	svg = d3.select("body").append("svg")
+		.attr("width", width + margin.right + margin.left)
+		.attr("height", height + margin.top + margin.bottom)
+		.style("background","white")
+	  .append("g")
+		.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+}
+
 /** main entry
 * called from .jade views
-
 */
 function render(date){
 	org_date = date;
@@ -70,7 +91,6 @@ function render(date){
 	console.log("** render(): date = "+date);
 
 	d3.json(dataSourceFor(ORG_DATA+date),function(data){
-	//d3.json(dataSourceFor("org2013april"),function(data){
 		// that is needed for historized orgdata
 		if (ORG_DATA=="organization/history/"){
 			orgData = data.oItems;
@@ -78,13 +98,7 @@ function render(date){
 		else if (ORG_DATA=="organization"){
 			orgData = data;
 		}
-
 		console.log("dataSourceFor(ORG_DATA+date):  "+dataSourceFor(ORG_DATA+date));
-
-
-
-		//root = findAndreas(findNorbert(makeTree(createList(data,"Employee Number","Supervisor Employee Number"))).children);
-		//root = findNorbert(makeTree(createList(data,"Employee Number","Supervisor Employee Number")));
 
 		var _parent,_parentBase;
 		if (HIERARCHY_TYPE=="hr") _parent = "Supervisor Employee Number";
@@ -107,15 +121,9 @@ function render(date){
 		root = findNorbert(_tree);
 		console.log("[OK] findNorbert()"+root);
 
-
-
-		//root = _.nest(orgData,["Location","Function"]);
-
 		orgTree = root;
 
-
 		if (ROOT_NAME) root = searchBy(orgTree,"employee",ROOT_NAME);
-
 
 		console.log("***** before count");
 
@@ -142,36 +150,10 @@ function render(date){
 			console.log("[hmmmmm] no root object......");
 		}
 	});
-	//});
 }
 
 var _links;
 
-
-function _init(){
-	// ************** Generate the tree diagram	 *****************
-	var margin = {top: MARGIN_TOP, right: 120, bottom: 20, left: MARGIN_LEFT},
-		width = WIDTH - margin.right - margin.left,
-		height = HEIGHT - margin.top - margin.bottom;
-
-
-	tree = d3.layout.tree()
-		.size([height, width]);
-
-	diagonal = d3.svg.diagonal()
-		.projection(function(d) { return [d.y, d.x]; });
-		//.projection(function(d) { return [d.x, d.y]; });
-
-	svg = d3.select("body").append("svg")
-		.attr("width", width + margin.right + margin.left)
-		.attr("height", height + margin.top + margin.bottom)
-		.style("background","white")
-	  .append("g")
-		.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-
-
-}
 
 function _renderBackground(source){
 	//getting tree clustered by levels
@@ -231,13 +213,9 @@ function _renderBackground(source){
 
 function _render(source){
 	var i = 0;
-
-
-
-  // Compute the new tree layout.
+	// Compute the new tree layout.
 	//var nodes = tree.nodes(root).reverse(),
-
-  // filter the nodes which have no children
+	// filter the nodes which have no children
 	var nodes = tree.nodes(source).reverse().filter(function(d){
 		if (!LEAF_NODES){
 			return (d.children &&d.depth<MAX_DEPTH) ;
@@ -245,10 +223,8 @@ function _render(source){
 		else{
 			return (d.depth<MAX_DEPTH) ;
 		}
-		}),
-
-	  links = tree.links(nodes);
-
+	}),
+ 	links = tree.links(nodes);
 
   // Normalize for fixed-depth.
   nodes.forEach(function(d) { d.y = d.depth * DEPTH_WIDTH; });
@@ -271,8 +247,6 @@ function _render(source){
 		   return getSize(d,50,2)/2+"px";
 		})
 	  .style("fill", "#fff");
-
-
 
 
 	//***** NAME ********
@@ -392,9 +366,6 @@ function _render(source){
 
 	  //.style("writing-mode", "tb");
 
-
-
-
   // Declare the links…
   var link = svg.selectAll("path.link")
 	  .data(links, function(d) { return d.target.id; });
@@ -403,14 +374,6 @@ function _render(source){
   link.enter().insert("path", "g")
 	  .attr("class", "link")
 	  .attr("d", diagonal);
-
-
-
-
-
-
-
-
 }
 
 
@@ -425,8 +388,6 @@ function click(d) {
   d3.select("svg").remove();
   render(org_date);
   return;
-
-
 
   if (d.children) {
     d._children = d.children;

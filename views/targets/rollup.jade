@@ -43,7 +43,7 @@ mixin renderContext(context)
 		td(style="text-align:center;padding:10px;width:100px")
 			div(style="margin-bottom:10px")
 				img(src="/images/space_triangle_grey_up.png" style="vertical-align:middle;display:block;margin: auto auto" height="8px" width="30px"  )
-			div(style=";color:white;background-color:#{_.findWhere(config.entities,{'name':context.name}).skin.colors.primary};line-height:40px")
+			div(style=";color:white;background-color:#{_.findWhere(config.entities,{'name':context.name}).skin.colors.primary};line-height:60px")
 				span(style="line-height:28px;font-size:16px;font-weight:normal")
 					a(href="/targets/overview?context=#{context.name}" style="line-height:28px;font-size:12px;font-weight:bold;color:white;") #{_.capitalize(_.rest(context.name.split(".")).join("."))}
 			div(style="margin-top:10px")
@@ -52,7 +52,7 @@ mixin renderContext(context)
 
 
 // -----------------------------------------------------------------------
-// ------------------ mixin kpis ----------------------------
+// ------------------ mixin Root kpis ----------------------------
 // -----------------------------------------------------------------------
 mixin renderKPIsRoot(data)
 
@@ -60,11 +60,9 @@ mixin renderKPIsRoot(data)
 		each theme in data.children
 			if theme.name == 'KPI'
 				each kpi in theme.children[0].children
-					td(style="text-align:center;padding:10px;width:100px")
-						div(style="margin-bottom:10px")
-							img(src="/images/space_triangle_grey_up.png" style="vertical-align:middle;display:block;margin: auto auto" height="8px" width="30px"  )
+					td(style="text-align:center;padding-left:50px;padding-right:50px;width:100px")
 
-						div(style=";color:white;background-color:#{_.findWhere(config.entities,{'name':kpi.children[0].context}).skin.colors.primary};margin-bottom:5px;font-size:10px;font-weight:normal;height:40px;display:flex;justify-content:center;align-content:center;flex-direction:column;")
+						div(style=";color:white;background-color:#{_.findWhere(config.entities,{'name':kpi.children[0].context}).skin.colors.tints[2]};margin-bottom:5px;font-size:10px;font-weight:normal;height:40px;display:flex;justify-content:center;align-content:center;flex-direction:column;")
 							|#{_.capitalize(kpi.name)}
 
 
@@ -120,24 +118,26 @@ div(style="text-align:right")
 // ------------------------------ main view -------------------------------
 div.container-fluid(style="max-width:1800px")
 	div.row
-		div(style="font-weight:bold;font-size:20px;color:#{color_PL};text-align:center") 
-			img(src="/images/#{context}_logo.png" height="30px")
+		//div(style="font-weight:bold;font-size:20px;color:#{color_PL};text-align:center") 
+		//	img(src="/images/#{context}_logo.png" height="30px")
 		
-		div(style="font-weight:bold;font-size:20px;color:#{color_PL};text-align:center") "let the world play for real"
-		div(style="font-weight:normal;font-size:14px;color:#{color_PL};text-align:center") #{period}
-		div(style="margin-top:10px;margin-bottom:10px")
-			img(src="/images/space_triangle_bpty_up.png" style="vertical-align:middle;display:block;margin: auto auto" height="20px" width="300px"  )
+		//div(style="font-weight:bold;font-size:20px;color:#{color_PL};text-align:center") "let the world play for real"
+		//div(style="font-weight:normal;font-size:14px;color:#{color_PL};text-align:center") #{period}
+		//div(style="margin-top:10px;margin-bottom:10px")
+		//	img(src="/images/space_triangle_bpty_up.png" style="vertical-align:middle;display:block;margin: auto auto" height="20px" width="300px"  )
 
-		div.row(style=";color:white;background-color:#{color_PL};text-align:center;font-size:16px;font-weight:normal;margin-left:-5px;margin-right:-5px;line-height:48px") #{context} group
+		div.row(style=";color:white;background-color:#{color_PL};text-align:center;font-size:20px;font-weight:normal;margin-left:-5px;margin-right:-5px;line-height:50px") 
+			img(src="/images/#{context}_logo_white.png" height="30px")
+			| &nbsp;Group
 		
-		// holding KPIs
-		div.row(style="text-align:center")
-			table.table.table-borderless(style="background-color:transparent")
-				tr
-					each kpi in targetsClustered.children
-						// just the root ("bpty" KPIs)
-						if kpi.children[0].children[0].children[0].children[0].context.split(".").length ==1
-							+renderKPIsRoot(kpi)
+			// holding KPIs
+			div.row(style="text-align:center")
+				table.table.table-borderless(style="background-color:transparent")
+					tr
+						each kpi in targetsClustered.children
+							// just the root ("bpty" KPIs)
+							if kpi.children[0].children[0].children[0].children[0].context.split(".").length ==1
+								+renderKPIsRoot(kpi)
 		
 		
 		

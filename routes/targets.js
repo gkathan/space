@@ -164,13 +164,16 @@ res.locals._=require('lodash');
 			}
 
 
-			//var _targetsClustered = _.nst.nest(data,["profit","context","theme","group","target"]);
-			//var _targetsClusteredTheme= _.nst.nest(data,["profit","theme","context","target"]);
+			var _targetsClustered = _.nst.nest(data,["profit","context","theme","group","target"]);
+			var _targetsClusteredTheme= _.nst.nest(data,["profit","theme","context","target"]);
+
+			/*
 			var _targetsClustered = _.nst.nest(data,["context","theme","group","target"]);
 			var _targetsClusteredTheme= _.nst.nest(data,["theme","context","target"]);
+			*/
 
-			//res.locals.targetsClustered = _targetsClustered.children[1];
-			res.locals.targetsClustered = _targetsClustered;
+			res.locals.targetsClustered = _targetsClustered.children[1];
+			//res.locals.targetsClustered = _targetsClustered;
 			res.locals.targetsClusteredTheme = _targetsClusteredTheme;
 
 

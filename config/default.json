@@ -67,7 +67,9 @@
 					"secondary2" : "#82cec1",
 					"secondary3" : "#f99d1c",
 					"secondary4" : "#b0acd5",
-					"secondary5" : "#ffcd03"
+					"secondary5" : "#ffcd03",
+					"tints" : ["#174D75","#2E5F83","#457191","#5C839F","#7395AD","#8AA7BB","#A1B9C9","#B8CBD7","#CFDDE5","#E6EFF3","#FFFFFF"],
+					"shades" : ["#174D75","#154569","#133D5D","#113551","#0F2D45","#0D2539","#0B1D2D","#091521","#070D15","#050509","#000000"]
 				}
 			}
 		},

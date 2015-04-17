@@ -1,0 +1,39 @@
+include ../kanban_menu
+
+style.
+	#chart svg {
+	  height: 400px;
+		width:1000px;
+	}
+	#chart2 svg {
+	  height: 400px;
+		width:1000px;
+	}
+
+block content
+	div.row(style="margin: auto;max-width:1150px")
+		div.panel.panel-default
+			div.panel-heading 
+				|availability: 
+				b unplanned
+			div.panel-body
+				
+				div(id="chart" style="text-align:center")
+					svg
+					
+	div.row(style="margin: auto;max-width:1150px")
+		div.panel.panel-default
+			div.panel-heading 
+				|availability: 
+				b planned | unplanned | total 
+			div.panel-body
+				
+				div(id="chart2" style="text-align:center")
+					svg
+								
+
+
+			
+	
+script(src='/javascripts/dashboards/nvd3_availability.js')
+script(src='/javascripts/dashboards/nvd3_availability_multi.js')

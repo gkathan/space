@@ -55,4 +55,20 @@ router.get('/', function(req, res) {
 	}
 });
 
+router.get('/availability', function(req, res) {
+		res.render('dashboard/availability', { title: 's p a c e - availability dashboard' });
+});
+
+router.get('/incidents', function(req, res) {
+		res.render('dashboard/incidents', { title: 's p a c e - incidents dashboard' });
+});
+
+router.get('/qos', function(req, res) {
+		res.render('dashboard/qos', { title: 's p a c e - QoS dashboard' });
+});
+
+
+
+
+
 module.exports = router;

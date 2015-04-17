@@ -171,7 +171,7 @@ function makeTree(data){
 				// add node to child array
 				.push(node);
 		} else {
-			console.log("******************************** no parent found - push to treeData !!!"+JSON.stringify(node));
+			console.log("******************************** no parent found - push to treeData !!!");//+JSON.stringify(node));
 
 			// parent is null or missing
 			treeData.push(node);

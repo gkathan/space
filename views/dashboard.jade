@@ -7,81 +7,31 @@ block content
 			div.panel-body
 				
 				if l1targets.length>0
-					div.col-md-2.col-lg3(style="width:220px")
-						.panel.panel-default(style="width:200px;margin:0px;height:300px ")
-							.panel-heading(style="text-align:center;font-weight:bold") #{_.findWhere(l1targets,{id:'K1'}).id}  - #{_.findWhere(l1targets,{id:'K1'}).directTarget} 
-							.panel-body
-							div(style="font-weight:normal;font-size:12px;text-align:center")
-								|target | #{_.findWhere(l1targets,{id:'K1'}).directTime} 
-							div(style="font-weight:bold;font-size:28px;text-align:center")
-								|#{_.findWhere(l1targets,{id:'K1'}).directMetric} 
-							
-							div(id="c3_availability_gauge")
-							div(style="font-size:10px;text-align:center")
-								br
-								|last update: #{moment(availability.createDate).format('YYYY-MM-DD HH:mm:ss')}
-								br
-								a(href="http://dashboard.bwin.corp/" target="_blank") :: appdynamics dashboard
-									
-								
-					div.col-md-2.col-lg3(style="width:220px")
-						.panel.panel-default(style="width:200px;margin:0px;height:300px ")
-							.panel-heading(style="text-align:center;font-weight:bold") S2 - incidents P1-P8
-							.panel-body
-							div(style="font-weight:normal;font-size:12px;text-align:center")
-								|target | Q4
-							div(style="font-weight:bold;font-size:28px;text-align:center")
-								|-25% 
-							
-							div(id="c3_incident_barchart")
-							div(style="font-size:12px;text-align:center")
-								
-								a(href="files/firereports/firereport_#{availability.year}-week-#{availability.week}.pdf" target="_blank") as per firereport week-#{availability.week}-#{availability.year}
+					each target in l1targets
+						div.col-md-2.col-lg3(style="width:220px")
+							.panel.panel-default(style="width:200px;margin:0px;height:300px ")
+								.panel-heading(style="text-align:center;font-weight:bold") 
+									a(href="/dashboard/availability") 
+										|#{target.id} - #{target.directTarget} 
+								.panel-body
+								div(style="font-weight:normal;font-size:12px;text-align:center")
+									|target | #{target.directTime} 
+								div(style="font-weight:bold;font-size:28px;text-align:center")
+									|#{target.directMetric}#{target.directMetricScale} 
+								div(id="#{target.dashboardTop}")
+								div(style="font-size:12px;text-align:center")
+									if target.id=="K1"
+										br
+										|last update: #{moment(availability.createDate).format('YYYY-MM-DD HH:mm:ss')}
+										br
+										a(href="http://dashboard.bwin.corp/" target="_blank") :: appdynamics dashboard
+									else if target.id =="K2"
+										a(href="files/firereports/firereport_#{availability.year}-week-#{availability.week}.pdf" target="_blank") as per firereport week-#{availability.week}-#{availability.year}
+									else if target.id =="K3"
+										a(href="" target="_blank") as per some source
+									else if target.id =="K4"
+									else if target.id =="K5"
 
-					div.col-md-2.col-lg3(style="width:220px")
-						.panel.panel-default(style="width:200px;margin:0px;height:300px ")
-							.panel-heading(style="text-align:center;font-weight:bold") S3 - mobile share 
-							.panel-body
-							div(style="font-weight:normal;font-size:12px;text-align:center")
-								|target | Q4
-							div(style="font-weight:bold;font-size:28px;text-align:center")
-								|50% 
-							
-							div(id="c3_mobile_spline")
-							div(style="font-size:12px;text-align:center")
-							
-								a(href="" target="_blank") as per some source
-
-					div.col-md-2.col-lg3(style="width:220px")
-						.panel.panel-default(style="width:200px;margin:0px;height:300px ")
-							.panel-heading(style="text-align:center;font-weight:bold") S4 - roadmap delivery
-							.panel-body
-							div(style="font-weight:normal;font-size:12px;text-align:center")
-								|target | YoY
-							div(style="font-weight:bold;font-size:28px;text-align:center")
-								|100% 
-							
-							div(id="c3_incident_chart")
-							div(style="font-size:12px;text-align:center")
-								br
-								a(href="" target="_blank") as per some source
-
-					div.col-md-2.col-lg3(style="width:220px")
-						.panel.panel-default(style="width:200px;margin:0px;height:300px ")
-							.panel-heading(style="text-align:center;font-weight:bold") S5 - contracted B2B rev 
-							.panel-body
-							div(style="font-weight:normal;font-size:12px;text-align:center")
-								|target | YoY
-							div(style="font-weight:bold;font-size:28px;text-align:center")
-								|10 mEur 
-							
-							div(id="c3_incident_chart")
-							div(style="font-size:12px;text-align:center")
-								br
-								a(href="" target="_blank") as per some source
-
-			
-	
-script(src='/javascripts/c3/availability_gauge.js')
-script(src='/javascripts/c3/incident_barchart.js')
-script(src='/javascripts/c3/mobile_spline.js')
+//include the according external graph codes
+each target in l1targets
+	script(src='/javascripts/dashboards/#{target.dashboardTop}.js')

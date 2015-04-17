@@ -1,49 +1,49 @@
-	
+
 // =================================== D3 helper functions ==========================================
 
 function _drawXlink(svg,href,x,y,style){
 	if (!style.rotate) style.rotate=0;
 	if (!style.scale) style.scale=1;
-	
+
 	var _xlink = svg.append("use")
 		.attr("xlink:href",href)
 		.attr("transform","translate("+x+","+y+") scale("+style.scale+") rotate("+style.rotate+")");
 	if (style.cursor) _xlink.style("cursor",style.cursor);
 	if (style.opacity) _xlink.style("opacity",style.opacity);
-	
+
 	return _xlink;
 }
 
 
 //_drawText(svg,"text",100,100,1,{"weight":bold,"color":"blue","anchor":"end"})
- 
+
 function _drawText(svg,text,x,y,style){
 	if (!style.style) style.style="normal";
 	if (!style.anchor) style.anchor="start";
 	if (!style.rotate) style.rotate=0;
 	if (!style.scale) style.scale=1;
-    
+
 	var _text = svg.append("text")
 	.text(text)
 	.style("font-style",style.style)
 	.style("text-anchor",style.anchor)
  	.attr("transform","translate ("+x+","+y+") scale("+style.scale+") rotate("+style.rotate+")");
-	
+
     if (style.color) _text.style("fill",style.color);
 	if (style.size) _text.style("font-size",style.size);
     if (style.weight) _text.style("font-weight",style.weight);
     if (style.opacity) _text.style("opacity",style.opacity);
-    if (style.mode) _text.style("writing-mode","tb"); 
-    if (style.css) _text.attr("class",style.css); 
+    if (style.mode) _text.style("writing-mode","tb");
+    if (style.css) _text.attr("class",style.css);
 
     return _text;
 }
- 
+
 
 
 
 /**
-    This function attempts to create a new svg "text" element, chopping 
+    This function attempts to create a new svg "text" element, chopping
      it up into "tspan" pieces, if the caption is too long
     => expects a text element and will add the tspans accordingly !
 */
@@ -62,9 +62,9 @@ function textarea(svg,caption, x, y,maxChars,lineHeight) {
 			.attr("x",x)
 			.attr("y",y)
 			.text(line);
-  
+
 			if (words[n]=="|") words[n]="";
-  
+
 			line = words[n] + " ";
 			y += lineHeight;
 		}
@@ -94,6 +94,22 @@ function _drawLine(svg,x1,y1,x2,y2,css,markers){
 	 }
 	 return _line;
 }
+
+/** generic line draw helper method
+ * @markers array ["start","end"]
+ * @class css reference
+ * */
+function _drawCircle(svg,x,y,r,css){
+	var _circle = svg.append("circle")
+	  .attr("cx",x)
+	  .attr("cy",y)
+	  .attr("r",r)
+
+	  .attr("class",css);
+	 return _circle;
+}
+
+
 /**
  * rect helper
  */
