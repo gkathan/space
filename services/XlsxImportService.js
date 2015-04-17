@@ -22,7 +22,7 @@ var appRoot = require('app-root-path');
  *
  * converts xlsx to json
  */
-exports.convertXlsx2Json = function convertXlsx2Json (filename,done) {
+exports.convertXlsx2Json = function convertXlsx2Json (filename,req,done) {
 	// here we can do our processing
 	var _originalFilename = filename;
 	var _jsonfilename = filename+".json";
@@ -54,10 +54,7 @@ exports.convertXlsx2Json = function convertXlsx2Json (filename,done) {
 			logger.debug("***************** [DEBUG]: _collection: "+_collection);
 			if (_collection=="portfoliogate") _handlers = [_handlePortfolioGate];
 			else if (_collection=="organization"){
-
 				_handlers = [_handleOrganization];
-
-
 			}
 			else if (_.indexOf(_plainElements,_collection) >-1){
 				 _handlers = [_handlePlain];
@@ -117,7 +114,15 @@ exports.convertXlsx2Json = function convertXlsx2Json (filename,done) {
 									logger.debug("_orghistory: oDate="+_orghistory.oDate);
 									logger.debug("_orghistory: oItems="+_orghistory.oItems);
 
-									db.collection(_collection).insert(_orghistory);
+									db.collection(_collection).insert(_orghistory,function(){
+										// and update the app.locals.organizationhistoryDates for the menu
+										orgService = require('../services/OrganizationService');
+										orgService.getOrganizationHistoryDates(function(data){
+											logger.debug("...and updating the menu with: "+JSON.stringify(data));
+											req.app.locals.organizationhistoryDates=data;
+											callback();
+										 });
+									});
 
 
 

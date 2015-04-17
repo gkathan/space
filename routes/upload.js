@@ -126,10 +126,12 @@ router.post('/process/xlsx',function(req,res){
   // lets take the first
   // and do the json
   var xlsximport = require('../services/XlsxImportService');
-  xlsximport.convertXlsx2Json(_filename,function(err,success){
+  xlsximport.convertXlsx2Json(_filename,req,function(err,success){
 		  if(success){
 				res.locals.success=success;
 		    res.locals.uploadfilename= _filename;
+
+
 		    res.render("upload/"+_type, { title: 's p a c e - import '+_type });
 			}
 			else{
