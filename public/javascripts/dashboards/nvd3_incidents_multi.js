@@ -7,9 +7,11 @@ nv.addGraph(function() {
 
   var incidents;//={unplannedYTD:99.61,targetYTD:99.75};
   var _period ="";
-  if (window.location.search.split("=").length>=1) _period=_.last(window.location.search.split("="));
+  if (window.location.search.split("=").length>1) _period="/"+_.last(window.location.search.split("="));
+
+  console.log("period: "+_period);
   // do a ajax call
-  $.get( "/api/space/rest/incidenttracker/"+_period, function( data ) {
+  $.get( "/api/space/rest/incidenttracker"+_period, function( data ) {
     incidents = data;
 
     var _P1=[];
