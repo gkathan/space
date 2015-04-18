@@ -6,7 +6,8 @@ nv.addGraph(function() {
   */
 
   var incidents;//={unplannedYTD:99.61,targetYTD:99.75};
-  var _period=_.last(window.location.search.split("="));
+  var _period ="";
+  if (window.location.search.split("=").length>=1) _period=_.last(window.location.search.split("="));
   // do a ajax call
   $.get( "/api/space/rest/incidenttracker/"+_period, function( data ) {
     incidents = data;
@@ -45,6 +46,9 @@ nv.addGraph(function() {
     ;
     $("#P1Sum").text(_P1Sum);
     $("#P8Sum").text(_P8Sum);
+    if (_period=="") _period ="All";
+    $("#period").text(_period);
+
      //chart.focusEnable(true);
     chart.reduceXTicks(true).staggerLabels(true);
 
