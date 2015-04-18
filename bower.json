@@ -6,7 +6,7 @@
     "bootstrap": "~3.3.2",
     "bootstrap-multiselect": "~0.9.10",
     "bootstrap-notify": "latest",
-    "d3": "latest",
+    "d3": "~3.5.5",
     "underscore": "~1.8.2",
     "underscore.nest": "latest",
     "moment": "latest",
@@ -25,7 +25,8 @@
     "tablesorter": "*",
     "jquery.fileDownload": "~1.4.2",
     "c3": "~0.4.10",
-    "bootstrap3-wysiwyg": "~0.3.3"
+    "bootstrap3-wysiwyg": "~0.3.3",
+    "nvd3": "~1.8.1"
   },
   "authors": [
     "cactus <gerold.kathan@gmail.com>"

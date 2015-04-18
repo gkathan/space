@@ -5,27 +5,32 @@ nv.addGraph(function() {
 
   */
 
-  var availability;//={unplannedYTD:99.61,targetYTD:99.75};
-
+  var incidents;//={unplannedYTD:99.61,targetYTD:99.75};
+  var _period=_.last(window.location.search.split("="));
   // do a ajax call
-  $.get( "/api/space/rest/availability", function( data ) {
-    availability = data[0].avReport.GetAVGraphDatapoints;
+  $.get( "/api/space/rest/incidenttracker/"+_period, function( data ) {
+    incidents = data;
 
-    var _planned=[];
-    var _unplanned=[];
-    var _total=[];
+    var _P1=[];
+    var _P8=[];
 
-    for (var month in availability){
-      console.log("date: "+availability[month].date+" value.planned: "+availability[month].value.planned+" value.unplanned: "+availability[month].value.unplanned);
-      _planned.push({"date":availability[month].date,"y":availability[month].value.planned});
-      _unplanned.push({"date":availability[month].date,"y":availability[month].value.unplanned});
-      _total.push({"date":availability[month].date,"y":(parseFloat(availability[month].value.unplanned)*parseFloat(availability[month].value.planned))/100});
+    var _P1Sum=0;
+    var _P8Sum=0;
+
+    //var _total=[];
+
+    for (var day in incidents){
+      console.log("date: "+incidents[day].date+" P1: "+incidents[day].P1+" P8: "+incidents[day].P8);
+      _P1.push({"date":incidents[day].date,"y":parseInt(incidents[day].P1)});
+      _P1Sum+=parseInt(incidents[day].P1);
+      _P8.push({"date":incidents[day].date,"y":parseInt(incidents[day].P8)});
+      _P8Sum+=parseInt(incidents[day].P8);
     }
 
-    //console.log("availability: "+JSON.stringify(availability));
+    console.log("P1Sum = "+_P1Sum+" P8Sum = "+_P8Sum);
 
     //var avData = [{key:"Avalability bla",values:availability}]
-    var avData = [{key:"planned",values:_planned},{key:"unplanned",values:_unplanned},{key:"total",values:_total}]
+    var incData = [{key:"P1",values:_P1},{key:"P8",values:_P8}]
 
     var chart = nv.models.multiBarChart()
       .x(function(d) { return d.date })
@@ -36,20 +41,18 @@ nv.addGraph(function() {
       .color(["#174D75","#00b8e4","#82cec1"])
       .groupSpacing(0.2)
       .rotateLabels(45)
-      .showControls(false)
-
+      .showControls(true)
     ;
-
-    console.log("data: "+JSON.stringify(data));
-    chart.reduceXTicks(false).staggerLabels(true);
-
-    chart.forceY([95,98,100])
+    $("#P1Sum").text(_P1Sum);
+    $("#P8Sum").text(_P8Sum);
+     //chart.focusEnable(true);
+    chart.reduceXTicks(true).staggerLabels(true);
 
     chart.yAxis
-        .tickFormat(d3.format(',.2f'));
+        .tickFormat(d3.format(',d'));
 
-    d3.select('#chart2 svg')
-        .datum(avData)
+    d3.select('#chart svg')
+        .datum(incData)
         .transition().duration(500)
         .call(chart)
         ;

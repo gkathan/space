@@ -36,7 +36,7 @@ var logger = winston.loggers.get('test_log');
  */
 exports.getL1 = function (context,callback) {
 	var targets =  db.collection('targets');
-	targets.find({context:context,"type":"L1"}).sort({$natural:1}, function (err, docs){
+	targets.find({context:context,"type":"L1"}).sort({id:1}, function (err, docs){
 			debugger;
 
 			callback(docs);
@@ -46,7 +46,7 @@ exports.getL1 = function (context,callback) {
 
 exports.getL2 = function (context,callback) {
 	var targets =  db.collection('targets');
-	targets.find({context:context,"type":"L2"}).sort({$natural:1}, function (err, docs){
+	targets.find({context:context,"type":"L2"}).sort({id:1}, function (err, docs){
 
 			callback(docs);
 			return;

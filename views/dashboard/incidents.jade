@@ -1,13 +1,74 @@
 include ../kanban_menu
 
+style.
+	#chart svg {
+	  height: 400px;
+		width:1100px;
+	}
+	#chart2 svg {
+	  height: 400px;
+		width:1000px;
+	}
+
 block content
 	div.row(style="margin: auto;max-width:1150px")
 		div.panel.panel-default
-			div.panel-heading studios - L1 targets dashboard
+			div.panel-heading 
+				|incidents: 
+				b daily 
+				|for period: 
+				b #{period}
 			div.panel-body
-				
+				.btn-group
+					a.btn.btn-default(href='javascript:void(0)') Quarter
+					a.btn.btn-default.dropdown-toggle(href='bootstrap-elements.html', data-target='#', data-toggle='dropdown')
+						span.caret
+						ul.dropdown-menu
+							li
+								a(href='/dashboard/incidents?period=q1-2014') Q1-2014
+							li
+								a(href='/dashboard/incidents?period=q2-2014') Q2-2014
+							li
+								a(href='/dashboard/incidents?period=q3-2014') Q3-2014
+							li
+								a(href='/dashboard/incidents?period=q4-2014') Q4-2014
+							li
+								a(href='/dashboard/incidents?period=q1-2015') Q1-2015
+							li
+								a(href='/dashboard/incidents?period=q2-2015') Q2-2015
+				.btn-group
+					a.btn.btn-default(href='javascript:void(0)') HalfYear
+					a.btn.btn-default.dropdown-toggle(href='bootstrap-elements.html', data-target='#', data-toggle='dropdown')
+						span.caret
+						ul.dropdown-menu
+							li
+								a(href='/dashboard/incidents?period=h1-2014') H1-2014
+							li
+								a(href='/dashboard/incidents?period=h2-2014') H2-2014
+							li
+								a(href='/dashboard/incidents?period=h1-2015') H1-2015
+				.btn-group
+					a.btn.btn-default(href='javascript:void(0)') Year
+					a.btn.btn-default.dropdown-toggle(href='bootstrap-elements.html', data-target='#', data-toggle='dropdown')
+						span.caret
+						ul.dropdown-menu
+							li
+								a(href='/dashboard/incidents?period=2014') 2014
+							li
+								a(href='/dashboard/incidents?period=2015') 2015
+
+				div(style="text-align:center")
+					span(style="font-weight:normal;font-size:20px") &Sigma; 
+					span(id="P1Sum" style="font-weight:bold;font-size:30px;color:#174D75;text-align:center") 
+					span(style="font-weight:normal;font-size:20px") &nbsp;&nbsp;&nbsp;&Sigma; 
+					span(id="P8Sum" style="font-weight:bold;font-size:30px;color:#00b8e4") 
+					
+				div(id="chart" style="text-align:center")
+					svg
+					
+					
+
+
 			
 	
-script(src='/javascripts/c3/availability_gauge.js')
-script(src='/javascripts/c3/incident_barchart.js')
-script(src='/javascripts/c3/mobile_spline.js')
+script(src='/javascripts/dashboards/nvd3_incidents_multi.js')

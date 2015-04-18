@@ -60,6 +60,8 @@ router.get('/availability', function(req, res) {
 });
 
 router.get('/incidents', function(req, res) {
+		var _period = req.query.period;
+		res.locals.period = _period;
 		res.render('dashboard/incidents', { title: 's p a c e - incidents dashboard' });
 });
 
