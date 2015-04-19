@@ -7,7 +7,7 @@ $.get( "/api/space/rest/availability", function( data ) {
 
   // do another ajax call to get target values
   $.get( "/api/space/rest/targets/L1", function( l1targets ) {
-    console.log("ajax call to get L1target data: "+JSON.stringify(l1targets));
+    //console.log("ajax call to get L1target data: "+JSON.stringify(l1targets));
     var _s1 = _.findWhere(l1targets,{id:'K1'});
 
     //availability={unplannedYTD:99.61,targetYTD:99.75};

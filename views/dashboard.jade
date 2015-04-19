@@ -26,7 +26,10 @@ block content
 										br
 										a(href="http://dashboard.bwin.corp/" target="_blank") :: appdynamics dashboard
 									else if target.id =="K2"
-										a(href="files/firereports/firereport_#{availability.year}-week-#{availability.week}.pdf" target="_blank") as per firereport week-#{availability.week}-#{availability.year}
+										span(id="baseline")
+										br
+										span(id="target")
+										
 									else if target.id =="K3"
 										a(href="" target="_blank") as per some source
 									else if target.id =="K4"
