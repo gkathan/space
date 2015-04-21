@@ -57,6 +57,7 @@ function getConfig(collection){
 		case "boards": return getBoardConfig();
 		case "v1epics": return getV1EpicsConfig();
 		case "incidents": return getIncidentsConfig();
+		case "problems": return getProblemsConfig();
 		case "labels": return getLabelsConfig();
 		case "customers": return getCustomersConfig();
 		case "competitors": return getCompetitorsConfig();
@@ -443,17 +444,66 @@ function getV1EpicsConfig(){
 
 function getIncidentsConfig(){
 	var _incidents =[
-      { id:"id", name: "id", field: "Number",sortable:true,width:30,cssClass:"onKanbanImmutable" },
+      { id:"id", name: "id", field: "id",sortable:true,width:70,cssClass:"onKanbanImmutable" },
     	{ id:"context", name: "context", field: "context",sortable:true,width:80,cssClass:"onKanbanImmutable"},
-      { id:"Description", name: "Description", field: "Short description",sortable:true,width:150, editor: Slick.Editors.Text,cssClass: "cell-standard" },
-      { id: "Urgency", name: "Urgency", field: "Urgency", editor: Slick.Editors.Text ,width:150, cssClass: "cell-standard",sortable:true},
-      { id: "Impact", name: "Impact",  field: "Impact",width:150 ,sortable:true, cssClass: "cell-standard"},
-			{ id: "Priority", name: "Priority", field: "Priority", editor: Slick.Editors.Text,width:150,sortable:true, cssClass: "cell-standard" }];
+      { id:"state", name: "state", field: "state",sortable:true,width:70, editor: Slick.Editors.Text,cssClass: "cell-standard" },
+      { id: "openedAt", name: "openedAt", field: "openedAt", editor: Slick.Editors.Text ,width:150, cssClass: "cell-standard",sortable:true},
+			{ id:"priority", name: "priority", field: "priority",sortable:true,width:100, editor: Slick.Editors.Text,cssClass: "cell-standard" },
+			{ id:"location", name: "location", field: "location",sortable:true,width:100, editor: Slick.Editors.Text,cssClass: "cell-standard" },
+      { id: "shortDescription", name: "shortDescription",  field: "shortDescription",width:500 ,sortable:true, cssClass: "cell-standard"},
+			{ id:"label", name: "label", field: "label",sortable:true,width:200, editor: Slick.Editors.Text,cssClass: "cell-standard" },
+			{ id:"businessService", name: "businessService", field: "businessService",sortable:true,width:200, editor: Slick.Editors.Text,cssClass: "cell-standard" },
+
+      { id:"impact", name: "impact", field: "impact",sortable:true,width:100, editor: Slick.Editors.Text,cssClass: "cell-standard" },
+      { id:"urgency", name: "urgency", field: "urgency",sortable:true,width:100, editor: Slick.Editors.Text,cssClass: "cell-standard" },
+      { id:"description", name: "description", field: "description",sortable:true,width:500, editor: Slick.Editors.Text,cssClass: "cell-standard" },
+      { id:"resolvedAt", name: "resolvedAt", field: "resolvedAt",sortable:true,width:150, editor: Slick.Editors.Text,cssClass: "cell-standard" },
+      { id:"slaResolutionDate", name: "slaResolutionDate", field: "slaResolutionDate",sortable:true,width:150, editor: Slick.Editors.Text,cssClass: "cell-standard" },
+      { id:"category", name: "category", field: "category",sortable:true,width:150, editor: Slick.Editors.Text,cssClass: "cell-standard" },
+      { id:"labelType", name: "labelType", field: "labelType",sortable:true,width:150, editor: Slick.Editors.Text,cssClass: "cell-standard" },
+      { id:"active", name: "active", field: "active",sortable:true,width:50, editor: Slick.Editors.Text,cssClass: "cell-standard" },
+      { id:"closeCode", name: "closeCode", field: "closeCode",sortable:true,width:150, editor: Slick.Editors.Text,cssClass: "cell-standard" },
+			{ id: "problemId", name: "problemId",  field: "problemId",width:80 ,sortable:true, cssClass: "cell-standard"},
+			{ id: "severity", name: "severity",  field: "severity",width:80 ,sortable:true, cssClass: "cell-standard"},
+			{ id: "isMajorIncident", name: "isMajorIncident",  field: "isMajorIncident",width:150 ,sortable:true, cssClass: "cell-standard"},
+			{ id: "createdBy", name: "createdBy",  field: "createdBy",width:150 ,sortable:true, cssClass: "cell-standard"},
+			{ id: "contactType", name: "contactType",  field: "contactType",width:150 ,sortable:true, cssClass: "cell-standard"},
+			{ id: "timeWorked", name: "timeWorked",  field: "timeWorked",width:150 ,sortable:true, cssClass: "cell-standard"},
+			{ id: "syncDate", name: "syncDate",  field: "shortDescription",width:150 ,sortable:true, cssClass: "cell-standard"}];
 	var _config ={};
-	_config.mode="readonly";
+	_config.mode="editable";
 	_config.fields = _incidents;
 	return _config;
 }
+
+
+function getProblemsConfig(){
+	var _problems =[
+      { id:"id", name: "id", field: "id",sortable:true,width:70,cssClass:"onKanbanImmutable" },
+    	{ id:"context", name: "context", field: "context",sortable:true,width:80,cssClass:"onKanbanImmutable"},
+      { id:"impact", name: "impact", field: "impact",sortable:true,width:100, editor: Slick.Editors.Text,cssClass: "cell-standard" },
+      { id:"urgency", name: "urgency", field: "urgency",sortable:true,width:100, editor: Slick.Editors.Text,cssClass: "cell-standard" },
+      { id:"description", name: "description", field: "description",sortable:true,width:500, editor: Slick.Editors.Text,cssClass: "cell-standard" },
+      { id:"priority", name: "priority", field: "priority",sortable:true,width:100, editor: Slick.Editors.Text,cssClass: "cell-standard" },
+			{ id:"label", name: "label", field: "label",sortable:true,width:100, editor: Slick.Editors.Text,cssClass: "cell-standard" },
+      { id:"closedAt", name: "closedAt", field: "closedAt",sortable:true,width:150, editor: Slick.Editors.Text,cssClass: "cell-standard" },
+      { id:"labelType", name: "labelType", field: "labelType",sortable:true,width:150, editor: Slick.Editors.Text,cssClass: "cell-standard" },
+      { id:"active", name: "active", field: "active",sortable:true,width:150, editor: Slick.Editors.Text,cssClass: "cell-standard" },
+      { id:"closeCode", name: "closeCode", field: "closeCode",sortable:true,width:150, editor: Slick.Editors.Text,cssClass: "cell-standard" },
+      { id:"state", name: "state", field: "state",sortable:true,width:80, editor: Slick.Editors.Text,cssClass: "cell-standard" },
+			{ id: "openedAt", name: "openedAt", field: "openedAt", editor: Slick.Editors.Text ,width:150, cssClass: "cell-standard",sortable:true},
+      { id: "shortDescription", name: "shortDescription",  field: "shortDescription",width:250 ,sortable:true, cssClass: "cell-standard"},
+			{ id: "incidentId", name: "incidentId",  field: "incidentId",width:150 ,sortable:true, cssClass: "cell-standard"},
+			{ id: "createdBy", name: "createdBy",  field: "createdBy",width:150 ,sortable:true, cssClass: "cell-standard"},
+			{ id: "contactType", name: "contactType",  field: "contactType",width:150 ,sortable:true, cssClass: "cell-standard"},
+			{ id: "syncDate", name: "syncDate",  field: "syncDate",width:150 ,sortable:true, cssClass: "cell-standard"}];
+	var _config ={};
+	_config.mode="editable";
+	_config.fields = _problems;
+	return _config;
+}
+
+
 
 
 function getLabelsConfig(){

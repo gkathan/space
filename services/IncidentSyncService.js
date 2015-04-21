@@ -27,7 +27,9 @@ exports.init = function(callback){
 
 			var _url = config.sync.incident.url;
 
-			_syncIncident(_url);
+			_syncIncident(_url,function(data){
+				logger.debug("** [DONE] incidentSync ");
+			});
 
 		});
 	}
@@ -38,12 +40,17 @@ exports.sync = _syncIncident;
 function _syncIncident(url,done){
 	logger.debug("**** _syncIncident, url: "+url);
 
+		var _secret = require("../config/secret.json");
+
+		var options_auth={user:_secret.snowUser,password:_secret.snowPassword};
+		logger.debug("snowUser: "+_secret.snowUser);
+
 		var Client = require('node-rest-client').Client;
-		client = new Client();
+		client = new Client(options_auth);
 		// direct way
 		logger.debug("**** node rest client: "+client);
 
-		url+="priority<=2";
+		url+="priority<=3";
 
 		logger.debug("*** client.get data : url = "+url);
 
@@ -53,74 +60,72 @@ function _syncIncident(url,done){
 			logger.debug("...data:"+data);
 			logger.debug("...response:"+response.records);
 
-			logger.debug("...get data..: _url:"+url);
-			done(data);
-		})
+			logger.debug("arguments.callee.name: "+arguments.callee.name);
+			logger.debug("[_syncIncident]...get data..: _url:"+url);
+			//logger.debug("[_syncIncident]...get data..: data:"+JSON.stringify(data));
 
+			// and store it
+			var incidents =  db.collection('incidents');
+			incidents.drop();
 
-
-/*
-	// 1) fetch the data from the 2 endpoints
-	async.each(urls, function (url, callback){
-		// call availability rest service
-		var Client = require('node-rest-client').Client;
-		client = new Client();
-		// direct way
-		client.get(url, function(data, response){
-			// parsed response body as js object
-
-			logger.debug("...get data..");
-			logger.debug(data);
-		})
-		callback();
-	});
-*/
-
-/*
-	var async=require('async');
-
-	async.series([
-		function(done){
-*/
-					logger.debug("1) ************************************** STEP-1");
-					// priority 1 & 2 = P1, / P8
-//					_getData(url,2,"2015-03-25",function(data,done){
-//						logger.debug("-----------------------------------------data: "+data);
-//							done();
-
-	//				})
-
-/*
-		},
-		function(callback){
-					logger.debug("2) ************************************** STEP-2");
-
-					callback();
-						done("????");
-		}
-
-
-
-		]);
-*/
-
-
-
-		/*
-		var availability =  db.collection('availability');
-		availability.drop();
-		availability.insert({createDate:new Date(),epics:JSON.parse(data)}	 , function(err , success){
-			//console.log('Response success '+success);
-			logger.debug('Response error '+err);
-			if(success){
-				logger.info("sync availability [DONE]");
+			var _incidents=[];
+			for (var i in data.records){
+				_incidents.push(_filterRelevantData(data.records[i]));
 			}
-			//return next(err);
 
-		})*/
+			incidents.insert(_incidents	 , function(err , success){
+				//console.log('Response success '+success);
+				logger.debug('Response error '+err);
+				if(success){
+					logger.info("[success] sync incidents....length: "+_incidents.length);
 
+				}
+			})
+			done(data);
+
+
+		})
 }
 
+/**
+* filters out the relevant attributes of the 87 fields from snow ;-)
+*/
+function _filterRelevantData(data){
+
+	var _incident={};
+	_incident.location = data.location;
+	_incident.context="bpty";
+	_incident.impact = data.impact;
+	_incident.urgency = data.urgency;
+	_incident.description = data.description;
+	_incident.priority = data.priority;
+	_incident.closedAt = data.closed_at;
+	_incident.resolvedAt = data.resolved_at;
+	_incident.id = data.number;
+	_incident.label = data.u_label;
+	_incident.businessService = data.u_business_service;
+	_incident.slaResolutionDate = data.u_sla_resolution_due_date;
+	_incident.category = data.category;
+	_incident.labelType = data.u_label_type;
+	_incident.active = data.active;
+	_incident.closeCode = data.u_close_code;
+	_incident.assignmentGroup = data.assignmentGroup;
+	_incident.state = data.state;
+	_incident.openedAt = data.opened_at;
+	_incident.shortDescription = data.short_description;
+	_incident.notify = data.notify;
+	_incident.problemId = data.problem_id;
+	_incident.severity = data.severity;
+	_incident.isMajorIncident = data.u_major_incident;
+	_incident.createdBy = data.sys_created_by;
+	_incident.openedBy = data.sys_opened_by;
+
+	_incident.contactType = data.contact_type;
+	_incident.timeWorked = data.time_worked;
+	_incident.syncDate = new Date();
+
+	return _incident;
+}
 
 function _getData(url,priority,date,callback){
 		var Client = require('node-rest-client').Client;

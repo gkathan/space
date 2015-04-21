@@ -46,6 +46,8 @@ var PATH = {
 						REST_INCIDENTS : BASE+'/space/rest/incidents',
 						REST_INCIDENTTRACKER : BASE+'/space/rest/incidenttracker',
 						REST_INCIDENTTRACKER_DATE : BASE+'/space/rest/incidenttracker/:date',
+						REST_PROBLEMS : BASE+'/space/rest/problems',
+
 						REST_V1EPICS : BASE+'/space/rest/v1epics',
 						REST_LABELS : BASE+'/space/rest/labels',
 						REST_DOMAINS : BASE+'/space/rest/domains',
@@ -59,6 +61,8 @@ var PATH = {
 						REST_SYNCEMPLOYEEIMAGES : BASE+'/space/rest/sync/employeeimages',
 						REST_SYNCAVAILABILITY : BASE+'/space/rest/sync/availability',
 						REST_SYNCINCIDENTS : BASE+'/space/rest/sync/incidents',
+						REST_SYNCPROBLEMS : BASE+'/space/rest/sync/problems',
+						REST_SYNCAPM_BETPLACEMENT : BASE+'/space/rest/sync/apm/betplacement',
 
 						REST_INITIATIVES_DIFF_TRAIL : BASE+'/space/rest/initiatives_diff_trail',
 						REST_ORGANIZATION : BASE+'/space/rest/organization',
@@ -124,6 +128,8 @@ router.get(PATH.REST_SCRUMTEAMS, function(req, res, next) {findAllByName(req,res
 router.get(PATH.REST_V1TEAMS, function(req, res, next) {findAllByName(req,res,next);});
 router.get(PATH.REST_PRODUCTPORTFOLIO, function(req, res, next) {findAllByName(req,res,next);});
 router.get(PATH.REST_PRODUCTCATALOG, function(req, res, next) {findAllByName(req,res,next);});
+router.get(PATH.REST_PROBLEMS, function(req, res, next) {findAllByName(req,res,next);});
+
 router.get(PATH.REST_INCIDENTS, function(req, res, next) {findAllByName(req,res,next);});
 router.get(PATH.REST_INCIDENTTRACKER, function(req, res, next) {findAllByName(req,res,next);});
 router.post(PATH.REST_INCIDENTTRACKER, function(req, res, next) {save(req,res,next);});
@@ -176,6 +182,11 @@ router.post(PATH.REST_SYNCAVAILABILITY, function(req, res, next) {syncAvailabili
 router.get(PATH.REST_SYNCAVAILABILITY, function(req, res, next) {syncAvailability(req,res,next); });
 router.post(PATH.REST_SYNCINCIDENTS, function(req, res, next) {syncIncidents(req,res,next); });
 router.get(PATH.REST_SYNCINCIDENTS, function(req, res, next) {syncIncidents(req,res,next); });
+router.post(PATH.REST_SYNCPROBLEMS, function(req, res, next) {syncProblems(req,res,next); });
+router.get(PATH.REST_SYNCPROBLEMS, function(req, res, next) {syncProblems(req,res,next); });
+
+router.post(PATH.REST_SYNCAPM_BETPLACEMENT, function(req, res, next) {syncApm("betplacement",req,res,next); });
+router.get(PATH.REST_SYNCAPM_BETPLACEMENT, function(req, res, next) {syncApm("betplacement",req,res,next); });
 
 
 router.post(PATH.REST_SWITCHCONTEXT, function(req, res, next) {switchcontext(req,res,next); });
@@ -678,6 +689,31 @@ function syncIncidents(req,res,next){
 
 			logger.debug("???");
 			res.send("incidents: "+JSON.stringify(data));
+	});
+}
+
+function syncProblems(req,res,next){
+    logger.debug("*********************** lets sync problems from snow... ");
+		var _url = config.sync.problem.url;
+    var probSyncService = require ('../services/ProblemSyncService');
+    logger.debug("*********************** probservice instantiated ");
+	  probSyncService.sync(_url,function(data){
+
+			logger.debug("???");
+			res.send("problems: "+JSON.stringify(data));
+	});
+}
+
+function syncApm(process,req,res,next){
+    logger.debug("*********************** lets sync appdynamics process: "+process);
+		var _url = config.sync.apm[process].url;
+		
+    var apmSyncService = require ('../services/ApmSyncService');
+    logger.debug("*********************** apmservice instantiated, url: "+_url);
+	  apmSyncService.sync(_url,function(data){
+
+			logger.debug("???");
+			res.send("apm says: "+JSON.stringify(data));
 	});
 }
 

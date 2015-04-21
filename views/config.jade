@@ -69,6 +69,10 @@ div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;back
 		a.btn.btn-xs.btn-danger(id="sync_availability" href="#" ) force sync availability
 		br
 		a.btn.btn-xs.btn-danger(id="sync_incidents" href="#" ) force sync incidents
+		br
+		a.btn.btn-xs.btn-danger(id="sync_problems" href="#" ) force sync problems
+		br
+		a.btn.btn-xs.btn-danger(id="sync_apm_betplacement" href="#" ) force sync apm.betplacement
 
 
 
@@ -145,7 +149,42 @@ div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;back
 			});
 			//location.reload();
 		});
+		
+		$('#sync_problems').on('click', function () {
+			console.log("problemsync request called...");
+			$.ajax({
+				url: '/api/space/rest/sync/problems',
+				type: 'POST',
+				data: {
 
+					},
+				success: function(data){
+					alert("data: "+JSON.stringify(data));
+				},
+				error: function(err){
+					alert("err: "+JSON.stringify(err));
+				}
+			});
+			//location.reload();
+		});
+
+		$('#sync_apm_betplacement').on('click', function () {
+			console.log("sync_apm_betplacement request called...");
+			$.ajax({
+				url: '/api/space/rest/sync/apm/betplacement',
+				type: 'POST',
+				data: {
+
+					},
+				success: function(data){
+					alert("data: "+JSON.stringify(data));
+				},
+				error: function(err){
+					alert("err: "+JSON.stringify(err));
+				}
+			});
+			//location.reload();
+		});
 
 		$('#switchcontext_bpty').on('click', function () {
 			_switch("bpty");

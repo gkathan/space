@@ -299,7 +299,24 @@
 		"incident" : {
 			"mode": "off",
 			"intervalMinutes" :1 	,
-			"url" : "https://bwinparty.service-now.com/ess/incident_list.do?JSONv2&sysparm_action=getRecords&sysparm_query="
+			"url" : "https://bwinparty.service-now.com/incident_list.do?JSONv2&sysparm_action=getRecords&sysparm_query="
+		},
+		"problem" : {
+			"mode": "off",
+			"intervalMinutes" :60 	,
+			"url" : "https://bwinparty.service-now.com/problem_list.do?JSONv2&sysparm_action=getRecords&sysparm_query="
+		},
+		"apm" : {
+			"betplacement" :{
+				"mode": "off",
+				"intervalMinutes" :60 	,
+				"url" : "https://apm.bwinparty.corp/controller/rest/applications/bwin.party/metric-data",
+				"time_range_type" : "BETWEEN_TIMES",
+				"start_time" : 1427839200000,
+				"end_time" : 1427925600000,
+				"metricPath" : "Business%20Transaction%20Performance%7CBusiness%20Transactions%7Cbetting.api.bwin.be/v2%7CBettingPosBE-BetPlacementService.PlaceBet%7CAverage%20Response%20Time%20%28ms%29"
+
+			}
 		}
 	},
 
@@ -339,11 +356,16 @@
 					}
 			},
 
-     "firereports" : {
-		"contact": "Pablo Delgado Caballero",
-		"contactEmail" : "Pablo.DelgadoCaballero@bwinparty.com"
+ 		"firereports" : {
+					"contact": "Pablo Delgado Caballero",
+					"contactEmail" : "Pablo.DelgadoCaballero@bwinparty.com"
+		},
 
-     }
-
+		"mappings" :{
+				"snow" :{
+					"priority":[{"sys":1,"bpty":"P01 - Critical"},{"sys":2,"bpty":"P08 - High"},{"sys":3,"bpty":"P16 - Moderate"},{"sys":4,"bpty":"P40 - Low"}],
+					"state":[{"sys":1,"bpty":"New"},{"sys":2,"bpty":"In Progress"},{"sys":3,"bpty":"Closed"},{"sys":8,"bpty":"Awaiting"},{"sys":9,"bpty":"Resolved"}]
+				}
+		}
 
 }

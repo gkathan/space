@@ -139,6 +139,9 @@ avSyncService.init(function(av){
 var incidentSyncService = require('./services/IncidentSyncService');
 incidentSyncService.init();
 
+var problemSyncService = require('./services/ProblemSyncService');
+problemSyncService.init();
+
 
 // https
 // Enable reverse proxy support in Express. This causes the
