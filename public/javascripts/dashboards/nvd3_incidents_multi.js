@@ -1,3 +1,4 @@
+var c;
 nv.addGraph(function() {
 
   /*
@@ -57,11 +58,23 @@ nv.addGraph(function() {
     chart.yAxis
         .tickFormat(d3.format(',d'));
 
+    //console.log("--scaleY(50) = "+(50));
+
+
     d3.select('#chart svg')
         .datum(incData)
         .transition().duration(500)
         .call(chart)
         ;
+
+
+
+    var _svg = d3.select("#chart svg");
+    var _addon =_svg.append("g").attr("id","addons");
+
+     c = chart;
+
+    //_drawLine(_addon,0,350,1000,350,"targetLine");
 
     nv.utils.windowResize(chart.update);
 
