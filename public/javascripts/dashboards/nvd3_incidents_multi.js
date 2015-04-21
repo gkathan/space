@@ -1,4 +1,3 @@
-var c;
 nv.addGraph(function() {
 
   /*
@@ -72,9 +71,8 @@ nv.addGraph(function() {
     var _svg = d3.select("#chart svg");
     var _addon =_svg.append("g").attr("id","addons");
 
-     c = chart;
-
-    //_drawLine(_addon,0,350,1000,350,"targetLine");
+    console.log("scaling y(50) = "+chart.yAxis.scale()(50))
+    _drawLine(_addon,0,chart.yAxis.scale()(50),1000,chart.yAxis.scale()(50),"targetLine");
 
     nv.utils.windowResize(chart.update);
 
