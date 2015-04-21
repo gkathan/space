@@ -102,6 +102,7 @@ function _filterRelevantData(data){
 	_incident.closedAt = data.closed_at;
 	_incident.resolvedAt = data.resolved_at;
 	_incident.id = data.number;
+	_incident.sysId = data.sys_id;
 	_incident.label = data.u_label;
 	_incident.businessService = data.u_business_service;
 	_incident.slaResolutionDate = data.u_sla_resolution_due_date;

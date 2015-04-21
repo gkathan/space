@@ -20,6 +20,7 @@
         "SimpleDate": SimpleDateFormatter,
         "RAG":RAGFormatter,
         "V1EpicURL":V1EpicURLFormatter,
+        "SnowIncidentURL":SnowIncidentURLFormatter,
         "CheckInSync":CheckInSyncFormatter
 
       }
@@ -77,6 +78,12 @@
    http://v1.bwinparty.corp/V1-Production/Epic.mvc/Summary?oidToken=Epic%3A3394319
   function V1EpicURLFormatter(row, cell, value, columnDef, dataContext) {
     return value ? "<a href=\"http://v1.bwinparty.corp/V1-Production/Epic.mvc/Summary?oidToken=Epic%3A"+value+"\" target=\"_new\">"+value+"</a>" : "";
+  }
+
+  /* snow deeplink incident formatter
+  */
+  function SnowIncidentURLFormatter(row, cell, value, columnDef, dataContext) {
+    return value ? "<a href=\"https://bwinparty.service-now.com/ess/incident.do?sys_id="+value+"\" target=\"_new\">"+value+"</a>" : "";
   }
 
 

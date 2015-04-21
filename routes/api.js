@@ -130,7 +130,9 @@ router.get(PATH.REST_PRODUCTPORTFOLIO, function(req, res, next) {findAllByName(r
 router.get(PATH.REST_PRODUCTCATALOG, function(req, res, next) {findAllByName(req,res,next);});
 router.get(PATH.REST_PROBLEMS, function(req, res, next) {findAllByName(req,res,next);});
 
-router.get(PATH.REST_INCIDENTS, function(req, res, next) {findAllByName(req,res,next);});
+//router.get(PATH.REST_INCIDENTS, function(req, res, next) {findAllByName(req,res,next);});
+router.get(PATH.REST_INCIDENTS, function(req, res, next) {findIncidents(req,res,next);});
+
 router.get(PATH.REST_INCIDENTTRACKER, function(req, res, next) {findAllByName(req,res,next);});
 router.post(PATH.REST_INCIDENTTRACKER, function(req, res, next) {save(req,res,next);});
 router.delete(PATH.REST_INCIDENTTRACKER, function(req, res, next) {delete(req,res,next);});
@@ -408,6 +410,18 @@ function findBy_id(req, res , next){
     })
 }
 
+/**
+*/
+function findIncidents(req,res,next){
+	  logger.debug("findIncidents() called");
+
+		var incService = require("../services/IncidentService");
+		incService.find(function(data){
+				res.send(data);
+				return;
+		});
+
+}
 
 
 /**
@@ -707,7 +721,7 @@ function syncProblems(req,res,next){
 function syncApm(process,req,res,next){
     logger.debug("*********************** lets sync appdynamics process: "+process);
 		var _url = config.sync.apm[process].url;
-		
+
     var apmSyncService = require ('../services/ApmSyncService');
     logger.debug("*********************** apmservice instantiated, url: "+_url);
 	  apmSyncService.sync(_url,function(data){

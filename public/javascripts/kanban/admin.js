@@ -17,6 +17,8 @@ refresh(_type);
 
 
 function refresh(collection){
+		console.log("---------------------- dataSourceFor(collection): "+dataSourceFor(collection));
+
 		$.ajax({
 		type: "GET",
 		url: dataSourceFor(collection),
@@ -445,7 +447,8 @@ function getV1EpicsConfig(){
 function getIncidentsConfig(){
 	var _incidents =[
       { id:"id", name: "id", field: "id",sortable:true,width:70,cssClass:"onKanbanImmutable" },
-    	{ id:"context", name: "context", field: "context",sortable:true,width:80,cssClass:"onKanbanImmutable"},
+    	{ id:"sysId", name: "sysId", field: "sysId",sortable:true,width:70,formatter:Slick.Formatters.SnowIncidentURL,cssClass:"onKanbanImmutable" },
+			{ id:"context", name: "context", field: "context",sortable:true,width:80,cssClass:"onKanbanImmutable"},
       { id:"state", name: "state", field: "state",sortable:true,width:70, editor: Slick.Editors.Text,cssClass: "cell-standard" },
       { id: "openedAt", name: "openedAt", field: "openedAt", editor: Slick.Editors.Text ,width:150, cssClass: "cell-standard",sortable:true},
 			{ id:"priority", name: "priority", field: "priority",sortable:true,width:100, editor: Slick.Editors.Text,cssClass: "cell-standard" },
@@ -480,6 +483,7 @@ function getIncidentsConfig(){
 function getProblemsConfig(){
 	var _problems =[
       { id:"id", name: "id", field: "id",sortable:true,width:70,cssClass:"onKanbanImmutable" },
+    	{ id:"sysId", name: "sysId", field: "sysId",sortable:true,width:70,cssClass:"onKanbanImmutable" },
     	{ id:"context", name: "context", field: "context",sortable:true,width:80,cssClass:"onKanbanImmutable"},
       { id:"impact", name: "impact", field: "impact",sortable:true,width:100, editor: Slick.Editors.Text,cssClass: "cell-standard" },
       { id:"urgency", name: "urgency", field: "urgency",sortable:true,width:100, editor: Slick.Editors.Text,cssClass: "cell-standard" },
