@@ -1,10 +1,11 @@
 /**
-* service which syncs on a scheduled basis with the P1, P8 incidents from snow API
+* service which syncs on a scheduled basis with the configured prioity  incidents from snow API
 **/
 
 var config = require('config');
 var schedule = require('node-schedule');
 var _ = require('lodash');
+var moment = require('moment');
 
 var mongojs = require("mongojs");
 var DB="space";
@@ -50,7 +51,15 @@ function _syncIncident(url,done){
 		// direct way
 		logger.debug("**** node rest client: "+client);
 
-		url+="priority<=3";
+		/*
+			Priority:
+			Display Value	Actual Value
+			P01 – Critical	1
+			P08 – High	2
+			P16 - Moderate	3
+			P40 – Low	4
+		*/
+		url+="priority<="+config.sync.incident.includePriority;
 
 		logger.debug("*** client.get data : url = "+url);
 
@@ -79,12 +88,24 @@ function _syncIncident(url,done){
 				if(success){
 					logger.info("[success] sync incidents....length: "+_incidents.length);
 
+						var _tracker = _calculateDailyTracker(_incidents);
+						// and  handle incident tracker
+						var incidentstracker =  db.collection('incidenttracker');
+						//incidentstracker.drop();
+						incidentstracker.insert(_tracker	 , function(err , success){
+								logger.info("[success] sync incidentstracker....length: "+_tracker.length);
+						});
+
+
 				}
 			})
 			done(data);
 
 
-		})
+		}).on('error',function(err){
+            console.log('something went wrong on the request', err.request.options);
+        });
+
 }
 
 /**
@@ -99,20 +120,20 @@ function _filterRelevantData(data){
 	_incident.urgency = data.urgency;
 	_incident.description = data.description;
 	_incident.priority = data.priority;
-	_incident.closedAt = data.closed_at;
-	_incident.resolvedAt = data.resolved_at;
+	_incident.closedAt = new moment(data.closed_at,"DD-MM-YYYY HH:mm:ss").toDate();
+	_incident.resolvedAt = new moment(data.resolved_at,"DD-MM-YYYY HH:mm:ss").toDate();
 	_incident.id = data.number;
 	_incident.sysId = data.sys_id;
 	_incident.label = data.u_label;
 	_incident.businessService = data.u_business_service;
-	_incident.slaResolutionDate = data.u_sla_resolution_due_date;
+	_incident.slaResolutionDate = new moment(data.u_sla_resolution_due_date,"DD-MM-YYYY HH:mm:ss").toDate();
 	_incident.category = data.category;
 	_incident.labelType = data.u_label_type;
 	_incident.active = data.active;
 	_incident.closeCode = data.u_close_code;
 	_incident.assignmentGroup = data.assignmentGroup;
 	_incident.state = data.state;
-	_incident.openedAt = data.opened_at;
+	_incident.openedAt = new moment(data.opened_at,"DD-MM-YYYY HH:mm:ss").toDate();
 	_incident.shortDescription = data.short_description;
 	_incident.notify = data.notify;
 	_incident.problemId = data.problem_id;
@@ -124,6 +145,41 @@ function _filterRelevantData(data){
 	_incident.contactType = data.contact_type;
 	_incident.timeWorked = data.time_worked;
 	_incident.syncDate = new Date();
+	_incident.slaBreach = "";
+	_incident.slaBreachTime = "";
+
+	//logger.debug("--------------------- state: "+data.state);
+	if (data.state=="Resolved"){
+
+		var _open = _incident.openedAt;
+		var _resolved = _incident.resolvedAt
+
+
+		var ms = moment(_resolved,"DD/MM/YYYY HH:mm:ss").diff(moment(_open,"DD/MM/YYYY HH:mm:ss"));
+		var d = moment.duration(ms);
+		var _time = Math.floor(d.asHours()) + moment.utc(ms).format(":mm:ss");
+
+
+		_incident.timeToResolve = _time;
+		/*logger.debug("********************** opened: "+_open);
+		logger.debug("********************** resolved: "+_resolved);
+		logger.debug("********************** time to resolve: "+_time);
+		*/
+		if (_incident.slaResolutionDate && _resolved > _incident.slaResolutionDate){
+			_incident.slaBreach = true;
+			//logger.debug("################################## SLAB BREACH !!!! ");
+			ms = moment(_resolved,"DD/MM/YYYY HH:mm:ss").diff(moment(_incident.slaResolutionDate,"DD/MM/YYYY HH:mm:ss"));
+			d = moment.duration(ms);
+			_time = Math.floor(d.asHours()) + moment.utc(ms).format(":mm:ss");
+
+			//logger.debug("################################## SLAB BREACH by  "+_time);
+			_incident.slaBreachTime = _time;
+		}
+		else if (_incident.slaResolutionDate && _resolved <= _incident.slaResolutionDate){
+			_incident.slaBreach = false;
+		}
+
+	}
 
 	return _incident;
 }
@@ -146,6 +202,31 @@ function _getData(url,priority,date,callback){
 			logger.debug("...get data..: _url:"+url);
 			callback(data);
 		})
+}
 
 
+/**
+* param data list of incidnet objects
+* calculates the daily number of incidents types
+* and updates the incidentracker collection
+*/
+function _calculateDailyTracker(data){
+	var _dailytracker = [];
+	for (var i in data){
+		//openedAt date is what we look at
+		var _day = moment(data[i].openedAt).format("YYYY-MM-DD");
+
+		if (!_.findWhere(_dailytracker,{"date":_day})) {
+			_dailytracker.push({"date":_day,"P1":0,"P8":0});
+		}
+
+		if (data[i].priority=="P01 - Critical"){
+			_.findWhere(_dailytracker,{"date":_day}).P1++;
+		}
+		else if (data[i].priority=="P08 - High"){
+			_.findWhere(_dailytracker,{"date":_day}).P8++;
+		}
+
+	}
+	return _dailytracker;
 }

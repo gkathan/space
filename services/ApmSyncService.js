@@ -19,16 +19,13 @@ var logger = winston.loggers.get('space_log');
 exports.init = function(callback){
 	var rule = new schedule.RecurrenceRule();
 	// every 10 minutes
-	rule.minute = new schedule.Range(0, 59, config.sync.apm.betplacement.intervalMinutes);
-	logger.info("[s p a c e] ProblemSyncService init(): "+config.sync.problem.intervalMinutes+" minutes - mode: "+config.sync.apm.betplacement.mode);
-	if (config.sync.apm.betplacement.mode!="off"){
+	rule.minute = new schedule.Range(0, 59, config.sync.apm.login.intervalMinutes);
+	logger.info("[s p a c e] ApmSyncService init(): "+config.sync.apm.login.intervalMinutes+" minutes - mode: "+config.sync.apm.login.mode);
+	if (config.sync.apm.login.mode!="off"){
 		var j = schedule.scheduleJob(rule, function(){
-			logger.debug('...going to sync Problem stuff ....');
+			logger.debug('...going to sync Apm LOGIN stuff ....');
 
-			var _conf = config.sync.apm.betplacement;
-			var _url = _conf.url+"?"+"metricPath="+_conf.metricPath+"&time-range-type="+_conf.time-range-type+"&start-time="+_conf.start-time+"&end-time="+_conf.end-time;
-
-			_syncBetPlacement(_url,function(data){
+			_syncLogin(function(data){
 				logger.debug("** [DONE] apmSync ");
 			});
 
@@ -36,59 +33,45 @@ exports.init = function(callback){
 	}
 }
 
-exports.sync = _syncBetPlacement;
+exports.sync = _syncLogin;
 
-function _syncBetPlacement(url,done){
-	logger.debug("---- in _syncBetPlacement...");
-	var _conf = config.sync.apm.betplacement;
-	logger.debug("---- _conf: "+_conf);
-	var _url = "?"+"metric-path="+_conf.metricPath+"&time-range-type="+_conf.time_range_type+"&start-time="+_conf.start_time+"&end-time="+_conf.end_time+"&output=JSON";
-	logger.debug("--------------------------------------- _url: "+_url);
-	url+=_url;
+function _syncLogin(done){
 
-	logger.debug("**** _syncBetPlacement, url: "+url);
-
-		var _secret = require("../config/secret.json");
-
-		var options_auth={user:_secret.apmUser,password:_secret.apmPassword};
-		logger.debug("apmUser: "+_secret.apmUser);
+	logger.debug("---- in _syncLogin...");
+	var _conf = config.sync.apm.login;
+	var url = _conf.url+"?"+"metric-path="+_conf.metricPath+_conf.timing+"&output=JSON";
 
 
-		var Client = require('node-rest-client').Client;
-		client = new Client();
-		// direct way
-		logger.debug("**** node rest client: "+client);
-
-		//url+="priority<=3";
-
-		logger.debug("*** client.get data : url = "+url);
+	logger.debug("--------------------------------------- url: "+url);
 
 
-		client.get(url, function(data, response,callback){
-			// parsed response body as js object
-			logger.debug("...data:"+data);
-			logger.debug("...response:"+response.records);
+	var _secret = require("../config/secret.json");
 
-			logger.debug("arguments.callee.name: "+arguments.callee.name);
-			logger.debug("[_syncProblem]...get data..: _url:"+url);
-			//logger.debug("[_syncIncident]...get data..: data:"+JSON.stringify(data));
+	var options_auth={user:_secret.apmUser, password:_secret.apmPassword, connection:{rejectUnauthorized : false}};
+	logger.debug("apmUser: "+_secret.apmUser);
 
-			// and store it
-			var qos =  db.collection('qos');
-			qos.drop();
+	var Client = require('node-rest-client').Client;
+	client = new Client(options_auth);
+	client.get(url, function(data, response,callback){
+		// parsed response body as js object
+		logger.debug("======== syncLogin data:"+JSON.stringify(data));
 
 
-			qos.insert(data	 , function(err , success){
-				//console.log('Response success '+success);
-				logger.debug('Response error '+err);
-				if(success){
-					logger.info("[success] sync apm  ....length: "+data.length);
+		// and store it
+		var apm_login =  db.collection('apm_login');
 
-				}
-			})
-			done(data);
+		data[0].snapshotTime=new Date();
 
+		apm_login.insert(data	 , function(err , success){
+			//console.log('Response success '+success);
+			logger.debug('Response error '+err);
+			if(success){
+				logger.info("[success] sync apm  ....length: "+data.length);
 
+			}
 		})
+		done(data);
+
+	})
 
 }

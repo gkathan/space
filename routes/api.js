@@ -62,7 +62,9 @@ var PATH = {
 						REST_SYNCAVAILABILITY : BASE+'/space/rest/sync/availability',
 						REST_SYNCINCIDENTS : BASE+'/space/rest/sync/incidents',
 						REST_SYNCPROBLEMS : BASE+'/space/rest/sync/problems',
-						REST_SYNCAPM_BETPLACEMENT : BASE+'/space/rest/sync/apm/betplacement',
+						REST_SYNCAPM_LOGIN : BASE+'/space/rest/sync/apm/login',
+
+						REST_APM_LOGIN : BASE+'/space/rest/apm/login',
 
 						REST_INITIATIVES_DIFF_TRAIL : BASE+'/space/rest/initiatives_diff_trail',
 						REST_ORGANIZATION : BASE+'/space/rest/organization',
@@ -187,8 +189,11 @@ router.get(PATH.REST_SYNCINCIDENTS, function(req, res, next) {syncIncidents(req,
 router.post(PATH.REST_SYNCPROBLEMS, function(req, res, next) {syncProblems(req,res,next); });
 router.get(PATH.REST_SYNCPROBLEMS, function(req, res, next) {syncProblems(req,res,next); });
 
-router.post(PATH.REST_SYNCAPM_BETPLACEMENT, function(req, res, next) {syncApm("betplacement",req,res,next); });
-router.get(PATH.REST_SYNCAPM_BETPLACEMENT, function(req, res, next) {syncApm("betplacement",req,res,next); });
+router.post(PATH.REST_SYNCAPM_LOGIN, function(req, res, next) {syncApm("login",req,res,next); });
+router.get(PATH.REST_SYNCAPM_LOGIN, function(req, res, next) {syncApm("login",req,res,next); });
+
+router.get(PATH.REST_APM_LOGIN, function(req, res, next) {findAllByName(req,res,next); });
+
 
 
 router.post(PATH.REST_SWITCHCONTEXT, function(req, res, next) {switchcontext(req,res,next); });
@@ -701,7 +706,7 @@ function syncIncidents(req,res,next){
     logger.debug("*********************** incservice instantiated ");
 	  incSyncService.sync(_url,function(data){
 
-			logger.debug("???");
+
 			res.send("incidents: "+JSON.stringify(data));
 	});
 }
@@ -713,20 +718,22 @@ function syncProblems(req,res,next){
     logger.debug("*********************** probservice instantiated ");
 	  probSyncService.sync(_url,function(data){
 
-			logger.debug("???");
+
 			res.send("problems: "+JSON.stringify(data));
 	});
 }
 
 function syncApm(process,req,res,next){
     logger.debug("*********************** lets sync appdynamics process: "+process);
-		var _url = config.sync.apm[process].url;
+
 
     var apmSyncService = require ('../services/ApmSyncService');
-    logger.debug("*********************** apmservice instantiated, url: "+_url);
-	  apmSyncService.sync(_url,function(data){
 
-			logger.debug("???");
+	  apmSyncService.sync(function(data){
+			
+
+			logger.debug("------------------------------------------------------ data.snapShotDate: "+data.snapshotDate)
+
 			res.send("apm says: "+JSON.stringify(data));
 	});
 }

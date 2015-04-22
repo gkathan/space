@@ -72,7 +72,7 @@ div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;back
 		br
 		a.btn.btn-xs.btn-danger(id="sync_problems" href="#" ) force sync problems
 		br
-		a.btn.btn-xs.btn-danger(id="sync_apm_betplacement" href="#" ) force sync apm.betplacement
+		a.btn.btn-xs.btn-danger(id="sync_apm_login" href="#" ) force sync apm.login
 
 
 
@@ -168,10 +168,10 @@ div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;back
 			//location.reload();
 		});
 
-		$('#sync_apm_betplacement').on('click', function () {
+		$('#sync_apm_login').on('click', function () {
 			console.log("sync_apm_betplacement request called...");
 			$.ajax({
-				url: '/api/space/rest/sync/apm/betplacement',
+				url: '/api/space/rest/sync/apm/login',
 				type: 'POST',
 				data: {
 

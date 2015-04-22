@@ -21,8 +21,10 @@
         "RAG":RAGFormatter,
         "V1EpicURL":V1EpicURLFormatter,
         "SnowIncidentURL":SnowIncidentURLFormatter,
-        "CheckInSync":CheckInSyncFormatter
-
+        "CheckInSync":CheckInSyncFormatter,
+        "IncidentSLABreach":IncidentSLABreachFormatter,
+        "IncidentState":IncidentStateFormatter,
+        "IncidentPriority":IncidentPriorityFormatter
       }
     }
   });
@@ -107,12 +109,10 @@
   function RAGFormatter(row, cell, value, columnDef, dataContext) {
     var _color;
     if (value){
-		if (value.toLowerCase()=="red") _color="red";
-		if (value.toLowerCase()=="amber") _color="gold";
-		if (value.toLowerCase()=="green") _color="limegreen";
-	}
-    //return value ? "<div style=\"background-color:"+_color+"\">&nbsp;&nbsp;&nbsp;</div>" : "";
-
+  		if (value.toLowerCase()=="red") _color="red";
+  		if (value.toLowerCase()=="amber") _color="gold";
+  		if (value.toLowerCase()=="green") _color="limegreen";
+	  }
 
     return value ? "<div style='text-align:center'><div style='display:inline-block;margin-top:2px;width:10px;height:10px;-moz-border-radius: 50%; -webkit-border-radius: 50%; border-radius: 50%;background-color:"+_color+"''></div></div>" : "";
   }
@@ -121,8 +121,43 @@
     if (value==0) return "<img src='../images/iconexp/bullet_ball_yellow.png'>"
     if (value==1) return "<img src='../images/iconexp/bullet_ball_green.png'>"
     return "<img src='../images/iconexp/bullet_ball_grey.png'>"
+  }
 
+
+  function IncidentSLABreachFormatter(row, cell, value, columnDef, dataContext) {
+    var _color;
+    if (value){
+  		if (value == true) _color="red";
+  		if (value==false) _color="limegreen";
+	  }
+
+    return value ? "<div style='text-align:center'><div style='display:inline-block;margin-top:2px;width:10px;height:10px;-moz-border-radius: 50%; -webkit-border-radius: 50%; border-radius: 50%;background-color:"+_color+"''></div></div>" : "";
+  }
+
+  function IncidentStateFormatter(row, cell, value, columnDef, dataContext) {
+    var _color;
+    if (value){
+      if (value == "Resolved") _color="limegreen";
+      if (value=="In progress") _color="gold";
+      if (value=="New") _color="red";
+      if (value=="Awaiting") _color="steelblue";
+      if (value=="Closed") _color="lightgrey";
+    }
+
+    return value ? "<div style='text-align:center'><div style='display:inline-block;margin-top:2px;width:10px;height:10px;-moz-border-radius: 50%; -webkit-border-radius: 50%; border-radius: 50%;background-color:"+_color+"''></div></div>" : "";
+  }
+
+function IncidentPriorityFormatter(row, cell, value, columnDef, dataContext) {
+  var _color;
+  if (value){
+    if (value == "P01 - Critical") _style="font-weight:bold;color:black";
+    if (value=="P08 - High") _style="font-weight:normal;color:black";
+    if (value=="P16 - Moderate") _style="font-weight:normal;color:grey";
 
   }
+
+  return "<span style='"+_style+"'>"+value+"</span>";
+}
+
 
 })(jQuery);

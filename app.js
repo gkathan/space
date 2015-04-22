@@ -142,6 +142,9 @@ incidentSyncService.init();
 var problemSyncService = require('./services/ProblemSyncService');
 problemSyncService.init();
 
+var apmSyncService = require('./services/ApmSyncService');
+apmSyncService.init();
+
 
 // https
 // Enable reverse proxy support in Express. This causes the

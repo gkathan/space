@@ -448,20 +448,24 @@ function getIncidentsConfig(){
 	var _incidents =[
       { id:"id", name: "id", field: "id",sortable:true,width:70,cssClass:"onKanbanImmutable" },
     	{ id:"sysId", name: "sysId", field: "sysId",sortable:true,width:70,formatter:Slick.Formatters.SnowIncidentURL,cssClass:"onKanbanImmutable" },
-			{ id:"context", name: "context", field: "context",sortable:true,width:80,cssClass:"onKanbanImmutable"},
-      { id:"state", name: "state", field: "state",sortable:true,width:70, editor: Slick.Editors.Text,cssClass: "cell-standard" },
-      { id: "openedAt", name: "openedAt", field: "openedAt", editor: Slick.Editors.Text ,width:150, cssClass: "cell-standard",sortable:true},
-			{ id:"priority", name: "priority", field: "priority",sortable:true,width:100, editor: Slick.Editors.Text,cssClass: "cell-standard" },
+			//{ id:"context", name: "context", field: "context",sortable:true,width:80,cssClass:"onKanbanImmutable"},
+			{ id:"priority", name: "priority", field: "priority",sortable:true,width:100, formatter:Slick.Formatters.IncidentPriority,cssClass: "cell-standard" },
+      { id:"state", name: "s", field: "state",sortable:true,width:20, formatter:Slick.Formatters.IncidentState,cssClass: "cell-standard" },
+      { id:"state", name: "state", field: "state",sortable:true,width:70, formatter:Slick.Formatters.IncidentPriority,cssClass: "cell-standard" },
+      { id:"openedAt", name: "openedAt", field: "openedAt", formatter:Slick.Formatters.IncidentPriority ,width:120, cssClass: "cell-standard",sortable:true},
+      { id:"shortDescription", name: "shortDescription",  field: "shortDescription",width:300 ,formatter:Slick.Formatters.IncidentPriority,sortable:true, cssClass: "cell-standard"},
+      { id:"slaResolutionDate", name: "SLA Date", field: "slaResolutionDate",sortable:true,width:120, formatter:Slick.Formatters.IncidentPriority,cssClass: "cell-standard" },
+      { id:"resolvedAt", name: "resolvedAt", field: "resolvedAt",sortable:true,width:120, formatter:Slick.Formatters.IncidentPriority,cssClass: "cell-standard" },
+			{ id:"timeToResolve", name: "TTR", field: "timeToResolve",sortable:true,width:80, formatter:Slick.Formatters.IncidentPriority,cssClass: "cell-standard" },
+			{ id:"slaBreach", name: "SLA Breach", field: "slaBreach",sortable:true,width:80, formatter:Slick.Formatters.IncidentSLABreach,cssClass: "cell-standard" },
+			{ id:"slaBreachTime", name: "Breach by", field: "slaBreachTime",sortable:true,width:80, editor: Slick.Editors.Text,cssClass: "cell-standard-red" },
 			{ id:"location", name: "location", field: "location",sortable:true,width:100, editor: Slick.Editors.Text,cssClass: "cell-standard" },
-      { id: "shortDescription", name: "shortDescription",  field: "shortDescription",width:500 ,sortable:true, cssClass: "cell-standard"},
 			{ id:"label", name: "label", field: "label",sortable:true,width:200, editor: Slick.Editors.Text,cssClass: "cell-standard" },
 			{ id:"businessService", name: "businessService", field: "businessService",sortable:true,width:200, editor: Slick.Editors.Text,cssClass: "cell-standard" },
 
       { id:"impact", name: "impact", field: "impact",sortable:true,width:100, editor: Slick.Editors.Text,cssClass: "cell-standard" },
       { id:"urgency", name: "urgency", field: "urgency",sortable:true,width:100, editor: Slick.Editors.Text,cssClass: "cell-standard" },
       { id:"description", name: "description", field: "description",sortable:true,width:500, editor: Slick.Editors.Text,cssClass: "cell-standard" },
-      { id:"resolvedAt", name: "resolvedAt", field: "resolvedAt",sortable:true,width:150, editor: Slick.Editors.Text,cssClass: "cell-standard" },
-      { id:"slaResolutionDate", name: "slaResolutionDate", field: "slaResolutionDate",sortable:true,width:150, editor: Slick.Editors.Text,cssClass: "cell-standard" },
       { id:"category", name: "category", field: "category",sortable:true,width:150, editor: Slick.Editors.Text,cssClass: "cell-standard" },
       { id:"labelType", name: "labelType", field: "labelType",sortable:true,width:150, editor: Slick.Editors.Text,cssClass: "cell-standard" },
       { id:"active", name: "active", field: "active",sortable:true,width:50, editor: Slick.Editors.Text,cssClass: "cell-standard" },
@@ -645,7 +649,7 @@ function renderAdminGrid(data,conf){
 		asyncEditorLoading: false,
 		cellHighlightCssClass: "changed",
 		//multiColumnSort: true,
-		 autoEdit: true,
+	 	autoEdit: true,
 		showHeaderRow:true,
 		explicitInitialization:true,
 		autoHeight: true
@@ -656,7 +660,7 @@ function renderAdminGrid(data,conf){
 
 	$('#countitems').html(dataView.getLength());
 
-    admingrid = new Slick.Grid("#adminGrid", dataView, columns, options);
+  admingrid = new Slick.Grid("#adminGrid", dataView, columns, options);
 
 	admingrid.onAddNewRow.subscribe(function (e, args) {
       console.log("[DEBUG] onAddNewRow() fired");
@@ -674,7 +678,7 @@ function renderAdminGrid(data,conf){
 		dataView.sort(comparer, args.sortAsc);
 	});
 
-    dataView.onRowsChanged.subscribe(function(e,args) {
+  dataView.onRowsChanged.subscribe(function(e,args) {
 		admingrid.invalidateRows(args.rows);
 		admingrid.render();
 	});
@@ -691,6 +695,7 @@ function renderAdminGrid(data,conf){
       if (columnId != null) {
         columnFilters[columnId] = $.trim($(this).val());
         dataView.refresh();
+				$('#countitems').html(dataView.getLength());
       }
     });
 
@@ -712,18 +717,19 @@ function renderAdminGrid(data,conf){
     admingrid.registerPlugin(checkboxSelector);
 
 
-    var columnpicker = new Slick.Controls.ColumnPicker(columns, admingrid, options);
+  var columnpicker = new Slick.Controls.ColumnPicker(columns, admingrid, options);
 
-    admingrid.init();
+  admingrid.init();
 
-    // default sort column
-    dataView.sort(function(a, b) {
+/*
+  // default sort column
+  dataView.sort(function(a, b) {
 		return (new Date(a["ChangeDateUTC"]) > new Date(b["ChangeDateUTC"])) ? 1 : -1;
 	},false);
 
+*/
 
-
-    dataView.setFilter(filter);
+  dataView.setFilter(filter);
 
 	// ------------------------  column filter ----------------------------------
 
