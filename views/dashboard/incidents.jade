@@ -9,6 +9,15 @@ style.
 	  height: 400px;
 		width:980px;
 	}
+	#chartP8 svg {
+	  height: 400px;
+		width:980px;
+	}
+	#chartP1 svg {
+	  height: 400px;
+		width:980px;
+	}
+
 
 block content
 	div.row(style="margin: auto;max-width:1000px")
@@ -66,9 +75,15 @@ block content
 				div(id="chart" style="text-align:center")
 					svg
 					
+				div(id="chartP1" style="text-align:center")
+					svg
+				div(id="chartP8" style="text-align:center")
+					svg
 					
 
 
 include ../includes/material			
 	
 script(src='/javascripts/dashboards/nvd3_incidents_multi.js')
+script(src='/javascripts/dashboards/nvd3_incidents_P1_multi.js')
+script(src='/javascripts/dashboards/nvd3_incidents_P8_multi.js')
