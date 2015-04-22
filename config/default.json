@@ -308,7 +308,6 @@
 			"url" : "https://bwinparty.service-now.com/problem_list.do?JSONv2&sysparm_action=getRecords&sysparm_query="
 		},
 		"apm" : {
-
 			"login" :{
 				"mode": "off",
 				"intervalMinutes" :5,
