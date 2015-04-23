@@ -153,7 +153,7 @@ function IncidentPriorityFormatter(row, cell, value, columnDef, dataContext) {
     if (value == "P01 - Critical") _style="font-weight:bold;color:black";
     if (value=="P08 - High") _style="font-weight:normal;color:black";
     if (value=="P16 - Moderate") _style="font-weight:normal;color:grey";
-
+    if (value=="P40 - Low") _style="font-weight:normal;color:lightgrey";
   }
 
   return "<span style='"+_style+"'>"+value+"</span>";

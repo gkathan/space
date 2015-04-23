@@ -18,6 +18,7 @@
 		"incident" : {
 			"mode": "on",
 			"intervalMinutes" :1 	,
+			"includePriority" : 4,
 			"url" : "https://bwinparty.service-now.com/incident_list.do?JSONv2&sysparm_action=getRecords&sysparm_query="
 		},
 		"problem" : {

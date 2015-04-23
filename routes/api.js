@@ -18,6 +18,8 @@ var HOST = config.database.host;
 var connection_string = HOST+'/'+DB;
 var db = mongojs(connection_string, [DB]);
 
+var incidentService = require('../services/IncidentService');
+
 var BASE = "";
 
 
@@ -136,9 +138,10 @@ router.get(PATH.REST_PROBLEMS, function(req, res, next) {findAllByName(req,res,n
 router.get(PATH.REST_INCIDENTS, function(req, res, next) {findIncidents(req,res,next);});
 
 router.get(PATH.REST_INCIDENTTRACKER, function(req, res, next) {findAllByName(req,res,next);});
-router.post(PATH.REST_INCIDENTTRACKER, function(req, res, next) {save(req,res,next);});
-router.delete(PATH.REST_INCIDENTTRACKER, function(req, res, next) {delete(req,res,next);});
-router.get(PATH.REST_INCIDENTTRACKER_DATE, function(req, res, next) {findByDate(req,res,next);});
+//router.post(PATH.REST_INCIDENTTRACKER, function(req, res, next) {save(req,res,next);});
+//router.delete(PATH.REST_INCIDENTTRACKER, function(req, res, next) {delete(req,res,next);});
+router.get(PATH.REST_INCIDENTTRACKER_DATE, function(req, res, next) {findIncidenttrackerByDate(req,res,next);});
+
 router.get(PATH.REST_V1EPICS, function(req, res, next) {findAllByName(req,res,next);});
 //
 
@@ -303,61 +306,21 @@ function findById(req, res , next){
 
 
 /**
- * find by generic key
+ * find incidenttracker by date
  */
-function findByDate(req, res , next){
-    var path = req.path.split("/");
-	// format path: /space/rest/boards/1
-	// take the last from the set with last stripped ;-)
-	var collection = _.last(_.initial(path));
-
+function findIncidenttrackerByDate(req, res , next){
+	var path = req.path.split("/");
 	var _date = _.last(path);
-
-	var _quarter = _parseQuarter(_date);
-	logger.debug("quarter: "+_quarter)
-
-	// ok lets inspect what kind of date is specified
-	// we support currently:
-	// 1) just plain year "2015"
-	// 2) quarter of a year "2015q1"
-	// 3) a day "2015-03-21"
-
-  var _year = parseInt(_date);
-	logger.debug("year:" +_year);
-	var _from;
-	var _to;
-
-	if ( _year != NaN && _year >2010){
-		_from = new Date(_date+"-01-01");
-		_to = new Date(_date+"-12-31");
-		logger.debug("[year]:" +_year+ "[from]: "+_from+" [to]: "+_to);
-	}
-	else if (_quarter[0] != "Invalid date" && _quarter[1] != "Invalid date"){
-		_from = new Date(_quarter[0]);
-		_to = new Date(_quarter[1]);
-		logger.debug("[quarter]:" +_quarter+ "[from]: "+_from+" [to]: "+_to);
-	}
-	else {
-		logger.error("no way");
+	var _grouping = req.query.grouping;
+	//default grouping
+	if (!_grouping){
+		_grouping="weekly";
 	}
 
-	logger.debug("findbyDate: value: "+_.last(path));
-	logger.debug("collection: "+collection);
-
-
-
- var _query = {date : { $gte : _from,$lte : _to}};
-
-    db.collection(collection).find( _query, function(err , success){
-        logger.debug('Response success '+success);
-        logger.debug('Response error '+err);
-        if(success){
-            res.send(success);
-            return;
-        }
-        return next(err);
-    })
-
+	incidentService.findTrackerByDate(_grouping,_date,function(err,data){
+			res.send(data);
+			return;
+	});
 }
 
 
@@ -1373,23 +1336,6 @@ function _generateAndSendExcel(collection,conf,req,res,next){
     });
 }
 
-/**
-* parses a string to indiciate a quarter of a year and returns array with start end end date
-* @param quarter: "Q1-2014"
-*/
-function _parseQuarter(quarter){
-	var dateParsed;
-	var splitted = quarter.split('-');
-	var quarterEndMonth =  splitted[0].charAt(1) * 3;
-	var quarterStartMonth = (quarterEndMonth - 3)+1;
-	var _start = moment(quarterStartMonth + ' ' + splitted[1],'MM YYYY').format('YYYY-MM-DD');
-	var _end = moment(quarterEndMonth + ' ' + splitted[1],'MM YYYY').endOf('month').format('YYYY-MM-DD');
-
-	logger.debug(" quarterStartMonth= "+quarterStartMonth +"quarterEndMonth = "+quarterEndMonth+ "splitted[1]"+splitted[1])
-	logger.debug("q start: "+_start);
-	logger.debug("q end: "+_end);
-	return [_start,_end];
-}
 
 
 function _stripCrap(object){

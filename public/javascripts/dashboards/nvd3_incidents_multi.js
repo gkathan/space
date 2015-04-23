@@ -52,7 +52,7 @@ nv.addGraph(function() {
     $("#period").text(_period);
 
      //chart.focusEnable(true);
-    chart.reduceXTicks(true).staggerLabels(true);
+    chart.reduceXTicks(false).staggerLabels(true);
 
     chart.yAxis
         .tickFormat(d3.format(',d'));

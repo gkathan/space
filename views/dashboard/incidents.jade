@@ -25,11 +25,11 @@ style.
 	}
 
 
-block content
+mixin graph(title,name,chart)
 	div.row(style="margin: auto;max-width:1000px")
 		div.panel.panel-default
 			div.panel-heading 
-				|incidents: 
+				|#{title}
 				b daily 
 				|for period: 
 				span("id=period" style="font-weight:bold")
@@ -78,15 +78,16 @@ block content
 					span(style="font-weight:normal;font-size:20px") &nbsp;&nbsp;&nbsp;&Sigma; 
 					span(id="P8Sum" style="font-weight:bold;font-size:30px;color:#00b8e4") 
 					
-				div(id="chart" style="text-align:center")
-					svg
-					
-				div(id="chartP1" style="text-align:center")
-					svg
-				div(id="chartP8" style="text-align:center")
+				div(id="#{chart}" style="text-align:center")
 					svg
 					
 
+
+block content
+	+graph("P1","name","chart")
+	+graph("P1","name","chartP1")
+	+graph("P8","name","chartP8")
+	
 
 include ../includes/material			
 	

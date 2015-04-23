@@ -216,7 +216,7 @@ function _getData(url,priority,date,callback){
 
 
 /**
-* param data list of incidnet objects
+* param data list of incident objects
 * calculates the daily number of incidents types
 * and updates the incidentracker collection
 */
