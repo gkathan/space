@@ -56,6 +56,9 @@ var INSTALL = "./bin/scripts/*.sh";
 var TARGET = './space.zip';
 var SCRIPT_TARGET = './space_scripts.zip';
 
+var TRANSFERCONFIG = "./config/production.json";
+var TARGETCONFIG = "./space/app/config/production.json";
+
 
 var REMOTE_SETUP = ['./space_setup.sh'];
 var REMOTE_DEPLOY = ['./space/scripts/space_deploy.sh'];
@@ -177,6 +180,27 @@ gulp.task('deploy',function(callback){
 
 	runSequence('setup','buildfile','package','copy','transfer','remotedeploy','remotestart','done',callback);
 
+});
+
+/**
+ * deploys a space version
+ */
+gulp.task('deployconfig',function(callback){
+    gutil.beep();
+    gutil.log("[s p a c e -deployconfig] ************************************************************");
+    gutil.log("[s p a c e -deployconfig] ****** going to deploy new config to: "+SERVER.host+" -> "+SERVER.env);
+
+
+	runSequence('transferconfig','remotestart','done',callback);
+
+});
+
+gulp.task('transferconfig', function () {
+  gutil.log("[s p a c e -deployconfig] scp stuff - source: "+TRANSFERCONFIG,"target: "+TARGETCONFIG);
+  gutil.log("[s p a c e -deployconfig] ssh config: host: "+SERVER.host+" ,port: "+SERVER.port+" ,username: "+SERVER.username+" , password : "+SERVER.password);
+
+  return gulp.src(TRANSFERCONFIG)
+    .pipe(gulpSSH.sftp('write', TARGETCONFIG));
 });
 
 
