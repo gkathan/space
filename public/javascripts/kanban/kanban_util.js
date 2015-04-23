@@ -586,12 +586,3 @@ function ajaxCall(verb,action,itemList,_type,afterHandlerCallback){
 		});
 
 }
-
-
-
-/**
- * retrieves the AUTH role
- */
- function getAUTH(){
-	 return sessionStorage.getItem("AUTH");
- }

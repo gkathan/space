@@ -1,10 +1,10 @@
-/** NG version (2.0) based on node.js express and new data structures 
+/** NG version (2.0) based on node.js express and new data structures
 * depends on:
 * @version: 2.0
  * @author: Gerold Kathan
  * @date: 2015-01-23
- * @copyright: 
- * @license: 
+ * @copyright:
+ * @license:
  * @website: www.github.com/gkathan/kanban
  */
 
@@ -32,7 +32,7 @@ var V1_DATA_URL = CONFIG.v1.proxy;
 var DS = CONFIG.database.type;//"MONGO";
 //var DS ="MYSQL";
 
-	
+
 
 
 
@@ -80,7 +80,7 @@ hsl(170,44%,66%)
 #ffcd03 yellow
 hsl(48,100%,51%)
 
-#b0acd5 pink 
+#b0acd5 pink
 hsl(246,33%,75%)
 */
 // http://highintegritydesign.com/tools/tinter-shader/
@@ -91,18 +91,18 @@ var FQ_DELIMITER="/";
 
 function dataSourceFor(collection){
 	for (var p in JSON_CONFIG){
-		if (JSON_CONFIG[p].type==DS) return JSON_CONFIG[p].url+collection; 
+		if (JSON_CONFIG[p].type==DS) return JSON_CONFIG[p].url+collection;
 	}
 }
 
 
-//overrides for lanes 
-var itemDataConfig = [	
+//overrides for lanes
+var itemDataConfig = [
 			{"level":"0", "mode": "auto","percentages":
 					[
 						{"context":"holding","name":"b2c gaming","value"	:80},
 						{"context":"holding","name":"new biz","value"		:20}
-						
+
 					]
 			},
 			{"level":"1", "mode": "auto","percentages":
@@ -111,11 +111,11 @@ var itemDataConfig = [
 						{"context":"b2c gaming","name":"enabling","value"	:40},
 						{"context":"studios", "name":"customer","value"	:50},
 						{"context":"studios","name":"product","value"	:20},
-						{"context":"studios","name":"enabling","value"		:30}						
+						{"context":"studios","name":"enabling","value"		:30}
 					]
 			},
 			{"level":"2","mode": "auto","percentages":
-					
+
 					[
 						{"context":"studios","name":"bwin","value"		:20},
 						{"context":"studios","name":"premium","value"		:15},
@@ -125,7 +125,7 @@ var itemDataConfig = [
 						{"context":"studios","name":"borgata","value"		:10},
 						{"context":"studios","name":"bwinfeed","value"		:10},
 						{"context":"studios","name":"betfred","value"		:10},
-						
+
 						{"context":"holding","name":"bwin","value"		:30},
 						{"context":"holding","name":"studios","value"		:20},
 						{"context":"holding","name":"premium","value"		:10},
@@ -135,10 +135,10 @@ var itemDataConfig = [
 						{"context":"holding","name":"CS","value"		:10},
 						{"context":"holding","name":"bpty","value"		:5},
 						{"context":"holding","name":"bwinfeed","value"		:5}
-						
-						
+
+
 					]
-						
+
 			},
 			// selective override only for one sublane works too ;-)
 			{"level":"3","mode":"equal","percentages":
@@ -150,15 +150,15 @@ var itemDataConfig = [
 						{"context":"*","name":"bwin"+FQ_DELIMITER+"enabling","value":20}
 					]
 			}
-	];		
+	];
 
 
 /** retrieves the serverside config via ajax call
  */
 function loadConfig(){
-	
+
 	 var config;
-	 
+
         $.ajax({
          async: false,
          dataType : 'json',
@@ -170,7 +170,7 @@ function loadConfig(){
       });
 
      return config;
-	
+
 }
 
 
@@ -216,7 +216,7 @@ function initShortcuts(){
 		window.location.href="admin.php?type=metrics";
 		return false;
 	});
-	
+
 		Mousetrap.bind(['a l'], function(e) {
 		console.log("redirect to admin lanetext");
 		window.location.href="admin.php?type=lanetext";
@@ -230,20 +230,20 @@ function initShortcuts(){
 		window.location.href="kanban.php";
 		return false;
 	});
-	
+
 
 	Mousetrap.bind(['m'], function(e) {
 		console.log("open menus");
 		$('#kanban_menu').trigger('click');
 		return false;
 	});
-	
+
 	Mousetrap.bind(['e p'], function(e) {
 		console.log("export pdf");
 		$('#save_as_pdf').trigger('click');
 		return false;
 	});
-	
+
 	Mousetrap.bind(['e g'], function(e) {
 		console.log("export png");
 		$('#save_as_png').trigger('click');
@@ -251,4 +251,3 @@ function initShortcuts(){
 	});
 
 }
-

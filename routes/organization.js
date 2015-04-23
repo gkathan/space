@@ -62,6 +62,12 @@ router.get("/circlecontain", function(req, res, next) {
 	}
 });
 
+router.get("/partition", function(req, res, next) {
+	if (ensureAuthenticated(req,res)){
+		res.locals.collection="organization";
+		res.render("organization/partition", { title: 's p a c e - partition chart - current' });
+	}
+});
 
 
 // for the other circlecontains....
@@ -69,6 +75,14 @@ router.get("/circlecontain/:collection", function(req, res, next) {
 	if (ensureAuthenticated(req,res)){
 		res.locals.collection=req.params.collection;
 		res.render("organization/circlecontain",{ title: "s p a c e - "+req.params.collection });
+	}
+});
+
+// for the other partitions....
+router.get("/partition/:collection", function(req, res, next) {
+	if (ensureAuthenticated(req,res)){
+		res.locals.collection=req.params.collection;
+		res.render("organization/partition",{ title: "s p a c e - partition -"+req.params.collection });
 	}
 });
 
