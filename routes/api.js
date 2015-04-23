@@ -730,7 +730,7 @@ function syncApm(process,req,res,next){
     var apmSyncService = require ('../services/ApmSyncService');
 
 	  apmSyncService.sync(function(data){
-			
+
 
 			logger.debug("------------------------------------------------------ data.snapShotDate: "+data.snapshotDate)
 

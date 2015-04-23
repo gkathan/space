@@ -88,14 +88,24 @@ function _syncIncident(url,done){
 				if(success){
 					logger.info("[success] sync incidents....length: "+_incidents.length);
 
-						var _tracker = _calculateDailyTracker(_incidents);
-						// and  handle incident tracker
-						var incidentstracker =  db.collection('incidenttracker');
-						//incidentstracker.drop();
-						incidentstracker.insert(_tracker	 , function(err , success){
-								logger.info("[success] sync incidentstracker....length: "+_tracker.length);
-						});
+						// get oldsnow data and merge it
+						var incidenttrackeroldsnow =  db.collection('incidenttrackeroldsnow');
+						incidenttrackeroldsnow.find({}, function(err , oldtrackerdata){
 
+							if (oldtrackerdata){
+								logger.debug("***** [yep] we got the old tracker data: length= "+oldtrackerdata.length);
+								var _tracker = _calculateDailyTracker(_incidents,config.context);
+								// and  handle incident tracker
+								var incidenttracker =  db.collection('incidenttracker');
+								incidenttracker.drop();
+								incidenttracker.insert(oldtrackerdata.concat(_tracker)	 , function(err , success){
+										if (err) logger.warn("[incidenttracker insert failed....]"+err.message);
+										logger.info("[success] sync incidenttracker....length: "+_tracker.length);
+								});
+
+							}
+
+						});
 
 				}
 			})
@@ -210,14 +220,15 @@ function _getData(url,priority,date,callback){
 * calculates the daily number of incidents types
 * and updates the incidentracker collection
 */
-function _calculateDailyTracker(data){
+function _calculateDailyTracker(data,context){
 	var _dailytracker = [];
 	for (var i in data){
 		//openedAt date is what we look at
 		var _day = moment(data[i].openedAt).format("YYYY-MM-DD");
+		_day = new Date(_day);
 
 		if (!_.findWhere(_dailytracker,{"date":_day})) {
-			_dailytracker.push({"date":_day,"P1":0,"P8":0});
+			_dailytracker.push({"date":_day,"P1":0,"P8":0,"context":context});
 		}
 
 		if (data[i].priority=="P01 - Critical"){
@@ -226,6 +237,7 @@ function _calculateDailyTracker(data){
 		else if (data[i].priority=="P08 - High"){
 			_.findWhere(_dailytracker,{"date":_day}).P8++;
 		}
+
 
 	}
 	return _dailytracker;

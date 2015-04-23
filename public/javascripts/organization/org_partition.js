@@ -154,8 +154,8 @@ function render(collection,date){
       .attr("transform", function(d) { return "translate(" + x(d.y) + "," + y(d.x) + ")"; })
       .on("click", click);
 
-  var kx = w / root.dx,
-      ky = h / 1;
+  var kx = width / root.dx,
+      ky = height / 1;
 
   g.append("svg:rect")
       .attr("width", root.dy * kx)
@@ -174,9 +174,9 @@ function render(collection,date){
   function click(d) {
     if (!d.children) return;
 
-    kx = (d.y ? w - 40 : w) / (1 - d.y);
-    ky = h / d.dx;
-    x.domain([d.y, 1]).range([d.y ? 40 : 0, w]);
+    kx = (d.y ? width - 40 : width) / (1 - d.y);
+    ky = height / d.dx;
+    x.domain([d.y, 1]).range([d.y ? 40 : 0, width]);
     y.domain([d.x, d.x + d.dx]);
 
     var t = g.transition()

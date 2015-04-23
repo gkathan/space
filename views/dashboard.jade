@@ -1,5 +1,12 @@
 include kanban_menu
 
+// Load d3.js and c3.js
+script(src='/javascripts/components/c3/c3.min.js')
+// Load nv3d
+script(src='/javascripts/components/nvd3/build/nv.d3.min.js')
+
+
+
 block content
 	div.row(style="margin: auto;max-width:1150px")
 		div.panel.panel-default
@@ -11,8 +18,12 @@ block content
 						div.col-md-2.col-lg3(style="width:220px")
 							.panel.panel-default(style="width:200px;margin:0px;height:300px ")
 								.panel-heading(style="text-align:center;font-weight:bold") 
-									a(href="/dashboard/#{_.last(target.dashboardDetail.split('_'))}") 
-										|#{target.id} - #{target.directTarget} 
+									if target.id=="K2"
+										a(href="/dashboard/#{_.last(target.dashboardDetail.split('_'))}?period=q#{moment().quarter()}-#{moment().year()}") 
+											|#{target.id} - #{target.directTarget} 
+									else
+										a(href="/dashboard/#{_.last(target.dashboardDetail.split('_'))}") 
+											|#{target.id} - #{target.directTarget} 
 								.panel-body
 								div(style="font-weight:normal;font-size:12px;text-align:center")
 									|target | #{target.directTime} 
