@@ -152,7 +152,10 @@ function _findIncidenttrackerByDate(aggregate,period,callback){
 						logger.debug("************* callback success");
 						callback(null,success);
         }
-        callback(err);
+        else{
+					logger.warn("************* callback error: "+err.message);
+					callback(err,null);
+				}
     })
 
 }
@@ -320,7 +323,6 @@ function _aggregateQuarterly(data,period){
 function _aggregateHalfyearly(data,period){
 		return _aggregateByTime(data,period,"halfyear");
 }
-
 
 function _aggregateYearly(data,period){
 		return _aggregateByTime(data,period,"year");

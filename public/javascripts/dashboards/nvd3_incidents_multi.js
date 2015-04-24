@@ -1,17 +1,21 @@
 nv.addGraph(function() {
 
-  /*
-  availability: [{"date":"April-2014","value":{"planned":98.49,"unplanned":98.79}},{"date":"May-2014","value":{"planned":99.21,"unplanned":99.68}},{"date":"June-2014","value":{"planned":99.15,"unplanned":99.15}},{"date":"July-2014","value":{"planned":99.69,"unplanned":99.7}},{"date":"August-2014","value":{"planned":99.88,"unplanned":99.92}},{"date":"September-2014","value":{"planned":99.94,"unplanned":99.95}},{"date":"October-2014","value":{"planned":99.4,"unplanned":99.56}},{"date":"November-2014","value":{"planned":99.8,"unplanned":99.81}},{"date":"December-2014","value":{"planned":96.62,"unplanned":98.94}},{"date":"January-2015","value":{"planned":99.87,"unplanned":99.87}},{"date":"February-2015","value":{"planned":99.01,"unplanned":99.17}},{"date":"March-2015","value":{"planned":99.63,"unplanned":99.87}}]
+  var incidents;
 
-  */
+  var _chartId = "chartTest";
+  var _period =getUrlVars().period;
+  var _aggregate =getUrlVars().aggregate;
 
-  var incidents;//={unplannedYTD:99.61,targetYTD:99.75};
-  var _period ="";
-  if (window.location.search.split("=").length>1) _period="/"+_.last(window.location.search.split("="));
+  var _url = "/api/space/rest/incidenttracker/"+_period;
+
+  if (_aggregate){
+    _url+="?aggregate="+_aggregate;
+  }
+
 
   console.log("period: "+_period);
   // do a ajax call
-  $.get( "/api/space/rest/incidenttracker"+_period, function( data ) {
+  $.get( _url, function( data ) {
     incidents = data;
 
     var _P1=[];
@@ -49,10 +53,14 @@ nv.addGraph(function() {
     $("#P1Sum").text(_P1Sum);
     $("#P8Sum").text(_P8Sum);
     if (_period=="") _period ="All";
-    $("#period").text(_period);
+    $("#period_"+_chartId).text(_period);
+    $("#aggregate_"+_chartId).text(_aggregate);
 
-     //chart.focusEnable(true);
-    chart.reduceXTicks(false).staggerLabels(true);
+    var _reduceXTicks = false;
+    if (_aggregate=="daily") _reduceXTicks = true;
+
+    chart.reduceXTicks(_reduceXTicks).staggerLabels(true);
+
 
     chart.yAxis
         .tickFormat(d3.format(',d'));
@@ -60,20 +68,20 @@ nv.addGraph(function() {
     //console.log("--scaleY(50) = "+(50));
 
 
-    d3.select('#chart svg')
+    d3.select('#'+_chartId+' svg')
         .datum(incData)
         .transition().duration(500)
         .call(chart)
         ;
 
 
-
+/*
     var _svg = d3.select("#chart svg");
     var _addon =_svg.append("g").attr("id","addons");
 
     console.log("scaling y(50) = "+chart.yAxis.scale()(50))
     _drawLine(_addon,0,chart.yAxis.scale()(50),1000,chart.yAxis.scale()(50),"targetLine");
-
+*/
     nv.utils.windowResize(chart.update);
 
     return chart;

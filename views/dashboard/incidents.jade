@@ -7,7 +7,7 @@ script(src='/javascripts/components/nvd3/build/nv.d3.min.js')
 
 
 style.
-	#chart svg {
+	#chartTest svg {
 	  height: 400px;
 		width:980px;
 	}
@@ -29,10 +29,11 @@ mixin graph(title,name,chart)
 	div.row(style="margin: auto;max-width:1000px")
 		div.panel.panel-default
 			div.panel-heading 
-				|#{title}
-				b daily 
-				|for period: 
-				span("id=period" style="font-weight:bold")
+				span(style="color:black;font-size:30px;font-weight:bold") #{title}
+				|&nbsp;|&nbsp;
+				span(id="aggregate_#{chart}" style="font-weight:bold") 
+				|&nbsp;|&nbsp;for period: 
+				span(id="period_#{chart}" style="color:black;font-weight:bold")
 			div.panel-body
 				.btn-group
 					a.btn.btn-default(href='javascript:void(0)') Quarter
@@ -72,11 +73,6 @@ mixin graph(title,name,chart)
 							li
 								a(href='/dashboard/incidents?period=2015') 2015
 
-				div(style="text-align:center")
-					span(style="font-weight:normal;font-size:20px") &Sigma; 
-					span(id="P1Sum" style="font-weight:bold;font-size:30px;color:#174D75;text-align:center") 
-					span(style="font-weight:normal;font-size:20px") &nbsp;&nbsp;&nbsp;&Sigma; 
-					span(id="P8Sum" style="font-weight:bold;font-size:30px;color:#00b8e4") 
 					
 				div(id="#{chart}" style="text-align:center")
 					svg
@@ -84,7 +80,7 @@ mixin graph(title,name,chart)
 
 
 block content
-	+graph("P1","name","chart")
+	+graph("test","name","chartTest")
 	+graph("P1","name","chartP1")
 	+graph("P8","name","chartP8")
 	

@@ -462,6 +462,8 @@ function getIncidentsConfig(){
 			{ id:"location", name: "location", field: "location",sortable:true,width:100, editor: Slick.Editors.Text,cssClass: "cell-standard" },
 			{ id:"label", name: "label", field: "label",sortable:true,width:200, editor: Slick.Editors.Text,cssClass: "cell-standard" },
 			{ id:"businessService", name: "businessService", field: "businessService",sortable:true,width:200, editor: Slick.Editors.Text,cssClass: "cell-standard" },
+			{ id:"assignmentGroup", name: "assignmentGroup", field: "assignmentGroup",sortable:true,width:200, editor: Slick.Editors.Text,cssClass: "cell-standard" },
+			{ id:"environment", name: "environment", field: "environment",sortable:true,width:200, editor: Slick.Editors.Text,cssClass: "cell-standard" },
 
       { id:"impact", name: "impact", field: "impact",sortable:true,width:100, editor: Slick.Editors.Text,cssClass: "cell-standard" },
       { id:"urgency", name: "urgency", field: "urgency",sortable:true,width:100, editor: Slick.Editors.Text,cssClass: "cell-standard" },

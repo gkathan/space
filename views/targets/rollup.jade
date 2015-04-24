@@ -60,9 +60,9 @@ mixin renderKPIsRoot(data)
 		each theme in data.children
 			if theme.name == 'KPI'
 				each kpi in theme.children[0].children
-					td(style="text-align:center;padding-left:50px;padding-right:50px;width:100px")
+					td(style="text-align:center;padding-left:5px;padding-right:5px;width:100px")
 
-						div(style=";color:white;background-color:#{_.findWhere(config.entities,{'name':kpi.children[0].context}).skin.colors.tints[2]};margin-bottom:5px;font-size:10px;font-weight:normal;height:40px;display:flex;justify-content:center;align-content:center;flex-direction:column;")
+						div(style=";color:white;background-color:#{_.findWhere(config.entities,{'name':kpi.children[0].context}).skin.colors.tints[2]};margin-bottom:5px;font-size:10px;font-weight:normal;height:60px;display:flex;justify-content:center;align-content:center;flex-direction:column;")
 							|#{_.capitalize(kpi.name)}
 
 
