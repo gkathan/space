@@ -311,21 +311,15 @@ function findById(req, res , next){
 function findIncidenttrackerByDate(req, res , next){
 	var path = req.path.split("/");
 	var _date = _.last(path);
-	var _grouping = req.query.grouping;
+	var _aggregate = req.query.aggregate;
 	//default grouping
-	if (!_grouping){
-		_grouping="weekly";
+	if (!_aggregate){
+		_aggregate="weekly";
 	}
 
-	incidentService.findTrackerByDate(_grouping,_date,function(err,data){
-			if (err) {
-				logger.warn("error:"+err.message);
-				return;
-			}
-			else {
-				res.send(data);
-				return;
-			}
+	incidentService.findTrackerByDate(_aggregate,_date,function(err,data){
+			res.send(data);
+			return;
 	});
 }
 

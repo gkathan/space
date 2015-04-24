@@ -57,8 +57,8 @@ exports.findTrackerByDate = _findIncidenttrackerByDate;
 
 
 
-function _findIncidenttrackerByDate(grouping,period,callback){
-  if (!grouping) grouping="weekly";
+function _findIncidenttrackerByDate(aggregate,period,callback){
+  if (!aggregate) aggregate="weekly";
 
 
 	var collection = "incidenttracker";
@@ -129,15 +129,23 @@ function _findIncidenttrackerByDate(grouping,period,callback){
         logger.debug('Response error '+err);
         if(success){
 
-						if (grouping=="weekly"){
+						if (aggregate=="weekly"){
 							success = _aggregateWeekly(success);
 						}
-						else if (grouping=="monthly"){
+						else if (aggregate=="monthly"){
 							success = _aggregateMonthly(success);
 						}
-						else if (grouping=="quarterly"){
+						else if (aggregate=="quarterly"){
 							success = _aggregateQuarterly(success);
 						}
+						else if (aggregate=="halfyearly"){
+							success = _aggregateHalfyearly(success);
+						}
+
+						else if (aggregate=="yearly"){
+							success = _aggregateYearly(success);
+						}
+
 						// daily is default raw data - we have nothing todo
 						//res.send(success);
             //return;
@@ -178,28 +186,43 @@ function _mapCode(_code,_collection,_resolve){
 * generic parses a string to indiciate a given period of a year and returns array with start end end date
 * @param quarter: "Q1-2014"
 */
-
 function _parsePeriod(period,type){
 	var dateParsed;
-
 	var _p = _.first(period);
 	if (_p.toLowerCase()!=_.first(type)) return false;
 
-	var _factor =1;
-	if (type=="halfyear") _factor=6;
-	else if (type=="quarter") _factor=3;
+	var _typeFormat ="";
+	if (type=="week") _typeFormat="WW";
+	else if (type=="month") _typeFormat="MM";
+	else if (type=="quarter") _typeFormat="Q";
+	else if (type=="halfyear") _typeFormat="Q";
 
 	var splitted = period.split('-');
-	var periodEndMonth =  splitted[0].charAt(1) * _factor;
-	var periodStartMonth = (periodEndMonth - _factor)+1;
-	var _start = moment(periodStartMonth + ' ' + splitted[1],'MM YYYY').format('YYYY-MM-DD');
-	var _end = moment(periodEndMonth + ' ' + splitted[1],'MM YYYY').endOf('month').format('YYYY-MM-DD');
 
-	logger.debug(" periodStartMonth= "+periodStartMonth +"periodEndMonth = "+periodEndMonth+ "splitted[1]"+splitted[1])
+	var _number = _.rest(splitted[0]);
+	var _numberStart = _number;
+	var _numberEnd = _number;
+
+	// handling for halfyear - moment has no halfyaer implemented
+	// so we take Q1+Q2 for H1
+	// and Q3+Q4 for H2
+	if (type=="halfyear"){
+		_numberStart=(_number*2)-1;
+		_numberEnd=(_number*2);
+		type="quarter";
+		logger.debug("*******HALFYEAR");
+	}
+
+	var _year = splitted[1];
+
+	var _start = moment(_numberStart+"-"+_year,_typeFormat+"-YYYY").startOf(type).format('YYYY-MM-DD');;
+	var _end = moment(_numberEnd+"-"+_year,_typeFormat+"-YYYY").endOf(type).format('YYYY-MM-DD');;
+
 	logger.debug("p start: "+_start);
 	logger.debug("p end: "+_end);
 	return [_start,_end];
 }
+
 
 function _parseQuarter(quarter){
 	return _parsePeriod(quarter,"quarter");
@@ -213,161 +236,92 @@ function _parseMonth(month){
 	return _parsePeriod(month,"month");
 }
 
-/*
 function _parseWeek(week){
 	return _parsePeriod(week,"week");
 }
-*/
-
-/**
-* parses a string to indiciate a week of a year and returns array with start end end date
-* @param quarter: "W45-2014"
-*/
-
-function _parseWeek(week){
-	var dateParsed;
-	var _w = _.first(week);
-	if (_w.toLowerCase()!="w") return false;
-
-	var splitted = week.split('-');
-
-	var _weekNumber = _.rest(splitted[0]);
-	var _year = splitted[1];
-
-	var _start = moment(_weekNumber+"-"+_year,"WW-YYYY").startOf('week').format('YYYY-MM-DD');;
-	var _end = moment(_weekNumber+"-"+_year,"WW-YYYY").endOf('week').format('YYYY-MM-DD');;
-
-	logger.debug("w start: "+_start);
-	logger.debug("w end: "+_end);
-	return [_start,_end];
-}
-/*
-function _parsePeriod(period,type){
-	var dateParsed;
-	var _p = _.first(period);
-	if (_p.toLowerCase()!=_.first(type)) return false;
-
-	var _typeFormat ="";
-	if (type=="week") _typeFormat="WW";
-	else if (type=="month") _typeFormat="MM";
-	else if (type=="quarter") _typeFormat="Q";
 
 
 
-	var splitted = period.split('-');
 
-	var _number = _.rest(splitted[0]);
-	var _year = splitted[1];
-
-	var _start = moment(_number+"-"+_year,_typeFormat+"-YYYY").startOf(type).format('YYYY-MM-DD');;
-	var _end = moment(_number+"-"+_year,_typeFormat+"-YYYY").endOf(type).format('YYYY-MM-DD');;
-
-	logger.debug("p start: "+_start);
-	logger.debug("p end: "+_end);
-	return [_start,_end];
-}
-*/
-
-/** weekly incidenttracker data
+/** generic aggregator incidenttracker data
 * param period: defines whether we arte looking at "yearly",  "quarterly", "monthly", or "weekly"
+* param time: "week", "month", "quarter" "year"
 */
-function _aggregateWeekly(data,period){
+function _aggregateByTime(data,period,time){
 	// looking at week granularity does not make sense in monthly aggregation
 	if (period=="daily"){
 		return false;
 	}
 
-  var weeks =[];
+	//weeks,months,....
+  var items =[];
 
-	var _p1_week=0;
-  var _p8_week=0;
+	var _p1_aggregate=0;
+  var _p8_aggregate=0;
 
   for (var i in data){
-		var _week = moment(data[i].date).week();
-		var _weekName = "cw"+moment(data[i].date).format("WW")+"-"+moment(data[i].date).format("YYYY");
-
-  	if (!_.findWhere(weeks,{"date":_weekName})){
-			_p1_week=0;
-      _p8_week=0;
-			weeks.push({P1:_p1_week,P8:_p8_week,date:_weekName});
-			logger.debug("* week added: "+_week);
+		var _time;
+		var _timeName;
+		// needs special treatment per time
+		if (time=="week"){
+			_time = moment(data[i].date).week();
+			_timeName = "cw"+moment(data[i].date).format("WW")+"-"+moment(data[i].date).format("YYYY");
 		}
-		//console.log("_month: "+_month);
-		_p1_week+=parseInt(data[i].P1);
-    _p8_week+=parseInt(data[i].P8);
+		else if (time=="month"){
+			_time = moment(data[i].date).month();
+			_timeName = moment(data[i].date).format("MMMM")+"-"+moment(data[i].date).format("YYYY");
 
-		_.findWhere(weeks,{"date":_weekName}).P1=_p1_week;
-		_.findWhere(weeks,{"date":_weekName}).P8=_p8_week;
+		}
+		else if (time=="quarter"){
+			_time = moment(data[i].date).quarter();
+			_timeName = "Q"+moment(data[i].date).format("Q")+"-"+moment(data[i].date).format("YYYY");
+
+		}
+		else if (time=="halfyear"){
+			_time = moment(data[i].date).quarter();
+			var _half = parseInt((parseInt(moment(data[i].date).format("Q"))+1)/2);
+			_timeName = "H"+_half+"-"+moment(data[i].date).format("YYYY");
+		}
+		else if (time=="year"){
+			_time = moment(data[i].date).year();
+			_timeName = moment(data[i].date).format("YYYY");
+		}
+
+
+  	if (!_.findWhere(items,{"date":_timeName})){
+			_p1_aggregate=0;
+      _p8_aggregate=0;
+			items.push({P1:_p1_aggregate,P8:_p8_aggregate,date:_timeName});
+			logger.debug("* "+time+" added: "+_time);
+		}
+
+		_p1_aggregate+=parseInt(data[i].P1);
+    _p8_aggregate+=parseInt(data[i].P8);
+
+		_.findWhere(items,{"date":_timeName}).P1=_p1_aggregate;
+		_.findWhere(items,{"date":_timeName}).P8=_p8_aggregate;
   }
-	return weeks;
+	return items;
 }
 
 
-/** monthly incidenttracker data
-* param period: defines whether we arte looking at "yearly",  "quarterly", "monthly", or "weekly"
-*/
+function _aggregateWeekly(data,period){
+		return _aggregateByTime(data,period,"week");
+}
+
 function _aggregateMonthly(data,period){
-	// looking at week granularity does not make sense in monthly aggregation
-	if (period=="weekly"||period=="daily"){
-		return false;
-	}
+		return _aggregateByTime(data,period,"month");
+}
 
-  var months =[];
+function _aggregateQuarterly(data,period){
+		return _aggregateByTime(data,period,"quarter");
+}
 
-	var _p1_month=0;
-  var _p8_month=0;
-
-  for (var i in data){
-		var _month = moment(data[i].date).month();
-		var _monthName = moment(data[i].date).format("MMMM")+"-"+moment(data[i].date).format("YYYY");
-
-  	if (!_.findWhere(months,{"date":_monthName})){
-			_p1_month=0;
-      _p8_month=0;
-			months.push({P1:_p1_month,P8:_p8_month,date:_monthName});
-			logger.debug("* month added: "+_month);
-		}
-		//console.log("_month: "+_month);
-		_p1_month+=parseInt(data[i].P1);
-    _p8_month+=parseInt(data[i].P8);
-
-		_.findWhere(months,{"date":_monthName}).P1=_p1_month;
-		_.findWhere(months,{"date":_monthName}).P8=_p8_month;
-  }
-	return months;
+function _aggregateHalfyearly(data,period){
+		return _aggregateByTime(data,period,"halfyear");
 }
 
 
-/** quarterly incidenttracker data
-* param period: defines whether we arte looking at "yearly",  "quarterly", "monthly", or "weekly"
-*/
-function _aggregateQuarterly(data,period){
-	// looking at week granularity does not make sense in monthly aggregation
-	if (period=="weekly" || period=="monthly" ||period=="daily"){
-		return false;
-	}
-
-  var quarters =[];
-
-	var _p1_quarter=0;
-  var _p8_quarter=0;
-
-  for (var i in data){
-		var _quarter = moment(data[i].date).quarter();
-		var _quarterName = "Q"+moment(data[i].date).format("Q")+"-"+moment(data[i].date).format("YYYY");
-
-  	if (!_.findWhere(quarters,{"date":_quarterName})){
-			_p1_quarter=0;
-      _p8_quarter=0;
-			quarters.push({P1:_p1_quarter,P8:_p8_quarter,date:_quarterName});
-			logger.debug("* quarter added: "+_quarter);
-		}
-		//console.log("_month: "+_month);
-		_p1_quarter+=parseInt(data[i].P1);
-    _p8_quarter+=parseInt(data[i].P8);
-
-		_.findWhere(quarters,{"date":_quarterName}).P1=_p1_quarter;
-		_.findWhere(quarters,{"date":_quarterName}).P8=_p8_quarter;
-  }
-	return quarters;
+function _aggregateYearly(data,period){
+		return _aggregateByTime(data,period,"year");
 }
