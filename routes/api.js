@@ -318,8 +318,14 @@ function findIncidenttrackerByDate(req, res , next){
 	}
 
 	incidentService.findTrackerByDate(_grouping,_date,function(err,data){
-			res.send(data);
-			return;
+			if (err) {
+				logger.warn("error:"+err.message);
+				return;
+			}
+			else {
+				res.send(data);
+				return;
+			}
 	});
 }
 

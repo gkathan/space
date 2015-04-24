@@ -175,73 +175,55 @@ function _mapCode(_code,_collection,_resolve){
 
 
 /**
-* parses a string to indiciate a quarter of a year and returns array with start end end date
+* generic parses a string to indiciate a given period of a year and returns array with start end end date
 * @param quarter: "Q1-2014"
 */
+
+function _parsePeriod(period,type){
+	var dateParsed;
+
+	var _p = _.first(period);
+	if (_p.toLowerCase()!=_.first(type)) return false;
+
+	var _factor =1;
+	if (type=="halfyear") _factor=6;
+	else if (type=="quarter") _factor=3;
+
+	var splitted = period.split('-');
+	var periodEndMonth =  splitted[0].charAt(1) * _factor;
+	var periodStartMonth = (periodEndMonth - _factor)+1;
+	var _start = moment(periodStartMonth + ' ' + splitted[1],'MM YYYY').format('YYYY-MM-DD');
+	var _end = moment(periodEndMonth + ' ' + splitted[1],'MM YYYY').endOf('month').format('YYYY-MM-DD');
+
+	logger.debug(" periodStartMonth= "+periodStartMonth +"periodEndMonth = "+periodEndMonth+ "splitted[1]"+splitted[1])
+	logger.debug("p start: "+_start);
+	logger.debug("p end: "+_end);
+	return [_start,_end];
+}
+
 function _parseQuarter(quarter){
-	var dateParsed;
-	var _q = _.first(quarter);
-	if (_q.toLowerCase()!="q") return false;
-
-	var splitted = quarter.split('-');
-	var quarterEndMonth =  splitted[0].charAt(1) * 3;
-	var quarterStartMonth = (quarterEndMonth - 3)+1;
-	var _start = moment(quarterStartMonth + ' ' + splitted[1],'MM YYYY').format('YYYY-MM-DD');
-	var _end = moment(quarterEndMonth + ' ' + splitted[1],'MM YYYY').endOf('month').format('YYYY-MM-DD');
-
-	logger.debug(" quarterStartMonth= "+quarterStartMonth +"quarterEndMonth = "+quarterEndMonth+ "splitted[1]"+splitted[1])
-	logger.debug("q start: "+_start);
-	logger.debug("q end: "+_end);
-	return [_start,_end];
+	return _parsePeriod(quarter,"quarter");
 }
 
-
-/**
-* parses a string to indiciate a half of a year and returns array with start end end date
-* @param quarter: "H2-2014"
-*/
 function _parseHalf(half){
-	var dateParsed;
-	var _h = _.first(half);
-	if (_h.toLowerCase()!="h") return false;
-
-	var splitted = half.split('-');
-	var halfEndMonth =  splitted[0].charAt(1) * 6;
-	var halfStartMonth = (halfEndMonth - 6)+1;
-	var _start = moment(halfStartMonth + ' ' + splitted[1],'MM YYYY').format('YYYY-MM-DD');
-	var _end = moment(halfEndMonth + ' ' + splitted[1],'MM YYYY').endOf('month').format('YYYY-MM-DD');
-
-	logger.debug(" halfStartMonth= "+halfStartMonth +"halfEndMonth = "+halfEndMonth+ "splitted[1]"+splitted[1])
-	logger.debug("h start: "+_start);
-	logger.debug("h end: "+_end);
-	return [_start,_end];
+	return _parsePeriod(half,"halfyear");
 }
 
-/**
-* parses a string to indiciate a month of a year and returns array with start end end date
-* @param quarter: "M8-2014"
-*/
 function _parseMonth(month){
-	var dateParsed;
-	var _m = _.first(month);
-	if (_m.toLowerCase()!="m") return false;
-
-	var splitted = month.split('-');
-	var monthEndMonth =  splitted[0].charAt(1) * 1;
-	var monthStartMonth = (monthEndMonth - 1)+1;
-	var _start = moment(monthStartMonth + ' ' + splitted[1],'MM YYYY').format('YYYY-MM-DD');
-	var _end = moment(monthEndMonth + ' ' + splitted[1],'MM YYYY').endOf('month').format('YYYY-MM-DD');
-
-	logger.debug(" monthStartMonth= "+monthStartMonth +"monthEndMonth = "+monthEndMonth+ "splitted[1]"+splitted[1])
-	logger.debug("m start: "+_start);
-	logger.debug("m end: "+_end);
-	return [_start,_end];
+	return _parsePeriod(month,"month");
 }
+
+/*
+function _parseWeek(week){
+	return _parsePeriod(week,"week");
+}
+*/
 
 /**
 * parses a string to indiciate a week of a year and returns array with start end end date
 * @param quarter: "W45-2014"
 */
+
 function _parseWeek(week){
 	var dateParsed;
 	var _w = _.first(week);
@@ -253,59 +235,36 @@ function _parseWeek(week){
 	var _year = splitted[1];
 
 	var _start = moment(_weekNumber+"-"+_year,"WW-YYYY").startOf('week').format('YYYY-MM-DD');;
-	var _end = moment(_weekNumber+"-"+_year,"WW-YYYY").startOf('week').format('YYYY-MM-DD');;
+	var _end = moment(_weekNumber+"-"+_year,"WW-YYYY").endOf('week').format('YYYY-MM-DD');;
 
 	logger.debug("w start: "+_start);
 	logger.debug("w end: "+_end);
 	return [_start,_end];
 }
+/*
+function _parsePeriod(period,type){
+	var dateParsed;
+	var _p = _.first(period);
+	if (_p.toLowerCase()!=_.first(type)) return false;
+
+	var _typeFormat ="";
+	if (type=="week") _typeFormat="WW";
+	else if (type=="month") _typeFormat="MM";
+	else if (type=="quarter") _typeFormat="Q";
 
 
-/** weekly incidenttracker data
-*/
-/*function _aggregateWeekly(data,period){
-  var weeks =[];
-  var days =[];
 
-  var w =0;
-  var d =0;
+	var splitted = period.split('-');
 
-  var _p1_week=0;
-  var _p8_week=0;
+	var _number = _.rest(splitted[0]);
+	var _year = splitted[1];
 
-  var _p1_day=0;
-  var _p8_day=0;
+	var _start = moment(_number+"-"+_year,_typeFormat+"-YYYY").startOf(type).format('YYYY-MM-DD');;
+	var _end = moment(_number+"-"+_year,_typeFormat+"-YYYY").endOf(type).format('YYYY-MM-DD');;
 
-  var _p1_sum =0;
-  var _p8_sum =0;
-
-
-  for (var i in data){
-    data[i].P1 = parseInt(data[i].P1);
-    data[i].P8 = parseInt(data[i].P8);
-    _p1_week+=data[i].P1;
-    _p8_week+=data[i].P8;
-
-    _p1_day+=data[i].P1;
-    _p8_day+=data[i].P8;
-
-    _p1_sum+=data[i].P1;
-    _p8_sum+=data[i].P8;
-
-    days[i] = {P1:_p1_day,P8:_p8_day};
-
-
-    if (i % 7 ==0){
-
-			console.log("mod 7 ==0 i:"+i);
-      weeks[w] = {P1:_p1_week,P8:_p8_week,date:"week-"+(w+1),context:config.context};
-      _p1_week=0;
-      _p8_week=0;
-			 w++;
-    }
-  }
-
-	return weeks;
+	logger.debug("p start: "+_start);
+	logger.debug("p end: "+_end);
+	return [_start,_end];
 }
 */
 
