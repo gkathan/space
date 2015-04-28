@@ -1,0 +1,176 @@
+[33m9d1421f[m[33m ([1;36mHEAD[m[33m, [1;31morigin/master[m[33m, [1;31morigin/HEAD[m[33m, [1;32mmaster[m[33m)[m 2 dimensional query capability for incidentracker (aggregation and period)
+[33m2a00a21[m fixed javascript config structure, fixed incidentracker handlicg
+[33m501fd5b[m added new task to just deploy production config and restart space
+[33mbd4e2bc[m partition chart, restructuring of javascript modules
+[33m6ecf94c[m tweaks
+[33m58b76d7[m established integration with appdynamics, automated incidenttracker (daily) calculation based on scheduled incident import
+[33mec240f8[m added new graphs for incidents dashboard
+[33m8057487[m tweaks in incident integration
+[33m6027988[m connected incidents to new snow instance, added problem syncer from snow and started with appdynamics integration
+[33m048bfb7[m ok got it :-)
+[33ma10ba03[m trying to enhance nvd3 charts with custom d3 elements
+[33m221604d[m fixed width to ipad friendly 1000px
+[33m80b55ae[m enhanced the incidents (K2) target tracking with baselinedata and target data calculation
+[33m6241520[m incident multibar nvd3 chart fixes
+[33m0940ec0[m incident multibar nvd3 chart fixes
+[33m6228d50[m incident multibar nvd3 chart
+[33m2033b98[m new charts (nvd3) introduced, example for availability, barchart, multibarchart
+[33ma01b5de[m fixed organization import/upload - updates now implicitly the menu structure in orghistory
+[33m34a1da7[m organization circlecontain enabled history view, tweaks and fixes
+[33m30e0e99[m fixed organizationhistory
+[33m4c0d7b8[m organization tweaking - hunting shit bug which is about dots in the column headers of PI import excel sheet ... + started integration of new snow cloud instance..
+[33m57ade32[m debugging orgtree
+[33mb93665e[m targets tweaks, logos, colors
+[33m0988f4f[m tweaked index news section
+[33m78f6d2b[m target rollup twaeks
+[33m20675ee[m tweaks
+[33m562a414[m tweaks
+[33mb82d15c[m tweaks
+[33md075431[m Merge branch 'master' of https://github.com/gkathan/strategy2tactics
+[33mf090a7b[m tweaked target views
+[33m202d493[m added icon
+[33m5e533dc[m added icon
+[33macc9be1[m target rollup tweaked
+[33mcf0ee57[m target rollup view fixed
+[33mf0dd4d5[m target rollup view fixed
+[33m183a794[m target rollup, multi context view tweaked
+[33m0a3f696[m partitionmap experiment
+[33m16ff773[m fixed circle conatin for organization
+[33mb592138[m sunburst target prototype, domain list import admin export, tweaks
+[33m21b45cb[m playing with jquery-orgchart..
+[33m48339bc[m added jquery-orgchart
+[33m6578a03[m availability sync + service fixed
+[33m59fd53e[m changed RAG indicators to circle, removed health changes
+[33m13c03b2[m fixed bootstrap container layout
+[33m302dbcf[m fixed serverside configured color handling in targets, multi-context
+[33m1dd1a64[m Merge branch 'master' of https://github.com/gkathan/strategy2tactics
+[33m1b1a223[m linting
+[33mfd777f5[m 3d flipping cards & linting of source code
+[33m3254fc5[m hardened the import section
+[33m672644f[m async fix
+[33m0eaeb1a[m fixed generic save handler with proper async handling, multi-context for all domain elements (admin,db script)
+[33mface868[m[33m ([1;33mtag: 1.1.0[m[33m)[m tweaked portfoliogate view
+[33m5dc2b0a[m tweaks
+[33m4070225[m flip testing
+[33m179b0fc[m services tweaks
+[33m2792b2c[m tweaks and configs
+[33m2b4ca23[m availability data integration from avreports
+[33mf512ec8[m merge conflict
+[33ma029b4a[m tweaks
+[33m0a1c912[m content handling added
+[33m565605c[m merge conflicts
+[33m0587b9f[m tweaks
+[33ma2838b9[m targets UI tweaking, fixing incidenttracker data API
+[33mf18044d[m img added
+[33m01ba915[m tweaks
+[33m78534ab[m Merge branch 'master' of https://github.com/gkathan/strategy2tactics
+[33mc757c2d[m targets tewaking, c3 graphs for dashboard
+[33m9e3f925[m Merge branch 'master' of https://github.com/gkathan/strategy2tactics
+[33ma58860f[m added arrows
+[33m600f841[m tweaks
+[33mf9abcb2[m tweaking targets, incidenttracker admin
+[33mff1ea36[m dos2unix
+[33m9721e96[m dos2unix
+[33m1f4a2c8[m tweaks
+[33m589e142[m tweaks
+[33m381f5fa[m Merge branch 'master' of https://github.com/gkathan/strategy2tactics
+[33mc4474e5[m targets tweaking
+[33mae76d85[m fixed deploy
+[33m9a39132[m replaced tar with zip
+[33m6e78529[m Update README.md
+[33m47f1423[m target details view (modal window) and refactoring of targets overview (90° rotated)
+[33m1c8ea6a[m ui tweaks
+[33m9f2da9c[m Update README.md
+[33m06cc380[m Update README.md
+[33m7d7cb1b[m Update README.md
+[33m1237ef0[m refactored the ugly legacy save handler to proper async handling
+[33mfa765f0[m fixed issue with deleting temp json file from xlsx converter - simple fix = we do not have to write the physical file - so no delete issue ;-
+[33m02e8bd2[m organizationservice, integration of the employee image service [TODO] local copy / sync
+[33m0592013[m Merge branch 'master' of https://github.com/gkathan/strategy2tactics
+[33m08def37[m added simple comtent management service for managing the index spaceNews teasers
+[33ma9b0653[m tweak
+[33m6d1536b[m issues with tar on windows..
+[33m06cd854[m logos for multi-context prototype
+[33m7f62288[m [multi-context] prototype of multitenancy: via session.CONTEXT and config it is possible to live switch between contexts
+[33m96c60f2[m fixed linefeed windows / unix
+[33m22b4276[m tweaks
+[33mfffdf4e[m config tewaks
+[33m79278fd[m resolved conflict
+[33m4986f2a[m start scripts tweaking
+[33ma127911[m targets detail view - modal panel
+[33m6bb23a3[m small stuff
+[33m4878cc7[m more gulp build automation...
+[33m01f3312[m started target details modal view...
+[33mc504caf[m fixed winston logger handling - now using winston container definition, done once in app.js and reusable in other moules ++ refactored the V1Sync scheduler into a service module V1SyncService
+[33m25de9ee[m first experiments with multi-entity / tenancy by using the config.entity as qualifier and dynamically assigning main logo and material design stylesheet accordingly
+[33mc519c09[m Readme adaptation
+[33m4de5976[m config change
+[33mbd85f67[m build automation via gulp
+[33m801b5a2[m migrated from ant build (java) to gulp (javascript stream), started ldap authenctication in test project, small stuff
+[33m7f3d808[m responsive table design in targets
+[33ma0e7f6c[m build and start scripts adapted
+[33m2bc2cde[m[33m ([1;33mtag: v1.0.0[m[33m, [1;33mtag: 1.0.1[m[33m)[m added firerepirts upload, admin, public list
+[33mf678dba[m migrated from homegrown to passport.js authentication framewor, currently with Local strategy
+[33me3d346f[m tweaked targets view
+[33m49b3322[m taregt stuff
+[33m4638dae[m Merge branch 'master' of https://github.com/gkathan/strategy2tactics
+[33mf6bc713[m cosmetic stuff, renaming tool to space
+[33m8a2c654[m Update README.md
+[33m70076c9[m organization modal menu, whiteboard refactoring, stuff
+[33m98eb030[m targets refinement, added roadmap API + admin
+[33mcc3b179[m targets refinement, added roadmap API + admin
+[33ma5863fa[m targets refinement, added roadmap API + admin
+[33mfccc988[m finished targets stuff..
+[33me9ebecf[m target stuff..
+[33m343f819[m flip cards
+[33md5b2c36[m added admin for productcatalog
+[33m41f5503[m added targets overview, and small other stuff
+[33m0dd93aa[m removed number from title
+[33m07a5cc3[m portfoliogate is now sortable :-)
+[33m768f4a8[m small stuff in a portfoligate, mailer, ..
+[33m59f1686[m fixed the attachment handling in portfoliogate, now works with proper detected invest proposals and clsoing documents
+[33me515203[m added attachement deeplinking in portfoligate view
+[33m77d63f4[m debugging and fixing fileupload and small other things
+[33m9dcd2b8[m changed looger from lo4js to winston
+[33mc92dbb3[m todays stuff: file upload form, still issue with json parse on PROD
+[33maf7252a[m adding small stuff, still having issue with org upload..
+[33m573e6f2[m fixed board create and delete handling :-)
+[33mea75e48[m added competitors dfata domain, fixed delete board handling, added images and stuff
+[33md4d58da[m further empty board stuff
+[33m072f12d[m further empty board stuff
+[33m02b7b43[m ssh test
+[33mb382f9f[m start board reafactoring
+[33mee79fdf[m tweaking admin grid, added create new board form
+[33m1b176a7[m removed alpaca forms
+[33md22dae9[m layout fixes, table for portfoliogates
+[33me7f7116[m auth fix
+[33m19165b8[m added B2B customers domain
+[33m9883a83[m build
+[33m9992c85[m portfolio stuff: health change view, email notification and some material design color customization
+[33m10fef9b[m replaced nodemailer with emailjs
+[33m5106235[m sorting with lodash ??
+[33m8c4a243[m portfoliogate upload snapshot of v1 data, and small fixes
+[33m0f94827[m V1Service added
+[33mf449407[m small layout fix
+[33m0855910[m labels view added
+[33m064f64d[m screen captures of labels added
+[33md2f900a[m material / responsive fixes
+[33ma140c6d[m fixes
+[33m91adf9c[m fixes
+[33ma2c87d1[m fixes
+[33m0a716a1[m fixes
+[33m57d08b5[m material design
+[33m16f4d17[m material design
+[33md393bb3[m added
+[33mde11f5c[m Create README.md
+[33mb1b2a67[m[33m ([1;33mtag: v2.0.0[m[33m)[m added
+[33mdd5fe92[m slick theme
+[33mc4f3475[m t
+[33m7115d36[m added xlsx-to-json
+[33m910bd75[m lodash
+[33m433fa87[m lodash
+[33m69aa334[m changed underscore to lodash
+[33m40e2560[m changes 2015-02-10
+[33m5019630[m changes and adaptions 2015-02-10
+[33m0446237[m changes and adaptions 2015-02-10
+[33md2824db[m initial strategy2tactics commit
