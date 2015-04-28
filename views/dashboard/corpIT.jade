@@ -1,0 +1,90 @@
+include ../kanban_menu
+// Load d3.js and c3.js
+script(src='/javascripts/components/c3/c3.min.js')
+// Load nv3d
+script(src='/javascripts/components/nvd3/build/nv.d3.min.js')
+script(src='/javascripts/space/newsticker/jquery.bootstrap.newsbox.min.js')
+
+style.
+	@-webkit-keyframes "pulse" {
+	 0% {
+		-webkit-transform: scale(1);
+		opacity: 1.0;
+	 }
+	 25% {
+		-webkit-transform: scale(1);
+		opacity: 0.5;
+	 }
+	 50% {
+		-webkit-transform: scale(1);
+		opacity: 0.1;
+	 }
+	 75% {
+		-webkit-transform: scale(1);
+		opacity: 0.5;
+	 }
+	 100% {
+		-webkit-transform: scale(1);
+		opacity: 1.0;
+	 }
+	}
+
+mixin ragState(app,rag)
+	table.responsive(style="max-width:500px;border-bottom: #efefef solid 1px")
+		tr(style="line-height:24px")
+			td(style="width:40px;text-align:left;padding-right:0px;vertical-align:top;text-align:center")  
+					if rag =="red"
+						div(style="margin-left:5px;width: 17px;height: 17px;-webkit-animation: pulse 1s ease-out;animation: pulse 1s ease-out;-webkit-animation-iteration-count: infinite;-moz-animation-iteration-count: infinite;	animation-iteration-count: infinite;;-moz-border-radius: 50%; -webkit-border-radius: 50%; border-radius: 50%;background-color:#{mapHealth2Color(rag)};margin-top:3px")
+					else if rag=="amber"
+						div(style="margin-left:5px;width: 17px;height: 17px;-webkit-animation: pulse 3s ease-out;animation: pulse 3s ease-out;-webkit-animation-iteration-count: infinite;-moz-animation-iteration-count: infinite;	animation-iteration-count: infinite;;-moz-border-radius: 50%; -webkit-border-radius: 50%; border-radius: 50%;background-color:#{mapHealth2Color(rag)};margin-top:3px")
+					else if rag=="green"
+						div(style="margin-left:5px;width: 17px;height: 17px;-moz-border-radius: 50%; -webkit-border-radius: 50%; border-radius: 50%;background-color:#{mapHealth2Color(rag)};margin-top:3px")
+					else
+						div(style="margin-left:5px;width: 17px;height: 17px;-moz-border-radius: 50%; -webkit-border-radius: 50%; border-radius: 50%;background-color:#{mapHealth2Color(rag)};margin-top:3px")
+
+			td(style="width:100px;text-align:left;vertical-align:top;font-size:14px;font-weight:normal") 
+				img(src="/images/space/logo_#{app}.png" height="15px") 
+			td(style="width:250px;text-align:left;vertical-align:top;font-size:14px;font-weight:normal") 
+				if rag=="red"
+					span(style="color:red") #{app}
+				else	
+					span(style="") #{app}
+
+-	function mapHealth2Color(health){
+-		// there is no amber css color ;-)
+-		if (health=="amber") return "gold";
+-		if (health=="green") return "limegreen";
+-		if (!health) return "lightgrey"
+-		// red and green are ok
+-		return health;
+-	}
+
+block content
+	div.row(style="margin: auto;max-width:700px")
+		div.panel.panel-default
+			div.panel-heading studios - corpIT availability dashboard
+			div.panel-body
+				h4(style="font-weight:bold") APPLICATIONS
+				each app in apps
+					+ragState(app.name,app.rag)
+				hr
+				h4(style="font-weight:bold") COMMUNICATION
+				each tel in telephony
+					+ragState(tel.name,tel.rag)
+				hr
+				h4(style="font-weight:bold") NETWORK
+				each net in network
+					+ragState(net.name,net.rag)
+script.
+	$(function () {
+		$(".corpITIncidents").bootstrapNews({
+			newsPerPage: 5,
+			autoplay: true,
+			pauseOnHover:true,
+			direction: 'up',
+			newsTickerInterval: 4000,
+			onToDo: function () {
+				//console.log(this);
+			}
+		});
+});

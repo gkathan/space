@@ -107,6 +107,14 @@ function _syncIncident(url,done){
 
 
 				// and do a diff with the new one
+        // !! we need to iterate over the array and do the diff per incident!
+        // and also check for new incidents !
+        // lodash.difference
+        // lodash.pick for reducing the object proerties
+        // lodash.omit might be better...
+
+        //todo
+
 				var _diff = jsondiffpatch.diff(_compareIncidentsBaseline,_compareIncidents);
 				// and send a websocket event about the changes ;-)
 

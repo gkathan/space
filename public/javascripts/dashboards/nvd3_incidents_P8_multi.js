@@ -47,7 +47,7 @@ nv.addGraph(function() {
       .color(["#00b8e4","#82cec1"])
       .groupSpacing(0.2)
       .rotateLabels(45)
-      .showControls(true)
+      .showControls(false)
     ;
     $("#P8Sum").text(_P8Sum);
     $("#P8BaseSum").text(_P8BaseSum);
