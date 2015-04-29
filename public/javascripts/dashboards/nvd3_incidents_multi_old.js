@@ -2,7 +2,7 @@ nv.addGraph(function() {
 
   var incidents;
 
-  var _chartId = "chartP8";
+  var _chartId = "chartTest";
   var _period =getUrlVars().period;
   var _aggregate =getUrlVars().aggregate;
 
@@ -18,24 +18,26 @@ nv.addGraph(function() {
   $.get( _url, function( data ) {
     incidents = data;
 
+    var _P1=[];
     var _P8=[];
-    var _P8Base=[];
 
+    var _P1Sum=0;
     var _P8Sum=0;
-    var _P8BaseSum=0;
 
+    //var _total=[];
 
     for (var day in incidents){
-      console.log("date: "+incidents[day].date+" P8: "+incidents[day].P8+" P8: "+incidents[day].P8);
+      console.log("date: "+incidents[day].date+" P1: "+incidents[day].P1+" P8: "+incidents[day].P8);
+      _P1.push({"date":incidents[day].date,"y":parseInt(incidents[day].P1)});
+      _P1Sum+=parseInt(incidents[day].P1);
       _P8.push({"date":incidents[day].date,"y":parseInt(incidents[day].P8)});
-      _P8Sum+=parseInt(incidents[day].P1);
-      _P8Base.push({"date":incidents[day].date,"y":parseInt(incidents[day].P8)});
-      _P8BaseSum+=parseInt(incidents[day].P8);
+      _P8Sum+=parseInt(incidents[day].P8);
     }
 
-    console.log("P8Sum = "+_P8Sum+" P8BaseSum = "+_P8BaseSum);
+    console.log("P1Sum = "+_P1Sum+" P8Sum = "+_P8Sum);
 
-    var incData = [{key:"P8",values:_P8}];//,{key:"P8Base",values:_P8Base}]
+    //var avData = [{key:"Avalability bla",values:availability}]
+    var incData = [{key:"P1",values:_P1},{key:"P8",values:_P8}]
 
     var chart = nv.models.multiBarChart()
       .x(function(d) { return d.date })
@@ -43,14 +45,13 @@ nv.addGraph(function() {
       .staggerLabels(true)
       .tooltips(true)
       .showLegend(true)
-      //.color(["#174D75","#00b8e4","#82cec1"])
-      .color(["#00b8e4","#82cec1"])
+      .color(["#174D75","#00b8e4","#82cec1"])
       .groupSpacing(0.2)
       .rotateLabels(45)
-      .showControls(false)
+      .showControls(true)
     ;
+    $("#P1Sum").text(_P1Sum);
     $("#P8Sum").text(_P8Sum);
-    $("#P8BaseSum").text(_P8BaseSum);
     if (_period=="") _period ="All";
     $("#period_"+_chartId).text(_period);
     $("#aggregate_"+_chartId).text(_aggregate);
@@ -67,15 +68,15 @@ nv.addGraph(function() {
     //console.log("--scaleY(50) = "+(50));
 
 
-      d3.select('#'+_chartId+' svg')
+    d3.select('#'+_chartId+' svg')
         .datum(incData)
         .transition().duration(500)
         .call(chart)
         ;
 
 
-  /*
-    var _svg = d3.select("#chartP8 svg");
+/*
+    var _svg = d3.select("#chart svg");
     var _addon =_svg.append("g").attr("id","addons");
 
     console.log("scaling y(50) = "+chart.yAxis.scale()(50))

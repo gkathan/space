@@ -1,89 +1,108 @@
-nv.addGraph(function() {
+//var chart;
+var charts=[];
 
-  var incidents;
+var _period;
+var _aggregate;
 
-  var _chartId = "chartTest";
-  var _period =getUrlVars().period;
-  var _aggregate =getUrlVars().aggregate;
+function init(chartId){
 
-  var _url = "/api/space/rest/incidenttracker/"+_period;
+  nv.addGraph(function() {
+    var incidents;
+    var chart;
 
-  if (_aggregate){
-    _url+="?aggregate="+_aggregate;
-  }
+    var _chartId = chartId;//"chartP1";
+    var _prio = chartId.split("chart")[1];
+    _period =getUrlVars().period;
+    _aggregate =getUrlVars().aggregate;
 
+    var _url = "/api/space/rest/incidenttracker/"+_period;
 
-  console.log("period: "+_period);
-  // do a ajax call
-  $.get( _url, function( data ) {
-    incidents = data;
-
-    var _P1=[];
-    var _P8=[];
-
-    var _P1Sum=0;
-    var _P8Sum=0;
-
-    //var _total=[];
-
-    for (var day in incidents){
-      console.log("date: "+incidents[day].date+" P1: "+incidents[day].P1+" P8: "+incidents[day].P8);
-      _P1.push({"date":incidents[day].date,"y":parseInt(incidents[day].P1)});
-      _P1Sum+=parseInt(incidents[day].P1);
-      _P8.push({"date":incidents[day].date,"y":parseInt(incidents[day].P8)});
-      _P8Sum+=parseInt(incidents[day].P8);
+    if (_aggregate){
+      _url+="?aggregate="+_aggregate;
     }
 
-    console.log("P1Sum = "+_P1Sum+" P8Sum = "+_P8Sum);
+    var _colors={};
+    _colors["P1"]=["#174D75","#7395AD"];
+    _colors["P8"]=["#00b8e4","#82cec1"];
 
-    //var avData = [{key:"Avalability bla",values:availability}]
-    var incData = [{key:"P1",values:_P1},{key:"P8",values:_P8}]
+    console.log("prio: "+_prio+" colors: "+_colors[_prio]);
+    console.log("period: "+_period);
+    // do a ajax call
+    $.get( _url, function( data ) {
 
-    var chart = nv.models.multiBarChart()
-      .x(function(d) { return d.date })
-      .y(function(d) { return d.y })
-      .staggerLabels(true)
-      .tooltips(true)
-      .showLegend(true)
-      .color(["#174D75","#00b8e4","#82cec1"])
-      .groupSpacing(0.2)
-      .rotateLabels(45)
-      .showControls(true)
-    ;
-    $("#P1Sum").text(_P1Sum);
-    $("#P8Sum").text(_P8Sum);
-    if (_period=="") _period ="All";
-    $("#period_"+_chartId).text(_period);
-    $("#aggregate_"+_chartId).text(_aggregate);
+      chart = nv.models.multiBarChart()
+        .x(function(d) { return d.date })
+        .y(function(d) { return d.y })
+        .staggerLabels(true)
+        .tooltips(true)
+        .showLegend(true)
+        .color(_colors[_prio])
+        .groupSpacing(0.2)
+        .rotateLabels(45)
+        .showControls(false)
+      ;
+      if (_period=="") _period ="All";
+      $("#period_"+_chartId).text(_period);
+      $("#aggregate_"+_chartId).text(_aggregate);
 
-    var _reduceXTicks = false;
-    if (_aggregate=="daily") _reduceXTicks = true;
+      var _reduceXTicks = false;
+      if (_aggregate=="daily") _reduceXTicks = true;
 
-    chart.reduceXTicks(_reduceXTicks).staggerLabels(true);
+      chart.reduceXTicks(_reduceXTicks).staggerLabels(true);
+
+      chart.yAxis
+          .tickFormat(d3.format(',d'));
+
+      redraw(_chartId,_period,_aggregate,_prio);
+
+  /*
+      var _svg = d3.select("#chartP1 svg");
+      var _addon =_svg.append("g").attr("id","addons");
+
+      console.log("scaling y(50) = "+chart.yAxis.scale()(50))
+      _drawLine(_addon,0,chart.yAxis.scale()(50),1000,chart.yAxis.scale()(50),"targetLine");
+  */
+
+      charts[chartId]=chart;
+      return chart;
+      });
+  });
 
 
-    chart.yAxis
-        .tickFormat(d3.format(',d'));
+}
 
-    //console.log("--scaleY(50) = "+(50));
-
-
-    d3.select('#'+_chartId+' svg')
-        .datum(incData)
-        .transition().duration(500)
-        .call(chart)
-        ;
-
-
-/*
-    var _svg = d3.select("#chart svg");
-    var _addon =_svg.append("g").attr("id","addons");
-
-    console.log("scaling y(50) = "+chart.yAxis.scale()(50))
-    _drawLine(_addon,0,chart.yAxis.scale()(50),1000,chart.yAxis.scale()(50),"targetLine");
+/**
+* prepares data to be consumable by NVd3
 */
-    nv.utils.windowResize(chart.update);
+function _prepareData(incidents,prio){
+  var _P=[];
+  var _PBase=[];
+  var _PSum=0;
+  var _PBaseSum=0;
 
-    return chart;
-    });
-});
+  for (var day in incidents){
+    console.log("date: "+incidents[day].date+" "+prio+": "+incidents[day][prio]);
+    _P.push({"date":incidents[day].date,"y":parseInt(incidents[day][prio])});
+    _PSum+=parseInt(incidents[day][prio]);
+  }
+  console.log(prio+"Sum = "+_PSum+" "+prio+"BaseSum = "+_PBaseSum);
+  var incData = [{key:prio,values:_P}];//,{key:"P1Base",values:_P1Base}]
+  return incData
+}
+
+function redraw(chartId,period,aggregate,prio) {
+  var _url = "/api/space/rest/incidenttracker/"+period;
+  if (aggregate){
+    _url+="?aggregate="+aggregate;
+  }
+
+  d3.json(_url, function(data) {
+
+    d3.select('#'+chartId+' svg')
+      .datum(_prepareData(data,prio))
+      .transition().duration(500)
+      .call(charts[chartId]);
+
+    nv.utils.windowResize(charts[chartId].update);
+  });
+}

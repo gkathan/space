@@ -1,0 +1,24 @@
+include kanban_menu
+
+
+block content
+div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;background-color:white;;width:1000px;text-align: center;margin: 10px auto;")
+	.panel-heading
+		h3.panel-title incident matrix
+	.panel-body
+		img("src=/images/incidents/incident_matrix.png width=900px"  )
+		
+		div(style="text-align:left")
+			h4 definitions:
+			p Key to the priority definitions is the specification of “Impact”, reflecting the customer and revenue impact. 
+			p Note “equivalent revenue impact” means equivalent to the same number of users being offline. This may not actually involve an outage, for instance a substantial incorrect payment. Continuity impact could mean impact to a business partner, incorrect payouts, inadvertent publication of customer data, a potential way to cheat, a security issue or the publication of something on a website, being a undesirable risk in a particular region. 
+			p The values for “Urgency” relate to the affected IT service and how key it is to the business. Generally all games, betting applications and platform applications are “Core”. The complete list is as follows:  
+			ul
+				li 1-Core– High business profile (all customer-facing core services such as Poker, Casino etc.)
+				li 2-Critical– Strong indirect business profile (e.g. CRM, Alarm systems, etc)
+				li 3-Important– Significant internal productivity loss (e.g. e-mail, development tools, admin tools, development environments, test environments) 
+				li 4-Useful– Minor productivity loss with workaround (e.g. file & print, fax, home user access)
+
+			p Priority Code = Pxx (where ‘xx’ represents number of hours for time to repair)
+			p P01 = 1 hour time to repair (5*24*365) 
+			p Time to repair starts when the incident is detected. 

@@ -12,12 +12,7 @@ var DB="space";
 var connection_string = '127.0.0.1:27017/'+DB;
 var db = mongojs(connection_string, [DB]);
 
-var jsondiffpatch=require('jsondiffpatch').create({
-    // used to match objects when diffing arrays, by default only === operator is used
-    objectHash: function(obj) {
-        // this function is used only to when objects are not equal by ref
-        return obj.id || obj.sysId;
-    }});
+var jsondiffpatch=require('jsondiffpatch');
 
 // logger
 var winston = require('winston');
@@ -83,53 +78,91 @@ function _syncIncident(url,done){
 			var incidents =  db.collection('incidents');
 			var incidentsdelta =  db.collection('incidentsdelta');
 
+      var _incidentsNEW=[];
+      var _incidentsOLD;
 
 			// lets first get what we have had
 			incidents.find({},function(err,baseline){
-
-			// and store it
+        _incidentsOLD = baseline;
+			   // and store it
 
 				incidents.drop();
 
-				var _incidents=[];
+
 				var _compareIncidents=[];
 				var _compareIncidentsBaseline=[];
 
 				for (var i in data.records){
 					var _incident = _filterRelevantData(data.records[i]);
-					_incidents.push(_incident);
+					_incidentsNEW.push(_incident);
 					_compareIncidents.push(_filterRelevantDataForDiff(_incident));
 				}
 
-				for (var b in baseline){
-					_compareIncidentsBaseline.push(_filterRelevantDataForDiff(baseline[b]));
+        var _diff;
+
+				for (var o in _incidentsOLD){
+					_compareIncidentsBaseline.push(_filterRelevantDataForDiff(_incidentsOLD[o]));
 				}
 
+        var _incidentsDELTA_CHANGED =[];
+        for (var n in _incidentsNEW){
+          var _sysId = _incidentsNEW[n].sysId;
+          var _old = _.findWhere(_incidentsOLD,{"sysId":_sysId});
 
-				// and do a diff with the new one
-        // !! we need to iterate over the array and do the diff per incident!
+          var _changed={};
+          if (_old){
+            _diff=jsondiffpatch.diff(_filterRelevantDataForDiff(_old),_filterRelevantDataForDiff(_incidentsNEW[n]));
+            if (_diff){
+              var _change ={"id":_old.sysId,"sysId":_old.sysId,"diff":_diff}
+
+              _incidentsDELTA_CHANGED.push(_change);
+            }
+          }
+
+        }
+
+        var _incidentsNEWSysIds = _.pluck(_incidentsNEW,'sysId');
+        var _incidentsOLDSysIds = _.pluck(_incidentsOLD,'sysId');
+
         // and also check for new incidents !
         // lodash.difference
         // lodash.pick for reducing the object proerties
         // lodash.omit might be better...
 
-        //todo
+        var _incidentsDELTASysIds = _.difference(_incidentsNEWSysIds,_incidentsOLDSysIds);
 
-				var _diff = jsondiffpatch.diff(_compareIncidentsBaseline,_compareIncidents);
-				// and send a websocket event about the changes ;-)
+        logger.debug("OLD *************** "+_incidentsOLDSysIds);
+        logger.debug("NEW *************** "+_incidentsNEWSysIds);
 
-				logger.debug("--------------------------------------------------- baseline: length="+baseline.length);
-				logger.debug("--------------------------------------------------- incidents: length="+_incidents.length);
+        logger.debug("DELTA *************** delta size: "+_incidentsDELTASysIds.length);
 
-				logger.debug("--------------------------------------------------- diff = "+JSON.stringify(_diff));
+        var _incidentsDELTA_NEW =[];
+        for (var d in _incidentsDELTASysIds){
+          _incidentsDELTA_NEW.push(_.findWhere(_incidentsNEW,{"sysId":_incidentsDELTASysIds[d]}))
+        }
 
-				incidentsdelta.insert(_diff);
+        logger.debug("--------------------------------------------------- incidentsOLD: length="+_incidentsOLD.length);
+        logger.debug("--------------------------------------------------- incidentsNEW: length="+_incidentsNEW.length);
 
-				incidents.insert(_incidents	 , function(err , success){
+
+        if (_incidentsDELTA_NEW.length>0 || _incidentsDELTA_CHANGED.length>0){
+          var _incidentsDIFF={"createDate":new Date(),"NEW":_incidentsDELTA_NEW,"CHANGED":_incidentsDELTA_CHANGED}
+
+          incidentsdelta.insert(_incidentsDIFF);
+				  // and send a websocket event about the changes ;-)
+        }
+
+
+
+
+
+
+
+				incidents.insert(_incidentsNEW	 , function(err , success){
 					//console.log('Response success '+success);
 					logger.debug('Response error '+err);
 					if(success){
-						logger.info("[success] sync incidents....length: "+_incidents.length);
+						logger.info("[success] sync incidents....length: "+_incidentsNEW.length);
 
 							// get oldsnow data and merge it
 							var incidenttrackeroldsnow =  db.collection('incidenttrackeroldsnow');
@@ -137,7 +170,7 @@ function _syncIncident(url,done){
 
 								if (oldtrackerdata){
 									logger.debug("***** [yep] we got the old tracker data: length= "+oldtrackerdata.length);
-									var _tracker = _calculateDailyTracker(_incidents,config.context);
+									var _tracker = _calculateDailyTracker(_incidentsNEW,config.context);
 									// and  handle incident tracker
 									var incidenttracker =  db.collection('incidenttracker');
 									incidenttracker.drop();

@@ -294,7 +294,7 @@
 		"availability" : {
 			"mode": "off",
 			"intervalMinutes" :1440,
-			"url" : ["http://avreport.bwinparty.corp/API/AvReoprtingService.svc/getYTDDatapoint","http://avreport.bwinparty.corp/API/AvReoprtingService.svc/GetAVGraphDatapoints"]
+			"url" : ["http://avreport.bwinparty.corp/API/AvReoprtingService.svc/getYTDDatapoint","http://avreport.bwinparty.corp/API/AvReoprtingService.svc/GetAVGraphDatapoints","http://localhost:7777/AvReportingService.svc/GetIncidentsDatapoints/?from=2014-01-01"]
 		},
 		"incident" : {
 			"mode": "off",
@@ -302,6 +302,7 @@
 			"includePriority" : 2,
 			"url" : "https://bwinparty.service-now.com/incident_list.do?JSONv2&sysparm_action=getRecords&sysparm_query="
 		},
+
 		"problem" : {
 			"mode": "off",
 			"intervalMinutes" :60 	,

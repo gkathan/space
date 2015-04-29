@@ -126,9 +126,11 @@ router.get('/admin', function(req, res) {
 
 router.get('/playbooks', function(req, res) {
 	res.render('playbooks', { title: 's p a c e - playbooks' });
-
 });
 
+router.get('/incidentmatrix', function(req, res) {
+	res.render('incidentmatrix', { title: 's p a c e - incidentmatrix' });
+});
 
 
 router.get('/boards', function(req, res) {
