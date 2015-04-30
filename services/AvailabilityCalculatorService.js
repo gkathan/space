@@ -80,7 +80,7 @@ function _calculateOverall(from, to, callback){
 	var totalTime = new Date(to)-new Date(from);
 
 
-	var _socIncidents = db.collection('soc_incidents');
+	var _socIncidents = db.collection('socincidents');
 	_socIncidents.find(function(err,data){
 		// grab the SOC incidents for the intervall (from to)
 
