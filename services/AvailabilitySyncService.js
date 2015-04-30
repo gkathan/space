@@ -64,31 +64,18 @@ function _syncAvailability(urls,callback){
 							logger.debug(data);
 							avData[_endpoint]=JSON.parse(data);
 
-							client.get(urls[2], function(data, response,callback){
-								// parsed response body as js object
-								var _endpoint = _.last(_.initial(urls[2].split("/")));
-								logger.debug("...get data..: endpoint: "+_endpoint);
-								logger.debug(data);
-								avData[_endpoint]=JSON.parse(data);
-								// fix the date shit
-								for (var d in avData[_endpoint]){
-									var _incident = avData[_endpoint][d];
-									_incident.start = new Date(_incident.start);
-									_incident.stop = new Date(_incident.stop);
 
+
+							// and store it
+							var availability =  db.collection('availability');
+							availability.drop();
+							availability.insert({createDate:new Date(),avReport:avData}	 , function(err , success){
+								//console.log('Response success '+success);
+								logger.debug('Response error '+err);
+								if(success){
+									logger.info("sync availability [DONE]");
 								}
 
-
-								// and store it
-								var availability =  db.collection('availability');
-								availability.drop();
-								availability.insert({createDate:new Date(),avReport:avData}	 , function(err , success){
-									//console.log('Response success '+success);
-									logger.debug('Response error '+err);
-									if(success){
-										logger.info("sync availability [DONE]");
-									}
-								})
 							})
 						})
 				});

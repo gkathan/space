@@ -246,6 +246,7 @@ function _filterRelevantData(data){
 	_incident.syncDate = new Date();
 	_incident.slaBreach = "";
 	_incident.slaBreachTime = "";
+	_incident.subCategory = data.subcategory;
 
 	//logger.debug("--------------------- state: "+data.state);
 	if (data.state=="Resolved"){

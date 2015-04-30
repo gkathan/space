@@ -11,15 +11,12 @@ var mongojs = require('mongojs');
 
 var _ = require('lodash');
 
-<<<<<<< HEAD
 
-var DATABASE=config.database.db;
-=======
 var DB=config.database.db;
->>>>>>> 38fe055b5fea932341b87bcf0214a9b360f652b8
+
 var HOST = config.database.host;
-var connection_string = HOST+'/'+DATABASE;
-var db = mongojs(connection_string, [DATABASE]);
+var connection_string = HOST+'/'+DB;
+var db = mongojs(connection_string, [DB]);
 
 
 var winston=require('winston');
@@ -48,7 +45,7 @@ function _getStuff(context,callback) {
 function _calculateOverall(from, to){
 	/*
 	var includeExternal = false;
-	
+
 	//Set all 0
 	var AvTotalUnplanned = 0.0;
 	var AvTotalPlanned = 0.0;

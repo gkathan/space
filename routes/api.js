@@ -45,7 +45,10 @@ var PATH = {
 						REST_V1TEAMS : BASE+'/space/rest/v1teams',
 						REST_PRODUCTPORTFOLIO : BASE+'/space/rest/productportfolio',
 						REST_PRODUCTCATALOG : BASE+'/space/rest/productcatalog',
+
 						REST_INCIDENTS : BASE+'/space/rest/incidents',
+						REST_SOCINCIDENTS : BASE+'/space/rest/soc_incidents',
+
 						REST_INCIDENTTRACKER : BASE+'/space/rest/incidenttracker',
 						REST_INCIDENTTRACKER_DATE : BASE+'/space/rest/incidenttracker/:date',
 						REST_PROBLEMS : BASE+'/space/rest/problems',
@@ -63,6 +66,7 @@ var PATH = {
 						REST_SYNCEMPLOYEEIMAGES : BASE+'/space/rest/sync/employeeimages',
 						REST_SYNCAVAILABILITY : BASE+'/space/rest/sync/availability',
 						REST_SYNCINCIDENTS : BASE+'/space/rest/sync/incidents',
+						REST_SYNCSOCINCIDENTS : BASE+'/space/rest/sync/soc_incidents',
 						REST_SYNCPROBLEMS : BASE+'/space/rest/sync/problems',
 						REST_SYNCAPM_LOGIN : BASE+'/space/rest/sync/apm/login',
 
@@ -136,6 +140,8 @@ router.get(PATH.REST_PROBLEMS, function(req, res, next) {findAllByName(req,res,n
 
 //router.get(PATH.REST_INCIDENTS, function(req, res, next) {findAllByName(req,res,next);});
 router.get(PATH.REST_INCIDENTS, function(req, res, next) {findIncidents(req,res,next);});
+router.get(PATH.REST_SOCINCIDENTS, function(req, res, next) {findAllByName(req,res,next);});
+
 
 router.get(PATH.REST_INCIDENTTRACKER, function(req, res, next) {findAllByName(req,res,next);});
 //router.post(PATH.REST_INCIDENTTRACKER, function(req, res, next) {save(req,res,next);});
@@ -189,6 +195,9 @@ router.post(PATH.REST_SYNCAVAILABILITY, function(req, res, next) {syncAvailabili
 router.get(PATH.REST_SYNCAVAILABILITY, function(req, res, next) {syncAvailability(req,res,next); });
 router.post(PATH.REST_SYNCINCIDENTS, function(req, res, next) {syncIncidents(req,res,next); });
 router.get(PATH.REST_SYNCINCIDENTS, function(req, res, next) {syncIncidents(req,res,next); });
+router.post(PATH.REST_SYNCSOCINCIDENTS, function(req, res, next) {syncSOCIncidents(req,res,next); });
+router.get(PATH.REST_SYNCSOCINCIDENTS, function(req, res, next) {syncSOCIncidents(req,res,next); });
+
 router.post(PATH.REST_SYNCPROBLEMS, function(req, res, next) {syncProblems(req,res,next); });
 router.get(PATH.REST_SYNCPROBLEMS, function(req, res, next) {syncProblems(req,res,next); });
 
@@ -676,6 +685,18 @@ function syncIncidents(req,res,next){
 
 
 			res.send("incidents: "+JSON.stringify(data));
+	});
+}
+
+function syncSOCIncidents(req,res,next){
+    logger.debug("*********************** lets sync SOC incidents from avreport... ");
+		var _url = config.sync.soc_incidents.url;
+    var soc_incSyncService = require ('../services/SOCIncidentsSyncService');
+    logger.debug("*********************** SOC incservice instantiated ");
+	  soc_incSyncService.sync(_url,function(data){
+
+
+			res.send("SOC incidents: "+JSON.stringify(data));
 	});
 }
 

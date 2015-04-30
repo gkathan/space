@@ -139,6 +139,9 @@ avSyncService.init(function(av){
 var incidentSyncService = require('./services/IncidentSyncService');
 incidentSyncService.init();
 
+var soc_incidentSyncService = require('./services/SOCIncidentsSyncService');
+soc_incidentSyncService.init();
+
 var problemSyncService = require('./services/ProblemSyncService');
 problemSyncService.init();
 

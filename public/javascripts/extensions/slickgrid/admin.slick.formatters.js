@@ -24,7 +24,8 @@
         "CheckInSync":CheckInSyncFormatter,
         "IncidentSLABreach":IncidentSLABreachFormatter,
         "IncidentState":IncidentStateFormatter,
-        "IncidentPriority":IncidentPriorityFormatter
+        "IncidentPriority":IncidentPriorityFormatter,
+        "ResolutionTime":ResolutionTimeFormatter
       }
     }
   });
@@ -158,6 +159,23 @@ function IncidentPriorityFormatter(row, cell, value, columnDef, dataContext) {
 
   return "<span style='"+_style+"'>"+value+"</span>";
 }
+
+  function ResolutionTimeFormatter(row, cell, value, columnDef, dataContext) {
+
+    	//var ms = moment(_resolved,"DD/MM/YYYY HH:mm:ss").diff(moment(_open,"DD/MM/YYYY HH:mm:ss"));
+  		var d = moment.duration(value);
+  		var _time;
+      // longer than a day
+      if (d>=86400000){
+       _time = d.format("d[d] h:mm:ss", { trim: false });
+      }
+      else{
+        _time = d.format("h:mm:ss", { trim: false });
+      }
+
+    return _time;
+  }
+
 
 
 })(jQuery);

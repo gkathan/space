@@ -33,7 +33,7 @@ describe('AvailabilityCalculatorService', function(){
 				assert.equal("y", av);
 
 				//var unplanned = JSON.parse(data[0].avReport.getYTDDatapoint);
-
+				
 
 
 			})

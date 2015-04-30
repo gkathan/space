@@ -70,6 +70,8 @@ div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;back
 		br
 		a.btn.btn-xs.btn-danger(id="sync_incidents" href="#" ) force sync incidents
 		br
+		a.btn.btn-xs.btn-danger(id="sync_soc_incidents" href="#" ) force SOC sync incidents
+		br
 		a.btn.btn-xs.btn-danger(id="sync_problems" href="#" ) force sync problems
 		br
 		a.btn.btn-xs.btn-danger(id="sync_apm_login" href="#" ) force sync apm.login
@@ -136,6 +138,24 @@ div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;back
 			console.log("incidentsync request called...");
 			$.ajax({
 				url: '/api/space/rest/sync/incidents',
+				type: 'POST',
+				data: {
+
+					},
+				success: function(data){
+					alert("data: "+JSON.stringify(data));
+				},
+				error: function(err){
+					alert("err: "+JSON.stringify(err));
+				}
+			});
+			//location.reload();
+		});
+		
+		$('#sync_soc_incidents').on('click', function () {
+			console.log("soc incidentsync request called...");
+			$.ajax({
+				url: '/api/space/rest/sync/soc_incidents',
 				type: 'POST',
 				data: {
 
