@@ -3,7 +3,7 @@
 #Find the Process ID for www running instance
 echo "....killng running s p a c e  instance"
 PID1=`ps -eaf | grep 'forever ./bin/www' | grep -v grep | awk '{print $2}'`
-if [[ "" !=  "$PID" ]]; then
+if [[ "" !=  "$PID1" ]]; then
   echo "[s p a c e]killing: forever ./bin/www: PID =  $PID1"
   kill -9 $PID1
 fi
