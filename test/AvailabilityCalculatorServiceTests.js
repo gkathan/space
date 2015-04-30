@@ -26,8 +26,8 @@ describe('AvailabilityCalculatorService', function(){
     it('test test', function(){
 
       var avCalculatorService = require('../services/AvailabilityCalculatorService');
-
-			avCalculatorService.getStuff(config.context,function(data){
+			console.log("---------------------");
+			avCalculatorService.getStuff("ubba",function(xxx){
 				console.log("xxxxxx");
 				var av ="xx";
 				assert.equal("y", av);
