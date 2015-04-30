@@ -77,6 +77,9 @@ function _syncSOCIncidents(url,callback){
 
 						// lets flateten out the servicename 1:n entries into a comma delimited string
 						var _cluster = us.nst.nest(socIncidents,"incidentID").children;
+
+
+
 						var _incidentsFlattened=[];
 						for (var c in _cluster){
 							var _services="";
@@ -105,11 +108,11 @@ function _syncSOCIncidents(url,callback){
 
 						}
 
-
 						// and store it
-						var soc_incidents =  db.collection('soc_incidents');
-						soc_incidents.drop();
-						soc_incidents.insert(_incidentsFlattened	 , function(err , success){
+						var socincidents =  db.collection('socincidents');
+						socincidents.drop();
+
+						socincidents.insert(_incidentsFlattened	 , function(err , success){
 							//console.log('Response success '+success);
 							logger.debug('Response error '+err);
 							if(success){

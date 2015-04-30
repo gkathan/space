@@ -47,7 +47,8 @@ var PATH = {
 						REST_PRODUCTCATALOG : BASE+'/space/rest/productcatalog',
 
 						REST_INCIDENTS : BASE+'/space/rest/incidents',
-						REST_SOCINCIDENTS : BASE+'/space/rest/soc_incidents',
+						REST_SOCINCIDENTS : BASE+'/space/rest/socincidents',
+						REST_SOCSERVICES : BASE+'/space/rest/socservices',
 
 						REST_INCIDENTTRACKER : BASE+'/space/rest/incidenttracker',
 						REST_INCIDENTTRACKER_DATE : BASE+'/space/rest/incidenttracker/:date',
@@ -61,6 +62,8 @@ var PATH = {
 						REST_PRODUCTCATALOG : BASE+'/space/rest/productcatalog',
 						REST_ROADMAPS : BASE+'/space/rest/roadmaps',
 						REST_AVAILABILITY : BASE+'/space/rest/availability',
+						REST_AVAILABILITY_CALCULATE : BASE+'/space/rest/availability/calculate',
+
 						REST_FIREREPORT : BASE+'/space/rest/firereport',
 						REST_CONTENT : BASE+'/space/rest/content',
 						REST_SYNCEMPLOYEEIMAGES : BASE+'/space/rest/sync/employeeimages',
@@ -141,7 +144,7 @@ router.get(PATH.REST_PROBLEMS, function(req, res, next) {findAllByName(req,res,n
 //router.get(PATH.REST_INCIDENTS, function(req, res, next) {findAllByName(req,res,next);});
 router.get(PATH.REST_INCIDENTS, function(req, res, next) {findIncidents(req,res,next);});
 router.get(PATH.REST_SOCINCIDENTS, function(req, res, next) {findAllByName(req,res,next);});
-
+router.get(PATH.REST_SOCSERVICES, function(req, res, next) {findAllByName(req,res,next);});
 
 router.get(PATH.REST_INCIDENTTRACKER, function(req, res, next) {findAllByName(req,res,next);});
 //router.post(PATH.REST_INCIDENTTRACKER, function(req, res, next) {save(req,res,next);});
@@ -178,6 +181,9 @@ router.delete(PATH.REST_ROADMAPS, function(req, res, next) {remove(req,res,next)
 router.get(PATH.REST_AVAILABILITY, function(req, res, next) {findAllByName(req,res,next);});
 router.post(PATH.REST_AVAILABILITY, function(req, res, next) {save(req,res,next); });
 router.delete(PATH.REST_AVAILABILITY, function(req, res, next) {remove(req,res,next); });
+
+router.get(PATH.REST_AVAILABILITY_CALCULATE, function(req, res, next) {calculateAvailability(req,res,next);});
+
 
 router.get(PATH.REST_FIREREPORT, function(req, res, next) {findAllByName(req,res,next);});
 router.post(PATH.REST_FIREREPORT, function(req, res, next) {save(req,res,next); });
@@ -714,18 +720,26 @@ function syncProblems(req,res,next){
 
 function syncApm(process,req,res,next){
     logger.debug("*********************** lets sync appdynamics process: "+process);
-
-
     var apmSyncService = require ('../services/ApmSyncService');
 
 	  apmSyncService.sync(function(data){
-
-
 			logger.debug("------------------------------------------------------ data.snapShotDate: "+data.snapshotDate)
-
 			res.send("apm says: "+JSON.stringify(data));
 	});
 }
+
+function calculateAvailability(req,res,next){
+    logger.debug("*********************** calculate availabilty: ");
+    var avCalcService = require ('../services/AvailabilityCalculatorService');
+		var from = "2015-01-01 00:00:00";
+		var to = "2015-01-10 00:00:00";
+
+	  avCalcService.calculateOverall(from, to, function(data){
+			logger.debug("------------------------------------------------------ data.snapShotDate: "+data.snapshotDate)
+			res.send("apm says: "+JSON.stringify(data));
+	});
+}
+
 
 
 

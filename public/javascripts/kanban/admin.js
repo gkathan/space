@@ -71,8 +71,8 @@ function getConfig(collection){
 		case "content":  return getContentConfig();
     case "incidenttracker":  return getIncidenttrackerConfig();
 		case "domains":  return getDomainsConfig();
-		case "soc_incidents" : return getSOCIncidentsConfig();
-
+		case "socincidents" : return getSOCIncidentsConfig();
+		case "socservices" : return getSOCServicesConfig();
 
 
 	}
@@ -390,14 +390,37 @@ function getSOCIncidentsConfig(){
 		{ id: "isIR", name: "IR",  field: "isIR",width:50, editor: Slick.Editors.Number, formatter:Slick.Formatters.Checkmark, cssClass: "cell-standard"},
 		{ id: "isPlanned", name: "planned",  field: "isPlanned",width:50, editor: Slick.Editors.Number , formatter:Slick.Formatters.Checkmark, cssClass: "cell-standard"},
 		{ id: "report", name: "rep",  field: "report",width:50, editor: Slick.Editors.Number, formatter:Slick.Formatters.Checkmark , cssClass: "cell-standard"}
-
         ];
+
 	var _config ={};
 	_config.mode="readonly";
   _config.addRow="enabled";
 	_config.sortBy="start";
 
 	_config.fields = _soc_incidents;
+	return _config;
+}
+
+
+function getSOCServicesConfig(){
+		//targets
+	var _soc_services =[
+    { id: "id", name: "id", field: "_id",sortable:true,width:20,cssClass:"onKanbanImmutable"},
+    { id: "context", name: "context", field: "context",sortable:true,width:80,cssClass:"onKanbanImmutable"},
+		{ id: "ServiceName", name: "ServiceName",  field: "ServiceName",width:250,editor: Slick.Editors.Number , cssClass: "cell-standard"},
+  	{ id: "ServiceGroupID", name: "ServiceGroupID",  field: "ServiceGroupID",width:80,  editor: Slick.Editors.Number , cssClass: "cell-standard"},
+  	{ id: "Report", name: "Report",  field: "Report",width:80,  editor: Slick.Editors.Number , cssClass: "cell-standard"},
+  	{ id: "CoreService", name: "CoreService",  field: "CoreService",width:80,  editor: Slick.Editors.Number , cssClass: "cell-standard"},
+  	{ id: "Highlight", name: "Highlight",  field: "Highlight",width:80,  editor: Slick.Editors.Number , cssClass: "cell-standard"},
+  	{ id: "ext_service", name: "ext_service",  field: "ext_service",width:80,editor: Slick.Editors.Number , cssClass: "cell-standard"}
+
+    ];
+
+	var _config ={};
+	_config.mode="readonly";
+  _config.addRow="disabled";
+
+	_config.fields = _soc_services;
 	return _config;
 }
 

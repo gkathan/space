@@ -26,6 +26,8 @@ var logger = winston.loggers.get('space_log');
  *
  */
 exports.getStuff = _getStuff;
+exports.calculateOverall = _calculateOverall;
+
 
 
 function _getStuff(context,callback) {
@@ -42,7 +44,7 @@ function _getStuff(context,callback) {
 	});
 }
 
-function _calculateOverall(from, to){
+function _calculateOverall(from, to, callback){
 	/*
 	var includeExternal = false;
 
@@ -75,8 +77,53 @@ function _calculateOverall(from, to){
 
 	*/
 
+	var totalTime = new Date(to)-new Date(from);
 
-	// grab the SOC incidents for the intervall (from to)
+
+	var _socIncidents = db.collection('soc_incidents');
+	_socIncidents.find(function(err,data){
+		// grab the SOC incidents for the intervall (from to)
+
+		var cumPlanned = 0.0;
+		var cumUnPlanned = 0.0;
+
+		var planned = [];
+		var unplanned = [];
+
+
+		for (var i in data){
+			var _inc = data[i];
+
+			if (_inc.isEndUserDown && _inc.start>=new Date(from) && _inc.start <=new Date(to)){
+					logger.debug("************* ENDUSER soc inc: "+JSON.stringify(data[i]));
+
+					if (_inc.isPlanned==true){
+							logger.debug("----------------- PLANNED");
+							//CummulativePlanned = CummulativePlanned + (dt1 * Convert.ToInt32(Incident["DegradationPercentage"]) / 100);
+
+							cumPlanned+=_inc.resolutionTime*(parseFloat(_inc.degradation)/100);
+							planned.push(_inc);
+
+
+					}
+					else{
+							logger.debug("+++++++++++++++++++ UNPLANNED");
+							cumUnPlanned+=_inc.resolutionTime*(parseFloat(_inc.degradation)/100);
+							unplanned.push(_inc);
+					}
+
+			}
+
+			var avPlanned = 1-(cumPlanned / totalTime);
+			var avUnPlanned = 1-(cumUnPlanned / totalTime);
+
+
+
+		}
+		callback("from: "+from+" to: "+to+ " - cumPlanned: "+cumPlanned+" | cumPnplanned: "+cumUnPlanned+" --- totalTime: "+totalTime+ "avPlanned: <b>"+(avPlanned*100).toFixed(2)+ "%</b> avUnPlanned: <b>"+(avUnPlanned*100).toFixed(2)+"%</b><br><br>planned INCs: "+JSON.stringify(planned)+" unplanned INCs: "+JSON.stringify(unplanned));
+	})
+
+
 
 	// walk over each incdient
 

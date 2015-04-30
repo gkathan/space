@@ -113,7 +113,7 @@ function _syncIncident(url,done){
           if (_old){
             _diff=jsondiffpatch.diff(_filterRelevantDataForDiff(_old),_filterRelevantDataForDiff(_incidentsNEW[n]));
             if (_diff){
-              var _change ={"id":_old.sysId,"sysId":_old.sysId,"diff":_diff}
+              var _change ={"id":_old.id,"sysId":_old.sysId,"diff":_diff}
 
               _incidentsDELTA_CHANGED.push(_change);
             }

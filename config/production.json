@@ -34,6 +34,11 @@
         "includePriority" : 4,
   			"url" : "https://bwinparty.service-now.com/incident_list.do?JSONv2&sysparm_action=getRecords&sysparm_query="
   		},
+    	"soc_incidents" : {
+  			"mode": "off",
+  			"intervalMinutes" :1 	,
+  			"url" : "http://localhost:7777/AvReportingService.svc/GetIncidentsDatapoints/?from=2014-01-01"
+  		},
     	"problem" : {
   			"mode": "on",
   			"intervalMinutes" :60 	,
