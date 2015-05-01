@@ -22,13 +22,15 @@ var assert = require("assert")
 
 describe('TargetService', function(){
   describe('#getL1()', function(){
-    it('should read L1 targets from DB', function(){
+    it('should read L1 targets from DB', function(done){
 
       var targetService = require('../services/TargetService');
 
-			targetService.getL1(function(L1targets){
+			targetService.getL1("bpty.studios",function(L1targets){
 					console.log("--- test");
 					console.log("L1targets: "+JSON.stringify(L1targets));
+
+					done();
 			})
 
 			//assert.equal("E2988", employee.EmployeeNumbexr);

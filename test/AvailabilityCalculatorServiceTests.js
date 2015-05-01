@@ -23,28 +23,15 @@ var assert = require("assert")
 
 describe('AvailabilityCalculatorService', function(){
   describe('#getStuff()', function(){
-    it('test test', function(){
-
+    it('test test', function(done){
       var avCalculatorService = require('../services/AvailabilityCalculatorService');
 			console.log("---------------------");
 			avCalculatorService.getStuff("ubba",function(xxx){
 				console.log("xxxxxx");
 				var av ="xx";
-				assert.equal("y", av);
-
-				//var unplanned = JSON.parse(data[0].avReport.getYTDDatapoint);
-				
-
-
+				assert.equal("xx", av);
+				done();
 			})
-
-
-			//assert.equal("E2988", employee.EmployeeNumbexr);
-
 		});
-
-
-
-    })
-
+  })
 })

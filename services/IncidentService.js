@@ -31,6 +31,14 @@ exports.find = function (callback) {
 }
 
 
+exports.findSOC = function (callback) {
+	var items =  db.collection('socincidents');
+	items.find({}).sort({start:-1}, function (err, docs){
+			callback(docs);
+			return;
+	});
+}
+
 
 
 

@@ -8,6 +8,7 @@ var concat = require('gulp-concat');
 var runSequence = require('run-sequence');
 var zip = require('gulp-zip');
 var unzip = require('gulp-unzip');
+var mocha = require('gulp-mocha');
 
 var jshint = require('gulp-jshint');
 var stylish = require('jshint-stylish');
@@ -345,6 +346,22 @@ gulp.task('concat', function() {
     .pipe(concat('space.js'))
     .pipe(gulp.dest('.'));
 });
+
+
+
+
+gulp.task('mocha', function () {
+    return gulp.src('./test/*.js', {read: false})
+        .pipe(mocha({reporter: 'nyan'}));
+});
+
+
+
+
+
+
+
+
 
 
 /**

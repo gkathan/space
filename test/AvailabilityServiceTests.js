@@ -25,33 +25,30 @@ var assert = require("assert")
 
 
 describe('AvailabilityService', function(){
-  describe('#sync()', function(){
-    it('should read data from REST endpoint from avreport and store it in DB', function(){
+  describe('#findSOCServicesMain()', function(){
+    it('should read SOC Main Services data from MongoDB', function(done){
+      var avService = require('../services/AvailabilityService');
+			avService.findSOCServicesMain(function(data){
+				console.log("----------- data: "+data);
+				var _length = data.length;
+				assert.equal(22, _length);
 
-      var avSyncService = require('../services/AvailabilitySyncService');
-			var urls = ["http://avreport.bwin.intranet/API/AvReoprtingService.svc/getYTDDatapoint","http://avreport.bwin.intranet/API/AvReoprtingService.svc/GetAVGraphDatapoints"];
-
-			avSyncService.sync(urls,function(){
-				var avService=require('../services/AvailabilityService');
-				avService.getLatest(function(data){
-					//var av = avReport.getYTDDatapoint;
-				var av ="xx";
-				assert.equal("y", av);
-	
-					var unplanned = JSON.parse(data[0].avReport.getYTDDatapoint);
-
+				done();
 				})
-
-
-
 			});
+  	});
 
-			//assert.equal("E2988", employee.EmployeeNumbexr);
+  describe('#findSOCServicesExternal()', function(){
+    it('should read SOC External Services data from MongoDB', function(done){
+      var avService = require('../services/AvailabilityService');
+			avService.findSOCServicesExternal(function(data){
+				console.log("----------- data: "+data);
+				var _length = data.length;
+				assert.equal(7, _length);
 
-		});
-
-
-
-    })
+				done();
+				})
+			});
+  	});
 
 })

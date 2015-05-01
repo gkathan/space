@@ -26,7 +26,7 @@ var assert = require("assert")
 
 describe('IncidentService', function(){
   describe('#_mapPriority()', function(){
-    it('maps snow code to bpty meaninful descripion', function(){
+    it('maps snow code to bpty meaninful descripion', function(done){
 
       var incidentService = require('../services/IncidentService');
 
@@ -42,11 +42,12 @@ describe('IncidentService', function(){
 			var _bptyCode = incidentService.mapPriority(4);
 			assert.equal("P40 - Low", _bptyCode);
 
+			done();
 		});
 	});
 
   describe('#_mapState()', function(){
-    it('maps snow code to bpty meaninful descripion', function(){
+    it('maps snow code to bpty meaninful descripion', function(done){
 
       var incidentService = require('../services/IncidentService');
 
@@ -65,6 +66,7 @@ describe('IncidentService', function(){
 			var _bptyCode = incidentService.mapState(9);
 			assert.equal("Resolved", _bptyCode);
 
+			done();
 		});
   });
 

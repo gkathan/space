@@ -59,7 +59,6 @@ var PATH = {
 						REST_DOMAINS : BASE+'/space/rest/domains',
 						REST_CUSTOMERS : BASE+'/space/rest/customers',
 						REST_COMPETITORS : BASE+'/space/rest/competitors',
-						REST_PRODUCTCATALOG : BASE+'/space/rest/productcatalog',
 						REST_ROADMAPS : BASE+'/space/rest/roadmaps',
 						REST_AVAILABILITY : BASE+'/space/rest/availability',
 						REST_AVAILABILITY_CALCULATE : BASE+'/space/rest/availability/calculate',
@@ -107,7 +106,7 @@ var PATH = {
 						TRANSCODE_BOARDS : BASE+'/space/transcode'
 					};
 
-router.get(PATH.ROOT, function(req, res, next) {res.locals.API_LIST=PATH;res.locals.REQ_PATH=req.baseUrl;res.render("api")});
+router.get(PATH.ROOT, function(req, res, next) {res.locals.API_LIST=PATH;res.locals.REQ_PATH=req.baseUrl;res.render("api");});
 
 router.get(PATH.REST_INITIATIVES, function(req, res, next) {findAllByName(req,res,next); });
 router.post(PATH.REST_INITIATIVES, function(req, res, next) {save(req,res,next); });
@@ -228,16 +227,13 @@ router.get(PATH.REST_ORGANIZATIONHISTORY, function(req, res, next) {
             return;
         }
         return next(err);
-    })
-
-
-
+    });
 	});
 
 router.get(PATH.REST_INITIATIVES_DIFF_TRAIL+'/:initiativeId' , function(req, res, next) {findTrailByNameForId(req,res,next);});
 
-router.get(PATH.EXPORT_TARGETS, function(req, res, next) {excelTargets(req,res,next)});
-router.get(PATH.EXPORT_METRICS, function(req, res, next) {excelMetrics(req,res,next)});
+router.get(PATH.EXPORT_TARGETS, function(req, res, next) {excelTargets(req,res,next);});
+router.get(PATH.EXPORT_METRICS, function(req, res, next) {excelMetrics(req,res,next);});
 router.get(PATH.EXPORT_INITIATIVES, function(req, res, next) {excelInitiatives(req,res,next);});
 router.get(PATH.EXPORT_BOARDS, function(req, res, next) {excelBoards(req,res,next);});
 router.get(PATH.EXPORT_SCRUMTEAMS, function(req, res, next) {excelScrumTeams(req,res,next);});
@@ -278,7 +274,7 @@ function findAllByName(req, res , next){
 	_filter[_filterName]={};
 	_filter[_filterName][_filterOperator]=_filterValue;
 
-	if (_filterName==undefined) _filter = null;
+	if (_filterName===undefined) _filter = null;
 
 	// e.g http://localhost:3000/api/space/rest/boards?filterName=name&filterOperator=$eq&filterValue=studios
 	logger.debug("***** filter: "+JSON.stringify(_filter));
@@ -306,7 +302,6 @@ function findById(req, res , next){
 	// format path: /space/rest/boards/1
 	// take the last from the set with last stripped ;-)
 	var collection = _.last(_.initial(path));
-
     db.collection(collection).findOne({id:req.params.id} , function(err , success){
         logger.debug('Response success '+success);
         logger.debug('Response error '+err);
@@ -315,9 +310,8 @@ function findById(req, res , next){
             return;
         }
         return next(err);
-    })
+    });
 }
-
 
 
 /**
@@ -368,7 +362,7 @@ function findByKey(key,req, res , next){
             return;
         }
         return next(err);
-    })
+    });
 }
 
 /**
@@ -395,7 +389,7 @@ function findBy_id(req, res , next){
             return;
         }
         return next(err);
-    })
+    });
 }
 
 /**
@@ -441,7 +435,7 @@ function _transformDomains(data){
 			if (data[d].httpsLog !== undefined) _d.httpsLogStatus = data[d].httpsLog.statusCode;
 			_d.aRecords = data[d].aRecords;
 
-			_domains.push(_d)
+			_domains.push(_d);
 		}
 		return _domains;
 
@@ -485,25 +479,21 @@ function getTargetsTree(req,res,next){
  * find single object by Id
  */
 function findEmployeeByName(req, res , next){
-
     var collection = "organization";
-
     var _name = req.params.name.split(" ");
-
     db.collection(collection).findOne({"First Name":_.capitalize(_name[0]),"Last Name":_.capitalize(_name[1])} , function(err , success){
-        logger.debug('Response success '+success);
-        logger.debug('Response error '+err);
-        if(success){
-            res.send(success);
-            return;
-        }
-        else {
-            res.send(err);
-            return;
-
-		}
-        return next(err);
-    })
+      logger.debug('Response success '+success);
+      logger.debug('Response error '+err);
+      if(success){
+        res.send(success);
+        return;
+      }
+      else {
+        res.send(err);
+        return;
+			}
+      return next(err);
+    });
 }
 
 
@@ -513,19 +503,18 @@ function findEmployeeByName(req, res , next){
  * slected by refID which is the id of the changed entity
  */
 function findTrailByNameForId(req, res , next){
-    logger.debug("*** find Trail for :"+req.params.initiativeId);
-    var path = req.path.split("/");
+  logger.debug("*** find Trail for :"+req.params.initiativeId);
+  var path = req.path.split("/");
 	var collection = _.last(_.initial(path));
-
-    db.collection(collection).find({refId:mongojs.ObjectId(req.params.initiativeId)} , function(err , success){
-        logger.debug('Response success '+success);
-        logger.debug('Response error '+err);
-        if(success){
-            res.send(success);
-            return;
-        }
-        return next(err);
-    })
+  db.collection(collection).find({refId:mongojs.ObjectId(req.params.initiativeId)} , function(err , success){
+    logger.debug('Response success '+success);
+    logger.debug('Response error '+err);
+    if(success){
+        res.send(success);
+        return;
+    }
+    return next(err);
+	});
 }
 
 
@@ -561,7 +550,7 @@ function save(req, res , next){
 				// http://stackoverflow.com/questions/13031541/mongoerror-cannot-change-id-of-a-document
 				if ( item._id && ( typeof(item._id) === 'string' ) ) {
 					logger.debug("[DEBUG] fixing mongDB _id issue....");
-					item._id = mongojs.ObjectId.createFromHexString(item._id)
+					item._id = mongojs.ObjectId.createFromHexString(item._id);
 				}
 				logger.debug("[DEBUG] createDate: "+item.createDate);
 				item.changeDate=_timestamp;
@@ -590,7 +579,7 @@ function save(req, res , next){
 				db.collection(_collection).update({_id:mongojs.ObjectId(item._id)},item,{upsert:true} , function(err , success){
 					if(success){
 						logger.info("[success] updatedExisting: "+success.updatedExisting+ " success:"+JSON.stringify(success));
-							if(success.updatedExisting==false){
+							if(success.updatedExisting===false){
 								_newid = success.upserted[0]._id;
 								logger.info("[success] _newid = "+_newid);
 							}
@@ -646,10 +635,10 @@ function save(req, res , next){
 
  */
 function mail(req,res,next){
-    logger.debug("*********************** mail: "+req.body.mail);
-    var mail = JSON.parse(req.body.mail);
-    var mailer = require('../services/MailService');
-	mailer.sendText(mail);
+  logger.debug("*********************** mail: "+req.body.mail);
+  var _mail = JSON.parse(req.body.mail);
+  var mailer = require('../services/MailService');
+	mailer.sendText(_mail);
 	res.send({});
 	return;
 }
@@ -723,7 +712,7 @@ function syncApm(process,req,res,next){
     var apmSyncService = require ('../services/ApmSyncService');
 
 	  apmSyncService.sync(function(data){
-			logger.debug("------------------------------------------------------ data.snapShotDate: "+data.snapshotDate)
+			logger.debug("------------------------------------------------------ data.snapShotDate: "+data.snapshotDate);
 			res.send("apm says: "+JSON.stringify(data));
 	});
 }
@@ -735,7 +724,7 @@ function calculateAvailability(req,res,next){
 		var to = "2015-01-10 00:00:00";
 
 	  avCalcService.calculateOverall(from, to, function(data){
-			logger.debug("------------------------------------------------------ data.snapShotDate: "+data.snapshotDate)
+			logger.debug("------------------------------------------------------ data.snapShotDate: "+data.snapshotDate);
 			res.send("apm says: "+JSON.stringify(data));
 	});
 }
@@ -795,7 +784,7 @@ function remove(req, res , next){
 	async.each(items, function (item, callback){
 		logger.debug("*item: "+item); // print the key
 
-		db.collection(collection).remove({_id:mongojs.ObjectId(item)} , function(err , success){if (success) {logger.debug("--- remove: id:"+item+" [SUCCESS]");}})
+		db.collection(collection).remove({_id:mongojs.ObjectId(item)} , function(err , success){if (success) {logger.debug("--- remove: id:"+item+" [SUCCESS]");}});
 
 		callback(); // tell async that the iterator has completed
 
@@ -1401,23 +1390,21 @@ function _stripCrap(object){
  *
  */
 function _formatCell(row, cellData,eOpt){
-             if (eOpt.rowNum%2 ==0)
-				eOpt.styleIndex=1;
-			 else
-				eOpt.styleIndex=3;
-
-             //logger.debug(JSON.stringify(row));
-             return _stripCrap(cellData);
-        }
+  if (eOpt.rowNum%2 ===0)
+		eOpt.styleIndex=1;
+	else
+		eOpt.styleIndex=3;
+ 	return _stripCrap(cellData);
+}
 
 /**
  * extracts the captions from a conf arrax
  * needed for deterministically create the data for CSV export
  */
 function _getCaptionArray(conf){
-   var _fields = new Array();
+   var _fields = [];
 
-   for (c in conf.cols){
+   for (var c in conf.cols){
 	   _fields.push(conf.cols[c].caption);
    }
 
@@ -1429,10 +1416,10 @@ function _getCaptionArray(conf){
  */
 function _createDataRows(conf,data){
 	var _fields = _getCaptionArray(conf);
-	var _list = new Array();
+	var _list = [];
 
 	for (var d in data){
-		var _row = new Array();
+		var _row = [];
 		//logger.debug("JSON: "+JSON.stringify(data[d]));
 		for (var f in _fields){
 			var _column = _fields[f];
@@ -1488,7 +1475,7 @@ function transcode(req,res,next){
 	res.set("Cache-Control", "no-cache");
 	res.type(_format);
 
-	res.send(_s.data)
+	res.send(_s.data);
 }
 
 
@@ -1507,7 +1494,7 @@ function switchcontext(req,res,next){
 
 				req.session.CONTEXT = context.name;
 				logger.debug("*** session.CONTEXT: "+req.session.CONTEXT);
-		})
+		});
 	}
 	res.send("switchcontext");
 	//next();

@@ -36,3 +36,25 @@ exports.getDowntimeYTD = function (avpercentageYTD,weeks){
 	var minutes = av*weeks;
 	return moment.duration(minutes,'minutes').format("hh:mm.ss");;
 }
+
+
+exports.findSOCServicesMain = _findSOCServicesMain;
+exports.findSOCServicesExternal = _findSOCServicesExternal;
+
+function _findSOCServices(filter,callback) {
+	var items =  db.collection('socservices');
+	items.find(filter).sort({$natural:-1}, function (err, docs){
+			callback(docs);
+			return;
+	});
+}
+
+function _findSOCServicesMain(callback){
+	var _filter ={ServiceGroupID:"1",Report:"1"};
+	_findSOCServices(_filter,callback);
+}
+
+function _findSOCServicesExternal(callback){
+	var _filter ={ServiceGroupID:"1",Report:"1",ext_service:"1"};
+	_findSOCServices(_filter,callback);
+}

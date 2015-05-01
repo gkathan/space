@@ -11,6 +11,9 @@ var config = require('config');
 
 var app = express();
 
+//var io = require('socket.io').listen(app);
+
+
 // passport stuff
 var passport = require('passport'),
  LocalStrategy = require('passport-local');

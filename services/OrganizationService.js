@@ -28,8 +28,8 @@ exports.findEmployeeByFirstLastName = function (firstname,lastname, callback) {
 	logger.debug("findEmployeeByFirstLastName first: "+firstname+", last: "+lastname);
 	var organization =  db.collection('organization');
 		organization.find({'First Name':firstname,'Last Name':lastname}).sort({$natural:1}, function (err, docs){
-			if (docs) logger.debug("[ok] found some shit ... : "+docs);
-			callback(docs);
+			if (docs) logger.debug("[ok] found some shit ... : "+JSON.stringify(docs));
+			callback(docs[0]);
 			return;
 	});
 }

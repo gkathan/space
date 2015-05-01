@@ -17,35 +17,18 @@ winston.loggers.add('test_log',{
 });
 
 var logger = winston.loggers.get('test_log');
-
-
-
-
-
 var assert = require("assert")
-describe('Array', function(){
-  describe('#indexOf()', function(){
-    it('should return -1 when the value is not present', function(){
-      assert.equal(-1, [1,2,3].indexOf(5));
-      assert.equal(-1, [1,2,3].indexOf(0));
-    })
-  })
-})
 
 
 describe('OrganizationService', function(){
   describe('#findEmployeeByFirstLastName()', function(){
-    it('should return a employee record for a given first and last name', function(){
-
-      var orgService = require('../services/OrganizationService');
-      var employee = orgService.findEmployeeByFirstLastName("Gerold","Kathan",function(employee){
-
-			assert.equal("E2988", employee.EmployeeNumbexr);
-
-		});
-
-
-
+    it('should return a employee record for a given first and last name', function(done){
+			var orgService = require('../services/OrganizationService');
+      orgService.findEmployeeByFirstLastName("Gerold","Kathan",function(employee){
+				console.log("employee found: "+employee);
+				assert.equal("E2988", employee["Employee Number"]);
+				done();
+			});
     })
   })
 })
