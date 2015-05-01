@@ -55,7 +55,12 @@ server_https.listen(portssl);
 server_https.on('error', onError);
 server_https.on('listening', onListeningHttps);
 
-
+var io = require('socket.io').listen(server_http);
+io.sockets.on('connection', function (socket) {
+    console.log('A new user connected!');
+    var _message={title:"welcome to  s p a c e :-)",body:"this is real-time shit !!"}
+    socket.emit('message', { msg: _message });
+});
 
 /**
  * Normalize a port into a number, string, or false.
