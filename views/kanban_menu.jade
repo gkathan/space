@@ -241,10 +241,11 @@ block content
 									li(role="presentation")
 										a(role="menuitem" tabindex="-1" href="/config") -- show config --
 
-		.alert.alert-dismissable.alert-success(id="alert" style="visibility:hidden;width:400px;margin-left:auto;margin-right:0px")
+		.alert.alert-dismissable.alert-success(id="alert" style="visibility:hidden;width:400px;margin-left:auto;margin-right:0px;")
 			button.close(type='button', data-dismiss='alert') &times;
-			strong(id="space_notification_title")
-			div(id="space_notification_body")  
+			img(src="/images/iconexp/sign_warning.png" height="20px")
+			strong(id="space_notification_title" style="margin-left:20px")
+			div(id="space_notification_body"  style="margin-left:40px")  
 											
 
 	include includes/material
@@ -256,9 +257,20 @@ block content
 		// if we get an "info" emit from the socket server then console.log the data we recive
 		socket.on('message', function (data) {
 			
-			console.log(data);
-			$('#alert').css("visibility","visible");
-			$('#space_notification_title').text(data.msg.title);
-			$('#space_notification_body').text(data.msg.body);
+			$(function(){
+				new PNotify({
+					title: data.msg.title,
+					text: data.msg.body,
+					type: 'info',
+					shadow: true
+				});
+			});
+		
+		//	$('#alert').css("visibility","visible");
+		//	$('#alert').delay(500);
 			
+		//	$('#space_notification_title').text(data.msg.title);
+		//	$('#space_notification_body').text(data.msg.body);
+			
+			 
 		});
