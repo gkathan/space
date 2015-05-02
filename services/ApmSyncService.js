@@ -72,6 +72,8 @@ function _syncLogin(done){
 		})
 		done(data);
 
-	})
+	}).on('error',function(err){
+			logger.error('[ApmSyncSerice] says: something went wrong on the request', err.request.options);
+		})
 
 }

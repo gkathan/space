@@ -78,13 +78,12 @@ function _syncProblem(url,done){
 				logger.debug('Response error '+err);
 				if(success){
 					logger.info("[success] sync problems....length: "+_problems.length);
-
 				}
 			})
-			done(data);
-
-
-		})
+		done(data);
+	}).on('error',function(err){
+			logger.error('[ProblemSyncService] says: something went wrong on the request', err.request.options);
+	})
 }
 
 /**

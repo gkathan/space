@@ -18,8 +18,10 @@ var jsondiffpatch=require('jsondiffpatch');
 var winston = require('winston');
 var logger = winston.loggers.get('space_log');
 
+var app=require('../app');
 
-exports.init = function(callback){
+
+exports.init = function(){
 	var rule = new schedule.RecurrenceRule();
 	// every 10 minutes
 	rule.minute = new schedule.Range(0, 59, config.sync.incident.intervalMinutes);
@@ -41,7 +43,9 @@ exports.init = function(callback){
 exports.sync = _syncIncident;
 
 function _syncIncident(url,done){
+	debugger;
 	logger.debug("**** _syncIncident, url: "+url);
+	//logger.debug("**** _syncIncident, req: "+req.baseUrl);
 
 		var _secret = require("../config/secret.json");
 
@@ -151,13 +155,12 @@ function _syncIncident(url,done){
           incidentsdelta.insert(_incidentsDIFF);
 				  // and send a websocket event about the changes ;-)
 					//[TODO]
+					var _message;
+					_message.title="! INCIDENT UPDATE !";
+					_message.body = JSON.stringify(_incidentsDIFF);
+					app.io.emit('message', {msg:_message});
+
         }
-
-
-
-
-
-
 
 				incidents.insert(_incidentsNEW	 , function(err , success){
 					//console.log('Response success '+success);
@@ -191,11 +194,21 @@ function _syncIncident(url,done){
 
 
 		}).on('error',function(err){
-            console.log('something went wrong on the request', err.request.options);
+        logger.error('[IncidentSyncSerice] says: something went wrong on the request', err.request.options);
+
+				var _message={};
+				_message.title="INCIDENT UPDATE FAILED";
+				_message.body = "something went wrong on the request";
+
+				app.io.emit('message', {msg:_message});
+
   });
 
 }
 
+function _pushEvent(event,message){
+	exports.io.sockets.emit(event, message);
+}
 
 /**
 * filters out the relevant attributes of the 87 fields from snow ;-)

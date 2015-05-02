@@ -11,8 +11,6 @@ var config = require('config');
 
 var app = express();
 
-//var io = require('socket.io').listen(app);
-
 
 // passport stuff
 var passport = require('passport'),
@@ -142,8 +140,24 @@ avSyncService.init(function(av){
 var incidentSyncService = require('./services/IncidentSyncService');
 incidentSyncService.init();
 
+var sockets=[];
+app.io = require('socket.io')();
+
+/*
+app.io.sockets.on('connection', function (socket) {
+    console.log('A new user connected!');
+    sockets.push(socket);
+    var _message={title:"welcome to  s p a c e :-)",body:"this is real-time shit !! "+sockets.length+" clients connetced"}
+    app.io.emit('message', { msg: _message });
+
+    console.log("sockets array: length="+sockets.length);
+
+});
+*/
+
 var soc_incidentSyncService = require('./services/SOCIncidentsSyncService');
 soc_incidentSyncService.init();
+
 
 var problemSyncService = require('./services/ProblemSyncService');
 problemSyncService.init();
@@ -208,3 +222,4 @@ app.use(function(err, req, res, next) {
 });
 
 module.exports = app;
+exports.io = app.io;

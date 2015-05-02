@@ -23,8 +23,6 @@ var logger = winston.loggers.get('space_log');
 exports.init = _init;
 exports.sync=_syncAvailability;
 
-
-
 function _init(callback){
 	var rule = new schedule.RecurrenceRule();
 	// every 10 minutes
@@ -45,39 +43,49 @@ function _syncAvailability(urls,callback){
 
 	async.series([
 		function(done){
-					logger.debug("1) ************************************** STEP-1");
-					// call availability rest service
-					var Client = require('node-rest-client').Client;
-					client = new Client();
-					// direct way
-					client.get(urls[0], function(data, response,callback){
-						// parsed response body as js object
-						var _endpoint = _.last(urls[0].split("/"));
-						logger.debug("...get data..: endpoint: "+_endpoint);
-						logger.debug(data);
+			logger.debug("1) ************************************** STEP-1");
+			// call availability rest service
+			var Client = require('node-rest-client').Client;
+			client = new Client();
+			// direct way
+			client.get(urls[0], function(data, response,callback){
+				// parsed response body as js object
+				var _endpoint = _.last(urls[0].split("/"));
+				logger.debug("...get data..: endpoint: "+_endpoint);
+				logger.debug(data);
+				try{
+					avData[_endpoint]=JSON.parse(data);
+				}
+				catch(e){
+					logger.error("exception "+e);
+				}
+				// nested callback
+				client.get(urls[1], function(data, response,callback){
+					// parsed response body as js object
+					var _endpoint = _.last(urls[1].split("/"));
+					logger.debug("...get data..: endpoint: "+_endpoint);
+					logger.debug(data);
+					try{
 						avData[_endpoint]=JSON.parse(data);
-						// nested callback
-						client.get(urls[1], function(data, response,callback){
-							// parsed response body as js object
-							var _endpoint = _.last(urls[1].split("/"));
-							logger.debug("...get data..: endpoint: "+_endpoint);
-							logger.debug(data);
-							avData[_endpoint]=JSON.parse(data);
-
-
-
-							// and store it
-							var availability =  db.collection('availability');
-							availability.drop();
-							availability.insert({createDate:new Date(),avReport:avData}	 , function(err , success){
-								//console.log('Response success '+success);
-								logger.debug('Response error '+err);
-								if(success){
-									logger.info("sync availability [DONE]");
-								}
-
-							})
-						})
+					}
+					catch(e){
+						logger.error("exception "+e);
+					}
+					// and store it
+					var availability =  db.collection('availability');
+					availability.drop();
+					availability.insert({createDate:new Date(),avReport:avData}	 , function(err , success){
+						//console.log('Response success '+success);
+						logger.debug('Response error '+err);
+						if(success){
+							logger.info("sync availability [DONE]");
+						}
+					})
+				}).on('error',function(err){
+		        logger.error('[AvailabilitySyncSerice] says: something went wrong on the request', err.request.options);
+					})
+			}).on('error',function(err){
+	        logger.error('[AvailabilitySyncSerice] says: something went wrong on the request', err.request.options);
 				});
 			done();
 		},

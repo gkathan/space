@@ -41,87 +41,64 @@ function _init(callback){
 function _syncSOCIncidents(url,callback){
 	var async=require('async');
 	var socIncidents;
-
 	var incService = require('./IncidentService');
-
-
-
-
 	async.series([
 		function(done){
-					logger.debug("1) ************************************** STEP-1");
-					// call availability rest service
-					var Client = require('node-rest-client').Client;
-					client = new Client();
+			logger.debug("1) ************************************** STEP-1");
+			// call availability rest service
+			var Client = require('node-rest-client').Client;
+			client = new Client();
 
-					incService.find(function(snowIncidents){
-
-						// direct way
-						client.get(url, function(data, response,callback){
-
-
-							//logger.debug(data);
-							socIncidents=JSON.parse(data);
-
-							//logger.debug("------------------------"+socIncidents);
-							// fix the date shit
-							for (var d in socIncidents){
-								var _incident = socIncidents[d];
-								_incident.start = new Date(_incident.start);
-								_incident.stop = new Date(_incident.stop);
-								_incident.resolutionTime = _incident.stop - _incident.start;
-
-
-
-							}
-
-						// lets flateten out the servicename 1:n entries into a comma delimited string
-						var _cluster = us.nst.nest(socIncidents,"incidentID").children;
-
-
-
-						var _incidentsFlattened=[];
-						for (var c in _cluster){
-							var _services="";
-							var _incident;
-							for (var s in _cluster[c].children){
-								_services+=_cluster[c].children[s].serviceName+",";
-								_incident = _cluster[c].children[s];
-
-								if (_incident.incidentID.split("INC00").length>1)
-									_incident.incidentID = "INC"+_incident.incidentID.split("INC00")[1];
-
-
-							}
-							logger.debug("INC: "+_cluster[c].name+" services: "+_services)
-							_incident.serviceName=_services;
-
-							// check if there is a matching snow incident with accoding incidentID
-							var _check = _.findWhere(snowIncidents,{"id":_incident.incidentID})
-							if (_check){
-								_incident.snowId = _check.sysId;
-								_incident.labels = _check.label;
-								_incident.businessService = _check.businessService;
-							}
-
-							_incidentsFlattened.push(_incident);
-
+			incService.find(function(snowIncidents){
+				// direct way
+				client.get(url, function(data, response,callback){
+					//logger.debug(data);
+					socIncidents=JSON.parse(data);
+					//logger.debug("------------------------"+socIncidents);
+					// fix the date shit
+					for (var d in socIncidents){
+						var _incident = socIncidents[d];
+						_incident.start = new Date(_incident.start);
+						_incident.stop = new Date(_incident.stop);
+						_incident.resolutionTime = _incident.stop - _incident.start;
+					}
+					// lets flateten out the servicename 1:n entries into a comma delimited string
+					var _cluster = us.nst.nest(socIncidents,"incidentID").children;
+					var _incidentsFlattened=[];
+					for (var c in _cluster){
+						var _services="";
+						var _incident;
+						for (var s in _cluster[c].children){
+							_services+=_cluster[c].children[s].serviceName+",";
+							_incident = _cluster[c].children[s];
+							if (_incident.incidentID.split("INC00").length>1)
+								_incident.incidentID = "INC"+_incident.incidentID.split("INC00")[1];
 						}
-
-						// and store it
-						var socincidents =  db.collection('socincidents');
-						socincidents.drop();
-
-						socincidents.insert(_incidentsFlattened	 , function(err , success){
-							//console.log('Response success '+success);
-							logger.debug('Response error '+err);
-							if(success){
-								logger.info("sync soc_incidents [DONE]");
-							}
-
-							})
-						})
-				});
+						logger.debug("INC: "+_cluster[c].name+" services: "+_services)
+						_incident.serviceName=_services;
+						// check if there is a matching snow incident with accoding incidentID
+						var _check = _.findWhere(snowIncidents,{"id":_incident.incidentID})
+						if (_check){
+							_incident.snowId = _check.sysId;
+							_incident.labels = _check.label;
+							_incident.businessService = _check.businessService;
+						}
+						_incidentsFlattened.push(_incident);
+					}
+					// and store it
+					var socincidents =  db.collection('socincidents');
+					socincidents.drop();
+					socincidents.insert(_incidentsFlattened	 , function(err , success){
+						//console.log('Response success '+success);
+						logger.debug('Response error '+err);
+						if(success){
+							logger.info("sync soc_incidents [DONE]");
+						}
+					})
+				}).on('error',function(err){
+		        logger.error('[SOCIncidentSyncService] says: something went wrong on the request', err.request.options);
+				})
+		});
 			done();
 		},
 		function(done){
