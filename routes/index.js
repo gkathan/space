@@ -123,6 +123,20 @@ router.get('/admin', function(req, res) {
   }
 });
 
+/* GET the admin page. */
+router.get('/admin/message', function(req, res) {
+	if (ensureAuthenticated(req,res)){
+	   res.render('message', { title: 's p a c e - admin' });
+  }
+});
+
+/* GET the admin page. */
+router.get('/admin/content', function(req, res) {
+	if (ensureAuthenticated(req,res)){
+	   res.render('content', { title: 's p a c e - admin' });
+  }
+});
+
 
 router.get('/playbooks', function(req, res) {
 	res.render('playbooks', { title: 's p a c e - playbooks' });

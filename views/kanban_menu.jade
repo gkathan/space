@@ -241,12 +241,7 @@ block content
 									li(role="presentation")
 										a(role="menuitem" tabindex="-1" href="/config") -- show config --
 
-		.alert.alert-dismissable.alert-success(id="alert" style="visibility:hidden;width:400px;margin-left:auto;margin-right:0px;")
-			button.close(type='button', data-dismiss='alert') &times;
-			img(src="/images/iconexp/sign_warning.png" height="20px")
-			strong(id="space_notification_title" style="margin-left:20px")
-			div(id="space_notification_body"  style="margin-left:40px")  
-											
+										
 
 	include includes/material
 
@@ -256,12 +251,12 @@ block content
 
 		// if we get an "info" emit from the socket server then console.log the data we recive
 		socket.on('message', function (data) {
-			
+			if (!data.msg.type) data.msg.type="info";
 			$(function(){
 				new PNotify({
 					title: data.msg.title,
 					text: data.msg.body,
-					type: 'info',
+					type: data.msg.type,
 					shadow: true
 				});
 			});

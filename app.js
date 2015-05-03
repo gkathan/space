@@ -143,17 +143,14 @@ incidentSyncService.init();
 var sockets=[];
 app.io = require('socket.io')();
 
-/*
+
 app.io.sockets.on('connection', function (socket) {
-    console.log('A new user connected!');
-    sockets.push(socket);
-    var _message={title:"welcome to  s p a c e :-)",body:"this is real-time shit !! "+sockets.length+" clients connetced"}
-    app.io.emit('message', { msg: _message });
+    logger.debug('[socket.io] says: new user connected!');
 
-    console.log("sockets array: length="+sockets.length);
-
+    socket.on('disconnect',function(){
+      logger.debug("[socket.io] says: someone disconnected")
+    })
 });
-*/
 
 var soc_incidentSyncService = require('./services/SOCIncidentsSyncService');
 soc_incidentSyncService.init();

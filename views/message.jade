@@ -1,0 +1,66 @@
+include kanban_menu
+
+
+block content
+
+	
+div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;background-color:white;;width:400px;text-align: center;margin: 10px auto;")
+	div(style="margin: 10px auto;")
+		h3 emit message to s p a c e 
+		br
+		
+		form.form-horizontal(id="messageform" action="" method="" autocomplete="off" ) 
+			div(style="margin-left:5px;width:300px;height:40px")
+				input.form-control.floating-label(id="messagetitle" name="title" type="text" placeholder="title" autocomplete="off" data-hint="title")
+			div(style="margin-left:5px;width:300px;height:80px")
+				textarea.form-control.floating-label(id="messagebody" rows="3" name="body" type="text" placeholder="body" autocomplete="off" data-hint="body" )
+			
+			div(style="margin-left:5px;width:100px;height:80px")
+				select.form-control.floating-label(id="messagetype"  name="messagetype" type="select"  placeholder="type" autocomplete="off"  )
+					option info
+					option warning
+					option error
+					option success
+			
+			br
+			
+
+			button.btn.btn-default.btn-xs(type="button" )
+				span cancel
+			button.btn.btn-info.btn-xs(id="messagesubmit" type="button")
+				span emit
+
+include includes/material
+
+script.
+	$('#messagesubmit').click(function(e){
+		var _msg ={};
+		_msg.title=$('#messagetitle').val();
+		_msg.body=$('#messagebody').val();
+		_msg.type=$('#messagetype').val();
+		
+		
+		console.log("socket:"+socket);
+		
+		var socket = io.connect(); 
+		
+		$.ajax({
+			url : "/api/space/rest/message",
+			type: "POST",
+			contentType: "application/json",
+			data : JSON.stringify(_msg),
+			success: function(data, textStatus, jqXHR)
+			{
+				console.log("success: "+data);
+			},
+			error: function (jqXHR, textStatus, errorThrown)
+			{
+			console.log("error: "+errorThrown);
+			}
+	});
+		
+		//console.log("socket:"+socket);
+		
+		//socket.emit('message',{msg:_msg});
+			
+	})

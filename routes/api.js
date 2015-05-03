@@ -18,6 +18,8 @@ var HOST = config.database.host;
 var connection_string = HOST+'/'+DB;
 var db = mongojs(connection_string, [DB]);
 
+
+
 var incidentService = require('../services/IncidentService');
 
 var BASE = "";
@@ -82,6 +84,7 @@ var PATH = {
 
 						REST_MAIL : BASE+'/space/rest/mail',
 						REST_SWITCHCONTEXT : BASE+'/space/rest/switchcontext',
+						REST_MESSAGE : BASE+'/space/rest/message',
 
 
 						EXPORT_TARGETS : BASE+'/space/export/xlsx/targets',
@@ -194,6 +197,7 @@ router.delete(PATH.REST_CONTENT, function(req, res, next) {remove(req,res,next);
 
 
 router.post(PATH.REST_MAIL, function(req, res, next) {mail(req,res,next); });
+router.post(PATH.REST_MESSAGE, function(req, res, next) {message(req,res,next); });
 
 router.post(PATH.REST_SYNCEMPLOYEEIMAGES, function(req, res, next) {syncEmployeeImages(req,res,next); });
 router.post(PATH.REST_SYNCAVAILABILITY, function(req, res, next) {syncAvailability(req,res,next); });
@@ -643,6 +647,17 @@ function mail(req,res,next){
 	return;
 }
 
+function message(req,res,next){
+  logger.debug("*********************** real-time message emit: "+JSON.stringify(req.body));
+
+	var _message=req.body;
+	//var _message={title:"ubba",body:"bazooka"};
+
+	req.app.io.emit("message",{msg:_message});
+
+	res.send({});
+	return;
+}
 
 
 function syncEmployeeImages(req,res,next){

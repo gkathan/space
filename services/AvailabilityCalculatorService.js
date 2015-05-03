@@ -80,33 +80,39 @@ function _calculateOverall(from, to, callback){
 	// total timespan of period
 	var totalTime = new Date(to)-new Date(from);
 
-	var _socIncidents = db.collection('socincidents');
-	_socIncidents.find(function(err,data){
-	// grab the SOC incidents for the intervall (from to)
+	var avService=require('./AvailabilityService');
+	avService.findSOCServicesExternal(function(servicesExt){
 
-		var cumPlanned = 0.0;
-		var cumUnPlanned = 0.0;
+		var _socIncidents = db.collection('socincidents');
+		_socIncidents.find(function(err,data){
+		// grab the SOC incidents for the intervall (from to)
 
-		var planned = [];
-		var unplanned = [];
+			logger.debug("************** ext services: rounds: "+servicesExt.length);
 
-		for (var i in data){
-			var _inc = data[i];
+			var cumPlanned = 0.0;
+			var cumUnPlanned = 0.0;
 
-			if (_inc.isEndUserDown && _inc.start>=new Date(from) && _inc.start <=new Date(to)){
-					if (_inc.isPlanned==true){
-							cumPlanned+=_inc.resolutionTime*(parseFloat(_inc.degradation)/100);
-							planned.push(_inc);
-					}
-					else{
-							cumUnPlanned+=_inc.resolutionTime*(parseFloat(_inc.degradation)/100);
-							unplanned.push(_inc);
-					}
+			var planned = [];
+			var unplanned = [];
+
+			for (var i in data){
+				var _inc = data[i];
+
+				if (_inc.isEndUserDown && _inc.start>=new Date(from) && _inc.start <=new Date(to)){
+						if (_inc.isPlanned==true){
+								cumPlanned+=_inc.resolutionTime*(parseFloat(_inc.degradation)/100);
+								planned.push(_inc);
+						}
+						else{
+								cumUnPlanned+=_inc.resolutionTime*(parseFloat(_inc.degradation)/100);
+								unplanned.push(_inc);
+						}
+				}
+				var avPlanned = 1-(cumPlanned / totalTime);
+				var avUnPlanned = 1-(cumUnPlanned / totalTime);
 			}
-			var avPlanned = 1-(cumPlanned / totalTime);
-			var avUnPlanned = 1-(cumUnPlanned / totalTime);
-		}
-		callback("from: "+from+" to: "+to+ " - cumPlanned: "+cumPlanned+" | cumPnplanned: "+cumUnPlanned+" --- totalTime: "+totalTime+ "avPlanned: <b>"+(avPlanned*100).toFixed(2)+ "%</b> avUnPlanned: <b>"+(avUnPlanned*100).toFixed(2)+"%</b><br><br>planned INCs: "+JSON.stringify(planned)+" unplanned INCs: "+JSON.stringify(unplanned));
+			callback("from: "+from+" to: "+to+ " - cumPlanned: "+cumPlanned+" | cumPnplanned: "+cumUnPlanned+" --- totalTime: "+totalTime+ "avPlanned: <b>"+(avPlanned*100).toFixed(2)+ "%</b> avUnPlanned: <b>"+(avUnPlanned*100).toFixed(2)+"%</b><br><br>planned INCs: "+JSON.stringify(planned)+" unplanned INCs: "+JSON.stringify(unplanned));
+		})
 	})
 
 	// socservices

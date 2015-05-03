@@ -22,14 +22,14 @@ var assert = require("assert")
 
 
 describe('AvailabilityCalculatorService', function(){
-  describe('#getStuff()', function(){
-    it('test test', function(done){
+  describe('#calculateOverall(from,to)', function(){
+    it('calculates overall AV values', function(done){
       var avCalculatorService = require('../services/AvailabilityCalculatorService');
 			console.log("---------------------");
-			avCalculatorService.getStuff("ubba",function(xxx){
-				console.log("xxxxxx");
-				var av ="xx";
-				assert.equal("xx", av);
+			avCalculatorService.calculateOverall("2015-01-01","2015-01-31",function(data){
+				console.log("data: "+data);
+				//var av ="xx";
+				//assert.equal("xx", av);
 				done();
 			})
 		});
