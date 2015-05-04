@@ -14,21 +14,9 @@ var connection_string = HOST+'/'+DB;
 var db = mongojs(connection_string, [DB]);
 
 
-
-
-
-
 router.get("/", function(req, res, next) {
-
-	
-
 	res.render("incidents");
-	
 });
 
 
 module.exports = router;
-
-
-
-
