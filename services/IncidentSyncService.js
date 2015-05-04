@@ -155,7 +155,7 @@ function _syncIncident(url,done){
           incidentsdelta.insert(_incidentsDIFF);
 				  // and send a websocket event about the changes ;-)
 					//[TODO]
-					var _message={};
+					var _message;
 					_message.title="! INCIDENT UPDATE !";
 					_message.body = JSON.stringify(_incidentsDIFF);
 					app.io.emit('message', {msg:_message});

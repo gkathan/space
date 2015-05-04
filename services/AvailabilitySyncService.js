@@ -58,6 +58,7 @@ function _syncAvailability(urls,callback){
 				}
 				catch(e){
 					logger.error("exception "+e);
+					return;
 				}
 				// nested callback
 				client.get(urls[1], function(data, response,callback){
@@ -70,6 +71,7 @@ function _syncAvailability(urls,callback){
 					}
 					catch(e){
 						logger.error("exception "+e);
+						return;
 					}
 					// and store it
 					var availability =  db.collection('availability');

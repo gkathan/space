@@ -1,0 +1,91 @@
+include ../imports
+// Load d3.js and c3.js
+script(src='/javascripts/components/c3/c3.min.js')
+// Load nv3d
+script(src='/javascripts/components/nvd3/build/nv.d3.min.js')
+
+
+
+style.
+	#chart svg {
+	  height: 400px;
+		width:980px;
+	}
+	#chart2 svg {
+	  height: 400px;
+		width:980px;
+	}
+
+block content
+	img(src="/images/bpty_logo.png")
+	h2(style="text-align:center;font-weight:bold") firereport-online
+	
+	div.row(style="margin: auto;max-width:1000px")
+		div.panel.panel-default
+			div.panel-heading 
+				|availability: 
+				b unplanned
+			div.panel-body
+				
+				div(id="chart" style="text-align:center")
+					svg
+					
+	div.row(style="margin: auto;max-width:1000px")
+		div.panel.panel-default
+			div.panel-heading 
+				|availability: 
+				b planned | unplanned | total 
+			div.panel-body
+				
+				div(id="chart2" style="text-align:center")
+					svg
+	div.row(style="margin: auto;max-width:1000px")
+		div.panel.panel-default
+			div.panel-heading 
+				|availability: 
+				b planned | unplanned | total 
+			div.panel-body
+				| et text bla bla bla
+				br
+				| et text bla bla bla
+				br
+				| et text bla bla bla
+				br
+				| et text bla bla bla
+				br
+				| et text bla bla bla
+				br
+				| et text bla bla bla
+				br
+				| et text bla bla bla
+				br
+				| et text bla bla bla
+				br
+				| et text bla bla bla
+				br
+				| et text bla bla bla
+				br
+				| et text bla bla bla
+				br
+				| et text bla bla bla
+				| et text bla bla bla
+				| et text bla bla bla
+				| et text bla bla bla
+				| et text bla bla bla
+				| et text bla bla bla
+				| et text bla bla bla
+				| et text bla bla bla
+				| et text bla bla bla
+				| et text bla bla bla
+				| et text bla bla bla
+				| et text bla bla bla
+				| et text bla bla bla
+				| et text bla bla bla
+				
+								
+
+
+			
+	
+script(src='/javascripts/dashboards/nvd3_availability.js')
+script(src='/javascripts/dashboards/nvd3_availability_multi.js')

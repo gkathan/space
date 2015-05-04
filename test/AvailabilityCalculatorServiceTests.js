@@ -26,12 +26,13 @@ describe('AvailabilityCalculatorService', function(){
     it('calculates overall AV values', function(done){
       var avCalculatorService = require('../services/AvailabilityCalculatorService');
 			console.log("---------------------");
-			avCalculatorService.calculateOverall("2015-01-01","2015-01-31",function(data){
+			avCalculatorService.calculateOverall("2015-01-01","2015-04-01",function(data){
 				console.log("data: "+data);
 				//var av ="xx";
 				//assert.equal("xx", av);
 				done();
 			})
+
 		});
   })
 })
