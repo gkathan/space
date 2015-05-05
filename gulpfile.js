@@ -9,6 +9,7 @@ var runSequence = require('run-sequence');
 var zip = require('gulp-zip');
 var unzip = require('gulp-unzip');
 var mocha = require('gulp-mocha');
+var git = require('gulp-git');
 
 var jshint = require('gulp-jshint');
 var stylish = require('jshint-stylish');
@@ -355,7 +356,12 @@ gulp.task('mocha', function () {
         .pipe(mocha({reporter: 'nyan'}));
 });
 
-
+// Other actions that do not require a Vinyl
+gulp.task('log', function(){
+  git.exec({args : 'log --follow index.js'}, function (err, stdout) {
+    if (err) throw err;
+  });
+});
 
 
 
