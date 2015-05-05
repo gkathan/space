@@ -155,10 +155,50 @@ function _syncIncident(url,done){
           incidentsdelta.insert(_incidentsDIFF);
 				  // and send a websocket event about the changes ;-)
 					//[TODO]
-					var _message;
-					_message.title="! INCIDENT UPDATE !";
-					_message.body = JSON.stringify(_incidentsDIFF);
-					app.io.emit('message', {msg:_message});
+
+					var _message={};
+					var _type;
+					var _prio;
+
+
+					if (config.emit.snow_incidents_new =="on" && _incidentsDIFF.NEW.length>0){
+						// for now we assume there is always only one new INCIDENT
+						var _newincident = _incidentsDIFF.NEW[0];
+						logger.debug("_newincident: "+JSON.stringify(_newincident));
+						if (_.startsWith(_newincident.priority,"P01")){
+							_type="error";
+							_prio = "P1";
+						}
+						else if(_.startsWith(_newincident.priority,"P08")){
+							_type="warning";
+							_prio = "P8";
+						}
+						else if(_.startsWith(_newincident.priority,"P16")){
+							_type="info";
+							_prio = "P16";
+						}
+						else if(_.startsWith(_newincident.priority,"P40")){
+							_type="info";
+							_prio = "P40";
+						}
+
+
+						_message.title="! NEW <b>"+_prio+"</b> INCIDENT !";
+						// TODO format nicely and link to snow
+						_message.body = JSON.stringify(_incidentsDIFF.NEW);
+						_message.type = _type;
+						app.io.emit('message', {msg:_message});
+					}
+
+					if (config.emit.snow_incidents_changes =="on" && _incidentsDIFF.CHANGED.length>0){
+
+						_message.title="! INCIDENT CHANGES!";
+						// TODO format nicely and link to snow
+						_message.body = JSON.stringify(_incidentsDIFF.CHANGED);
+						_message.type = "warning";
+						app.io.emit('message', {msg:_message});
+					}
+
 
         }
 

@@ -4,6 +4,14 @@ script(src='/javascripts/components/c3/c3.min.js')
 // Load nv3d
 script(src='/javascripts/components/nvd3/build/nv.d3.min.js')
 
+-	function formatAV(av){
+-		return (av*100).toFixed(2)+ "%";
+-	}
+
+-	function formatAVTime(time){
+- 	var d = moment.duration(time);
+-		return d.format("h:mm:ss", { trim: false });
+-	}
 
 
 style.
@@ -16,74 +24,172 @@ style.
 		width:980px;
 	}
 
+
+mixin renderAvailabilityList(title,av)
+	h4 #{title}
+	table.table-striped.table-hover.table-condensed(style="max-width:1000px")
+		thead
+			tr(style="line-height:14px;font-weight:bold")
+				th(style="width:250px;text-align:right")
+					|service
+				th(style="width:100px;text-align:right")
+					|planned %
+				th(style="width:100px;text-align:right")
+					|planned t
+				th(style="width:100px;text-align:right")
+					|unplanned %
+				th(style="width:100px;text-align:right")
+					|unplanned t
+				th(style="width:100px;text-align:right")
+					|total %
+				th(style="width:100px;text-align:right")
+					|total t
+		tbody
+			each service in av.services
+				tr(style="line-height:14px;font-size:14px")
+					td(style="width:250px;text-align:right")
+						|#{service.ServiceName}
+					td(style="width:100px;text-align:right")
+						|#{formatAV(service.availability.planned)}
+					td(style="width:100px;text-align:right")
+						|#{formatAVTime(service.availability.plannedTime)}
+					td(style="width:100px;text-align:right")
+						|#{formatAV(service.availability.unplanned)}
+					td(style="width:100px;text-align:right")
+						|#{formatAVTime(service.availability.unplannedTime)}
+					td(style="width:100px;text-align:right")
+						|#{formatAV(service.availability.total)}
+					td(style="width:100px;text-align:right")
+						|#{formatAVTime(service.availability.totalTime)}
+
+	//totals
+	
+	hr
+	div(style="text-align:center")
+		table(style="margin:0 auto")
+			tr(style="line-height:32px")
+				td(style="width:150px;text-align:right")
+					|AV planned:&nbsp;&nbsp;&nbsp; 
+				td(style="width:100px")
+					b(style="font-size:24px")
+						|#{formatAV(av.avPlanned)}
+			tr(style="line-height:26px")
+				td(style="text-align:right")
+					|AV unplanned:&nbsp;&nbsp;&nbsp; 
+				td
+					b(style="font-size:24px")
+						|#{formatAV(av.avUnplanned)}
+			tr(style="line-height:32px")
+				td(style="text-align:right")
+					|AV totals:&nbsp;&nbsp;&nbsp; 
+				td
+					b(style="font-size:24px")
+						|#{formatAV(av.avTotal)}
+	hr
+	
 block content
-	img(src="/images/bpty_logo.png")
-	h2(style="text-align:center;font-weight:bold") firereport-online
+	div
+		img(src="/images/bpty_logo.png" style="display:block;margin-left:auto;margin-right:auto;")
+	h2(style="text-align:center;font-weight:bold") firereport-online prototype
+	h4(style="text-align:center;font-weight:bold") from: #{moment(av.from)}
+	h4(style="text-align:center;font-weight:bold") to: #{moment(av.to)}
+	
 	
 	div.row(style="margin: auto;max-width:1000px")
 		div.panel.panel-default
 			div.panel-heading 
 				|availability: 
-				b unplanned
+				b planned | unplanned | total 
 			div.panel-body
+				+renderAvailabilityList("SERVICES - INTERNAL",av)
+				+renderAvailabilityList("SERVICES - EXTERNAL",avExternal)
 				
-				div(id="chart" style="text-align:center")
-					svg
+									
+	div.row(style="margin: auto;max-width:1000px")
+		div.panel.panel-default
+			div.panel-heading 
+				|SOC reported incidents: 
+				
+			div.panel-body
+				img(src="/images/incidents/P1.png" height="50px") 
+				&nbsp;
+				img(src="/images/incidents/P8.png" height="50px")
+				&nbsp;
+				img(src="/images/incidents/P16.png" height="50px")
+				&nbsp;
+				img(src="/images/incidents/P40.png" height="50px")
+				
+				
+				table.table-striped.table-hover.table-condensed(style="max-width:900px")
+					thead
+						tr(style="line-height:16px;font-weight:bold")
+							th(style="width:50px;text-align:right")
+								|prio
+							th(style="width:100px;text-align:right")
+								|incidentID
+							th(style="width:200px;text-align:right")
+								|description
+							th(style="width:80px;text-align:center")
+								|start
+							th(style="width:80px;text-align:center")
+								|stop
+							th(style="width:40px;text-align:right")
+								|dur
+							th(style="width:40px;text-align:right")
+								|deg
+							th(style="width:200px;text-align:right")
+								|rootCause
+							th(style="width:50px;text-align:right")
+								|plan
+							th(style="width:50px;text-align:right")
+								|ext
+							th(style="width:50px;text-align:right")
+								|cust
+					tbody
+						each unplanned in av.incidentsUnplanned
+							tr(style="line-height:16px;font-size:12px")
+								td(style="width:300px;text-align:right")
+									img(src="/images/incidents/#{unplanned.priority}.png" height="25px") 
+								td(style="width:200px;text-align:right")
+									a(href="https://bwinparty.service-now.com/ess/incident.do?sys_id=#{unplanned.snowId}" target="_new")
+										|#{unplanned.incidentID}
+								td(style="width:100px;text-align:right")
+									|#{unplanned.description}
+								td(style="width:80px;text-align:right")
+									|#{moment(unplanned.start).format("YYYY-MM-DD HH:mm:ss")}
+								td(style="width:80px;text-align:right")
+									|#{moment(unplanned.stop).format("YYYY-MM-DD HH:mm:ss")}
+								td(style="width:40px;text-align:right")
+									|#{(unplanned.resolutionTime)/60/1000}
+								td(style="width:40px;text-align:right")
+									|#{unplanned.degradation}
+								td(style="width:200px;text-align:right")
+									|#{unplanned.rootCause}
+								td(style="width:50px;text-align:right")
+									|#{unplanned.isPlanned}
+								td(style="width:50px;text-align:right")
+									|#{unplanned.isExt}
+								td(style="width:50px;text-align:right")
+									|#{unplanned.isEndUserDown}								
+		div.row(style="margin: auto;max-width:1000px")
+			div.panel.panel-default
+				div.panel-heading 
+					|availability: 
+					b unplanned
+				div.panel-body
 					
-	div.row(style="margin: auto;max-width:1000px")
-		div.panel.panel-default
-			div.panel-heading 
-				|availability: 
-				b planned | unplanned | total 
-			div.panel-body
-				
-				div(id="chart2" style="text-align:center")
-					svg
-	div.row(style="margin: auto;max-width:1000px")
-		div.panel.panel-default
-			div.panel-heading 
-				|availability: 
-				b planned | unplanned | total 
-			div.panel-body
-				| et text bla bla bla
-				br
-				| et text bla bla bla
-				br
-				| et text bla bla bla
-				br
-				| et text bla bla bla
-				br
-				| et text bla bla bla
-				br
-				| et text bla bla bla
-				br
-				| et text bla bla bla
-				br
-				| et text bla bla bla
-				br
-				| et text bla bla bla
-				br
-				| et text bla bla bla
-				br
-				| et text bla bla bla
-				br
-				| et text bla bla bla
-				| et text bla bla bla
-				| et text bla bla bla
-				| et text bla bla bla
-				| et text bla bla bla
-				| et text bla bla bla
-				| et text bla bla bla
-				| et text bla bla bla
-				| et text bla bla bla
-				| et text bla bla bla
-				| et text bla bla bla
-				| et text bla bla bla
-				| et text bla bla bla
-				| et text bla bla bla
-				
-								
-
+					div(id="chart" style="text-align:center")
+						svg
+						
+		div.row(style="margin: auto;max-width:1000px")
+			div.panel.panel-default
+				div.panel-heading 
+					|availability: 
+					b planned | unplanned | total 
+				div.panel-body
+					
+					div(id="chart2" style="text-align:center")
+						svg
 
 			
 	

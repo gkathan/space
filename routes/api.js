@@ -100,6 +100,7 @@ var PATH = {
 						EXPORT_AVAILABILITY : BASE+'/space/export/xlsx/availability',
 						EXPORT_FIREREPORT : BASE+'/space/export/xlsx/firereport',
 						EXPORT_CONTENT : BASE+'/space/export/xlsx/content',
+						EXPORT_SOCINCIDENTS : BASE+'/space/export/xlsx/socincidents',
 
 						CONFIG : BASE+'/space/config',
 
@@ -249,6 +250,7 @@ router.get(PATH.EXPORT_AVAILABILITY, function(req, res, next) {exporter.excelAva
 router.get(PATH.EXPORT_FIREREPORT, function(req, res, next) {exporter.excelFirereport(req,res,next);});
 router.get(PATH.EXPORT_CONTENT, function(req, res, next) {exporter.excelContent(req,res,next);});
 router.get(PATH.EXPORT_ORGANIZATION, function(req, res, next) {exporter.excelOrganization(req,res,next);});
+router.get(PATH.EXPORT_SOCINCIDENTS, function(req, res, next) {exporter.excelSOCIncidents(req,res,next);});
 
 
 router.post(PATH.TRANSCODE_BOARDS, function(req, res, next) {transcode(req,res,next); });
@@ -647,10 +649,14 @@ function mail(req,res,next){
 function message(req,res,next){
   logger.debug("*********************** real-time message emit: "+JSON.stringify(req.body));
 
-	var _message=req.body;
-	//var _message={title:"ubba",body:"bazooka"};
 
-	req.app.io.emit("message",{msg:_message});
+
+	if (config.emit.space_messages =="on"){
+		var _message=req.body;
+		_message.desktop={desktop:true};
+
+		req.app.io.emit("message",{msg:_message});
+	}
 
 	res.send({});
 	return;

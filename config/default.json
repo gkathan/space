@@ -42,9 +42,109 @@
 		"plainTypes" : ["productportfolio","productcatalog","targets","incidents","labels","customers","competitors","roadmaps","availability","v1teams","scrumteams","incidenttracker","content","incidenttrackeroldsnow","socservices"]
 	},
 
-    "context" : "bpty.studios",
+  "context" : "bpty.studios",
 
-    "entities" : [
+
+
+  "v1" : {
+		"url" : "http://v1.bwinparty.corp/V1-Production/",
+		"proxy" : "http://knbnprxy.ea.bwinparty.corp/rest/epics"
+	},
+
+
+	"emit": {
+		"snow_incidents_new": "on",
+		"snow_incidents_changes": "off",
+		"space_messages" : "on"
+	},
+
+	"sync": {
+		"v1Epics" : {
+			"mode": "off",
+			"intervalMinutes" :60,
+			"url" : "http://knbnprxy.ea.bwinparty.corp/rest/epics"
+
+		},
+		"availability" : {
+			"mode": "off",
+			"intervalMinutes" :1440,
+			"url" : ["http://avreport.bwinparty.corp/API/AvReoprtingService.svc/getYTDDatapoint","http://avreport.bwinparty.corp/API/AvReoprtingService.svc/GetAVGraphDatapoints"]
+		},
+		"incident" : {
+			"mode": "off",
+			"intervalMinutes" :1 	,
+			"includePriority" : 2,
+			"url" : "https://bwinparty.service-now.com/incident_list.do?JSONv2&sysparm_action=getRecords&sysparm_query="
+		},
+		"soc_incidents" : {
+			"mode": "off",
+			"intervalMinutes" :1 	,
+			"url" : "http://localhost:7777/AvReportingService.svc/GetIncidentsDatapoints/?from=2014-01-01"
+		},
+
+		"problem" : {
+			"mode": "off",
+			"intervalMinutes" :60 	,
+			"url" : "https://bwinparty.service-now.com/problem_list.do?JSONv2&sysparm_action=getRecords&sysparm_query="
+		},
+		"apm" : {
+			"login" :{
+				"mode": "off",
+				"intervalMinutes" :5,
+				"url" : "https://apm.bwinparty.corp/controller/rest/applications/bwin.party/metric-data",
+				"timimg" : "&time_range_type=BEFORE_NOW&duration-in-mins=5",
+				"metricPath" : "Business%20Transaction%20Performance%7CBusiness%20Transactions%7CPosApi/v3%7CAuthenticationService.Login%7CAverage%20Response%20Time%20%28ms%29"
+			}
+		}
+	},
+
+
+
+    "database": {
+        "type" : "mongo",
+        "db": "space",
+        "host" : "localhost:27017"
+     },
+
+     "api" : {
+		"url" :"/api/space/rest/"
+	},
+
+	"transcoder" : {
+		"url" : ""
+     },
+
+     "mailer" : {
+		"host": "localhost",
+		"port": 25,
+		"from" : "mailer@localhost",
+		"signatureHtml" : "<style>html {position: relative;min-height: 100%;}body {background-color: #f9f9f9;font-family: RobotoDraft,  Helvetica, Arial;-webkit-user-select: none;-moz-user-select: none;-ms-user-select: none;user-select: none;-webkit-tap-highlight-color: rgba(0,0,0,0);-webkit-touch-callout: none; overflow: auto; argin-bottom: 20px;}</style>",
+		"signatureText" : "\n________________________________\n:: this is an automatically generated mail - please do not reply to this email - in case of questions please contact gerold.kathan@bwinparty.com\n\n:: bpty   s t u d i o s | commercial management"
+
+
+     },
+
+     "notifications" : {
+				"portfolioupdate": {
+						"to":"gerold.kathan@bwinparty.com",
+						"subject" : "[portfolio gate] update notification",
+						"text" : "hej,\nthere is an updated portfolio gate view available under \n\n http://space.bwinparty.corp/portfolio \n\ncheerz.",
+						"url" : "http://space.bwinparty.corp/portfolio"
+					}
+			},
+
+ 		"firereports" : {
+					"contact": "Pablo Delgado Caballero",
+					"contactEmail" : "Pablo.DelgadoCaballero@bwinparty.com"
+		},
+
+		"mappings" :{
+				"snow" :{
+					"priority":[{"sys":1,"bpty":"P01 - Critical"},{"sys":2,"bpty":"P08 - High"},{"sys":3,"bpty":"P16 - Moderate"},{"sys":4,"bpty":"P40 - Low"}],
+					"state":[{"sys":1,"bpty":"New"},{"sys":2,"bpty":"In Progress"},{"sys":3,"bpty":"Closed"},{"sys":8,"bpty":"Awaiting"},{"sys":9,"bpty":"Resolved"}]
+				}
+		},
+		"entities" : [
 		{
 			"name": "generic.example",
 			"skin": {
@@ -276,99 +376,7 @@
 			}
 
 
-	],
+	]
 
-
-  "v1" : {
-		"url" : "http://v1.bwinparty.corp/V1-Production/",
-		"proxy" : "http://knbnprxy.ea.bwinparty.corp/rest/epics"
-	},
-
-  "sync": {
-		"v1Epics" : {
-			"mode": "off",
-			"intervalMinutes" :60,
-			"url" : "http://knbnprxy.ea.bwinparty.corp/rest/epics"
-
-		},
-		"availability" : {
-			"mode": "off",
-			"intervalMinutes" :1440,
-			"url" : ["http://avreport.bwinparty.corp/API/AvReoprtingService.svc/getYTDDatapoint","http://avreport.bwinparty.corp/API/AvReoprtingService.svc/GetAVGraphDatapoints"]
-		},
-		"incident" : {
-			"mode": "off",
-			"intervalMinutes" :1 	,
-			"includePriority" : 2,
-			"url" : "https://bwinparty.service-now.com/incident_list.do?JSONv2&sysparm_action=getRecords&sysparm_query="
-		},
-		"soc_incidents" : {
-			"mode": "off",
-			"intervalMinutes" :1 	,
-			"url" : "http://localhost:7777/AvReportingService.svc/GetIncidentsDatapoints/?from=2014-01-01"
-		},
-
-		"problem" : {
-			"mode": "off",
-			"intervalMinutes" :60 	,
-			"url" : "https://bwinparty.service-now.com/problem_list.do?JSONv2&sysparm_action=getRecords&sysparm_query="
-		},
-		"apm" : {
-			"login" :{
-				"mode": "off",
-				"intervalMinutes" :5,
-				"url" : "https://apm.bwinparty.corp/controller/rest/applications/bwin.party/metric-data",
-				"timimg" : "&time_range_type=BEFORE_NOW&duration-in-mins=5",
-				"metricPath" : "Business%20Transaction%20Performance%7CBusiness%20Transactions%7CPosApi/v3%7CAuthenticationService.Login%7CAverage%20Response%20Time%20%28ms%29"
-			}
-		}
-	},
-
-
-
-    "database": {
-        "type" : "mongo",
-        "db": "space",
-        "host" : "localhost:27017"
-     },
-
-     "api" : {
-		"url" :"/api/space/rest/"
-	},
-
-	"transcoder" : {
-		"url" : ""
-     },
-
-     "mailer" : {
-		"host": "localhost",
-		"port": 25,
-		"from" : "mailer@localhost",
-		"signatureHtml" : "<style>html {position: relative;min-height: 100%;}body {background-color: #f9f9f9;font-family: RobotoDraft,  Helvetica, Arial;-webkit-user-select: none;-moz-user-select: none;-ms-user-select: none;user-select: none;-webkit-tap-highlight-color: rgba(0,0,0,0);-webkit-touch-callout: none; overflow: auto; argin-bottom: 20px;}</style>",
-		"signatureText" : "\n________________________________\n:: this is an automatically generated mail - please do not reply to this email - in case of questions please contact gerold.kathan@bwinparty.com\n\n:: bpty   s t u d i o s | commercial management"
-
-
-     },
-
-     "notifications" : {
-				"portfolioupdate": {
-						"to":"gerold.kathan@bwinparty.com",
-						"subject" : "[portfolio gate] update notification",
-						"text" : "hej,\nthere is an updated portfolio gate view available under \n\n http://space.bwinparty.corp/portfolio \n\ncheerz.",
-						"url" : "http://space.bwinparty.corp/portfolio"
-					}
-			},
-
- 		"firereports" : {
-					"contact": "Pablo Delgado Caballero",
-					"contactEmail" : "Pablo.DelgadoCaballero@bwinparty.com"
-		},
-
-		"mappings" :{
-				"snow" :{
-					"priority":[{"sys":1,"bpty":"P01 - Critical"},{"sys":2,"bpty":"P08 - High"},{"sys":3,"bpty":"P16 - Moderate"},{"sys":4,"bpty":"P40 - Low"}],
-					"state":[{"sys":1,"bpty":"New"},{"sys":2,"bpty":"In Progress"},{"sys":3,"bpty":"Closed"},{"sys":8,"bpty":"Awaiting"},{"sys":9,"bpty":"Resolved"}]
-				}
-		}
 
 }

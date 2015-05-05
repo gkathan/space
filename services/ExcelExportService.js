@@ -40,6 +40,8 @@ exports.excelAvailability = excelAvailability;
 exports.excelCustomers = excelCustomers;
 exports.excelCompetitors = excelCompetitors;
 exports.excelInitiatives = excelInitiatives;
+exports.excelSOCIncidents = excelSOCIncidents;
+
 
 
 /**
@@ -445,6 +447,8 @@ function excelCustomers(req, res , next){
     _generateAndSendExcel("customers",conf,req,res,next);
 }
 
+
+
 /**
  * generate competitors excel
  */
@@ -520,6 +524,38 @@ function excelInitiatives(req, res , next){
    ];
     _generateAndSendExcel("initiatives",conf,req,res,next);
 }
+
+/**
+ * generate customers excel
+ */
+function excelSOCIncidents(req, res , next){
+	var conf ={};
+    conf.stylesXmlFile = "views/excel_export/styles.xml";
+    conf.cols = [
+		{caption:'_id',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'priority',type:'string',width:12,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'incidentID',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'description',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'degradation',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'start',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'stop',type:'string',width:50,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'serviceName',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'resolutionTime',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'report',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'extService',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'isExt',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'isIR',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'isPlanned',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'highlight',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'isCoreService',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'isEndUserDown',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'highlight',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'url',type:'string',width:40,captionStyleIndex:2,beforeCellWrite:_formatCell}
+	];
+    _generateAndSendExcel("socincidents",conf,req,res,next);
+}
+
+
 
 
 function _generateAndSendExcel(collection,conf,req,res,next){

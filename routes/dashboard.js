@@ -62,6 +62,7 @@ router.get('/availability', function(req, res) {
 router.get('/incidents', function(req, res) {
 		var _period = req.query.period;
 		res.locals.period = _period;
+		res.locals.moment = moment;
 		res.render('dashboard/incidents', { title: 's p a c e - incidents dashboard' });
 });
 
@@ -70,7 +71,18 @@ router.get('/qos', function(req, res) {
 });
 
 router.get('/firereport', function(req, res) {
-		res.render('dashboard/firereport', { title: 's p a c e - firereport' });
+		var avc = require ('../services/AvailabilityCalculatorService');
+
+		var _from = "2015-01-01";
+		var _to = "2015-04-02";
+		avc.calculateOverall(_from,_to,function(avDataOverall){
+			avc.calculateExternal(_from,_to,function(avDataExternal){
+				res.locals.av = avDataOverall;
+				res.locals.avExternal = avDataExternal;
+				res.locals.moment = moment;
+				res.render('dashboard/firereport', { title: 's p a c e - firereport' });
+			});
+		});
 });
 
 router.get('/corpIT', function(req, res) {

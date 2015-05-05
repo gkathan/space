@@ -240,6 +240,9 @@ block content
 										a(role="menuitem" tabindex="-1" href="/admin?type=socservices") SOC services
 									li
 										a(href='/api') API
+									li
+										a(href='/admin/message') emit s p a c e message
+									
 									li(role="presentation")
 										a(role="menuitem" tabindex="-1" href="/config") -- show config --
 
@@ -254,11 +257,14 @@ block content
 		// if we get an "info" emit from the socket server then console.log the data we recive
 		socket.on('message', function (data) {
 			if (!data.msg.type) data.msg.type="info";
+			console.log("socket emit message: "+JSON.stringify(data.msg));
 			$(function(){
+				PNotify.desktop.permission();
 				new PNotify({
 					title: data.msg.title,
 					text: data.msg.body,
 					type: data.msg.type,
+					desktop: data.msg.desktop,
 					shadow: true
 				});
 			});

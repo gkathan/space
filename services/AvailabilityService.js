@@ -50,7 +50,7 @@ function _findSOCServices(filter,callback) {
 }
 
 function _findSOCServicesMain(callback){
-	var _filter ={ServiceGroupID:"1",Report:"1"};
+	var _filter ={ServiceGroupID:"1",Report:"1",ext_service:"0"};
 	_findSOCServices(_filter,callback);
 }
 

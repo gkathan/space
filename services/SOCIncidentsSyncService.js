@@ -63,6 +63,8 @@ function _syncSOCIncidents(url,callback){
 						_incident.resolutionTime = _incident.stop - _incident.start;
 					}
 					// lets flateten out the servicename 1:n entries into a comma delimited string
+
+					/*
 					var _cluster = us.nst.nest(socIncidents,"incidentID").children;
 					var _incidentsFlattened=[];
 					for (var c in _cluster){
@@ -76,6 +78,7 @@ function _syncSOCIncidents(url,callback){
 						}
 						logger.debug("INC: "+_cluster[c].name+" services: "+_services)
 						_incident.serviceName=_services;
+						*/
 						// check if there is a matching snow incident with accoding incidentID
 						var _check = _.findWhere(snowIncidents,{"id":_incident.incidentID})
 						if (_check){
@@ -83,12 +86,14 @@ function _syncSOCIncidents(url,callback){
 							_incident.labels = _check.label;
 							_incident.businessService = _check.businessService;
 						}
-						_incidentsFlattened.push(_incident);
+
+				/*		_incidentsFlattened.push(_incident);
 					}
+				*/
 					// and store it
 					var socincidents =  db.collection('socincidents');
 					socincidents.drop();
-					socincidents.insert(_incidentsFlattened	 , function(err , success){
+					socincidents.insert(socIncidents	 , function(err , success){
 						//console.log('Response success '+success);
 						logger.debug('Response error '+err);
 						if(success){
