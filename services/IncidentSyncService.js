@@ -1,7 +1,6 @@
 /**
 * service which syncs on a scheduled basis with the configured prioity  incidents from snow API
 **/
-
 var config = require('config');
 var schedule = require('node-schedule');
 var _ = require('lodash');
@@ -20,7 +19,6 @@ var logger = winston.loggers.get('space_log');
 
 var app=require('../app');
 
-
 exports.init = function(){
 	var rule = new schedule.RecurrenceRule();
 	// every 10 minutes
@@ -29,13 +27,11 @@ exports.init = function(){
 	if (config.sync.incident.mode!="off"){
 		var j = schedule.scheduleJob(rule, function(){
 			logger.debug('...going to sync Incident stuff ....');
-
 			var _url = config.sync.incident.url;
 
 			_syncIncident(_url,function(data){
 				logger.debug("** [DONE] incidentSync ");
 			});
-
 		});
 	}
 }
@@ -92,7 +88,6 @@ function _syncIncident(url,done){
 
 				incidents.drop();
 
-
 				var _compareIncidents=[];
 				var _compareIncidentsBaseline=[];
 
@@ -122,7 +117,6 @@ function _syncIncident(url,done){
               _incidentsDELTA_CHANGED.push(_change);
             }
           }
-
         }
 
         var _incidentsNEWSysIds = _.pluck(_incidentsNEW,'sysId');
@@ -160,7 +154,6 @@ function _syncIncident(url,done){
 					var _type;
 					var _prio;
 
-
 					if (config.emit.snow_incidents_new =="on" && _incidentsDIFF.NEW.length>0){
 						// for now we assume there is always only one new INCIDENT
 						var _newincident = _incidentsDIFF.NEW[0];
@@ -182,24 +175,22 @@ function _syncIncident(url,done){
 							_prio = "P40";
 						}
 
-
 						_message.title="! NEW <b>"+_prio+"</b> INCIDENT !";
 						// TODO format nicely and link to snow
 						_message.body = JSON.stringify(_incidentsDIFF.NEW);
 						_message.type = _type;
+						_message.desktop={desktop:true};
 						app.io.emit('message', {msg:_message});
 					}
 
 					if (config.emit.snow_incidents_changes =="on" && _incidentsDIFF.CHANGED.length>0){
-
 						_message.title="! INCIDENT CHANGES!";
 						// TODO format nicely and link to snow
 						_message.body = JSON.stringify(_incidentsDIFF.CHANGED);
 						_message.type = "warning";
+						_message.desktop={desktop:true};
 						app.io.emit('message', {msg:_message});
 					}
-
-
         }
 
 				incidents.insert(_incidentsNEW	 , function(err , success){
@@ -222,11 +213,8 @@ function _syncIncident(url,done){
 											if (err) logger.warn("[incidenttracker insert failed....]"+err.message);
 											logger.info("[success] sync incidenttracker....length: "+_tracker.length);
 									});
-
 								}
-
 							});
-
 					}
 				})
 			})

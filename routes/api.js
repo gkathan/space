@@ -649,8 +649,6 @@ function mail(req,res,next){
 function message(req,res,next){
   logger.debug("*********************** real-time message emit: "+JSON.stringify(req.body));
 
-
-
 	if (config.emit.space_messages =="on"){
 		var _message=req.body;
 		_message.desktop={desktop:true};

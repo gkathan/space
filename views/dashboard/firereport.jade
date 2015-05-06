@@ -30,7 +30,7 @@ mixin renderAvailabilityList(title,av)
 	h4 #{title}
 	table.table-striped.table-hover.table-condensed(style="max-width:1000px")
 		thead
-			tr(style="line-height:14px;font-weight:bold")
+			tr(style="line-height:14px;font-weight:bold;font-size:14px")
 				th(style="width:250px;text-align:right")
 					|service
 				th(style="width:100px;text-align:right")
@@ -91,23 +91,73 @@ mixin renderAvailabilityList(title,av)
 		table(style="margin:0 auto")
 			tr(style="line-height:24px")
 				td(style="width:200px;text-align:right")
-					|downtime planned:&nbsp;&nbsp;&nbsp; 
+					|downtime*) planned:&nbsp;&nbsp;&nbsp; 
 				td(style="width:150px")
 					b(style="font-size:16px")
 						|#{formatAVTime(av.cumPlanned)}
+			
+			
+			tr(style="line-height:24px;font-style:italic")
+				td(style="text-align:right")
+					|CORE:&nbsp;&nbsp;&nbsp; 
+				td
+					div(style="font-size:16px")
+						|#{formatAVTime(av.cumPlannedCore)}
+			tr(style="line-height:24px;font-style:italic")
+				td(style="text-align:right")
+					|NON-CORE:&nbsp;&nbsp;&nbsp; 
+				td
+					div(style="font-size:16px")
+						|#{formatAVTime(av.cumPlannedNonCore)}						
+			
+			
+			
+			
 			tr(style="line-height:24px")
 				td(style="text-align:right")
-					|downtime unplanned:&nbsp;&nbsp;&nbsp; 
+					|downtime*) unplanned:&nbsp;&nbsp;&nbsp; 
 				td
 					b(style="font-size:16px")
 						|#{formatAVTime(av.cumUnplanned)}
+			
+			tr(style="line-height:24px;font-style:italic")
+				td(style="text-align:right")
+					|CORE:&nbsp;&nbsp;&nbsp; 
+				td
+					div(style="font-size:16px")
+						|#{formatAVTime(av.cumUnPlannedCore)}
+			tr(style="line-height:24px;font-style:italic")
+				td(style="text-align:right")
+					|NON-CORE:&nbsp;&nbsp;&nbsp; 
+				td
+					div(style="font-size:16px")
+						|#{formatAVTime(av.cumUnPlannedNonCore)}						
+			
+			
 			tr(style="line-height:24px")
 				td(style="text-align:right")
-					|downtime totals:&nbsp;&nbsp;&nbsp; 
+					|downtime*) totals:&nbsp;&nbsp;&nbsp; 
 				td
 					b(style="font-size:16px")
 						|#{formatAVTime(av.cumTotal)}
+
+			tr(style="line-height:24px;font-style:italic")
+				td(style="text-align:right")
+					|CORE:&nbsp;&nbsp;&nbsp; 
+				td
+					div(style="font-size:16px")
+						|#{formatAVTime(av.cumTotalCore)}
+			tr(style="line-height:24px;font-style:italic")
+				td(style="text-align:right")
+					|NON-CORE:&nbsp;&nbsp;&nbsp; 
+				td
+					div(style="font-size:16px")
+						|#{formatAVTime(av.cumTotalNonCore)}						
+
+
 	hr
+	div(style="font-style:italic;font-size:10px")
+		|*) downtimes are per definition always "degraded" times by accordong SOC set degradation factor
 	
 block content
 	div
