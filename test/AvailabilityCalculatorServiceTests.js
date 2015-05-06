@@ -26,8 +26,8 @@ describe('AvailabilityCalculatorService', function(){
     it('calculates overall AV values', function(done){
       var avCalculatorService = require('../services/AvailabilityCalculatorService');
 			console.log("---------------------");
-			avCalculatorService.calculateOverall("2015-01-01","2015-01-08",function(data){
-				console.log("data: "+data);
+			avCalculatorService.calculateOverall("2015-01-01","2015-04-02",function(data){
+				console.log("data: "+JSON.stringify(data));
 				//var av ="xx";
 				//assert.equal("xx", av);
 				done();

@@ -10,6 +10,7 @@ script(src='/javascripts/components/nvd3/build/nv.d3.min.js')
 
 -	function formatAVTime(time){
 - 	var d = moment.duration(time);
+-		if (d>=86400000) return d.format("d[d] h:mm:ss", { trim: false });
 -		return d.format("h:mm:ss", { trim: false });
 -	}
 
@@ -86,6 +87,27 @@ mixin renderAvailabilityList(title,av)
 					b(style="font-size:24px")
 						|#{formatAV(av.avTotal)}
 	hr
+	div(style="text-align:center")
+		table(style="margin:0 auto")
+			tr(style="line-height:24px")
+				td(style="width:200px;text-align:right")
+					|downtime planned:&nbsp;&nbsp;&nbsp; 
+				td(style="width:150px")
+					b(style="font-size:16px")
+						|#{formatAVTime(av.cumPlanned)}
+			tr(style="line-height:24px")
+				td(style="text-align:right")
+					|downtime unplanned:&nbsp;&nbsp;&nbsp; 
+				td
+					b(style="font-size:16px")
+						|#{formatAVTime(av.cumUnplanned)}
+			tr(style="line-height:24px")
+				td(style="text-align:right")
+					|downtime totals:&nbsp;&nbsp;&nbsp; 
+				td
+					b(style="font-size:16px")
+						|#{formatAVTime(av.cumTotal)}
+	hr
 	
 block content
 	div
@@ -126,16 +148,16 @@ block content
 							th(style="width:50px;text-align:right")
 								|prio
 							th(style="width:100px;text-align:right")
-								|incidentID
+								|id
 							th(style="width:200px;text-align:right")
 								|description
 							th(style="width:80px;text-align:center")
 								|start
 							th(style="width:80px;text-align:center")
 								|stop
-							th(style="width:40px;text-align:right")
-								|dur
-							th(style="width:40px;text-align:right")
+							th(style="width:60px;text-align:right")
+								|ttr
+							th(style="width:50px;text-align:right")
 								|deg
 							th(style="width:200px;text-align:right")
 								|rootCause
@@ -159,10 +181,10 @@ block content
 									|#{moment(unplanned.start).format("YYYY-MM-DD HH:mm:ss")}
 								td(style="width:80px;text-align:right")
 									|#{moment(unplanned.stop).format("YYYY-MM-DD HH:mm:ss")}
-								td(style="width:40px;text-align:right")
-									|#{(unplanned.resolutionTime)/60/1000}
-								td(style="width:40px;text-align:right")
-									|#{unplanned.degradation}
+								td(style="width:60px;text-align:right")
+									|#{(formatAVTime(unplanned.resolutionTime))}
+								td(style="width:50px;text-align:right")
+									|#{unplanned.degradation}%
 								td(style="width:200px;text-align:right")
 									|#{unplanned.rootCause}
 								td(style="width:50px;text-align:right")
