@@ -179,7 +179,10 @@ function _syncIncident(url,done){
 						// TODO format nicely and link to snow
 						_message.body = JSON.stringify(_incidentsDIFF.NEW);
 						_message.type = _type;
-						_message.desktop={desktop:true};
+						_message.desktop={
+							desktop:true,
+							icon:"/images/incidents/"+_prio+".png"
+						};
 						app.io.emit('message', {msg:_message});
 					}
 

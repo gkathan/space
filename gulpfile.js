@@ -363,6 +363,10 @@ gulp.task('log', function(){
   });
 });
 
+/*
+git log  --pretty=format:'<li> <a href="http://github.com/jerel/<project>/commit/%H">view commit &bull;</a> %s</li> ' --reverse  >changelog.html
+
+*/
 
 
 

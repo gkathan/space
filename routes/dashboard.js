@@ -32,9 +32,9 @@ router.get('/', function(req, res) {
 		avService.getLatest(function(av){
 
 			res.locals.availability = av;
-			res.locals.downtime = avService.getDowntimeYTD(av.unplannedYTD,av.week);
-			res.locals.targetDowntime = avService.getDowntimeYTD(av,52);
-			res.locals.leftDowntime = avService.getDowntimeYTD(av,52);
+			res.locals.cum = avService.getcumYTD(av.unplannedYTD,av.week);
+			res.locals.targetcum = avService.getcumYTD(av,52);
+			res.locals.leftcum = avService.getcumYTD(av,52);
 			res.locals.moment = moment;
 
 			targetService.getL1(_context,function(l1targets){

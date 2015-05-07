@@ -74,6 +74,21 @@ mixin renderAvailabilityList(title,av)
 				td(style="width:100px")
 					b(style="font-size:24px")
 						|#{formatAV(av.avPlanned)}
+			tr(style="line-height:32px")
+				td(style="width:150px;text-align:right")
+					|CORE:&nbsp;&nbsp;&nbsp; 
+				td(style="width:100px")
+					div(style="font-size:24px")
+						|#{formatAV(av.avPlannedCore)}
+			tr(style="line-height:32px")
+				td(style="width:150px;text-align:right")
+					|NON-CORE:&nbsp;&nbsp;&nbsp; 
+				td(style="width:100px")
+					div(style="font-size:24px")
+						|#{formatAV(av.avPlannedNonCore)}
+
+
+
 			tr(style="line-height:26px")
 				td(style="text-align:right")
 					|AV unplanned:&nbsp;&nbsp;&nbsp; 
@@ -81,11 +96,42 @@ mixin renderAvailabilityList(title,av)
 					b(style="font-size:24px")
 						|#{formatAV(av.avUnplanned)}
 			tr(style="line-height:32px")
+				td(style="width:150px;text-align:right")
+					|CORE:&nbsp;&nbsp;&nbsp; 
+				td(style="width:100px")
+					div(style="font-size:24px")
+						|#{formatAV(av.avUnplannedCore)}
+			tr(style="line-height:32px")
+				td(style="width:150px;text-align:right")
+					|NON-CORE:&nbsp;&nbsp;&nbsp; 
+				td(style="width:100px")
+					div(style="font-size:24px")
+						|#{formatAV(av.avUnplannedNonCore)}
+
+
+
+			tr(style="line-height:32px")
 				td(style="text-align:right")
 					|AV totals:&nbsp;&nbsp;&nbsp; 
 				td
 					b(style="font-size:24px")
 						|#{formatAV(av.avTotal)}
+			tr(style="line-height:32px")
+				td(style="width:150px;text-align:right")
+					|CORE:&nbsp;&nbsp;&nbsp; 
+				td(style="width:100px")
+					div(style="font-size:24px")
+						|#{formatAV(av.avTotalCore)}
+			tr(style="line-height:32px")
+				td(style="width:150px;text-align:right")
+					|NON-CORE:&nbsp;&nbsp;&nbsp; 
+				td(style="width:100px")
+					div(style="font-size:24px")
+						|#{formatAV(av.avTotalNonCore)}
+
+
+
+
 	hr
 	div(style="text-align:center")
 		table(style="margin:0 auto")
@@ -94,7 +140,7 @@ mixin renderAvailabilityList(title,av)
 					|downtime*) planned:&nbsp;&nbsp;&nbsp; 
 				td(style="width:150px")
 					b(style="font-size:16px")
-						|#{formatAVTime(av.cumPlanned)}
+						|#{formatAVTime(av.downtimePlanned)}
 			
 			
 			tr(style="line-height:24px;font-style:italic")
@@ -102,13 +148,13 @@ mixin renderAvailabilityList(title,av)
 					|CORE:&nbsp;&nbsp;&nbsp; 
 				td
 					div(style="font-size:16px")
-						|#{formatAVTime(av.cumPlannedCore)}
+						|#{formatAVTime(av.downtimePlannedCore)}
 			tr(style="line-height:24px;font-style:italic")
 				td(style="text-align:right")
 					|NON-CORE:&nbsp;&nbsp;&nbsp; 
 				td
 					div(style="font-size:16px")
-						|#{formatAVTime(av.cumPlannedNonCore)}						
+						|#{formatAVTime(av.downtimePlannedNonCore)}						
 			
 			
 			
@@ -118,20 +164,20 @@ mixin renderAvailabilityList(title,av)
 					|downtime*) unplanned:&nbsp;&nbsp;&nbsp; 
 				td
 					b(style="font-size:16px")
-						|#{formatAVTime(av.cumUnplanned)}
+						|#{formatAVTime(av.downtimeUnplanned)}
 			
 			tr(style="line-height:24px;font-style:italic")
 				td(style="text-align:right")
 					|CORE:&nbsp;&nbsp;&nbsp; 
 				td
 					div(style="font-size:16px")
-						|#{formatAVTime(av.cumUnPlannedCore)}
+						|#{formatAVTime(av.downtimeUnplannedCore)}
 			tr(style="line-height:24px;font-style:italic")
 				td(style="text-align:right")
 					|NON-CORE:&nbsp;&nbsp;&nbsp; 
 				td
 					div(style="font-size:16px")
-						|#{formatAVTime(av.cumUnPlannedNonCore)}						
+						|#{formatAVTime(av.downtimeUnplannedNonCore)}						
 			
 			
 			tr(style="line-height:24px")
@@ -139,20 +185,20 @@ mixin renderAvailabilityList(title,av)
 					|downtime*) totals:&nbsp;&nbsp;&nbsp; 
 				td
 					b(style="font-size:16px")
-						|#{formatAVTime(av.cumTotal)}
+						|#{formatAVTime(av.downtimeTotal)}
 
 			tr(style="line-height:24px;font-style:italic")
 				td(style="text-align:right")
 					|CORE:&nbsp;&nbsp;&nbsp; 
 				td
 					div(style="font-size:16px")
-						|#{formatAVTime(av.cumTotalCore)}
+						|#{formatAVTime(av.downtimeTotalCore)}
 			tr(style="line-height:24px;font-style:italic")
 				td(style="text-align:right")
 					|NON-CORE:&nbsp;&nbsp;&nbsp; 
 				td
 					div(style="font-size:16px")
-						|#{formatAVTime(av.cumTotalNonCore)}						
+						|#{formatAVTime(av.downtimeTotalNonCore)}						
 
 
 	hr
@@ -161,11 +207,29 @@ mixin renderAvailabilityList(title,av)
 	
 block content
 	div
+		br
 		img(src="/images/bpty_logo.png" style="display:block;margin-left:auto;margin-right:auto;")
 	h2(style="text-align:center;font-weight:bold") firereport-online prototype
+	
+	
+	
 	h4(style="text-align:center;font-weight:bold") from: #{moment(av.from)}
 	h4(style="text-align:center;font-weight:bold") to: #{moment(av.to)}
 	
+	div.row(style="margin: auto;max-width:1000px")
+		div.form-group
+			div.input-group.date(id="fromdate" )
+				span.input-group-addon 
+					span.glyphicon.glyphicon-calendar 
+					span(style="font-size:10px") ::start
+				input.form-control(id="from" type="text" style="width:200px")
+
+			div.input-group.date(id="todate" )
+				span.input-group-addon 
+					span.glyphicon.glyphicon-calendar 
+					span(style="font-size:10px")  ::stop
+				input.form-control(id="to" type="text" style="width:200px")
+
 	
 	div.row(style="margin: auto;max-width:1000px")
 		div.panel.panel-default

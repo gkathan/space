@@ -1,8 +1,6 @@
-/**
- *
- *
- * .....
- */
+/** re-implementation of bpty legacy way of calculating availability
+ * from avreport.bwinparty.corp
+  */
 var config = require('config');
 var mongojs = require('mongojs');
 var _ = require('lodash');
@@ -14,6 +12,7 @@ var db = mongojs(connection_string, [DB]);
 
 var winston=require('winston');
 var logger = winston.loggers.get('space_log');
+
 /**
  *
  */
@@ -32,7 +31,7 @@ function _calculateOverall(from, to, done){
 		_processServices("EXTERNAL",servicesExt,null,from,to,function(data){
 			// the result of this will be injected as "ProductIntegration row in MAIN "
 			var _injectServices = [];
-			var _productIntegration={ServiceName:"Product Integration",ext_service:0,ServiceGroupID:1,Report:1,CoreService:1,Highlight:0,availability:{planned:data.avPlanned,unplanned:data.avUnplanned,total:data.avTotal,plannedTime:data.cumPlanned,unplannedTime:data.cumUnplanned,totalTime:data.cumTotal}};
+			var _productIntegration={ServiceName:"Product Integration",ext_service:0,ServiceGroupID:1,Report:1,CoreService:1,Highlight:0,availability:{planned:data.avPlanned,unplanned:data.avUnplanned,total:data.avTotal,plannedTime:data.downtimePlanned,unplannedTime:data.downtimeUnplanned,totalTime:data.downtimeTotal}};
 			_injectServices.push(_productIntegration);
 			avService.findSOCServicesMain(function(servicesMain){
 				_processServices("MAIN",servicesMain,_injectServices,from,to,function(data){
@@ -64,16 +63,16 @@ function _processServices(type,services,injectedServices,from,to,callback){
 		var _socIncidents = db.collection('socincidents');
 		_socIncidents.find(function(err,data){
 		// grab the SOC incidents for the intervall (from to)
-		var cumPlanned = 0.0;
-		var cumPlannedCore = 0.0;
-		var cumPlannedNonCore = 0.0;
+		var downtimePlanned = 0.0;
+		var downtimePlannedCore = 0.0;
+		var downtimePlannedNonCore = 0.0;
 
-		var cumUnPlanned = 0.0;
-		var cumUnPlannedCore = 0.0;
-		var cumUnPlannedNonCore = 0.0;
+		var downtimeUnplanned = 0.0;
+		var downtimeUnplannedCore = 0.0;
+		var downtimeUnplannedNonCore = 0.0;
 
-		var cumTotalCore = 0.0;
-		var cumTotalNonCore = 0.0;
+		var downtimeTotalCore = 0.0;
+		var downtimeTotalNonCore = 0.0;
 
 
 		var incidentsPlanned = [];
@@ -89,57 +88,59 @@ function _processServices(type,services,injectedServices,from,to,callback){
 					var _time = _degrade(_inc.resolutionTime,_inc.degradation);
 					if (_inc.isPlanned==true){
 						// check core / non-core
-
 						_checkCoreTime(_inc,function(result){
-							cumPlanned+=_time;
-							cumPlannedCore+=result.coreTime;
-							cumPlannedNonCore+=result.nonCoreTime;
-
+							downtimePlanned+=_time;
+							downtimePlannedCore+=result.coreTime;
+							downtimePlannedNonCore+=result.nonCoreTime;
 							servicePlanned+=_time;
 							incidentsPlanned.push(_inc);
 						})
-
-
 					}
 					else{
 						// check core / non-core
 						_checkCoreTime(_inc,function(result){
-							cumUnPlanned+=_time;
-							cumUnPlannedCore+=result.coreTime;
-							cumUnPlannedNonCore+=result.nonCoreTime;
-
+							downtimeUnplanned+=_time;
+							downtimeUnplannedCore+=result.coreTime;
+							downtimeUnplannedNonCore+=result.nonCoreTime;
 							serviceUnplanned+=_time;
 							incidentsUnplanned.push(_inc);
-
 						})
-
-						cumTotalCore=cumUnPlannedCore+cumPlannedCore;
-						cumTotalNonCore=cumUnPlannedNonCore+cumPlannedNonCore;
-
+						downtimeTotalCore=downtimeUnplannedCore+downtimePlannedCore;
+						downtimeTotalNonCore=downtimeUnplannedNonCore+downtimePlannedNonCore;
 					}
 				}
 			}
 			var avServicePlanned = 1-(servicePlanned / totalTime);
-			var avServicePlannedCore = 1-(cumPlannedCore / totalTime);
-			var avServicePlannedNonCore = 1-(cumPlannedNonCore / totalTime);
+			var avServicePlannedCore = 1-(downtimePlannedCore / totalTime);
+			var avServicePlannedNonCore = 1-(downtimePlannedNonCore / totalTime);
 
 			var avServiceUnplanned = 1-(serviceUnplanned / totalTime);
-			var avServiceUnPlannedCore = 1-(cumUnPlannedCore / totalTime);
-			var avServiceUnPlannedNonCore = 1-(cumUnPlannedNonCore / totalTime);
+			var avServiceUnplannedCore = 1-(downtimeUnplannedCore / totalTime);
+			var avServiceUnplannedNonCore = 1-(downtimeUnplannedNonCore / totalTime);
 
 			var avServiceTotal = avServicePlanned * avServiceUnplanned;
+			var avServiceTotalCore = avServicePlannedCore * avServiceUnplannedCore;
+			var avServiceTotalNonCore = avServicePlannedNonCore * avServiceUnplannedNonCore;
+
 
 			services[s].availability={
 					planned:avServicePlanned,
+					plannedCore:avServicePlannedCore,
+					plannedNonCore:avServicePlannedNonCore,
 					plannedTime:servicePlanned,
 					unplanned:avServiceUnplanned,
+					unplannedCore:avServiceUnplannedCore,
+					unplannedNonCore:avServiceUnplannedNonCore,
 					unplannedTime:serviceUnplanned,
 					total:avServiceTotal,
+					totalCore:avServiceTotalCore,
+					totalNonCore:avServiceTotalNonCore,
+
 					totalTime:(servicePlanned+serviceUnplanned)
 				};
 
-			var avPlanned = 1-(cumPlanned / totalTime);
-			var avUnPlanned = 1-(cumUnPlanned / totalTime);
+			var avPlanned = 1-(downtimePlanned / totalTime);
+			var avUnplanned = 1-(downtimeUnplanned / totalTime);
 		} //end services loop
 		if (injectedServices){
 			services = services.concat(injectedServices);
@@ -151,8 +152,8 @@ function _processServices(type,services,injectedServices,from,to,callback){
 		var _averagePlannedNonCore=0.0;
 
 		var _averageUnplanned=0.0;
-		var _averageUnPlannedCore=0.0;
-		var _averageUnPlannedNonCore=0.0;
+		var _averageUnplannedCore=0.0;
+		var _averageUnplannedNonCore=0.0;
 
 
 		var _averageTotal=0.0;
@@ -164,39 +165,53 @@ function _processServices(type,services,injectedServices,from,to,callback){
 		var _rounds = services.length;
 		for (var s in services){
 			_averagePlanned+=services[s].availability.planned;
-
-
+			_averagePlannedCore+=services[s].availability.plannedCore;
+			_averagePlannedNonCore+=services[s].availability.plannedNonCore;
 
 			_averageUnplanned+=services[s].availability.unplanned;
+			_averageUnplannedCore+=services[s].availability.unplannedCore;
+			_averageUnplannedNonCore+=services[s].availability.unplannedNonCore;
 		}
 		_averagePlanned=_averagePlanned/_rounds;
+		_averagePlannedCore=_averagePlannedCore/_rounds;
+		_averagePlannedNonCore=_averagePlannedNonCore/_rounds;
+
 		_averageUnplanned=_averageUnplanned/_rounds;
+		_averageUnplannedCore=_averageUnplannedCore/_rounds;
+		_averageUnplannedNonCore=_averageUnplannedNonCore/_rounds;
+
 		_averageTotal=_averagePlanned*_averageUnplanned;
+		_averageTotalCore=_averagePlannedCore*_averageUnplannedCore;
+		_averageTotalNonCore=_averagePlannedNonCore*_averageUnplannedNonCore;
 
 		var _avResult={};
 		_avResult.from=from;
 		_avResult.to=to;
 		//time of downtime in millisceonds
-		_avResult.cumPlanned=cumPlanned;
-		_avResult.cumUnplanned=cumUnPlanned;
-		_avResult.cumTotal = cumPlanned+cumUnPlanned;
+		_avResult.downtimePlanned=downtimePlanned;
+		_avResult.downtimeUnplanned=downtimeUnplanned;
+		_avResult.downtimeTotal = downtimePlanned+downtimeUnplanned;
 		_avResult.avPlanned=_averagePlanned;
+		_avResult.avPlannedCore=_averagePlannedCore;
+		_avResult.avPlannedNonCore=_averagePlannedNonCore;
 		_avResult.avUnplanned=_averageUnplanned;
+		_avResult.avUnplannedCore=_averageUnplannedCore;
+		_avResult.avUnplannedNonCore=_averageUnplannedNonCore;
 		_avResult.avTotal=_averageTotal;
+		_avResult.avTotalCore=_averageTotalCore;
+		_avResult.avTotalNonCore=_averageTotalNonCore;
 		_avResult.services= services;
 		_avResult.from=from;
 		_avResult.from=from;
 		_avResult.incidentsPlanned = incidentsPlanned;
 		_avResult.incidentsUnplanned = incidentsUnplanned;
 
-		_avResult.cumPlannedCore=cumPlannedCore;
-		_avResult.cumPlannedNonCore=cumPlannedNonCore;
-		_avResult.cumUnPlannedCore=cumUnPlannedCore;
-		_avResult.cumUnPlannedNonCore=cumUnPlannedNonCore;
-		_avResult.cumTotalCore=cumTotalCore;
-		_avResult.cumTotalNonCore=cumTotalNonCore;
-
-
+		_avResult.downtimePlannedCore=downtimePlannedCore;
+		_avResult.downtimePlannedNonCore=downtimePlannedNonCore;
+		_avResult.downtimeUnplannedCore=downtimeUnplannedCore;
+		_avResult.downtimeUnplannedNonCore=downtimeUnplannedNonCore;
+		_avResult.downtimeTotalCore=downtimeTotalCore;
+		_avResult.downtimeTotalNonCore=downtimeTotalNonCore;
 
 		callback(_avResult);
 	})
@@ -237,16 +252,12 @@ function _checkCoreTime(incident,callback){
 	var _start = incident.start;
 	var _stop = incident.stop;
 
-	// moment('2010-10-20').isBetween('2009-12-31', '2012-01-01', 'year'); // true
-
 	var _coreTime = 0;
 	for (var i in _coreDefinition){
 		_coreTime+=_getCoreTime(_start,_stop,_coreDefinition[i]);
 	}
-
 	var _degradedCoreTime = _degrade(_coreTime,incident.degradation);
 	var _degradedNonCoreTime = _degrade((incident.resolutionTime-_coreTime),incident.degradation);
-
 
 	callback({coreTime:_degradedCoreTime,nonCoreTime:_degradedNonCoreTime,resolutionTime:incident.resolutionTime});
 }
@@ -275,11 +286,8 @@ function _getCoreTime(_start,_stop,coreDef){
 		//milliseconds
 		return _coreDuration;
 	}
-
 	return 0;
 	}
-
-
 
 
 /** returns a concrete DateTime instance for a given Time only
@@ -289,11 +297,8 @@ function _getDateForTimeString(_timeString,_datetime){
 	var _day = moment(_datetime).date();
 	var _month = moment(_datetime).month()+1;
 	var _year = moment(_datetime).year();
-
 	var d = new moment(_year+"-"+_month+"-"+_day+" "+_timeString,"YYYY-M-DD HH:mm:ss");
-
 	logger.debug("==== moment created: given timeString: "+_timeString+" date = "+d.toLocaleString());
-
 	return d;
 }
 
