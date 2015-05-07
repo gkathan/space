@@ -655,7 +655,7 @@ function message(req,res,next){
 		var _message=req.body;
 		_message.desktop={
 			desktop:true,
-			icon:"/images/space_big_bpty.png"
+			icon:"/images/messages/msg_"+_message.type+".png"
 		};
 
 		req.app.io.emit("message",{msg:_message});

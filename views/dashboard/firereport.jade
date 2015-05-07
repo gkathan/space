@@ -1,4 +1,4 @@
-include ../imports
+include ../kanban_menu
 // Load d3.js and c3.js
 script(src='/javascripts/components/c3/c3.min.js')
 // Load nv3d
@@ -68,88 +68,108 @@ mixin renderAvailabilityList(title,av)
 	hr
 	div(style="text-align:center")
 		table(style="margin:0 auto")
-			tr(style="line-height:32px")
-				td(style="width:150px;text-align:right")
-					|AV planned:&nbsp;&nbsp;&nbsp; 
+			tr(style="line-height:32px;text-align:right")
+				td(style="width:150px;text-align:right;font-size:18px")
+					b AV planned:&nbsp;&nbsp;&nbsp; 
 				td(style="width:100px")
 					b(style="font-size:24px")
 						|#{formatAV(av.avPlanned)}
-			tr(style="line-height:32px")
+				td(style="width:100px")
+					b(style="font-size:10px")
+						|#{av.totalPeriod}
+			tr(style="line-height:32px;text-align:right")
 				td(style="width:150px;text-align:right")
 					|CORE:&nbsp;&nbsp;&nbsp; 
 				td(style="width:100px")
-					div(style="font-size:24px")
+					div(style="font-size:20px")
 						|#{formatAV(av.avPlannedCore)}
-			tr(style="line-height:32px")
+				td(style="width:100px")
+					div(style="font-size:10px")
+						|#{av.totalPeriodCore}
+			tr(style="line-height:32px;text-align:right")
 				td(style="width:150px;text-align:right")
 					|NON-CORE:&nbsp;&nbsp;&nbsp; 
 				td(style="width:100px")
-					div(style="font-size:24px")
+					div(style="font-size:20px")
 						|#{formatAV(av.avPlannedNonCore)}
+				td(style="width:100px")
+					div(style="font-size:10px")
+						|#{av.totalPeriodNonCore}
 
 
 
-			tr(style="line-height:26px")
-				td(style="text-align:right")
-					|AV unplanned:&nbsp;&nbsp;&nbsp; 
+			tr(style="line-height:26px;text-align:right")
+				td(style="text-align:right;font-size:18px")
+					b AV unplanned:&nbsp;&nbsp;&nbsp; 
 				td
 					b(style="font-size:24px")
 						|#{formatAV(av.avUnplanned)}
-			tr(style="line-height:32px")
+				td(style="width:100px")
+					b(style="font-size:10px")
+						|#{av.totalPeriod}
+
+			tr(style="line-height:32px;text-align:right")
 				td(style="width:150px;text-align:right")
 					|CORE:&nbsp;&nbsp;&nbsp; 
 				td(style="width:100px")
-					div(style="font-size:24px")
+					div(style="font-size:20px")
 						|#{formatAV(av.avUnplannedCore)}
-			tr(style="line-height:32px")
+				td(style="width:100px")
+					div(style="font-size:10px")
+						|#{av.totalPeriodCore}
+
+			tr(style="line-height:32px;text-align:right")
 				td(style="width:150px;text-align:right")
 					|NON-CORE:&nbsp;&nbsp;&nbsp; 
 				td(style="width:100px")
-					div(style="font-size:24px")
+					div(style="font-size:20px")
 						|#{formatAV(av.avUnplannedNonCore)}
+				td(style="width:100px")
+					div(style="font-size:10px")
+						|#{av.totalPeriodNonCore}
 
 
 
-			tr(style="line-height:32px")
-				td(style="text-align:right")
-					|AV totals:&nbsp;&nbsp;&nbsp; 
+			tr(style="line-height:32px;text-align:right")
+				td(style="text-align:right;font-size:18px")
+					b AV totals:&nbsp;&nbsp;&nbsp; 
 				td
 					b(style="font-size:24px")
 						|#{formatAV(av.avTotal)}
-			tr(style="line-height:32px")
-				td(style="width:150px;text-align:right")
+			tr(style="line-height:32px;text-align:right")
+				td(style="width:150px")
 					|CORE:&nbsp;&nbsp;&nbsp; 
 				td(style="width:100px")
-					div(style="font-size:24px")
+					div(style="font-size:20px")
 						|#{formatAV(av.avTotalCore)}
-			tr(style="line-height:32px")
+			tr(style="line-height:32px;text-align:right")
 				td(style="width:150px;text-align:right")
 					|NON-CORE:&nbsp;&nbsp;&nbsp; 
 				td(style="width:100px")
-					div(style="font-size:24px")
+					div(style="font-size:20px")
 						|#{formatAV(av.avTotalNonCore)}
 
 
 
-
+	// 
 	hr
 	div(style="text-align:center")
 		table(style="margin:0 auto")
-			tr(style="line-height:24px")
+			tr(style="line-height:24px;text-align:right")
 				td(style="width:200px;text-align:right")
-					|downtime*) planned:&nbsp;&nbsp;&nbsp; 
+					b downtime*) planned:&nbsp;&nbsp;&nbsp; 
 				td(style="width:150px")
 					b(style="font-size:16px")
 						|#{formatAVTime(av.downtimePlanned)}
 			
 			
-			tr(style="line-height:24px;font-style:italic")
+			tr(style="line-height:24px;font-style:italic;text-align:right")
 				td(style="text-align:right")
 					|CORE:&nbsp;&nbsp;&nbsp; 
 				td
 					div(style="font-size:16px")
 						|#{formatAVTime(av.downtimePlannedCore)}
-			tr(style="line-height:24px;font-style:italic")
+			tr(style="line-height:24px;font-style:italic;text-align:right")
 				td(style="text-align:right")
 					|NON-CORE:&nbsp;&nbsp;&nbsp; 
 				td
@@ -159,20 +179,20 @@ mixin renderAvailabilityList(title,av)
 			
 			
 			
-			tr(style="line-height:24px")
+			tr(style="line-height:24px;text-align:right")
 				td(style="text-align:right")
-					|downtime*) unplanned:&nbsp;&nbsp;&nbsp; 
+					b downtime*) unplanned:&nbsp;&nbsp;&nbsp; 
 				td
 					b(style="font-size:16px")
 						|#{formatAVTime(av.downtimeUnplanned)}
 			
-			tr(style="line-height:24px;font-style:italic")
+			tr(style="line-height:24px;font-style:italic;text-align:right")
 				td(style="text-align:right")
 					|CORE:&nbsp;&nbsp;&nbsp; 
 				td
 					div(style="font-size:16px")
 						|#{formatAVTime(av.downtimeUnplannedCore)}
-			tr(style="line-height:24px;font-style:italic")
+			tr(style="line-height:24px;font-style:italic;text-align:right")
 				td(style="text-align:right")
 					|NON-CORE:&nbsp;&nbsp;&nbsp; 
 				td
@@ -180,20 +200,20 @@ mixin renderAvailabilityList(title,av)
 						|#{formatAVTime(av.downtimeUnplannedNonCore)}						
 			
 			
-			tr(style="line-height:24px")
+			tr(style="line-height:24px;text-align:right")
 				td(style="text-align:right")
-					|downtime*) totals:&nbsp;&nbsp;&nbsp; 
+					b downtime*) totals:&nbsp;&nbsp;&nbsp; 
 				td
 					b(style="font-size:16px")
 						|#{formatAVTime(av.downtimeTotal)}
 
-			tr(style="line-height:24px;font-style:italic")
+			tr(style="line-height:24px;font-style:italic;text-align:right")
 				td(style="text-align:right")
 					|CORE:&nbsp;&nbsp;&nbsp; 
 				td
 					div(style="font-size:16px")
 						|#{formatAVTime(av.downtimeTotalCore)}
-			tr(style="line-height:24px;font-style:italic")
+			tr(style="line-height:24px;font-style:italic;text-align:right")
 				td(style="text-align:right")
 					|NON-CORE:&nbsp;&nbsp;&nbsp; 
 				td
@@ -216,19 +236,14 @@ block content
 	h4(style="text-align:center;font-weight:bold") from: #{moment(av.from)}
 	h4(style="text-align:center;font-weight:bold") to: #{moment(av.to)}
 	
+	
+	
 	div.row(style="margin: auto;max-width:1000px")
-		div.form-group
-			div.input-group.date(id="fromdate" )
-				span.input-group-addon 
-					span.glyphicon.glyphicon-calendar 
-					span(style="font-size:10px") ::start
-				input.form-control(id="from" type="text" style="width:200px")
+		#daterange.selectbox.pull-right
+			i.fa.fa-calendar &nbsp;
+			span -- enter date -- &nbsp;
+			b.caret
 
-			div.input-group.date(id="todate" )
-				span.input-group-addon 
-					span.glyphicon.glyphicon-calendar 
-					span(style="font-size:10px")  ::stop
-				input.form-control(id="to" type="text" style="width:200px")
 
 	
 	div.row(style="margin: auto;max-width:1000px")
@@ -331,3 +346,37 @@ block content
 	
 script(src='/javascripts/dashboards/nvd3_availability.js')
 script(src='/javascripts/dashboards/nvd3_availability_multi.js')
+
+script.
+	/*$(function () {
+		$('#start').datetimepicker({keepOpen:false,format:"ddd, DD MMM YYYY, HH:mm:ss"});
+		$('#stop').datetimepicker({keepOpen:false,format:"ddd, DD MMM YYYY, HH:mm:ss"});
+	})*/
+	$(document).ready(function() {
+		$('#daterange').daterangepicker({ 
+			format: 'YYYY-MM-DD',
+			startDate: '2015-01-01',
+			endDate: new Date(),
+			showDropdowns:true,
+			showWeekNumbers:true,
+			ranges: {
+						 'Last 30 Days': [moment().subtract('days', 29), moment()],
+						 'This Month': [moment().startOf('month'), moment().endOf('month')],
+						 'Last Month': [moment().subtract('month', 1).startOf('month'), moment().subtract('month', 1).endOf('month')],
+						 'Last Week': [moment().subtract('week', 1).startOf('week'), moment().subtract('week', 1).endOf('week')],
+						 'YTD': [moment().startOf('year'), moment()]
+						
+		  }
+		});
+		
+		$('#daterange').on('apply.daterangepicker', function(ev, picker) {
+			var _from = picker.startDate.format('YYYY-MM-DD');
+			var _to = picker.endDate.format('YYYY-MM-DD');
+			
+			window.location.href = "/dashboard/firereport?from="+_from+"&to="+_to;
+			
+			
+		});	
+			
+	});
+	

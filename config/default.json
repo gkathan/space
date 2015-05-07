@@ -38,8 +38,25 @@
 		}
 	},
 
+
+
+	"availability":{
+		"coreTime":[
+			{"dayOfWeek":6,"start":"12:00:00","stop":"23:59:59"},
+			{"dayOfWeek":0,"start":"00:00:00","stop":"00:59:59"},
+			{"dayOfWeek":0,"start":"12:00:00","stop":"23:59:59"},
+			{"dayOfWeek":1,"start":"00:00:00","stop":"00:59:59"},
+			{"dayOfWeek":1,"start":"16:00:00","stop":"23:59:59"},
+			{"dayOfWeek":2,"start":"16:00:00","stop":"23:59:59"},
+			{"dayOfWeek":3,"start":"16:00:00","stop":"23:59:59"},
+			{"dayOfWeek":4,"start":"16:00:00","stop":"23:59:59"},
+			{"dayOfWeek":5,"start":"16:00:00","stop":"23:59:59"}
+		]
+
+	},
+
 	"import":{
-		"plainTypes" : ["productportfolio","productcatalog","targets","incidents","labels","customers","competitors","roadmaps","availability","v1teams","scrumteams","incidenttracker","content","incidenttrackeroldsnow","socservices"]
+		"plainTypes" : ["productportfolio","productcatalog","targets","incidents","labels","customers","competitors","roadmaps","availability","v1teams","scrumteams","incidenttracker","content","incidenttrackeroldsnow","socservices","label2customer"]
 	},
 
   "context" : "bpty.studios",
@@ -78,9 +95,16 @@
 		},
 		"soc_incidents" : {
 			"mode": "off",
-			"intervalMinutes" :1 	,
-			"url" : "http://localhost:7777/AvReportingService.svc/GetIncidentsDatapoints/?from=2014-01-01"
+			"intervalMinutes" :1,
+			"url" : "http://avreport.bwinparty.corp/API/AvReportingService.svc/GetIncidentsDatapoints/?from=2014-01-01"
 		},
+
+		"soc_services" : {
+			"mode": "off",
+			"intervalMinutes" :3600,
+			"url" : "http://avreport.bwinparty.corp/API/AvReportingService.svc/GetServicesDatapoints"
+		},
+
 
 		"problem" : {
 			"mode": "off",

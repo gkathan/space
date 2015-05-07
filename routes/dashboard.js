@@ -32,9 +32,9 @@ router.get('/', function(req, res) {
 		avService.getLatest(function(av){
 
 			res.locals.availability = av;
-			res.locals.cum = avService.getcumYTD(av.unplannedYTD,av.week);
-			res.locals.targetcum = avService.getcumYTD(av,52);
-			res.locals.leftcum = avService.getcumYTD(av,52);
+			res.locals.downtime = avService.getDowntimeYTD(av.unplannedYTD,av.week);
+			res.locals.targetdowntime = avService.getDowntimeYTD(av,52);
+			res.locals.leftdowntime = avService.getDowntimeYTD(av,52);
 			res.locals.moment = moment;
 
 			targetService.getL1(_context,function(l1targets){
@@ -64,13 +64,22 @@ router.get('/qos', function(req, res) {
 router.get('/firereport', function(req, res) {
 		var avc = require ('../services/AvailabilityCalculatorService');
 
-		var _from = "2015-01-01";
-		var _to = "2015-04-02";
-		avc.calculateOverall(_from,_to,function(avDataOverall){
-			avc.calculateExternal(_from,_to,function(avDataExternal){
+		//default is in config
+		var _from = moment().startOf('year');
+		var _to = moment();
+
+		if (req.query.from)	 _from = req.query.from;//"2015-01-01";
+		if (req.query.to) _to = req.query.to;//"2015-01-10";
+
+		var _filter = {customer:"pmu"};
+
+		avc.calculateOverall(_from,_to,_filter,function(avDataOverall){
+			avc.calculateExternal(_from,_to,_filter,function(avDataExternal){
 				res.locals.av = avDataOverall;
 				res.locals.avExternal = avDataExternal;
 				res.locals.moment = moment;
+				res.locals.from = _from;
+				res.locals.to = _to;
 				res.render('dashboard/firereport', { title: 's p a c e - firereport' });
 			});
 		});

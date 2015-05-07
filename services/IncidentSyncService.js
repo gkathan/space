@@ -175,9 +175,12 @@ function _syncIncident(url,done){
 							_prio = "P40";
 						}
 
-						_message.title="! NEW <b>"+_prio+"</b> INCIDENT !";
+						_message.title="! NEW "+_prio+" INCIDENT !";
 						// TODO format nicely and link to snow
-						_message.body = JSON.stringify(_incidentsDIFF.NEW);
+
+						var _bodyFormatted = _formatIncidentMessage(_incidentsDIFF.NEW[0]);
+
+						_message.body = _bodyFormatted;
 						_message.type = _type;
 						_message.desktop={
 							desktop:true,
@@ -189,6 +192,8 @@ function _syncIncident(url,done){
 					if (config.emit.snow_incidents_changes =="on" && _incidentsDIFF.CHANGED.length>0){
 						_message.title="! INCIDENT CHANGES!";
 						// TODO format nicely and link to snow
+
+
 						_message.body = JSON.stringify(_incidentsDIFF.CHANGED);
 						_message.type = "warning";
 						_message.desktop={desktop:true};
@@ -236,6 +241,14 @@ function _syncIncident(url,done){
   });
 
 }
+
+function _formatIncidentMessage(incident){
+	var _msg="+ "+incident.priority+"\n"+incident.description;
+	_msg+="+ businessService: "+incident.businessService;
+
+	return _msg;
+}
+
 
 function _pushEvent(event,message){
 	exports.io.sockets.emit(event, message);

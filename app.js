@@ -153,7 +153,9 @@ app.io.sockets.on('connection', function (socket) {
 });
 
 var soc_incidentSyncService = require('./services/SOCIncidentsSyncService');
-soc_incidentSyncService.init();
+soc_incidentSyncService.init(function(data){
+  logger.debug("soc_incidentSyncService.init() says: "+JSON.stringify(data));
+});
 
 
 var problemSyncService = require('./services/ProblemSyncService');

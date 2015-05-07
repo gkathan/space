@@ -30,7 +30,7 @@ describe('AvailabilityCalculatorService', function(){
     it('calculates overall AV values', function(done){
 
 			console.log("---------------------");
-			avCalculatorService.calculateOverall("2015-01-01","2015-04-02",function(data){
+			avCalculatorService.calculateOverall("2015-01-01","2015-04-02",null,function(data){
 				console.log("data: "+JSON.stringify(data));
 				//var av ="xx";
 				//assert.equal("xx", av);
@@ -290,7 +290,27 @@ describe('AvailabilityCalculatorService', function(){
 		});
 	})
 
-	})
+describe('#calculateOverallCoreTime(from,to)', function(){
+	it('calculates the total time of core time for the given period.... ', function(done){
+		var _from = new Date("2015-01-01");
+		var _to = new Date("2015-01-02");
+
+		// thursday
+		// coretime is 16:00:00-23:59:59
+		// = 28800000 ms
+		// - 1 second
+		// =
+		var coreTotalTime = avCalculatorService.calculateTotalCoreTime(_from,_to);
+
+
+
+		assert.equal(28799000, coreTotalTime);
+		done();
+
+	});
+})
+
+})
 
 
 

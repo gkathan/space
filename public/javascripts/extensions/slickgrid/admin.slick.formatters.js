@@ -25,6 +25,7 @@
         "IncidentSLABreach":IncidentSLABreachFormatter,
         "IncidentState":IncidentStateFormatter,
         "IncidentPriority":IncidentPriorityFormatter,
+        "IncidentPriorityIcon":IncidentPriorityIconFormatter,
         "ResolutionTime":ResolutionTimeFormatter
       }
     }
@@ -149,7 +150,7 @@
   }
 
 function IncidentPriorityFormatter(row, cell, value, columnDef, dataContext) {
-  var _color;
+  var _style;
   if (value){
     if (value == "P01 - Critical") _style="font-weight:bold;color:black";
     if (value=="P08 - High") _style="font-weight:normal;color:black";
@@ -159,6 +160,20 @@ function IncidentPriorityFormatter(row, cell, value, columnDef, dataContext) {
 
   return "<span style='"+_style+"'>"+value+"</span>";
 }
+
+function IncidentPriorityIconFormatter(row, cell, value, columnDef, dataContext) {
+  var _img;
+  if (value){
+    if (value == "P01 - Critical" || value=="P1") _img="P1.png";
+    if (value=="P08 - High" || value=="P8") _img="P8.png";
+    if (value=="P16 - Moderate" || value=="P16") _img="P16.png";
+    if (value=="P40 - Low" || value=="P40") _img="P40.png";
+  }
+
+  if (_img) return "<img src='/images/incidents/"+_img+"' height='20px'/>";
+  else return "";
+}
+
 
   function ResolutionTimeFormatter(row, cell, value, columnDef, dataContext) {
 

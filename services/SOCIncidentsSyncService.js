@@ -61,6 +61,13 @@ function _syncSOCIncidents(url,callback){
 						_incident.start = new Date(_incident.start);
 						_incident.stop = new Date(_incident.stop);
 						_incident.resolutionTime = _incident.stop - _incident.start;
+
+						var _check = _.findWhere(snowIncidents,{"id":_incident.incidentID})
+						if (_check){
+							_incident.snowId = _check.sysId;
+							_incident.labels = _check.label;
+							_incident.businessService = _check.businessService;
+						}
 					}
 					// lets flateten out the servicename 1:n entries into a comma delimited string
 
@@ -80,12 +87,7 @@ function _syncSOCIncidents(url,callback){
 						_incident.serviceName=_services;
 						*/
 						// check if there is a matching snow incident with accoding incidentID
-						var _check = _.findWhere(snowIncidents,{"id":_incident.incidentID})
-						if (_check){
-							_incident.snowId = _check.sysId;
-							_incident.labels = _check.label;
-							_incident.businessService = _check.businessService;
-						}
+
 
 				/*		_incidentsFlattened.push(_incident);
 					}

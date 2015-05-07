@@ -23,10 +23,19 @@
 		},
 
 		"soc_incidents" : {
-			"mode": "off",
-			"intervalMinutes" :1 	,
-			"url" : "http://localhost:7777/AvReportingService.svc/GetIncidentsDatapoints/?from=2014-01-01"
+			"mode": "on",
+			"intervalMinutes" :1,
+			"url" : "http://avreport.bwinparty.corp/API/AvReportingService.svc/GetIncidentsDatapoints/?from=2014-01-01"
 		},
+
+		"soc_services" : {
+			"mode": "off",
+			"intervalMinutes" :3600,
+			"url" : "http://avreport.bwinparty.corp/API/AvReportingService.svc/GetServicesDatapoints"
+		},
+
+
+
 
 		"problem" : {
 			"mode": "on",

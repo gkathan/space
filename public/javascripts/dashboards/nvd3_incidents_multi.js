@@ -4,6 +4,22 @@ var charts=[];
 var _period;
 var _aggregate;
 
+
+function _getYear(period){
+  var _split = period.split("-");
+
+  var _year;
+  if (_split.length==2){
+    _year = parseInt(_split[1]);
+  }
+  else if (_split.length==1){
+    _year = parseInt(_split[0]);
+  }
+  if (_year>=2014 && _year <=moment().year()) return _year;
+
+}
+
+
 function init(chartId){
 
   nv.addGraph(function() {
