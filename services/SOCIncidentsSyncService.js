@@ -69,29 +69,7 @@ function _syncSOCIncidents(url,callback){
 							_incident.businessService = _check.businessService;
 						}
 					}
-					// lets flateten out the servicename 1:n entries into a comma delimited string
 
-					/*
-					var _cluster = us.nst.nest(socIncidents,"incidentID").children;
-					var _incidentsFlattened=[];
-					for (var c in _cluster){
-						var _services="";
-						var _incident;
-						for (var s in _cluster[c].children){
-							_services+=_cluster[c].children[s].serviceName+",";
-							_incident = _cluster[c].children[s];
-							if (_incident.incidentID.split("INC00").length>1)
-								_incident.incidentID = "INC"+_incident.incidentID.split("INC00")[1];
-						}
-						logger.debug("INC: "+_cluster[c].name+" services: "+_services)
-						_incident.serviceName=_services;
-						*/
-						// check if there is a matching snow incident with accoding incidentID
-
-
-				/*		_incidentsFlattened.push(_incident);
-					}
-				*/
 					// and store it
 					var socincidents =  db.collection('socincidents');
 					socincidents.drop();

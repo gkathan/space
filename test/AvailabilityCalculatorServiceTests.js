@@ -310,6 +310,36 @@ describe('#calculateOverallCoreTime(from,to)', function(){
 	});
 })
 
+describe('#checkLabels(filterList,incidentist)', function(){
+	it('bla... ', function(done){
+		var _filter = ["bwin.com","bwin.it","bwin.fr","bwin.es","gamebookers.com"];
+		var _emptyFilter =[];
+		var _incident1 = ["bwin.com","party.com"];
+		var _incident2 = [];
+		var _incident3;
+		var _incident4 = ["party.com"];
+
+
+
+		var _check1 = avCalculatorService.checkLabels(_filter,_incident1);
+		var _check2 = avCalculatorService.checkLabels(_filter,_incident2);
+		var _check3 = avCalculatorService.checkLabels(_filter,_incident3);
+		var _check4 = avCalculatorService.checkLabels(_filter,_incident4);
+		var _check5 = avCalculatorService.checkLabels(_emptyFilter,_incident1);
+
+		assert.equal(true, _check1);
+		assert.equal(true, _check2);
+		assert.equal(true, _check3);
+		assert.equal(false, _check4);
+		assert.equal(true, _check5);
+
+
+		done();
+
+
+	});
+})
+
 })
 
 

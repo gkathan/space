@@ -20,6 +20,7 @@ exports.calculateOverall = _calculateOverall;
 exports.calculateExternal = _calculateExternal;
 exports.checkCoreTime = _checkCoreTime;
 exports.calculateTotalCoreTime = _calculateTotalCoreTime;
+exports.checkLabels=checkLabels;
 
 
 /**
@@ -97,9 +98,17 @@ function _processServices(type,services,injectedServices,from,to,filter,callback
 
 	_label2customer.find(function(err,mapping){
 		//{customer:"bwin"};
-		var _filterLabels = [];
-		_filterLabels =  _.where(mapping,{"customer":filter.customer});
+		var _filterLabels=[];
+		
+		if (filter) {
+			// now i need a plain array with labels
+			var _allLabels = _.pluck(mapping,"label");
+			// in written:
+			// 1) _.pluck(_.where: give me all labels for the specified customer (e.g. cutomer = bwin => labels = ["bwin.com","bwin.it","bwin.de"....])
+			// 2) give me the "opposite" of the other labels => if we will get an intersect of incident.label with this "ANTI-LIST" - we can skip this incident
+			_filterLabels =  _.pluck(_.where(mapping,{"customer":filter.customer}),"label");
 
+		}
 
 		_socIncidents.find(function(err,data){
 			// grab the SOC incidents for the intervall (from to)
@@ -128,15 +137,14 @@ function _processServices(type,services,injectedServices,from,to,filter,callback
 				for (var i in data){
 					var _inc = data[i];
 
-					var _labels
+					var _labels=[];
 					if (_inc.labels){
 						_labels = _inc.labels.split(", ");
 					}
-					// we need to get the labels for given customer in the filter
 
-					//if (_.intersection(_labels,_filterLabels).length==0){
 
-						if (_inc.serviceName.split(",").indexOf(services[s].ServiceName)>-1 &&_inc.isEndUserDown && _inc.start>=new Date(from) && _inc.start <=new Date(to)){
+
+						if (checkLabels(_filterLabels,_labels) && _inc.serviceName.split(",").indexOf(services[s].ServiceName)>-1 &&_inc.isEndUserDown && _inc.start>=new Date(from) && _inc.start <=new Date(to)){
 							var _time = _degrade(_inc.resolutionTime,_inc.degradation);
 							if (_inc.isPlanned==true){
 								// check core / non-core
@@ -174,7 +182,7 @@ function _processServices(type,services,injectedServices,from,to,filter,callback
 								downtimeTotalCore=downtimeUnplannedCore+downtimePlannedCore;
 								downtimeTotalNonCore=downtimeUnplannedNonCore+downtimePlannedNonCore;
 							}
-						//}
+
 					}
 				} // end for incident loop
 
@@ -293,6 +301,18 @@ function _processServices(type,services,injectedServices,from,to,filter,callback
 
 }
 
+/**
+* checks whether a given list of labels from an incdient is relevant for a filter list of labels
+* param: labelsFilter = list of labels which belong to a customer e.g. for bwin this is ["bwin.com","bwin.it","bwin.es","bwin.fr"]
+* param: labelsIncident = list of labels affected by an incident e.g. ["pmu.fr","bwin.com"]
+* return: true if either labelsIncident is null or empty, or the intersection of the 2 lists includes a value
+*/
+function checkLabels(labelsFilter,labelsIncident){
+	if (!labelsIncident || labelsIncident.length==0 || labelsFilter.length==0) return true;
+	else if (_.intersection(labelsFilter,labelsIncident).length>0) return true;
+	return false;
+
+}
 
 function _formatAV(av){
 	return (av*100).toFixed(2)+ "%";

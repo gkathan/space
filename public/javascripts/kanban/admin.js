@@ -377,7 +377,7 @@ function getSOCIncidentsConfig(){
     { id: "degradation", name: "deg", field: "degradation", editor: Slick.Editors.Number ,width:40, cssClass: "cell-standard"},
 		{ id: "description", name: "description", field: "description",sortable:true,width:300, editor: Slick.Editors.Text,cssClass: "cell-standard" },
 		{ id: "serviceName", name: "serviceName",  field: "serviceName",width:150, editor: Slick.Editors.Number , cssClass: "cell-standard"},
-		{ id: "labels", name: "labels",  field: "labels",width:150, editor: Slick.Editors.Number , cssClass: "cell-standard"},
+		{ id: "labels", name: "labels",  field: "labels",width:250, editor: Slick.Editors.Number , cssClass: "cell-standard"},
 		{ id: "businessService", name: "businessService",  field: "businessService",width:150, editor: Slick.Editors.Number , cssClass: "cell-standard"},
 		{ id: "start", name: "start",  field: "start",width:150, editor: Slick.Editors.Number ,sortable:true, cssClass: "cell-standard"},
 		{ id: "stop", name: "stop",  field: "stop",width:150, editor: Slick.Editors.Number ,sortable:true, cssClass: "cell-standard"},

@@ -67,12 +67,15 @@ router.get('/firereport', function(req, res) {
 		//default is in config
 		var _from = moment().startOf('year');
 		var _to = moment();
+		var _customer;
+		var _filter;
 
 		if (req.query.from)	 _from = req.query.from;//"2015-01-01";
 		if (req.query.to) _to = req.query.to;//"2015-01-10";
-
-		var _filter = {customer:"pmu"};
-
+		if (req.query.customer){
+			_customer = req.query.customer;//"bwin" or "pmu" or "danske spil",...;
+			_filter = {customer:_customer};
+		}
 		avc.calculateOverall(_from,_to,_filter,function(avDataOverall){
 			avc.calculateExternal(_from,_to,_filter,function(avDataExternal){
 				res.locals.av = avDataOverall;
@@ -80,6 +83,10 @@ router.get('/firereport', function(req, res) {
 				res.locals.moment = moment;
 				res.locals.from = _from;
 				res.locals.to = _to;
+				res.locals.filter = _filter;
+
+				logger.debug("*****customer: "+_customer);
+
 				res.render('dashboard/firereport', { title: 's p a c e - firereport' });
 			});
 		});

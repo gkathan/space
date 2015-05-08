@@ -175,12 +175,12 @@ function _syncIncident(url,done){
 							_prio = "P40";
 						}
 
-						_message.title="! NEW "+_prio+" INCIDENT !";
+
+						_message.title=_newincident.businessService;
 						// TODO format nicely and link to snow
 
-						var _bodyFormatted = _formatIncidentMessage(_incidentsDIFF.NEW[0]);
 
-						_message.body = _bodyFormatted;
+						_message.body = "+ "+_newincident.label+"\n"+_newincident.shortDescription;;
 						_message.type = _type;
 						_message.desktop={
 							desktop:true,
@@ -242,12 +242,6 @@ function _syncIncident(url,done){
 
 }
 
-function _formatIncidentMessage(incident){
-	var _msg="+ "+incident.priority+"\n"+incident.description;
-	_msg+="+ businessService: "+incident.businessService;
-
-	return _msg;
-}
 
 
 function _pushEvent(event,message){

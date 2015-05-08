@@ -28,7 +28,7 @@ style.
 
 mixin renderAvailabilityList(title,av)
 	h4 #{title}
-	table.table-striped.table-hover.table-condensed(style="max-width:1000px")
+	table.table-striped.table-hover.table-condensed(style="max-width:1200px")
 		thead
 			tr(style="line-height:14px;font-weight:bold;font-size:14px")
 				th(style="width:250px;text-align:right")
@@ -229,16 +229,25 @@ block content
 	div
 		br
 		img(src="/images/bpty_logo.png" style="display:block;margin-left:auto;margin-right:auto;")
-	h2(style="text-align:center;font-weight:bold") firereport-online prototype
 	
 	
+	h3(style="text-align:center;font-weight:bold") firereport-online prototype
+	if filter
+		div(style="text-align:center;font-weight:bold")
+			img(src="/images/customers/#{filter.customer}.png" height="50px")
 	
-	h4(style="text-align:center;font-weight:bold") from: #{moment(av.from)}
-	h4(style="text-align:center;font-weight:bold") to: #{moment(av.to)}
+	br
+	div(style="text-align:center;font-weight:bold")
+		span(style="font-weight:normal") start: 
+		span(id="start" style="font-weight:bold") #{moment(av.from)}
+	div(style="text-align:center;font-weight:bold")
+		span(style="font-weight:normal") stop: 
+		span(id="stop" style="font-weight:bold") #{moment(av.to)}
+	
+			
 	
 	
-	
-	div.row(style="margin: auto;max-width:1000px")
+	div.row(style="margin: auto;max-width:1200px")
 		#daterange.selectbox.pull-right
 			i.fa.fa-calendar &nbsp;
 			span -- enter date -- &nbsp;
@@ -246,7 +255,7 @@ block content
 
 
 	
-	div.row(style="margin: auto;max-width:1000px")
+	div.row(style="margin: auto;max-width:1200px")
 		div.panel.panel-default
 			div.panel-heading 
 				|availability: 
@@ -256,7 +265,7 @@ block content
 				+renderAvailabilityList("SERVICES - EXTERNAL",avExternal)
 				
 									
-	div.row(style="margin: auto;max-width:1000px")
+	div.row(style="margin: auto;max-width:1200px")
 		div.panel.panel-default
 			div.panel-heading 
 				|SOC reported incidents: 
@@ -296,6 +305,8 @@ block content
 								|ext
 							th(style="width:50px;text-align:right")
 								|cust
+							th(style="width:150px;text-align:right")
+								|label
 					tbody
 						each unplanned in av.incidentsUnplanned
 							tr(style="line-height:16px;font-size:12px")
@@ -321,8 +332,10 @@ block content
 								td(style="width:50px;text-align:right")
 									|#{unplanned.isExt}
 								td(style="width:50px;text-align:right")
-									|#{unplanned.isEndUserDown}								
-		div.row(style="margin: auto;max-width:1000px")
+									|#{unplanned.isEndUserDown}					
+								td(style="width:150px;text-align:right")
+									|#{unplanned.labels}					
+		div.row(style="margin: auto;max-width:1200px")
 			div.panel.panel-default
 				div.panel-heading 
 					|availability: 
@@ -332,7 +345,7 @@ block content
 					div(id="chart" style="text-align:center")
 						svg
 						
-		div.row(style="margin: auto;max-width:1000px")
+		div.row(style="margin: auto;max-width:1200px")
 			div.panel.panel-default
 				div.panel-heading 
 					|availability: 
