@@ -21,6 +21,7 @@ exports.calculateExternal = _calculateExternal;
 exports.checkCoreTime = _checkCoreTime;
 exports.calculateTotalCoreTime = _calculateTotalCoreTime;
 exports.checkLabels=checkLabels;
+exports.checkServiceToExclude= checkServiceToExclude;
 
 
 /**
@@ -28,6 +29,8 @@ exports.checkLabels=checkLabels;
 * param filter: used to filter out incidents for certain customers = to create reports for specific customers, uses labels2customer mapping
 **/
 function _calculateOverall(from, to, filter,done){
+
+	if (filter.customer=="* ALL *") filter = null;
 
 	var avService=require('./AvailabilityService');
 	//first we grab the external services as we need them to calculate the "ProductIntegration" service
@@ -43,6 +46,7 @@ function _calculateOverall(from, to, filter,done){
 				Report:1,
 				CoreService:1,
 				Highlight:0,
+				include:true,
 				availability:{
 					planned:data.avPlanned,
 					plannedCore:data.avPlannedCore,
@@ -99,7 +103,7 @@ function _processServices(type,services,injectedServices,from,to,filter,callback
 	_label2customer.find(function(err,mapping){
 		//{customer:"bwin"};
 		var _filterLabels=[];
-		
+
 		if (filter) {
 			// now i need a plain array with labels
 			var _allLabels = _.pluck(mapping,"label");
@@ -125,96 +129,107 @@ function _processServices(type,services,injectedServices,from,to,filter,callback
 
 			var incidentsPlanned = [];
 			var incidentsUnplanned = [];
+
 			//iterate over all services
 			for (var s in services){
-				var servicePlanned = 0.0;
-				var servicePlannedCore = 0.0;
-				var servicePlannedNonCore = 0.0;
-				var serviceUnplanned = 0.0;
-				var serviceUnplannedCore = 0.0;
-				var serviceUnplannedNonCore = 0.0;
-				//per service iterate over incidents
-				for (var i in data){
-					var _inc = data[i];
 
-					var _labels=[];
-					if (_inc.labels){
-						_labels = _inc.labels.split(", ");
-					}
+					var servicePlanned = 0.0;
+					var servicePlannedCore = 0.0;
+					var servicePlannedNonCore = 0.0;
+					var serviceUnplanned = 0.0;
+					var serviceUnplannedCore = 0.0;
+					var serviceUnplannedNonCore = 0.0;
+
+					// enrich service for the filter display
+					// default we include all
+					services[s].include=true;
 
 
+					// ==> here we can identify services which can be skipped for a given customer filter
+					//
+					if (checkServiceToExclude(mapping,filter,services[s])==false){
+					//per service iterate over incidents
+					for (var i in data){
+						var _inc = data[i];
 
-						if (checkLabels(_filterLabels,_labels) && _inc.serviceName.split(",").indexOf(services[s].ServiceName)>-1 &&_inc.isEndUserDown && _inc.start>=new Date(from) && _inc.start <=new Date(to)){
-							var _time = _degrade(_inc.resolutionTime,_inc.degradation);
-							if (_inc.isPlanned==true){
-								// check core / non-core
-								_checkCoreTime(_inc,function(result){
-									downtimePlanned+=_time;
-									downtimePlannedCore+=result.coreTime;
-									downtimePlannedNonCore+=result.nonCoreTime;
-									servicePlanned+=_time;
-									servicePlannedCore+=result.coreTime;
-									servicePlannedNonCore+=result.nonCoreTime;
-									//and enrich the incident object with the core / noncore times
-									_inc.coreTime = result.coreTime;
-									_inc.nonCoreTime = result.nonCoreTime;
+						var _labels=[];
+						if (_inc.labels){
+							_labels = _inc.labels.split(", ");
+						}
 
-									incidentsPlanned.push(_inc);
-								})
-							}
-							else{
-								// check core / non-core
-								_checkCoreTime(_inc,function(result){
-									downtimeUnplanned+=_time;
-									downtimeUnplannedCore+=result.coreTime;
-									downtimeUnplannedNonCore+=result.nonCoreTime;
 
-									serviceUnplanned+=_time;
-									serviceUnplannedCore+=result.coreTime;
-									serviceUnplannedNonCore+=result.nonCoreTime;
 
-									//and enrich the incident object with the core / noncore times
-									_inc.coreTime = result.coreTime;
-									_inc.nonCoreTime = result.nonCoreTime;
+							if (checkLabels(_filterLabels,_labels) && _inc.serviceName.split(",").indexOf(services[s].ServiceName)>-1 &&_inc.isEndUserDown && _inc.start>=new Date(from) && _inc.start <=new Date(to)){
+								var _time = _degrade(_inc.resolutionTime,_inc.degradation);
+								if (_inc.isPlanned==true){
+									// check core / non-core
+									_checkCoreTime(_inc,function(result){
+										downtimePlanned+=_time;
+										downtimePlannedCore+=result.coreTime;
+										downtimePlannedNonCore+=result.nonCoreTime;
+										servicePlanned+=_time;
+										servicePlannedCore+=result.coreTime;
+										servicePlannedNonCore+=result.nonCoreTime;
+										//and enrich the incident object with the core / noncore times
+										_inc.coreTime = result.coreTime;
+										_inc.nonCoreTime = result.nonCoreTime;
 
-									incidentsUnplanned.push(_inc);
-								})
-								downtimeTotalCore=downtimeUnplannedCore+downtimePlannedCore;
-								downtimeTotalNonCore=downtimeUnplannedNonCore+downtimePlannedNonCore;
-							}
+										incidentsPlanned.push(_inc);
+									})
+								}
+								else{
+									// check core / non-core
+									_checkCoreTime(_inc,function(result){
+										downtimeUnplanned+=_time;
+										downtimeUnplannedCore+=result.coreTime;
+										downtimeUnplannedNonCore+=result.nonCoreTime;
 
-					}
-				} // end for incident loop
+										serviceUnplanned+=_time;
+										serviceUnplannedCore+=result.coreTime;
+										serviceUnplannedNonCore+=result.nonCoreTime;
 
-				// !!! different total times for core and noncore !!!
-				var avServicePlanned = 1-(servicePlanned / totalTime);
-				var avServicePlannedCore = 1-(servicePlannedCore / totalTimeCore);
-				var avServicePlannedNonCore = 1-(servicePlannedNonCore / totalTimeNonCore);
+										//and enrich the incident object with the core / noncore times
+										_inc.coreTime = result.coreTime;
+										_inc.nonCoreTime = result.nonCoreTime;
 
-				var avServiceUnplanned = 1-(serviceUnplanned / totalTime);
-				var avServiceUnplannedCore = 1-(serviceUnplannedCore / totalTimeCore);
-				var avServiceUnplannedNonCore = 1-(serviceUnplannedNonCore / totalTimeNonCore);
+										incidentsUnplanned.push(_inc);
+									})
+									downtimeTotalCore=downtimeUnplannedCore+downtimePlannedCore;
+									downtimeTotalNonCore=downtimeUnplannedNonCore+downtimePlannedNonCore;
+								}
 
-				var avServiceTotal = avServicePlanned * avServiceUnplanned;
-				var avServiceTotalCore = avServicePlannedCore * avServiceUnplannedCore;
-				var avServiceTotalNonCore = avServicePlannedNonCore * avServiceUnplannedNonCore;
+						}
+					} // end for incident loop
 
-				services[s].availability={
-					planned:avServicePlanned,
-					plannedCore:avServicePlannedCore,
-					plannedNonCore:avServicePlannedNonCore,
-					plannedTime:servicePlanned,
-					unplanned:avServiceUnplanned,
-					unplannedCore:avServiceUnplannedCore,
-					unplannedNonCore:avServiceUnplannedNonCore,
-					unplannedTime:serviceUnplanned,
-					total:avServiceTotal,
-					totalCore:avServiceTotalCore,
-					totalNonCore:avServiceTotalNonCore,
-					totalTime:(servicePlanned+serviceUnplanned)
-				};
-			} //end services loop
+					// !!! different total times for core and noncore !!!
+					var avServicePlanned = 1-(servicePlanned / totalTime);
+					var avServicePlannedCore = 1-(servicePlannedCore / totalTimeCore);
+					var avServicePlannedNonCore = 1-(servicePlannedNonCore / totalTimeNonCore);
 
+					var avServiceUnplanned = 1-(serviceUnplanned / totalTime);
+					var avServiceUnplannedCore = 1-(serviceUnplannedCore / totalTimeCore);
+					var avServiceUnplannedNonCore = 1-(serviceUnplannedNonCore / totalTimeNonCore);
+
+					var avServiceTotal = avServicePlanned * avServiceUnplanned;
+					var avServiceTotalCore = avServicePlannedCore * avServiceUnplannedCore;
+					var avServiceTotalNonCore = avServicePlannedNonCore * avServiceUnplannedNonCore;
+
+					services[s].availability={
+						planned:avServicePlanned,
+						plannedCore:avServicePlannedCore,
+						plannedNonCore:avServicePlannedNonCore,
+						plannedTime:servicePlanned,
+						unplanned:avServiceUnplanned,
+						unplannedCore:avServiceUnplannedCore,
+						unplannedNonCore:avServiceUnplannedNonCore,
+						unplannedTime:serviceUnplanned,
+						total:avServiceTotal,
+						totalCore:avServiceTotalCore,
+						totalNonCore:avServiceTotalNonCore,
+						totalTime:(servicePlanned+serviceUnplanned)
+					};
+				} // end if checkServices
+			}	//end services loop
 			if (injectedServices){
 				services = services.concat(injectedServices);
 			}
@@ -234,15 +249,21 @@ function _processServices(type,services,injectedServices,from,to,filter,callback
 
 
 
-			var _rounds = services.length;
+			var _rounds = 0;
 			for (var s in services){
-				_averagePlanned+=services[s].availability.planned;
-				_averagePlannedCore+=services[s].availability.plannedCore;
-				_averagePlannedNonCore+=services[s].availability.plannedNonCore;
+				// second same check
+				if (checkServiceToExclude(mapping,filter,services[s])==false){
+					_averagePlanned+=services[s].availability.planned;
+					_averagePlannedCore+=services[s].availability.plannedCore;
+					_averagePlannedNonCore+=services[s].availability.plannedNonCore;
 
-				_averageUnplanned+=services[s].availability.unplanned;
-				_averageUnplannedCore+=services[s].availability.unplannedCore;
-				_averageUnplannedNonCore+=services[s].availability.unplannedNonCore;
+					_averageUnplanned+=services[s].availability.unplanned;
+					_averageUnplannedCore+=services[s].availability.unplannedCore;
+					_averageUnplannedNonCore+=services[s].availability.unplannedNonCore;
+
+					_rounds++;
+					}
+
 			}
 			_averagePlanned=_averagePlanned/_rounds;
 			_averagePlannedCore=_averagePlannedCore/_rounds;
@@ -311,8 +332,51 @@ function checkLabels(labelsFilter,labelsIncident){
 	if (!labelsIncident || labelsIncident.length==0 || labelsFilter.length==0) return true;
 	else if (_.intersection(labelsFilter,labelsIncident).length>0) return true;
 	return false;
+}
+
+
+/** given e.g. customer filter is set to "bwin" - we have to exclude to serices for the AV calculation which are NOT used in the according "bwin" contest
+* e.g. services like "US -Poker, US-Casino" have no appearance in the label2customer matrix => and therefore can be skipped
+* e.g. service ="US - POKER "
+* e.g. labelsFilter = ["bwin.com","bwin.fr",.....]
+**/
+function checkServiceToExclude(mapping,filter,service){
+	if (!filter) return false;
+
+	var _filteredMapping = _.where(mapping,{"customer":filter.customer});
+
+
+	//logger.debug("mapping: "+JSON.stringify(mapping));
+	/*
+	logger.debug("filter: "+JSON.stringify(filter));
+	logger.debug("_filteredMapping: "+JSON.stringify(_filteredMapping));
+	logger.debug("---- service : "+JSON.stringify(service));
+*/
+
+	var count =0;
+	for (var m in _filteredMapping){
+			var _line = _filteredMapping[m];
+			//logger.debug("-- service: "+_line[service.ServiceName]);
+			if (_line[service.ServiceName] =="1") {
+				count++;
+			}
+
+	}
+	//logger.debug("======= count = "+count);
+	if (count>0) return false;
+	else {
+		service.include=false;
+		return true;
+
+	}
 
 }
+
+
+
+
+
+
 
 function _formatAV(av){
 	return (av*100).toFixed(2)+ "%";

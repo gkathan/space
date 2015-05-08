@@ -1,6 +1,13 @@
 var winston = require('winston');
 var config = require('config');
 var moment = require('moment');
+var mongojs = require('mongojs');
+
+var DB=config.database.db;
+var HOST = config.database.host;
+var connection_string = HOST+'/'+DB;
+var db = mongojs(connection_string, [DB]);
+
 
 winston.loggers.add('test_log',{
 	console:{
@@ -290,55 +297,84 @@ describe('AvailabilityCalculatorService', function(){
 		});
 	})
 
-describe('#calculateOverallCoreTime(from,to)', function(){
-	it('calculates the total time of core time for the given period.... ', function(done){
-		var _from = new Date("2015-01-01");
-		var _to = new Date("2015-01-02");
+	describe('#calculateOverallCoreTime(from,to)', function(){
+		it('calculates the total time of core time for the given period.... ', function(done){
+			var _from = new Date("2015-01-01");
+			var _to = new Date("2015-01-02");
 
-		// thursday
-		// coretime is 16:00:00-23:59:59
-		// = 28800000 ms
-		// - 1 second
-		// =
-		var coreTotalTime = avCalculatorService.calculateTotalCoreTime(_from,_to);
-
-
-
-		assert.equal(28799000, coreTotalTime);
-		done();
-
-	});
-})
-
-describe('#checkLabels(filterList,incidentist)', function(){
-	it('bla... ', function(done){
-		var _filter = ["bwin.com","bwin.it","bwin.fr","bwin.es","gamebookers.com"];
-		var _emptyFilter =[];
-		var _incident1 = ["bwin.com","party.com"];
-		var _incident2 = [];
-		var _incident3;
-		var _incident4 = ["party.com"];
+			// thursday
+			// coretime is 16:00:00-23:59:59
+			// = 28800000 ms
+			// - 1 second
+			// =
+			var coreTotalTime = avCalculatorService.calculateTotalCoreTime(_from,_to);
 
 
 
-		var _check1 = avCalculatorService.checkLabels(_filter,_incident1);
-		var _check2 = avCalculatorService.checkLabels(_filter,_incident2);
-		var _check3 = avCalculatorService.checkLabels(_filter,_incident3);
-		var _check4 = avCalculatorService.checkLabels(_filter,_incident4);
-		var _check5 = avCalculatorService.checkLabels(_emptyFilter,_incident1);
+			assert.equal(28799000, coreTotalTime);
+			done();
 
-		assert.equal(true, _check1);
-		assert.equal(true, _check2);
-		assert.equal(true, _check3);
-		assert.equal(false, _check4);
-		assert.equal(true, _check5);
+		});
+	})
+
+	describe('#checkLabels(filterList,incidentist)', function(){
+		it('bla... ', function(done){
+			var _filter = ["bwin.com","bwin.it","bwin.fr","bwin.es","gamebookers.com"];
+			var _emptyFilter =[];
+			var _incident1 = ["bwin.com","party.com"];
+			var _incident2 = [];
+			var _incident3;
+			var _incident4 = ["party.com"];
 
 
-		done();
+
+			var _check1 = avCalculatorService.checkLabels(_filter,_incident1);
+			var _check2 = avCalculatorService.checkLabels(_filter,_incident2);
+			var _check3 = avCalculatorService.checkLabels(_filter,_incident3);
+			var _check4 = avCalculatorService.checkLabels(_filter,_incident4);
+			var _check5 = avCalculatorService.checkLabels(_emptyFilter,_incident1);
+
+			assert.equal(true, _check1);
+			assert.equal(true, _check2);
+			assert.equal(true, _check3);
+			assert.equal(false, _check4);
+			assert.equal(true, _check5);
 
 
-	});
-})
+			done();
+
+
+		});
+	})
+
+
+	describe('#checkServiceToExclude(mapping,labelsFilter,service)', function(){
+		it('bla... ', function(done){
+
+			var _filter = {customer:"bwin"};//["bwin.com","bwin.it","bwin.fr","bwin.es","gamebookers.com"];
+
+			var avService=require('../services/AvailabilityService');
+			avService.findSOCServicesMain(function(services){
+				//logger.debug("SOC services: "+JSON.stringify(services));
+				var _label2customer = db.collection('label2customer');
+				_label2customer.find(function(err,mapping){
+					//logger.debug("mapping: "+JSON.stringify(mapping));
+
+
+
+					var _check = avCalculatorService.checkServiceToExclude(mapping,_filter,services[0]);
+
+
+
+
+
+
+					done();
+				})
+			})
+
+		});
+	})
 
 })
 

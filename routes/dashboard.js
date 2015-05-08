@@ -76,6 +76,8 @@ router.get('/firereport', function(req, res) {
 			_customer = req.query.customer;//"bwin" or "pmu" or "danske spil",...;
 			_filter = {customer:_customer};
 		}
+		else _filter = {customer:"* ALL *"};
+
 		avc.calculateOverall(_from,_to,_filter,function(avDataOverall){
 			avc.calculateExternal(_from,_to,_filter,function(avDataExternal){
 				res.locals.av = avDataOverall;

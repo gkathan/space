@@ -47,21 +47,22 @@ mixin renderAvailabilityList(title,av)
 					|total t
 		tbody
 			each service in av.services
-				tr(style="line-height:14px;font-size:14px")
-					td(style="width:250px;text-align:right")
-						|#{service.ServiceName}
-					td(style="width:100px;text-align:right")
-						|#{formatAV(service.availability.planned)}
-					td(style="width:100px;text-align:right")
-						|#{formatAVTime(service.availability.plannedTime)}
-					td(style="width:100px;text-align:right")
-						|#{formatAV(service.availability.unplanned)}
-					td(style="width:100px;text-align:right")
-						|#{formatAVTime(service.availability.unplannedTime)}
-					td(style="width:100px;text-align:right")
-						|#{formatAV(service.availability.total)}
-					td(style="width:100px;text-align:right")
-						|#{formatAVTime(service.availability.totalTime)}
+				if service.include == true 
+					tr(style="line-height:14px;font-size:14px")
+						td(style="width:250px;text-align:right")
+							|#{service.ServiceName}
+						td(style="width:100px;text-align:right")
+							|#{formatAV(service.availability.planned)}
+						td(style="width:100px;text-align:right")
+							|#{formatAVTime(service.availability.plannedTime)}
+						td(style="width:100px;text-align:right")
+							|#{formatAV(service.availability.unplanned)}
+						td(style="width:100px;text-align:right")
+							|#{formatAVTime(service.availability.unplannedTime)}
+						td(style="width:100px;text-align:right")
+							|#{formatAV(service.availability.total)}
+						td(style="width:100px;text-align:right")
+							|#{formatAVTime(service.availability.totalTime)}
 
 	//totals
 	
@@ -232,7 +233,7 @@ block content
 	
 	
 	h3(style="text-align:center;font-weight:bold") firereport-online prototype
-	if filter
+	if filter && filter.customer!="* ALL *"
 		div(style="text-align:center;font-weight:bold")
 			img(src="/images/customers/#{filter.customer}.png" height="50px")
 	
@@ -243,15 +244,28 @@ block content
 	div(style="text-align:center;font-weight:bold")
 		span(style="font-weight:normal") stop: 
 		span(id="stop" style="font-weight:bold") #{moment(av.to)}
+		
+		br
+		br
+	div(style="margin:0px auto;;width:100px;height:100px")
+		select.form-control.floating-label(id="filter"  name="filter" type="select"  placeholder="type" autocomplete="off"  )
+			option * ALL *
+			option bwin
+			option games
+			option premium
+			option kalixa
+			option party US
+			option danske spil
+			option pmu
+		
 	
-			
-	
-	
-	div.row(style="margin: auto;max-width:1200px")
-		#daterange.selectbox.pull-right
-			i.fa.fa-calendar &nbsp;
-			span -- enter date -- &nbsp;
-			b.caret
+		br
+		
+		div(style="margin:0px auto;width:120px;")
+			#daterange.selectbox.pull-right
+				i.fa.fa-calendar &nbsp;
+				span -- enter date -- &nbsp;
+				b.caret
 
 
 	
@@ -361,11 +375,18 @@ script(src='/javascripts/dashboards/nvd3_availability.js')
 script(src='/javascripts/dashboards/nvd3_availability_multi.js')
 
 script.
+	var _from="#{from}";
+	var _to="#{to}";
+	var _customer="#{filter.customer}";
 	/*$(function () {
 		$('#start').datetimepicker({keepOpen:false,format:"ddd, DD MMM YYYY, HH:mm:ss"});
 		$('#stop').datetimepicker({keepOpen:false,format:"ddd, DD MMM YYYY, HH:mm:ss"});
 	})*/
 	$(document).ready(function() {
+		
+		$("#filter").val(_customer);
+		
+		
 		$('#daterange').daterangepicker({ 
 			format: 'YYYY-MM-DD',
 			startDate: '2015-01-01',
@@ -383,13 +404,28 @@ script.
 		});
 		
 		$('#daterange').on('apply.daterangepicker', function(ev, picker) {
-			var _from = picker.startDate.format('YYYY-MM-DD');
-			var _to = picker.endDate.format('YYYY-MM-DD');
 			
-			window.location.href = "/dashboard/firereport?from="+_from+"&to="+_to;
-			
-			
+				
+			_from = picker.startDate.format('YYYY-MM-DD');
+			_to = picker.endDate.format('YYYY-MM-DD');
+			window.location.href = "/dashboard/firereport?from="+_from+"&to="+_to+"&customer="+_customer;
 		});	
+
+		$('#filter').on('change', function() {
+			console.log("select change event: "+this.value);
+			
+			if (this.value=="* ALL *")
+				_customer="";
+			else 
+				_customer="customer="+this.value;
+			
+			if (_from && _to)
+				window.location.href = "/dashboard/firereport?from="+_from+"&to="+_to+"&"+_customer
+			
+			else
+				window.location.href = "/dashboard/firereport?"+_customer;
+			
+		});
 			
 	});
 	
