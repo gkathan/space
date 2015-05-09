@@ -7,7 +7,6 @@ var _aggregate;
 
 function _getYear(period){
   var _split = period.split("-");
-
   var _year;
   if (_split.length==2){
     _year = parseInt(_split[1]);
@@ -16,23 +15,20 @@ function _getYear(period){
     _year = parseInt(_split[0]);
   }
   if (_year>=2014 && _year <=moment().year()) return _year;
-
 }
 
-function _getPreviousPeriod(period){
+function _alterPeriodByYear(period,yearDelta){
+  var _year = _getYear(period)+yearDelta;
   var _split = period.split("-");
-
-  var _year = _getYear(period)-1;
-
   if (_split.length==1){
     return _year;
   }
   else if (_split.length==2){
     return _split[0]+"-"+_year;
   }
-
   return false;
 }
+
 
 
 function init(chartId){
@@ -43,7 +39,6 @@ function init(chartId){
     var _prio = chartId.split("chart")[1];
     _period =getUrlVars().period;
     _aggregate =getUrlVars().aggregate;
-
 
     if (_aggregate){
       _url+="?aggregate="+_aggregate;
@@ -64,7 +59,7 @@ function init(chartId){
       .color(_colors[_prio])
       .groupSpacing(0.2)
       .rotateLabels(45)
-      .showControls(true)
+      .showControls(false)
     ;
     if (_period=="") _period ="All";
     $("#period_"+_chartId).text(_period);
@@ -72,9 +67,7 @@ function init(chartId){
 
     var _reduceXTicks = false;
     if (_aggregate=="daily") _reduceXTicks = true;
-
     chart.reduceXTicks(_reduceXTicks).staggerLabels(true);
-
     chart.yAxis
         .tickFormat(d3.format(',d'));
 
@@ -82,9 +75,7 @@ function init(chartId){
 
     charts[chartId]=chart;
     return chart;
-});
-
-
+  });
 }
 
 /**
@@ -102,8 +93,7 @@ function _prepareData(incidents,incidentsPrev,prio,period){
   var _PBaseSumPrev=0;
 
   var _year = _getYear(period);
-  var _yearPrev = _getYear(_getPreviousPeriod(period));
-
+  var _yearPrev = _getYear(_alterPeriodByYear(period,-1));
 
   for (var day in incidents){
     console.log("date: "+incidents[day].date+" "+prio+": "+incidents[day][prio]);
@@ -114,12 +104,11 @@ function _prepareData(incidents,incidentsPrev,prio,period){
 
   for (var day in incidentsPrev){
     console.log("date: "+incidentsPrev[day].date+" "+prio+": "+incidentsPrev[day][prio]);
-    _PPrev.push({"date":incidentsPrev[day].date,"y":parseInt(incidentsPrev[day][prio])});
+    //date of previous year must be "normalized" to this year ....
+    _PPrev.push({"date":_alterPeriodByYear(incidentsPrev[day].date,1),"y":parseInt(incidentsPrev[day][prio])});
     _PSumPrev+=parseInt(incidentsPrev[day][prio]);
   }
   console.log(prio+"Sum = "+_PSumPrev+" "+prio+"BaseSum = "+_PBaseSumPrev);
-
-
 
   var incData = [{key:_year,values:_P},{key:_yearPrev,values:_PPrev}]
   return incData
@@ -127,10 +116,11 @@ function _prepareData(incidents,incidentsPrev,prio,period){
 
 function redraw(chartId,period,aggregate,prio) {
   var _url = "/api/space/rest/incidenttracker/"+period;
-  var _urlPrev = "/api/space/rest/incidenttracker/"+_getPreviousPeriod(period);
+  var _urlPrev = "/api/space/rest/incidenttracker/"+_alterPeriodByYear(period,-1);
 
   if (aggregate){
     _url+="?aggregate="+aggregate;
+    _urlPrev+="?aggregate="+aggregate;
   }
 
   d3.json(_url, function(data) {
