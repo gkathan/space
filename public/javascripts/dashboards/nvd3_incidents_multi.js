@@ -4,8 +4,8 @@ var charts=[];
 var _period;
 var _aggregate;
 
-
 function _getYear(period){
+  console.log("**** getYear() called: period: "+period);
   var _split = period.split("-");
   var _year;
   if (_split.length==2){
@@ -21,7 +21,7 @@ function _alterPeriodByYear(period,yearDelta){
   var _year = _getYear(period)+yearDelta;
   var _split = period.split("-");
   if (_split.length==1){
-    return _year;
+    return _year.toString();
   }
   else if (_split.length==2){
     return _split[0]+"-"+_year;
