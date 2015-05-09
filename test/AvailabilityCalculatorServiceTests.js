@@ -359,23 +359,12 @@ describe('AvailabilityCalculatorService', function(){
 				var _label2customer = db.collection('label2customer');
 				_label2customer.find(function(err,mapping){
 					//logger.debug("mapping: "+JSON.stringify(mapping));
-
-
-
 					var _check = avCalculatorService.checkServiceToExclude(mapping,_filter,services[0]);
-
-
-
-
-
-
 					done();
 				})
 			})
-
 		});
 	})
-
 })
 
 

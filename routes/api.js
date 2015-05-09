@@ -741,13 +741,24 @@ function syncApm(process,req,res,next){
 function calculateAvailability(req,res,next){
     logger.debug("*********************** calculate availabilty: ");
     var avCalcService = require ('../services/AvailabilityCalculatorService');
-		var from = "2015-01-01 00:00:00";
-		var to = "2015-04-01 00:00:00";
 
-	  avCalcService.calculateOverall(from, to, function(data){
-			logger.debug("------------------------------------------------------ data.snapShotDate: "+data.snapshotDate);
-			res.send("apm says: "+JSON.stringify(data));
+
+		var from = req.query.from;// "2015-01-01 00:00:00";
+		var to = req.query.to;//"2015-04-01 00:00:00";
+		var filter;
+		if (req.query.customer){
+			_customer = req.query.customer;//"bwin" or "pmu" or "danske spil",...;
+			filter = {customer:_customer};
+		}
+		else filter = {customer:"* ALL *"};
+
+	  avCalcService.calculateOverall(from, to, filter,function(avDataOverall){
+				avCalcService.calculateExternal(from,to,filter,function(avDataExternal){
+			//logger.debug("------------------------------------------------------ data.snapShotDate: "+data.snapshotDate);
+			res.send({"avOverall":avDataOverall,"avExternal":avDataExternal});
 	});
+	});
+
 }
 
 

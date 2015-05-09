@@ -26,7 +26,60 @@ style.
 	}
 
 
-mixin renderAvailabilityList(title,av)
+mixin renderAVSumCoreNonCore(title,avTotal,avCore,avNonCore,timeTotal,timeCore,timeNonCore)
+	tr(style="line-height:32px;text-align:right")
+		td(style="width:150px;text-align:right;font-size:18px")
+			b #{title}:&nbsp;&nbsp;&nbsp; 
+		td(style="width:100px")
+			b(style="font-size:24px")
+				|#{formatAV(avTotal)}
+		td(style="width:100px")
+			b(style="font-size:10px")
+				|#{timeTotal}
+
+	tr(style="line-height:32px;text-align:right")
+		td(style="width:150px")
+			|CORE:&nbsp;&nbsp;&nbsp; 
+		td(style="width:100px")
+			div(style="font-size:20px")
+				|#{formatAV(avCore)}
+		td
+			div(style="font-size:10px")
+				|#{timeCore}
+	tr(style="line-height:32px;text-align:right")
+		td(style="width:150px;text-align:right")
+			|NON-CORE:&nbsp;&nbsp;&nbsp; 
+		td(style="width:100px")
+			div(style="font-size:20px")
+				|#{formatAV(avNonCore)}
+		td
+			div(style="font-size:10px")
+				|#{timeNonCore}
+
+mixin renderAVDowntime(title,downtime,downtimeCore,downtimeNonCore)
+	tr(style="line-height:24px;text-align:right")
+		td(style="width:200px;text-align:right")
+			b downtime*) #{title}:&nbsp;&nbsp;&nbsp; 
+		td(style="width:150px")
+			b(style="font-size:16px")
+				|#{formatAVTime(downtime)}
+	tr(style="line-height:24px;font-style:italic;text-align:right")
+		td(style="text-align:right")
+			|CORE:&nbsp;&nbsp;&nbsp; 
+		td
+			div(style="font-size:16px")
+				|#{formatAVTime(downtimeCore)}
+	tr(style="line-height:24px;font-style:italic;text-align:right")
+		td(style="text-align:right")
+			|NON-CORE:&nbsp;&nbsp;&nbsp; 
+		td
+			div(style="font-size:16px")
+				|#{formatAVTime(downtimeNonCore)}						
+	
+			
+
+
+mixin renderAVServicesList(title,av)
 	h4 #{title}
 	table.table-striped.table-hover.table-condensed(style="max-width:1200px")
 		thead
@@ -47,196 +100,108 @@ mixin renderAvailabilityList(title,av)
 					|total t
 		tbody
 			each service in av.services
-				if service.include == true 
-					tr(style="line-height:14px;font-size:14px")
-						td(style="width:250px;text-align:right")
+				if service.filterExclude != true 
+					tr(style="line-height:14px;font-size:14px;text-align:right")
+						td
 							|#{service.ServiceName}
-						td(style="width:100px;text-align:right")
-							|#{formatAV(service.availability.planned)}
-						td(style="width:100px;text-align:right")
-							|#{formatAVTime(service.availability.plannedTime)}
-						td(style="width:100px;text-align:right")
-							|#{formatAV(service.availability.unplanned)}
-						td(style="width:100px;text-align:right")
-							|#{formatAVTime(service.availability.unplannedTime)}
-						td(style="width:100px;text-align:right")
-							|#{formatAV(service.availability.total)}
-						td(style="width:100px;text-align:right")
-							|#{formatAVTime(service.availability.totalTime)}
+						td
+							|#{formatAV(service.availability.planned.all)}
+						td
+							|#{formatAVTime(service.availability.planned.time)}
+						td
+							|#{formatAV(service.availability.unplanned.all)}
+						td
+							|#{formatAVTime(service.availability.unplanned.time)}
+						td
+							|#{formatAV(service.availability.total.all)}
+						td
+							|#{formatAVTime(service.availability.total.time)}
 
-	//totals
-	
 	hr
 	div(style="text-align:center")
 		table(style="margin:0 auto")
-			tr(style="line-height:32px;text-align:right")
-				td(style="width:150px;text-align:right;font-size:18px")
-					b AV planned:&nbsp;&nbsp;&nbsp; 
-				td(style="width:100px")
-					b(style="font-size:24px")
-						|#{formatAV(av.avPlanned)}
-				td(style="width:100px")
-					b(style="font-size:10px")
-						|#{av.totalPeriod}
-			tr(style="line-height:32px;text-align:right")
-				td(style="width:150px;text-align:right")
-					|CORE:&nbsp;&nbsp;&nbsp; 
-				td(style="width:100px")
-					div(style="font-size:20px")
-						|#{formatAV(av.avPlannedCore)}
-				td(style="width:100px")
-					div(style="font-size:10px")
-						|#{av.totalPeriodCore}
-			tr(style="line-height:32px;text-align:right")
-				td(style="width:150px;text-align:right")
-					|NON-CORE:&nbsp;&nbsp;&nbsp; 
-				td(style="width:100px")
-					div(style="font-size:20px")
-						|#{formatAV(av.avPlannedNonCore)}
-				td(style="width:100px")
-					div(style="font-size:10px")
-						|#{av.totalPeriodNonCore}
-
-
-
-			tr(style="line-height:26px;text-align:right")
-				td(style="text-align:right;font-size:18px")
-					b AV unplanned:&nbsp;&nbsp;&nbsp; 
-				td
-					b(style="font-size:24px")
-						|#{formatAV(av.avUnplanned)}
-				td(style="width:100px")
-					b(style="font-size:10px")
-						|#{av.totalPeriod}
-
-			tr(style="line-height:32px;text-align:right")
-				td(style="width:150px;text-align:right")
-					|CORE:&nbsp;&nbsp;&nbsp; 
-				td(style="width:100px")
-					div(style="font-size:20px")
-						|#{formatAV(av.avUnplannedCore)}
-				td(style="width:100px")
-					div(style="font-size:10px")
-						|#{av.totalPeriodCore}
-
-			tr(style="line-height:32px;text-align:right")
-				td(style="width:150px;text-align:right")
-					|NON-CORE:&nbsp;&nbsp;&nbsp; 
-				td(style="width:100px")
-					div(style="font-size:20px")
-						|#{formatAV(av.avUnplannedNonCore)}
-				td(style="width:100px")
-					div(style="font-size:10px")
-						|#{av.totalPeriodNonCore}
-
-
-
-			tr(style="line-height:32px;text-align:right")
-				td(style="text-align:right;font-size:18px")
-					b AV totals:&nbsp;&nbsp;&nbsp; 
-				td
-					b(style="font-size:24px")
-						|#{formatAV(av.avTotal)}
-			tr(style="line-height:32px;text-align:right")
-				td(style="width:150px")
-					|CORE:&nbsp;&nbsp;&nbsp; 
-				td(style="width:100px")
-					div(style="font-size:20px")
-						|#{formatAV(av.avTotalCore)}
-			tr(style="line-height:32px;text-align:right")
-				td(style="width:150px;text-align:right")
-					|NON-CORE:&nbsp;&nbsp;&nbsp; 
-				td(style="width:100px")
-					div(style="font-size:20px")
-						|#{formatAV(av.avTotalNonCore)}
-
-
-
-	// 
+			+renderAVSumCoreNonCore("AV planned",av.avPlanned,av.avPlannedCore,av.avPlannedNonCore,av.totalPeriod,av.totalPeriodCore,av.totalPeriodNonCore)
+			+renderAVSumCoreNonCore("AV unplanned",av.avUnplanned,av.avUnplannedCore,av.avUnplannedNonCore,av.totalPeriod,av.totalPeriodCore,av.totalPeriodNonCore)
+			+renderAVSumCoreNonCore("AV totals",av.avTotal,av.avTotalCore,av.avTotalNonCore,av.totalPeriod,av.totalPeriodCore,av.totalPeriodNonCore)
 	hr
 	div(style="text-align:center")
 		table(style="margin:0 auto")
-			tr(style="line-height:24px;text-align:right")
-				td(style="width:200px;text-align:right")
-					b downtime*) planned:&nbsp;&nbsp;&nbsp; 
-				td(style="width:150px")
-					b(style="font-size:16px")
-						|#{formatAVTime(av.downtimePlanned)}
-			
-			
-			tr(style="line-height:24px;font-style:italic;text-align:right")
-				td(style="text-align:right")
-					|CORE:&nbsp;&nbsp;&nbsp; 
-				td
-					div(style="font-size:16px")
-						|#{formatAVTime(av.downtimePlannedCore)}
-			tr(style="line-height:24px;font-style:italic;text-align:right")
-				td(style="text-align:right")
-					|NON-CORE:&nbsp;&nbsp;&nbsp; 
-				td
-					div(style="font-size:16px")
-						|#{formatAVTime(av.downtimePlannedNonCore)}						
-			
-			
-			
-			
-			tr(style="line-height:24px;text-align:right")
-				td(style="text-align:right")
-					b downtime*) unplanned:&nbsp;&nbsp;&nbsp; 
-				td
-					b(style="font-size:16px")
-						|#{formatAVTime(av.downtimeUnplanned)}
-			
-			tr(style="line-height:24px;font-style:italic;text-align:right")
-				td(style="text-align:right")
-					|CORE:&nbsp;&nbsp;&nbsp; 
-				td
-					div(style="font-size:16px")
-						|#{formatAVTime(av.downtimeUnplannedCore)}
-			tr(style="line-height:24px;font-style:italic;text-align:right")
-				td(style="text-align:right")
-					|NON-CORE:&nbsp;&nbsp;&nbsp; 
-				td
-					div(style="font-size:16px")
-						|#{formatAVTime(av.downtimeUnplannedNonCore)}						
-			
-			
-			tr(style="line-height:24px;text-align:right")
-				td(style="text-align:right")
-					b downtime*) totals:&nbsp;&nbsp;&nbsp; 
-				td
-					b(style="font-size:16px")
-						|#{formatAVTime(av.downtimeTotal)}
-
-			tr(style="line-height:24px;font-style:italic;text-align:right")
-				td(style="text-align:right")
-					|CORE:&nbsp;&nbsp;&nbsp; 
-				td
-					div(style="font-size:16px")
-						|#{formatAVTime(av.downtimeTotalCore)}
-			tr(style="line-height:24px;font-style:italic;text-align:right")
-				td(style="text-align:right")
-					|NON-CORE:&nbsp;&nbsp;&nbsp; 
-				td
-					div(style="font-size:16px")
-						|#{formatAVTime(av.downtimeTotalNonCore)}						
-
-
+			+renderAVDowntime("planned:",av.downtimePlanned,av.downtimePlannedCore,av.downtimePlannedNonCore)
+			+renderAVDowntime("unplanned:",av.downtimeUnplanned,av.downtimeUnplannedCore,av.downtimeUnplannedNonCore)
+			+renderAVDowntime("total:",av.downtimeTotal,av.downtimeTotalCore,av.downtimeTotalNonCore)
 	hr
 	div(style="font-style:italic;font-size:10px")
 		|*) downtimes are per definition always "degraded" times by accordong SOC set degradation factor
 	
+
+mixin renderIncidentList(title,incidents)
+	h3 #{title}
+	table.table-striped.table-hover.table-condensed(style="max-width:900px")
+		thead
+			tr(style="line-height:16px;font-weight:bold")
+				th(style="width:50px;text-align:right")
+					|prio
+				th(style="width:100px;text-align:right")
+					|id
+				th(style="width:200px;text-align:right")
+					|description
+				th(style="width:80px;text-align:center")
+					|start
+				th(style="width:80px;text-align:center")
+					|stop
+				th(style="width:60px;text-align:right")
+					|ttr
+				th(style="width:50px;text-align:right")
+					|deg
+				th(style="width:200px;text-align:right")
+					|rootCause
+				th(style="width:50px;text-align:right")
+					|plan
+				th(style="width:50px;text-align:right")
+					|ext
+				th(style="width:50px;text-align:right")
+					|cust
+				th(style="width:150px;text-align:right")
+					|label
+		tbody
+			each inc in incidents
+				tr(style="line-height:16px;font-size:12px")
+					td(style="width:300px;text-align:right")
+						img(src="/images/incidents/#{inc.priority}.png" height="25px") 
+					td(style="width:200px;text-align:right")
+						a(href="https://bwinparty.service-now.com/ess/incident.do?sys_id=#{inc.snowId}" target="_new")
+							|#{inc.incidentID}
+					td(style="width:100px;text-align:right")
+						|#{inc.description}
+					td(style="width:80px;text-align:right")
+						|#{moment(inc.start).format("YYYY-MM-DD HH:mm:ss")}
+					td(style="width:80px;text-align:right")
+						|#{moment(inc.stop).format("YYYY-MM-DD HH:mm:ss")}
+					td(style="width:60px;text-align:right")
+						|#{(formatAVTime(inc.resolutionTime))}
+					td(style="width:50px;text-align:right")
+						|#{inc.degradation}%
+					td(style="width:200px;text-align:right")
+						|#{inc.rootCause}
+					td(style="width:50px;text-align:right")
+						|#{inc.isPlanned}
+					td(style="width:50px;text-align:right")
+						|#{inc.isExt}
+					td(style="width:50px;text-align:right")
+						|#{inc.isEndUserDown}					
+					td(style="width:150px;text-align:right")
+						|#{inc.labels}					
+
+
+
 block content
 	div
 		br
 		img(src="/images/bpty_logo.png" style="display:block;margin-left:auto;margin-right:auto;")
-	
-	
 	h3(style="text-align:center;font-weight:bold") firereport-online prototype
 	if filter && filter.customer!="* ALL *"
 		div(style="text-align:center;font-weight:bold")
 			img(src="/images/customers/#{filter.customer}.png" height="50px")
-	
 	br
 	div(style="text-align:center;font-weight:bold")
 		span(style="font-weight:normal") start: 
@@ -244,7 +209,6 @@ block content
 	div(style="text-align:center;font-weight:bold")
 		span(style="font-weight:normal") stop: 
 		span(id="stop" style="font-weight:bold") #{moment(av.to)}
-		
 		br
 		br
 	div(style="margin:0px auto;;width:100px;height:100px")
@@ -257,124 +221,57 @@ block content
 			option party US
 			option danske spil
 			option pmu
-		
-	
 		br
-		
 		div(style="margin:0px auto;width:120px;")
 			#daterange.selectbox.pull-right
 				i.fa.fa-calendar &nbsp;
 				span -- enter date -- &nbsp;
 				b.caret
-
-
-	
 	div.row(style="margin: auto;max-width:1200px")
 		div.panel.panel-default
 			div.panel-heading 
 				|availability: 
 				b planned | unplanned | total 
 			div.panel-body
-				+renderAvailabilityList("SERVICES - INTERNAL",av)
-				+renderAvailabilityList("SERVICES - EXTERNAL",avExternal)
-				
-									
+				+renderAVServicesList("SERVICES - INTERNAL",av)
+				+renderAVServicesList("SERVICES - EXTERNAL",avExternal)
+
 	div.row(style="margin: auto;max-width:1200px")
 		div.panel.panel-default
 			div.panel-heading 
 				|SOC reported incidents: 
-				
 			div.panel-body
-				img(src="/images/incidents/P1.png" height="50px") 
-				&nbsp;
-				img(src="/images/incidents/P8.png" height="50px")
-				&nbsp;
-				img(src="/images/incidents/P16.png" height="50px")
-				&nbsp;
-				img(src="/images/incidents/P40.png" height="50px")
 				
+				+renderIncidentList("unplanned",av.incidentsUnplanned)
+				+renderIncidentList("planned",av.incidentsPlanned)
 				
-				table.table-striped.table-hover.table-condensed(style="max-width:900px")
-					thead
-						tr(style="line-height:16px;font-weight:bold")
-							th(style="width:50px;text-align:right")
-								|prio
-							th(style="width:100px;text-align:right")
-								|id
-							th(style="width:200px;text-align:right")
-								|description
-							th(style="width:80px;text-align:center")
-								|start
-							th(style="width:80px;text-align:center")
-								|stop
-							th(style="width:60px;text-align:right")
-								|ttr
-							th(style="width:50px;text-align:right")
-								|deg
-							th(style="width:200px;text-align:right")
-								|rootCause
-							th(style="width:50px;text-align:right")
-								|plan
-							th(style="width:50px;text-align:right")
-								|ext
-							th(style="width:50px;text-align:right")
-								|cust
-							th(style="width:150px;text-align:right")
-								|label
-					tbody
-						each unplanned in av.incidentsUnplanned
-							tr(style="line-height:16px;font-size:12px")
-								td(style="width:300px;text-align:right")
-									img(src="/images/incidents/#{unplanned.priority}.png" height="25px") 
-								td(style="width:200px;text-align:right")
-									a(href="https://bwinparty.service-now.com/ess/incident.do?sys_id=#{unplanned.snowId}" target="_new")
-										|#{unplanned.incidentID}
-								td(style="width:100px;text-align:right")
-									|#{unplanned.description}
-								td(style="width:80px;text-align:right")
-									|#{moment(unplanned.start).format("YYYY-MM-DD HH:mm:ss")}
-								td(style="width:80px;text-align:right")
-									|#{moment(unplanned.stop).format("YYYY-MM-DD HH:mm:ss")}
-								td(style="width:60px;text-align:right")
-									|#{(formatAVTime(unplanned.resolutionTime))}
-								td(style="width:50px;text-align:right")
-									|#{unplanned.degradation}%
-								td(style="width:200px;text-align:right")
-									|#{unplanned.rootCause}
-								td(style="width:50px;text-align:right")
-									|#{unplanned.isPlanned}
-								td(style="width:50px;text-align:right")
-									|#{unplanned.isExt}
-								td(style="width:50px;text-align:right")
-									|#{unplanned.isEndUserDown}					
-								td(style="width:150px;text-align:right")
-									|#{unplanned.labels}					
-		div.row(style="margin: auto;max-width:1200px")
-			div.panel.panel-default
-				div.panel-heading 
-					|availability: 
-					b unplanned
-				div.panel-body
-					
-					div(id="chart" style="text-align:center")
-						svg
-						
-		div.row(style="margin: auto;max-width:1200px")
-			div.panel.panel-default
-				div.panel-heading 
-					|availability: 
-					b planned | unplanned | total 
-				div.panel-body
-					
-					div(id="chart2" style="text-align:center")
-						svg
 
-			
+	script(src='/javascripts/dashboards/nvd3_availability.js')
+	div.row(style="margin: auto;max-width:1200px")
+		div.panel.panel-default
+			div.panel-heading 
+				|availability: 
+				b unplanned
+			div.panel-body
+				div(id="chart" style="text-align:center")
+					svg
+					
+	script(src='/javascripts/dashboards/nvd3_availability_multi.js')
+	div.row(style="margin: auto;max-width:1200px")
+		div.panel.panel-default
+			div.panel-heading 
+				|availability: 
+				b planned | unplanned | total 
+			div.panel-body
+				div(id="chart2" style="text-align:center")
+					svg
 	
-script(src='/javascripts/dashboards/nvd3_availability.js')
-script(src='/javascripts/dashboards/nvd3_availability_multi.js')
 
 script.
+	// make serverside parameter accessible  to clientside JS
+	//var av=!{JSON.stringify(av)};
+	//var avExternal=!{JSON.stringify(avExternal)};
+	
 	var _from="#{from}";
 	var _to="#{to}";
 	var _customer="#{filter.customer}";
@@ -383,10 +280,8 @@ script.
 		$('#stop').datetimepicker({keepOpen:false,format:"ddd, DD MMM YYYY, HH:mm:ss"});
 	})*/
 	$(document).ready(function() {
-		
 		$("#filter").val(_customer);
-		
-		
+
 		$('#daterange').daterangepicker({ 
 			format: 'YYYY-MM-DD',
 			startDate: '2015-01-01',
@@ -399,13 +294,10 @@ script.
 						 'Last Month': [moment().subtract('month', 1).startOf('month'), moment().subtract('month', 1).endOf('month')],
 						 'Last Week': [moment().subtract('week', 1).startOf('week'), moment().subtract('week', 1).endOf('week')],
 						 'YTD': [moment().startOf('year'), moment()]
-						
 		  }
 		});
 		
 		$('#daterange').on('apply.daterangepicker', function(ev, picker) {
-			
-				
 			_from = picker.startDate.format('YYYY-MM-DD');
 			_to = picker.endDate.format('YYYY-MM-DD');
 			window.location.href = "/dashboard/firereport?from="+_from+"&to="+_to+"&customer="+_customer;
@@ -413,19 +305,13 @@ script.
 
 		$('#filter').on('change', function() {
 			console.log("select change event: "+this.value);
-			
 			if (this.value=="* ALL *")
 				_customer="";
 			else 
 				_customer="customer="+this.value;
-			
 			if (_from && _to)
 				window.location.href = "/dashboard/firereport?from="+_from+"&to="+_to+"&"+_customer
-			
 			else
 				window.location.href = "/dashboard/firereport?"+_customer;
-			
 		});
-			
 	});
-	
