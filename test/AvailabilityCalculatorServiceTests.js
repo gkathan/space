@@ -1,6 +1,7 @@
 var winston = require('winston');
 var config = require('config');
 var moment = require('moment');
+require('moment-duration-format');
 var mongojs = require('mongojs');
 
 var DB=config.database.db;
@@ -32,19 +33,8 @@ var assert = require("assert")
 var avCalculatorService = require('../services/AvailabilityCalculatorService');
 
 describe('AvailabilityCalculatorService', function(){
+//_processServices(type,services,injectedServices,from,to,filter,endUserAffected,callback,testMapping,testIncidents){
 
-	describe('#calculateOverall(from,to)', function(){
-    it('calculates overall AV values', function(done){
-
-			console.log("---------------------");
-			avCalculatorService.calculateOverall("2015-01-01","2015-04-02",null,function(data){
-				console.log("data: "+JSON.stringify(data));
-				//var av ="xx";
-				//assert.equal("xx", av);
-				done();
-			});
-		});
-  })
 
   describe('#checkCoreTime(from,to)', function(){
     it('checks whetehr an incident is in core-time or not ', function(done){
@@ -309,8 +299,6 @@ describe('AvailabilityCalculatorService', function(){
 			// =
 			var coreTotalTime = avCalculatorService.calculateTotalCoreTime(_from,_to);
 
-
-
 			assert.equal(28799000, coreTotalTime);
 			done();
 
@@ -365,6 +353,175 @@ describe('AvailabilityCalculatorService', function(){
 			})
 		});
 	})
+
+
+	describe('#calculateOverall(from,to)', function(){
+    it('calculates overall AV values for a simple 100% incident', function(done){
+			var test_mapping={};
+			var test_incidents =[];
+			var _inc1 = {
+				"degradation" : 100,
+		    "description" : "this is a test incident",
+		    "extService" : false,
+		    "highlight" : false,
+		    "incidentID" : "INC120861",
+		    "isCoreService" : true,
+		    "isEndUserDown" : true,
+		    "isExt" : false,
+		    "isIR" : false,
+		    "isPlanned" : false,
+		    "priority" : "P1",
+		    "report" : true,
+		    "rootCause" : "rootcause of test incident",
+		    "serviceName" : "test service",
+		    "start" : new Date("2015-01-01 01:00:00"),
+		    "stop" : new Date("2015-01-01 01:01:00"),
+		    "resolutionTime" : 60000
+			};
+			test_incidents.push(_inc1);
+
+			var _type="TEST";
+			var _services=[];
+
+			var _s1 = {
+		    "ext_service" : "0",
+		    "ServiceName" : "test service",
+		    "ServiceGroupID" : "1",
+		    "Report" : "1",
+		    "CoreService" : "1",
+		    "Highlight" : "0",
+				"filterExclude" : false
+			}
+
+			_services.push(_s1);
+
+			avCalculatorService.processServices(_type,_services,null,"2015-01-01","2015-01-02",null,true,function(result){
+				console.log("data: "+JSON.stringify(result));
+				console.log("---------------------");
+				console.log("incidents: "+JSON.stringify(test_incidents));
+				//var av ="xx";
+				assert.equal(60000, result.downtime.unplanned.all);
+				assert.equal(60000, result.downtime.unplanned.nonCore);
+				assert.equal(0, result.downtime.unplanned.core);
+
+				assert.equal(0.9993055555555556, result.av.total.all);
+				assert.equal(0.9989583514175101, result.av.total.nonCore);
+				assert.equal(1, result.av.total.core);
+
+
+				done();
+			},null,test_incidents);
+		});
+  })
+	describe('#calculateOverall(from,to)', function(){
+    it('calculates overall AV values for 2 incidents ', function(done){
+			var test_mapping={};
+			var test_incidents =[];
+			var _inc1 = {
+				"degradation" : 100,
+		    "description" : "this is a test incident",
+		    "extService" : false,
+		    "highlight" : false,
+		    "incidentID" : "INC120861",
+		    "isCoreService" : true,
+		    "isEndUserDown" : true,
+		    "isExt" : false,
+		    "isIR" : false,
+		    "isPlanned" : false,
+		    "priority" : "P1",
+		    "report" : true,
+		    "rootCause" : "rootcause of test incident",
+		    "serviceName" : "test service B",
+		    "start" : new Date("2015-01-01 01:00:00"),
+		    "stop" : new Date("2015-01-01 01:01:00"),
+		    "resolutionTime" : 60000
+			};
+			//in core-time
+			var _inc2 = {
+				"degradation" : 50,
+		    "description" : "this is a test incident",
+		    "extService" : false,
+		    "highlight" : false,
+		    "incidentID" : "INC120861",
+		    "isCoreService" : true,
+		    "isEndUserDown" : true,
+		    "isExt" : false,
+		    "isIR" : false,
+		    "isPlanned" : true,
+		    "priority" : "P1",
+		    "report" : true,
+		    "rootCause" : "rootcause of test incident",
+		    "serviceName" : "test service A",
+		    "start" : new Date("2015-01-01 17:00:00"),
+		    "stop" : new Date("2015-01-01 17:01:00"),
+		    "resolutionTime" : 60000
+			};
+			test_incidents.push(_inc1);
+			test_incidents.push(_inc2);
+
+			var _type="TEST";
+			var _services=[];
+
+			var _s1 = {
+		    "ext_service" : "0",
+		    "ServiceName" : "test service A",
+		    "ServiceGroupID" : "1",
+		    "Report" : "1",
+		    "CoreService" : "1",
+		    "Highlight" : "0",
+				"filterExclude" : false
+			}
+			var _s2 = {
+				"ext_service" : "0",
+				"ServiceName" : "test service B",
+				"ServiceGroupID" : "1",
+				"Report" : "1",
+				"CoreService" : "1",
+				"Highlight" : "0",
+				"filterExclude" : false
+			}
+			var _s3 = {
+				"ext_service" : "0",
+				"ServiceName" : "test service C",
+				"ServiceGroupID" : "1",
+				"Report" : "1",
+				"CoreService" : "1",
+				"Highlight" : "0",
+				"filterExclude" : false
+			}
+
+			_services.push(_s1);
+			_services.push(_s2);
+
+			// !! if we add another service which has NO incdients => this affectes the AV !!
+			// it is EASILY possible to PIMP the AV by just adding a new service !!!
+			//_services.push(_s3);
+
+
+			avCalculatorService.processServices(_type,_services,null,"2015-01-01","2015-01-02",null,true,function(result){
+				console.log("data: "+JSON.stringify(result));
+				console.log("---------------------");
+				console.log("incidents: "+JSON.stringify(test_incidents));
+				//var av ="xx";
+				assert.equal(60000, result.downtime.unplanned.all);
+				assert.equal(60000, result.downtime.unplanned.nonCore);
+				assert.equal(0, result.downtime.unplanned.core);
+
+				assert.equal(30000, result.downtime.planned.all);
+				assert.equal(0, result.downtime.planned.nonCore);
+				assert.equal(30000, result.downtime.planned.core);
+
+
+				assert.equal(0.9994792269483024, result.av.total.all);
+				assert.equal(0.9994791757087551, result.av.total.nonCore);
+				assert.equal(0.999479148581548, result.av.total.core);
+
+
+				done();
+			},null,test_incidents);
+		});
+  })
+
 })
 
 
@@ -372,6 +529,7 @@ describe('AvailabilityCalculatorService', function(){
 
 function formatDuration(time){
  	var d = moment.duration(time);
+
 		if (d>=86400000) return d.format("d[d] h:mm:ss", { trim: false });
 		return d.format("h:mm:ss", { trim: false });
 }
