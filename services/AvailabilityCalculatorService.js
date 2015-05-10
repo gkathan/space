@@ -13,9 +13,6 @@ var db = mongojs(connection_string, [DB]);
 var winston=require('winston');
 var logger = winston.loggers.get('space_log');
 
-/**
- *
- */
 exports.calculateOverall = _calculateOverall;
 exports.calculateExternal = _calculateExternal;
 exports.checkCoreTime = _checkCoreTime;
@@ -23,6 +20,7 @@ exports.calculateTotalCoreTime = _calculateTotalCoreTime;
 exports.checkLabels=checkLabels;
 exports.checkServiceToExclude= checkServiceToExclude;
 
+var _endUserAffected = true;
 
 /**
 * calculation orchestrator for OVERALL
@@ -34,9 +32,14 @@ function _calculateOverall(from, to, filter,done){
 	var avService=require('./AvailabilityService');
 	//first we grab the external services as we need them to calculate the "ProductIntegration" service
 	avService.findSOCServicesExternal(function(servicesExt){
-		_processServices("EXTERNAL",servicesExt,null,from,to,filter,function(data){
+		_processServices("EXTERNAL",servicesExt,null,from,to,filter,_endUserAffected,function(data){
 			// the result of this will be injected as "ProductIntegration row in MAIN "
 			var _injectServices = [];
+
+			var _avProductIntegration={};
+			_avProductIntegration.planned={all:data.av.planned.all,core:data.av.planned.core,nonCore:data.av.planned.nonCore,time:data.downtime.planned};
+			_avProductIntegration.unplanned={all:data.av.unplanned.all,core:data.av.unplanned.core,nonCore:data.av.unplanned.nonCore,time:data.downtime.unplanned};
+			_avProductIntegration.total={all:data.av.total.all,core:data.av.total.core,nonCore:data.av.total.nonCore,time:data.downtime.total};
 
 			var _productIntegration={
 				ServiceName:"Product Integration",
@@ -45,23 +48,12 @@ function _calculateOverall(from, to, filter,done){
 				Report:1,
 				CoreService:1,
 				Highlight:0,
-				availability:{
-					planned:{all:data.avPlanned,core:data.avPlannedCore,nonCore:data.avPlannedNonCore},
-					unplanned:{all:data.avUnplanned,core:data.avUnplannedCore,nonCore:data.avUnplannedNonCore},
-					total:{all:data.avTotal,core:data.avTotalCore,nonCore:data.avTotalNonCore},
-
-					plannedTime:data.downtimePlanned,
-					unplannedTime:data.downtimeUnplanned,
-					totalTime:data.downtimeTotal,
-					totalPeriod:data.totalPeriod,
-					totalPeriodCore:data.totalPeriodCore,
-					totalPeriodNonCore:data.totalPeriodNonCore
-				}
+				availability:_avProductIntegration
 			};
 			_injectServices.push(_productIntegration);
 
 			avService.findSOCServicesMain(function(servicesMain){
-				_processServices("MAIN",servicesMain,_injectServices,from,to,filter,function(data){
+				_processServices("MAIN",servicesMain,_injectServices,from,to,filter,_endUserAffected,function(data){
 				//callback
 				done(data);
 				});
@@ -78,7 +70,7 @@ function _calculateExternal(from, to,filter,done){
 
 	var avService=require('./AvailabilityService');
 	avService.findSOCServicesExternal(function(servicesExt){
-		_processServices("EXTERNAL",servicesExt,null,from,to,filter,function(data){
+		_processServices("EXTERNAL",servicesExt,null,from,to,filter,_endUserAffected,function(data){
 			done(data);
 		});
 	})
@@ -88,7 +80,7 @@ function _calculateExternal(from, to,filter,done){
 * param injectedServices: to include calculated stuff from other rounds (legacy need to get this ProductInetgration ...)
 * param filter : filter by B2B customer (e.g. bwin)
 **/
-function _processServices(type,services,injectedServices,from,to,filter,callback){
+function _processServices(type,services,injectedServices,from,to,filter,endUserAffected,callback){
 	var totalTime={};
 	totalTime.all = new Date(to)-new Date(from);
 	totalTime.core = _calculateTotalCoreTime(new Date(from),new Date(to));
@@ -109,19 +101,16 @@ function _processServices(type,services,injectedServices,from,to,filter,callback
 			// 2) give me the "opposite" of the other labels => if we will get an intersect of incident.label with this "ANTI-LIST" - we can skip this incident
 			_filterLabels =  _.pluck(_.where(mapping,{"customer":filter.customer}),"label");
 		}
-
+		// grab the SOC incidents for the intervall (from to)
 		_socIncidents.find(function(err,data){
-			// grab the SOC incidents for the intervall (from to)
-
+			var incidents={};
+			incidents.planned = [];
+			incidents.unplanned = [];
 			var downtime={
 				planned:{all:0.0,core:0.0,nonCore:0.0},
 				unplanned:{all:0.0,core:0.0,nonCore:0.0},
 				total:{all:0.0,core:0.0,nonCore:0.0}
 			};
-
-			var incidentsPlanned = [];
-			var incidentsUnplanned = [];
-
 			//iterate over all services
 			for (var s in services){
 				var serviceDowntime={
@@ -143,7 +132,7 @@ function _processServices(type,services,injectedServices,from,to,filter,callback
 						_labels = _inc.labels.split(", ");
 					}
 
-					if (checkLabels(_filterLabels,_labels) && _inc.serviceName.split(",").indexOf(services[s].ServiceName)>-1 &&_inc.isEndUserDown && _inc.start>=new Date(from) && _inc.start <=new Date(to)){
+					if (checkLabels(_filterLabels,_labels) && _inc.serviceName.split(",").indexOf(services[s].ServiceName)>-1 &&_inc.isEndUserDown==endUserAffected && _inc.start>=new Date(from) && _inc.start <=new Date(to)){
 						var _time = _degrade(_inc.resolutionTime,_inc.degradation);
 						if (_inc.isPlanned==true){
 							// check core / non-core
@@ -158,7 +147,7 @@ function _processServices(type,services,injectedServices,from,to,filter,callback
 								_inc.coreTime = result.coreTime;
 								_inc.nonCoreTime = result.nonCoreTime;
 
-								incidentsPlanned.push(_inc);
+								incidents.planned.push(_inc);
 							})
 						}
 						else{
@@ -174,7 +163,7 @@ function _processServices(type,services,injectedServices,from,to,filter,callback
 								_inc.coreTime = result.coreTime;
 								_inc.nonCoreTime = result.nonCoreTime;
 
-								incidentsUnplanned.push(_inc);
+								incidents.unplanned.push(_inc);
 							})
 							downtime.total.core=downtime.unplanned.core+downtime.planned.core;
 							downtime.total.nonCore=downtime.unplanned.nonCore+downtime.planned.nonCore;
@@ -200,7 +189,6 @@ function _processServices(type,services,injectedServices,from,to,filter,callback
 					nonCore: avService.planned.nonCore*avService.unplanned.nonCore
 				};
 
-
 				services[s].availability={
 					planned:{all:avService.planned.all,core:avService.planned.core,nonCore:avService.planned.nonCore,time:serviceDowntime.planned.all},
 					unplanned:{all:avService.unplanned.all,core:avService.unplanned.core,nonCore:avService.unplanned.nonCore,time:serviceDowntime.unplanned.all},
@@ -218,41 +206,25 @@ function _processServices(type,services,injectedServices,from,to,filter,callback
 		_avResult.from=from;
 		_avResult.to=to;
 		//time of downtime in millisceonds
-		_avResult.downtimePlanned=downtime.planned.all;
-		_avResult.downtimeUnplanned=downtime.unplanned.all;
-		_avResult.downtimeTotal = downtime.planned.all+downtime.unplanned.all;
-		_avResult.avPlanned=average.planned.all;
-		_avResult.avPlannedCore=average.planned.core;
-		_avResult.avPlannedNonCore=average.planned.nonCore;
-		_avResult.avUnplanned=average.unplanned.all;
-		_avResult.avUnplannedCore=average.unplanned.core;
-		_avResult.avUnplannedNonCore=average.unplanned.nonCore;
-		_avResult.avTotal=average.total.all;
-		_avResult.avTotalCore=average.total.core;
-		_avResult.avTotalNonCore=average.total.nonCore;
+		_avResult.downtime={};
+		_avResult.downtime.planned={all:downtime.planned.all,core:downtime.planned.core,nonCore:downtime.planned.nonCore};
+		_avResult.downtime.unplanned={all:downtime.unplanned.all,core:downtime.unplanned.core,nonCore:downtime.unplanned.nonCore};
+		_avResult.downtime.total={all:downtime.total.all,core:downtime.total.core,nonCore:downtime.total.nonCore};
+		_avResult.av={};
+		_avResult.av.planned={all:average.planned.all,core:average.planned.core,nonCore:average.planned.nonCore};
+		_avResult.av.unplanned={all:average.unplanned.all,core:average.unplanned.core,nonCore:average.unplanned.nonCore};
+		_avResult.av.total={all:average.total.all,core:average.total.core,nonCore:average.total.nonCore};
+
 		_avResult.services= services;
-		_avResult.incidentsPlanned = incidentsPlanned;
-		_avResult.incidentsUnplanned = incidentsUnplanned;
-
-		_avResult.downtimePlannedCore=downtime.planned.core;
-		_avResult.downtimePlannedNonCore=downtime.planned.nonCore;
-		_avResult.downtimeUnplannedCore=downtime.unplanned.core;
-		_avResult.downtimeUnplannedNonCore=downtime.unplanned.nonCore;
-		_avResult.downtimeTotalCore=downtime.total.core;
-		_avResult.downtimeTotalNonCore=downtime.total.nonCore;
-
-		_avResult.totalPeriod=totalTime.all;
-		_avResult.totalPeriodCore=totalTime.core;
-		_avResult.totalPeriodNonCore=totalTime.nonCore;
+		_avResult.incidents={planned:incidents.planned,unplanned:incidents.unplanned};
+		_avResult.totalPeriod={all:totalTime.all,core:totalTime.core,nonCore:totalTime.nonCore};
 		/*
-		console.log("**************************************************** _averageTotal: "+ average.total.all);
-		console.log("**************************************************** _averageTotalCore: "+ 	_avResult.avTotalCore);
-		console.log("**************************************************** _averageTotalNonCore: "+ _avResult.avTotalNonCore);
-		console.log("############################## filter: "+JSON.stringify(_filterLabels));
+		logger.debug("**************************************************** _averageTotal: "+ average.total.all);
+		logger.debug("**************************************************** _averageTotalCore: "+ 	_avResult.avTotalCore);
+		logger.debug("**************************************************** _averageTotalNonCore: "+ _avResult.avTotalNonCore);
+		logger.debug("############################## filter: "+JSON.stringify(_filterLabels));
 		*/
-
 		callback(_avResult);
-
 		})
 	})
 }
@@ -280,7 +252,6 @@ function _calculateAverages(services){
 			average.unplanned.nonCore+=services[s].availability.unplanned.nonCore;
 			_rounds++;
 		}
-
 	}
 	average.planned.all=average.planned.all/_rounds;
 	average.planned.core=average.planned.core/_rounds;
@@ -296,9 +267,6 @@ function _calculateAverages(services){
 
 	return average;
 }
-
-
-
 
 /**
 * checks whether a given list of labels from an incdient is relevant for a filter list of labels
@@ -322,21 +290,13 @@ function checkServiceToExclude(mapping,filter,service){
 	if (!filter) return false;
 
 	var _filteredMapping = _.where(mapping,{"customer":filter.customer});
-	/*
-	logger.debug("mapping: "+JSON.stringify(mapping));
-	logger.debug("filter: "+JSON.stringify(filter));
-	logger.debug("_filteredMapping: "+JSON.stringify(_filteredMapping));
-	logger.debug("---- service : "+JSON.stringify(service));
-	*/
 	var count =0;
 	for (var m in _filteredMapping){
 			var _line = _filteredMapping[m];
-			//logger.debug("-- service: "+_line[service.ServiceName]);
 			if (_line[service.ServiceName] =="1") {
 				count++;
 			}
 	}
-	//logger.debug("======= count = "+count);
 	if (count>0) return false;
 	else {
 		service.filterExclude=true;
@@ -357,30 +317,20 @@ function formatDuration(time){
 		if (d>=86400000) return d.format("d[d] h:mm:ss", { trim: false });
 		return d.format("h:mm:ss", { trim: false });
 }
-
-
+/**
+e.g.
+	{"dayOfWeek":3,"start":"16:00:00","stop":"23:59:59"},
+	{"dayOfWeek":4,"start":"16:00:00","stop":"23:59:59"},
+	{"dayOfWeek":5,"start":"16:00:00","stop":"23:59:59"}
+*/
 function _calculateTotalCoreTime(from,to){
 	var _coreDefinition= config.availability.coreTime;
-	/*
-				{"dayOfWeek":6,"start":"12:00:00","stop":"23:59:59"},
-				{"dayOfWeek":0,"start":"00:00:00","stop":"00:59:59"},
-				{"dayOfWeek":0,"start":"12:00:00","stop":"23:59:59"},
-				{"dayOfWeek":1,"start":"00:00:00","stop":"00:59:59"},
-				{"dayOfWeek":1,"start":"16:00:00","stop":"23:59:59"},
-				{"dayOfWeek":2,"start":"16:00:00","stop":"23:59:59"},
-				{"dayOfWeek":3,"start":"16:00:00","stop":"23:59:59"},
-				{"dayOfWeek":4,"start":"16:00:00","stop":"23:59:59"},
-				{"dayOfWeek":5,"start":"16:00:00","stop":"23:59:59"}
-
-	*/
 	var _coreTotalTime =0;
-
 	// iterate over days
 	while(from < to){
     var newDate = from.setDate(from.getDate() + 1);
     from = new Date(newDate);
 		logger.debug("----day: "+moment(newDate).format("YYYY-MM-DD"));
-
 		for (var i in _coreDefinition){
 			if (moment(from).day()==_coreDefinition[i].dayOfWeek){
 				var _c = moment(_coreDefinition[i].stop,"HH:mm:ss")-moment(_coreDefinition[i].start,"HH:mm:ss");
@@ -389,35 +339,28 @@ function _calculateTotalCoreTime(from,to){
 			}
 		}
   }
-
 	logger.debug("*********** core time OVERALL:"+_coreTotalTime);
-
 	return _coreTotalTime;
 }
-
-
 /**
 * core time definition should be managed BY CUSTOMER (e.g. bwin has a definition, and US has a different one)
 */
 function _checkCoreTime(incident,callback){
 	var _coreDefinition= config.availability.coreTime;
-
 	var _start = incident.start;
 	var _stop = incident.stop;
-
 	var _coreTime = 0;
 	for (var i in _coreDefinition){
 		_coreTime+=_getCoreTime(_start,_stop,_coreDefinition[i]);
 	}
 	var _degradedCoreTime = _degrade(_coreTime,incident.degradation);
 	var _degradedNonCoreTime = _degrade((incident.resolutionTime-_coreTime),incident.degradation);
-
 	callback({coreTime:_degradedCoreTime,nonCoreTime:_degradedNonCoreTime,resolutionTime:incident.resolutionTime});
 }
-
-
+/**
+* calculate the absolute amount of coe time for a given date range
+*/
 function _getCoreTime(_start,_stop,coreDef){
-
 	// case 1 = INC.start before core.start, INC.end after core.start
 	if (moment(_start).day() == coreDef.dayOfWeek && _start <=_getDateForTimeString(coreDef.start,_start) && (_stop <=_getDateForTimeString(coreDef.stop,_stop) && _stop >=_getDateForTimeString(coreDef.start,_start))){
 		console.log("CASE-1) where INC start is BEFORE coretime.start definition and stops within coretime");
@@ -440,8 +383,7 @@ function _getCoreTime(_start,_stop,coreDef){
 		return _coreDuration;
 	}
 	return 0;
-	}
-
+}
 
 /** returns a concrete DateTime instance for a given Time only
 ** takes the date info from the _datetime and instantiantes a moment for given timeString

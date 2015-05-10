@@ -1,4 +1,5 @@
 include ../kanban_menu
+include mixins/chart_incident
 // Load d3.js and c3.js
 script(src='/javascripts/components/c3/c3.min.js')
 // Load nv3d
@@ -24,57 +25,66 @@ style.
 	  height: 400px;
 		width:980px;
 	}
+	#chartP8 svg {
+	  height: 400px;
+		width:1200px;
+	}
+	#chartP1 svg {
+	  height: 400px;
+		width:1200px;
+	}
 
 
-mixin renderAVSumCoreNonCore(title,avTotal,avCore,avNonCore,timeTotal,timeCore,timeNonCore)
+
+mixin renderAV(title,av,time)
 	tr(style="line-height:32px;text-align:right")
 		td(style="width:150px;text-align:right;font-size:18px")
 			b #{title}:&nbsp;&nbsp;&nbsp; 
 		td(style="width:100px")
 			b(style="font-size:24px")
-				|#{formatAV(avTotal)}
+				|#{formatAV(av.all)}
 		td(style="width:100px")
 			b(style="font-size:10px")
-				|#{timeTotal}
+				|#{time.all}
 
 	tr(style="line-height:32px;text-align:right")
 		td(style="width:150px")
 			|CORE:&nbsp;&nbsp;&nbsp; 
 		td(style="width:100px")
 			div(style="font-size:20px")
-				|#{formatAV(avCore)}
+				|#{formatAV(av.core)}
 		td
 			div(style="font-size:10px")
-				|#{timeCore}
+				|#{time.core}
 	tr(style="line-height:32px;text-align:right")
 		td(style="width:150px;text-align:right")
 			|NON-CORE:&nbsp;&nbsp;&nbsp; 
 		td(style="width:100px")
 			div(style="font-size:20px")
-				|#{formatAV(avNonCore)}
+				|#{formatAV(av.nonCore)}
 		td
 			div(style="font-size:10px")
-				|#{timeNonCore}
+				|#{time.nonCore}
 
-mixin renderAVDowntime(title,downtime,downtimeCore,downtimeNonCore)
+mixin renderAVDowntime(title,downtime)
 	tr(style="line-height:24px;text-align:right")
 		td(style="width:200px;text-align:right")
 			b downtime*) #{title}:&nbsp;&nbsp;&nbsp; 
 		td(style="width:150px")
 			b(style="font-size:16px")
-				|#{formatAVTime(downtime)}
+				|#{formatAVTime(downtime.all)}
 	tr(style="line-height:24px;font-style:italic;text-align:right")
 		td(style="text-align:right")
 			|CORE:&nbsp;&nbsp;&nbsp; 
 		td
 			div(style="font-size:16px")
-				|#{formatAVTime(downtimeCore)}
+				|#{formatAVTime(downtime.core)}
 	tr(style="line-height:24px;font-style:italic;text-align:right")
 		td(style="text-align:right")
 			|NON-CORE:&nbsp;&nbsp;&nbsp; 
 		td
 			div(style="font-size:16px")
-				|#{formatAVTime(downtimeNonCore)}						
+				|#{formatAVTime(downtime.nonCore)}						
 	
 			
 
@@ -120,15 +130,15 @@ mixin renderAVServicesList(title,av)
 	hr
 	div(style="text-align:center")
 		table(style="margin:0 auto")
-			+renderAVSumCoreNonCore("AV planned",av.avPlanned,av.avPlannedCore,av.avPlannedNonCore,av.totalPeriod,av.totalPeriodCore,av.totalPeriodNonCore)
-			+renderAVSumCoreNonCore("AV unplanned",av.avUnplanned,av.avUnplannedCore,av.avUnplannedNonCore,av.totalPeriod,av.totalPeriodCore,av.totalPeriodNonCore)
-			+renderAVSumCoreNonCore("AV totals",av.avTotal,av.avTotalCore,av.avTotalNonCore,av.totalPeriod,av.totalPeriodCore,av.totalPeriodNonCore)
+			+renderAV("AV planned",av.av.planned,av.totalPeriod)
+			+renderAV("AV unplanned",av.av.unplanned,av.totalPeriod)
+			+renderAV("AV totals",av.av.total,av.totalPeriod)
 	hr
 	div(style="text-align:center")
 		table(style="margin:0 auto")
-			+renderAVDowntime("planned:",av.downtimePlanned,av.downtimePlannedCore,av.downtimePlannedNonCore)
-			+renderAVDowntime("unplanned:",av.downtimeUnplanned,av.downtimeUnplannedCore,av.downtimeUnplannedNonCore)
-			+renderAVDowntime("total:",av.downtimeTotal,av.downtimeTotalCore,av.downtimeTotalNonCore)
+			+renderAVDowntime("planned:",av.downtime.planned)
+			+renderAVDowntime("unplanned:",av.downtime.unplanned)
+			+renderAVDowntime("total:",av.downtime.total)
 	hr
 	div(style="font-style:italic;font-size:10px")
 		|*) downtimes are per definition always "degraded" times by accordong SOC set degradation factor
@@ -237,13 +247,19 @@ block content
 				+renderAVServicesList("SERVICES - EXTERNAL",avExternal)
 
 	div.row(style="margin: auto;max-width:1200px")
+		script(src='/javascripts/dashboards/nvd3_incidents_multi.js')
+
+		+chartIncident("P1","chartP1")
+		+chartIncident("P8","chartP8")
+
+		
 		div.panel.panel-default
 			div.panel-heading 
 				|SOC reported incidents: 
 			div.panel-body
 				
-				+renderIncidentList("unplanned",av.incidentsUnplanned)
-				+renderIncidentList("planned",av.incidentsPlanned)
+				+renderIncidentList("unplanned",av.incidents.unplanned)
+				+renderIncidentList("planned",av.incidents.planned)
 				
 
 	script(src='/javascripts/dashboards/nvd3_availability.js')

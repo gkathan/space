@@ -38,11 +38,13 @@ function init(chartId){
     var _chartId = chartId;//"chartP1";
     var _prio = chartId.split("chart")[1];
     _period =getUrlVars().period;
+    if (!_period) _period=moment().year().toString();
     _aggregate =getUrlVars().aggregate;
 
     if (_aggregate){
       _url+="?aggregate="+_aggregate;
     }
+    if (!_aggregate) _aggregate="monthly";
 
     var _colors={};
     _colors["P1"]=["#174D75","#E6EFF3"];

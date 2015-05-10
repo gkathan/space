@@ -62,6 +62,9 @@ function _syncSOCIncidents(url,callback){
 						_incident.stop = new Date(_incident.stop);
 						_incident.resolutionTime = _incident.stop - _incident.start;
 
+						if (_incident.priority==" " && _.startsWith(_incident.incidentID,"Maintenance")) _incident.priority="MA";
+						if (_incident.priority==" " && _.startsWith(_incident.incidentID,"Change")) _incident.priority="CH";
+
 						var _check = _.findWhere(snowIncidents,{"id":_incident.incidentID})
 						if (_check){
 							_incident.snowId = _check.sysId;
