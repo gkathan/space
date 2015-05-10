@@ -745,6 +745,11 @@ function calculateAvailability(req,res,next){
 
 		var from = req.query.from;// "2015-01-01 00:00:00";
 		var to = req.query.to;//"2015-04-01 00:00:00";
+
+		if (!from) from = moment().year()+"-01-01";
+		if (!to) to = moment().format("YYYY-MM-DD");
+
+
 		var filter;
 		if (req.query.customer){
 			_customer = req.query.customer;//"bwin" or "pmu" or "danske spil",...;
@@ -755,7 +760,7 @@ function calculateAvailability(req,res,next){
 	  avCalcService.calculateOverall(from, to, filter,function(avDataOverall){
 				avCalcService.calculateExternal(from,to,filter,function(avDataExternal){
 			//logger.debug("------------------------------------------------------ data.snapShotDate: "+data.snapshotDate);
-			res.send({"avOverall":avDataOverall,"avExternal":avDataExternal});
+			res.send({"filter:":filter,"avOverall":avDataOverall,"avExternal":avDataExternal});
 	});
 	});
 

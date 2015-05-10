@@ -20,6 +20,7 @@ exports.calculateTotalCoreTime = _calculateTotalCoreTime;
 exports.checkLabels=checkLabels;
 exports.checkServiceToExclude= checkServiceToExclude;
 
+//sets global config to include endUserAffect flag from SocIncdients
 var _endUserAffected = true;
 
 /**
@@ -119,7 +120,7 @@ function _processServices(type,services,injectedServices,from,to,filter,endUserA
 				};
 				// enrich service for the filter display
 				// default we include all
-				services[s].filterInclude=true;
+				services[s].filterExclude=false;
 
 				// ==> here we can identify services which can be skipped for a given customer filter
 				if (checkServiceToExclude(mapping,filter,services[s])==false){
@@ -214,7 +215,6 @@ function _processServices(type,services,injectedServices,from,to,filter,endUserA
 		_avResult.av.planned={all:average.planned.all,core:average.planned.core,nonCore:average.planned.nonCore};
 		_avResult.av.unplanned={all:average.unplanned.all,core:average.unplanned.core,nonCore:average.unplanned.nonCore};
 		_avResult.av.total={all:average.total.all,core:average.total.core,nonCore:average.total.nonCore};
-
 		_avResult.services= services;
 		_avResult.incidents={planned:incidents.planned,unplanned:incidents.unplanned};
 		_avResult.totalPeriod={all:totalTime.all,core:totalTime.core,nonCore:totalTime.nonCore};

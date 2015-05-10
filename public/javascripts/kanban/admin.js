@@ -78,9 +78,6 @@ function getConfig(collection){
 	}
 }
 
-
-
-
 function filterByNameValue(list,name,value){
 	var _filtererdList = new Array();
 	for (var l in list){
