@@ -300,41 +300,46 @@ function _filterRelevantData(data){
 	_incident.slaBreachTime = "";
 	_incident.subCategory = data.subcategory;
 
-	//logger.debug("--------------------- state: "+data.state);
+	// an do some enriching.....
 	if (data.state=="Resolved"){
-
 		var _open = _incident.openedAt;
-		var _resolved = _incident.resolvedAt
+		var _resolved = _incident.resolvedAt;
+		_incident.timeToResolve = _getTimeStringForTimeRange(_open,_resolved);
 
-
-		var ms = moment(_resolved,"DD/MM/YYYY HH:mm:ss").diff(moment(_open,"DD/MM/YYYY HH:mm:ss"));
-		var d = moment.duration(ms);
-		var _time = Math.floor(d.asHours()) + moment.utc(ms).format(":mm:ss");
-
-
-		_incident.timeToResolve = _time;
-		/*logger.debug("********************** opened: "+_open);
-		logger.debug("********************** resolved: "+_resolved);
-		logger.debug("********************** time to resolve: "+_time);
-		*/
 		if (_incident.slaResolutionDate && _resolved > _incident.slaResolutionDate){
 			_incident.slaBreach = true;
-			//logger.debug("################################## SLAB BREACH !!!! ");
-			ms = moment(_resolved,"DD/MM/YYYY HH:mm:ss").diff(moment(_incident.slaResolutionDate,"DD/MM/YYYY HH:mm:ss"));
-			d = moment.duration(ms);
-			_time = Math.floor(d.asHours()) + moment.utc(ms).format(":mm:ss");
-
 			//logger.debug("################################## SLAB BREACH by  "+_time);
-			_incident.slaBreachTime = _time;
+			_incident.slaBreachTime = _getTimeStringForTimeRange(_incident.slaResolutionDate,_resolved);
 		}
 		else if (_incident.slaResolutionDate && _resolved <= _incident.slaResolutionDate){
 			_incident.slaBreach = false;
 		}
-
 	}
 
+	if (data.state=="Closed"){
+		var _open = _incident.openedAt;
+		var _closed = _incident.closedAt;
+		_incident.timeToClose = _getTimeStringForTimeRange(_open,_closed);
+
+		if (_incident.slaResolutionDate && _closed > _incident.slaResolutionDate){
+			_incident.slaBreach = true;
+			//logger.debug("################################## SLAB BREACH by  "+_time);
+			_incident.slaBreachTime = _getTimeStringForTimeRange(_incident.slaResolutionDate,_closed);
+		}
+		else if (_incident.slaResolutionDate && _closed <= _incident.slaResolutionDate){
+			_incident.slaBreach = false;
+		}
+	}
 	return _incident;
 }
+
+function _getTimeStringForTimeRange(start,stop){
+	var ms = moment(stop,"DD/MM/YYYY HH:mm:ss").diff(moment(start,"DD/MM/YYYY HH:mm:ss"));
+	var d = moment.duration(ms);
+	var _time = Math.floor(d.asHours()) + moment.utc(ms).format(":mm:ss");
+	return _time;
+}
+
 
 function _getData(url,priority,date,callback){
 		var Client = require('node-rest-client').Client;
