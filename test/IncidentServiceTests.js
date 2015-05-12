@@ -1,9 +1,5 @@
 var winston = require('winston');
 
-
-
-
-
 winston.loggers.add('test_log',{
 	console:{
 		colorize:true,
@@ -69,5 +65,19 @@ describe('IncidentService', function(){
 			done();
 		});
   });
+
+  describe('#getOverdueGroupedBy()', function(){
+    it('returns grouped by incdients', function(done){
+
+      var incidentService = require('../services/IncidentService');
+			incidentService.getOverdueGroupedByAssignmentGroup(function(result){
+					logger.debug("result: "+result.children.length);
+
+					done();
+			})
+
+		});
+  });
+
 
 })

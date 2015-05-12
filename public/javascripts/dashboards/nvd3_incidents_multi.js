@@ -40,16 +40,13 @@ function init(chartId){
     _period =getUrlVars().period;
     if (!_period) _period=moment().year().toString();
     _aggregate =getUrlVars().aggregate;
-
     if (_aggregate){
       _url+="?aggregate="+_aggregate;
     }
     if (!_aggregate) _aggregate="monthly";
-
     var _colors={};
     _colors["P1"]=["#174D75","#E6EFF3"];
     _colors["P8"]=["#00b8e4","#EAF7FF"];
-
     console.log("prio: "+_prio+" colors: "+_colors[_prio]);
     console.log("period: "+_period);
     chart = nv.models.multiBarChart()
@@ -66,18 +63,34 @@ function init(chartId){
     if (_period=="") _period ="All";
     $("#period_"+_chartId).text(_period);
     $("#aggregate_"+_chartId).text(_aggregate);
-
     var _reduceXTicks = false;
     if (_aggregate=="daily") _reduceXTicks = true;
     chart.reduceXTicks(_reduceXTicks).staggerLabels(true);
     chart.yAxis
         .tickFormat(d3.format(',d'));
-
     redraw(_chartId,_period,_aggregate,_prio);
 
     charts[chartId]=chart;
     return chart;
   });
+
+  // clickhandler for 
+	$('a.dropdown').click( function(event) {
+		var _prio =event.target.id.split("_")[0].split("chart")[1];
+		var _chart=event.target.id.split("_")[0];
+		if (_.startsWith(event.target.id.split("_")[1],"aggregate")){
+			_aggregate =event.target.id.split("_")[1].split("-")[1];
+		}
+		else
+		{
+			_period = event.target.id.split("_")[1];
+		}
+		$("#period_"+_chart).text(_period);
+		$("#aggregate_"+_chart).text(_aggregate);
+		redraw(_chart,_period,_aggregate,_prio);
+	});
+
+
 }
 
 /**

@@ -330,23 +330,6 @@ script.
 			else
 				window.location.href = "/dashboard/firereport?"+_customer;
 		});
-		
-		// for incident chart
-		$('a.dropdown').click( function(event) {
-			var _prio =event.target.id.split("_")[0].split("chart")[1];
-			var _chart=event.target.id.split("_")[0];
-			if (_.startsWith(event.target.id.split("_")[1],"aggregate")){
-				_aggregate =event.target.id.split("_")[1].split("-")[1];
-			}
-			else
-			{
-				_period = event.target.id.split("_")[1];
-			}
-			$("#period_"+_chart).text(_period);
-			$("#aggregate_"+_chart).text(_aggregate);
-			redraw(_chart,_period,_aggregate,_prio);
-		});
-
-	
+			
 	
 	});

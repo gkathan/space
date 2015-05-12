@@ -234,7 +234,7 @@ function _syncIncident(url,done){
 
 				var _message={};
 				_message.title="INCIDENT UPDATE FAILED";
-				_message.body = "something went wrong on the request";
+				_message.body = "something went wrong on the request: "+err;
 
 				app.io.emit('message', {msg:_message});
 

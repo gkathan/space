@@ -101,6 +101,8 @@ var PATH = {
 						EXPORT_FIREREPORT : BASE+'/space/export/xlsx/firereport',
 						EXPORT_CONTENT : BASE+'/space/export/xlsx/content',
 						EXPORT_SOCINCIDENTS : BASE+'/space/export/xlsx/socincidents',
+						EXPORT_INCIDENTS : BASE+'/space/export/xlsx/incidents',
+						EXPORT_PROBLEMS : BASE+'/space/export/xlsx/problems',
 
 						CONFIG : BASE+'/space/config',
 
@@ -251,6 +253,8 @@ router.get(PATH.EXPORT_FIREREPORT, function(req, res, next) {exporter.excelFirer
 router.get(PATH.EXPORT_CONTENT, function(req, res, next) {exporter.excelContent(req,res,next);});
 router.get(PATH.EXPORT_ORGANIZATION, function(req, res, next) {exporter.excelOrganization(req,res,next);});
 router.get(PATH.EXPORT_SOCINCIDENTS, function(req, res, next) {exporter.excelSOCIncidents(req,res,next);});
+router.get(PATH.EXPORT_INCIDENTS, function(req, res, next) {exporter.excelIncidents(req,res,next);});
+router.get(PATH.EXPORT_PROBLEMS, function(req, res, next) {exporter.excelProblems(req,res,next);});
 
 
 router.post(PATH.TRANSCODE_BOARDS, function(req, res, next) {transcode(req,res,next); });

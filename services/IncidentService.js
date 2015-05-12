@@ -6,7 +6,10 @@ var mongojs = require('mongojs');
 var moment = require('moment');
 require('moment-duration-format');
 
-var _ = require('lodash');
+
+_ = require('lodash');
+_.nst=require('underscore.nest');
+
 
 var DB=config.database.db;
 var HOST = config.database.host;
@@ -22,7 +25,7 @@ var logger = winston.loggers.get('space_log');
 /**
  *
  */
-exports.find = function (callback) {
+function _find(callback) {
 	var items =  db.collection('incidents');
 	items.find({}).sort({openedAt:-1}, function (err, docs){
 			callback(docs);
@@ -40,12 +43,6 @@ exports.findSOC = function (callback) {
 }
 
 
-
-
-
-
-
-
 /**
  * param prioritylist: ["P1","P8","P40"]
  *
@@ -57,17 +54,17 @@ exports.findGroupedByPriority = function (prioritylist){
 	return moment.duration(minutes,'minutes').format("hh:mm.ss");;
 }
 
+exports.find = _find;
 exports.mapPriority = _mapPriority;
 exports.mapState = _mapState;
 exports.weeklyTracker = _aggregateWeekly;
 exports.monthlyTracker = _aggregateMonthly;
 exports.findTrackerByDate = _findIncidenttrackerByDate;
-
+exports.getOverdueGroupedByAssignmentGroup = _getOverdueGroupedByAssignmentGroup;
 
 
 function _findIncidenttrackerByDate(aggregate,period,callback){
   if (!aggregate) aggregate="weekly";
-
 
 	var collection = "incidenttracker";
 	var _date = period;
@@ -76,8 +73,6 @@ function _findIncidenttrackerByDate(aggregate,period,callback){
 	var _half = _parseHalf(_date);
 	var _month = _parseMonth(_date);
 	var _week = _parseWeek(_date);
-
-
 
 	logger.debug("------------------------ date: "+_date+" quarter: "+_quarter)
 	logger.debug("------------------------ date: "+_date+" half: "+_half)
@@ -165,10 +160,21 @@ function _findIncidenttrackerByDate(aggregate,period,callback){
 					callback(err,null);
 				}
     })
-
 }
+/**
+* active ==true
+* state != resolved,closed
+* resolutionTime > SLA ?
+* group by = AssignmentGroup
+*/
+function _getOverdueGroupedByAssignmentGroup(callback){
+	_find(function(incidents){
 
+		var result = _.nst.nest(incidents,("assignmentGroup"))
 
+		callback(result);
+	});
+}
 
 
 /**
