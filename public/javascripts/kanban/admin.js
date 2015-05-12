@@ -378,7 +378,7 @@ function getSOCIncidentsConfig(){
 		{ id: "businessService", name: "businessService",  field: "businessService",width:150, editor: Slick.Editors.Number , cssClass: "cell-standard"},
 		{ id: "start", name: "start",  field: "start",width:150, editor: Slick.Editors.Number ,sortable:true, cssClass: "cell-standard"},
 		{ id: "stop", name: "stop",  field: "stop",width:150, editor: Slick.Editors.Number ,sortable:true, cssClass: "cell-standard"},
-		{ id: "resolutionTime", name: "resolution",  field: "resolutionTime",width:80, editor: Slick.Editors.Number , formatter:Slick.Formatters.ResolutionTime,sortable:true, cssClass: "cell-standard"},
+		{ id: "resolutionTime", name: "TTR",  field: "resolutionTime",width:80, editor: Slick.Editors.Number , formatter:Slick.Formatters.ResolutionTime,sortable:true, cssClass: "cell-standard"},
 		{ id: "isCoreService", name: "core",  field: "isCoreService",width:50, editor: Slick.Editors.Number , formatter:Slick.Formatters.Checkmark, cssClass: "cell-standard"},
 		{ id: "isEndUserDown", name: "end",  field: "isEndUserDown",width:50, editor: Slick.Editors.Number , formatter:Slick.Formatters.Checkmark, cssClass: "cell-standard"},
 		{ id: "isExt", name: "ext",  field: "isExt",width:50, editor: Slick.Editors.Number , formatter:Slick.Formatters.Checkmark, cssClass: "cell-standard"},

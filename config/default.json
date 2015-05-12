@@ -52,11 +52,10 @@
 			{"dayOfWeek":4,"start":"16:00:00","stop":"23:59:59"},
 			{"dayOfWeek":5,"start":"16:00:00","stop":"23:59:59"}
 		]
-
 	},
 
 	"import":{
-		"plainTypes" : ["productportfolio","productcatalog","targets","incidents","labels","customers","competitors","roadmaps","availability","v1teams","scrumteams","incidenttracker","content","incidenttrackeroldsnow","socservices","label2customer"]
+		"plainTypes" : ["productportfolio","productcatalog","targets","incidents","labels","customers","competitors","roadmaps","availability","v1teams","scrumteams","incidenttracker","content","incidenttrackeroldsnow","socservices","label2customer","oldsnowincidents"]
 	},
 
   "context" : "bpty.studios",
@@ -71,6 +70,7 @@
 
 	"emit": {
 		"snow_incidents_new": "on",
+		"snow_incidents_new_exclude_businessservices":"Workplace",
 		"snow_incidents_changes": "off",
 		"space_messages" : "on"
 	},
@@ -93,6 +93,15 @@
 			"includePriority" : 2,
 			"url" : "https://bwinparty.service-now.com/incident_list.do?JSONv2&sysparm_action=getRecords&sysparm_query="
 		},
+
+		"oldsnowincident" : {
+			"mode": "off",
+			"includePriority" : 2,
+			"intervalMinutes" :60 	,
+			"url" : "https://snow.bwinparty.corp/incident_list.do?JSON&sysparm_query=opened_at%3E2014-01-01"
+		},
+
+
 		"soc_incidents" : {
 			"mode": "off",
 			"intervalMinutes" :1,

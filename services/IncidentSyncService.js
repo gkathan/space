@@ -186,14 +186,17 @@ function _syncIncident(url,done){
 							desktop:true,
 							icon:"/images/incidents/"+_prio+".png"
 						};
-						app.io.emit('message', {msg:_message});
+
+						// filter out stuff
+						var _exclude = config.emit.snow_incidents_new_exclude_businessservices;
+						if (!_.startsWith(_newincident.businessService,_exclude)){
+							app.io.emit('message', {msg:_message});
+						}
+					
 					}
 
 					if (config.emit.snow_incidents_changes =="on" && _incidentsDIFF.CHANGED.length>0){
 						_message.title="! INCIDENT CHANGES!";
-						// TODO format nicely and link to snow
-
-
 						_message.body = JSON.stringify(_incidentsDIFF.CHANGED);
 						_message.type = "warning";
 						_message.desktop={desktop:true};
@@ -271,7 +274,16 @@ function _filterRelevantData(data){
 	_incident.impact = data.impact;
 	_incident.urgency = data.urgency;
 	_incident.description = data.description;
-	_incident.priority = data.priority;
+
+	if (data.priority){
+		_incident.priority = data.priority;
+	}
+	else{
+		if (_.startsWith(data.number,"CHG")) _incident.priority="CH";
+		else if (_.startsWith(data.number,"Maintenance")) _incident.priority="MA";
+	}
+
+
 	_incident.closedAt = new moment(data.closed_at,"DD-MM-YYYY HH:mm:ss").toDate();
 	_incident.resolvedAt = new moment(data.resolved_at,"DD-MM-YYYY HH:mm:ss").toDate();
 	_incident.id = data.number;

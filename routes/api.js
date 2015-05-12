@@ -405,7 +405,11 @@ function findIncidents(req,res,next){
 	  logger.debug("findIncidents() called");
 
 		var incService = require("../services/IncidentService");
-		incService.find(function(data){
+		incService.find(function(err,data){
+				if (err){
+					logger.error("[error] findincidents says: "+err)
+					res.send(err);
+				}
 				res.send(data);
 				return;
 		});
@@ -661,6 +665,7 @@ function message(req,res,next){
 			desktop:true,
 			icon:"/images/messages/msg_"+_message.type+".png"
 		};
+		_message.history={menu:true};
 
 		req.app.io.emit("message",{msg:_message});
 	}

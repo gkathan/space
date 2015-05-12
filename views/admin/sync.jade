@@ -1,0 +1,182 @@
+include ../kanban_menu
+
+//link(rel='stylesheet', href='/stylesheets/material.css')
+
+block content
+
+div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;background-color:white;width:900px;text-align: left;margin: 10px auto;")
+	.panel-heading
+		i.glyphicon.glyphicon-refresh(style="font-size:15px")
+		span(style="font-size:20px") &nbsp;SYNC
+	.panel-body(style="font-size:12px")
+		|sync processes:
+		table
+			thead
+				tr(style="line-height:24px")
+					th(style="width:100px") 
+						|syncer
+					th(style="width:700px")
+						|url
+			tbody
+				tr(style="line-height:18px")
+					td 
+						|soc_incidents:
+					td 
+						a(href="#{config.sync.soc_incidents.url}" target="_new")|#{config.sync.soc_incidents.url}
+				tr(style="line-height:16px")
+					td
+						|soc_services:
+					td
+						a(href="#{config.sync.soc_services.url}" target="_new")|#{config.sync.soc_services.url}
+				tr(style="line-height:16px")
+					td
+						|incident:
+					td 
+						a(href="#{config.sync.incident.url}" target="_new")|#{config.sync.incident.url}
+				tr(style="line-height:16px")
+					td
+						|v1Epics:
+					td
+						a(href="#{config.sync.v1Epics.url}" target="_new")|#{config.sync.v1Epics.url}
+				tr(style="line-height:16px")
+					td 
+						|SOCIncidents:
+					td
+						a(href="#{config.sync.soc_incidents.url}" target="_new")|#{config.sync.soc_incidents.url}
+			
+			
+
+
+
+include ../includes/material
+
+script.
+
+	$('#sync_employeeimages').on('click', function () {
+		$.ajax({
+		  url: '/api/space/rest/sync/employeeimages',
+		  type: 'POST',
+		  data: {
+
+				}
+		});
+		//location.reload();
+	});
+
+	$('#sync_availability').on('click', function () {
+		console.log("avreport request called...");
+		$.ajax({
+			url: '/api/space/rest/sync/availability',
+			type: 'POST',
+			data: {
+
+				},
+			success: function(data){
+				alert("data: "+JSON.stringify(data));
+			},
+			error: function(err){
+				alert("err: "+JSON.stringify(err));
+			}
+		});
+		//location.reload();
+	});
+	
+	$('#sync_incidents').on('click', function () {
+		console.log("incidentsync request called...");
+		$.ajax({
+			url: '/api/space/rest/sync/incidents',
+			type: 'POST',
+			data: {
+
+				},
+			success: function(data){
+				alert("data: "+JSON.stringify(data));
+			},
+			error: function(err){
+				alert("err: "+JSON.stringify(err));
+			}
+		});
+		//location.reload();
+	});
+	
+	$('#sync_soc_incidents').on('click', function () {
+		console.log("soc incidentsync request called...");
+		$.ajax({
+			url: '/api/space/rest/sync/soc_incidents',
+			type: 'POST',
+			data: {
+
+				},
+			success: function(data){
+				alert("data: "+JSON.stringify(data));
+			},
+			error: function(err){
+				alert("err: "+JSON.stringify(err));
+			}
+		});
+		//location.reload();
+	});
+	
+	$('#sync_problems').on('click', function () {
+		console.log("problemsync request called...");
+		$.ajax({
+			url: '/api/space/rest/sync/problems',
+			type: 'POST',
+			data: {
+
+				},
+			success: function(data){
+				alert("data: "+JSON.stringify(data));
+			},
+			error: function(err){
+				alert("err: "+JSON.stringify(err));
+			}
+		});
+		//location.reload();
+	});
+
+	$('#sync_apm_login').on('click', function () {
+		console.log("sync_apm_betplacement request called...");
+		$.ajax({
+			url: '/api/space/rest/sync/apm/login',
+			type: 'POST',
+			data: {
+
+				},
+			success: function(data){
+				alert("data: "+JSON.stringify(data));
+			},
+			error: function(err){
+				alert("err: "+JSON.stringify(err));
+			}
+		});
+		//location.reload();
+	});
+	
+	$('#calc_availability').on('click', function () {
+		console.log("calc_availability request called...");
+		$.ajax({
+			url: '/api/space/rest/availability/calculate',
+			type: 'GET',
+			data: {
+
+				},
+			success: function(data){
+				alert("data: "+JSON.stringify(data));
+			},
+			error: function(err){
+				alert("err: "+JSON.stringify(err));
+			}
+		});
+		//location.reload();
+	});
+
+	
+		
+		
+		
+			
+		
+		
+
+	

@@ -109,7 +109,7 @@ function _processServices(type,services,injectedServices,from,to,filter,endUserA
 		// grab the SOC incidents for the intervall (from to)
 		_socIncidents.find(function(err,data){
 			if (testIncidents) data = testIncidents;
-			logger.debug("***** SOCIncidents: "+JSON.stringify(data));
+			//logger.debug("***** SOCIncidents: "+JSON.stringify(data));
 
 			var incidents={};
 			incidents.planned = [];
@@ -341,16 +341,16 @@ function _calculateTotalCoreTime(from,to){
 	while(from < to){
     var newDate = from.setDate(from.getDate() + 1);
     from = new Date(newDate);
-		logger.debug("----day: "+moment(newDate).format("YYYY-MM-DD"));
+		//logger.debug("----day: "+moment(newDate).format("YYYY-MM-DD"));
 		for (var i in _coreDefinition){
 			if (moment(from).day()==_coreDefinition[i].dayOfWeek){
 				var _c = moment(_coreDefinition[i].stop,"HH:mm:ss")-moment(_coreDefinition[i].start,"HH:mm:ss");
 				_coreTotalTime+=_c
-				logger.debug("* core time span:"+_c);
+				//logger.debug("* core time span:"+_c);
 			}
 		}
   }
-	logger.debug("*********** core time OVERALL:"+_coreTotalTime);
+	//logger.debug("*********** core time OVERALL:"+_coreTotalTime);
 	return _coreTotalTime;
 }
 /**
@@ -404,7 +404,7 @@ function _getDateForTimeString(_timeString,_datetime){
 	var _month = moment(_datetime).month()+1;
 	var _year = moment(_datetime).year();
 	var d = new moment(_year+"-"+_month+"-"+_day+" "+_timeString,"YYYY-M-DD HH:mm:ss");
-	logger.debug("==== moment created: given timeString: "+_timeString+" date = "+d.toLocaleString());
+	//logger.debug("==== moment created: given timeString: "+_timeString+" date = "+d.toLocaleString());
 	return d;
 }
 

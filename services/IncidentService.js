@@ -28,8 +28,24 @@ var logger = winston.loggers.get('space_log');
 function _find(callback) {
 	var items =  db.collection('incidents');
 	items.find({}).sort({openedAt:-1}, function (err, docs){
-			callback(docs);
+			callback(err,docs);
 			return;
+	});
+}
+
+/**
+ * test find method which gets incidents transparently for caller from old and new snow repo
+ */
+function _findAll(callback) {
+	var items =  db.collection('incidents');
+	items.find({}).sort({openedAt:-1}, function (err, incidents){
+			var olditems =  db.collection('oldsnowincidents');
+			olditems.find({}).sort({openedAt:-1}, function (err, oldincidents){
+
+			callback(err,incidents.concat(oldincidents));
+			//callback(err,incidents);
+			return;
+		});
 	});
 }
 
@@ -55,6 +71,7 @@ exports.findGroupedByPriority = function (prioritylist){
 }
 
 exports.find = _find;
+exports.findAll = _findAll;
 exports.mapPriority = _mapPriority;
 exports.mapState = _mapState;
 exports.weeklyTracker = _aggregateWeekly;

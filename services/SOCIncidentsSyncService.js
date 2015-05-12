@@ -49,7 +49,9 @@ function _syncSOCIncidents(url,callback){
 			var Client = require('node-rest-client').Client;
 			client = new Client();
 
-			incService.find(function(snowIncidents){
+			// findAll grabs combined old and new snow incidents
+			//if we only want new snow => for now just call find()
+			incService.findAll(function(err,snowIncidents){
 				// direct way
 				client.get(url, function(data, response,callback){
 					//logger.debug(data);
@@ -63,7 +65,7 @@ function _syncSOCIncidents(url,callback){
 						_incident.resolutionTime = _incident.stop - _incident.start;
 
 						if (_incident.priority==" " && _.startsWith(_incident.incidentID,"Maintenance")) _incident.priority="MA";
-						if (_incident.priority==" " && _.startsWith(_incident.incidentID,"Change")) _incident.priority="CH";
+						if (_incident.priority==" " && _.startsWith(_incident.incidentID,"CHG")) _incident.priority="CH";
 
 						var _check = _.findWhere(snowIncidents,{"id":_incident.incidentID})
 						if (_check){

@@ -56,20 +56,7 @@ router.get('/chromeonly', function(req, res) {
 	res.render('chromeonly', { title: 's p a c e - chrome only' });
 });
 
-router.get('/config', function(req, res) {
-	if (ensureAuthenticated(req,res)){
-    var os = require('os');
-    var json2html = require('node-json2html');
-    var configHtml = json2html.transform(JSON.stringify(config));
 
-    logger.debug("config:"+config)
-    logger.debug("configHtml:"+configHtml)
-
-		res.locals.os = os;
-    res.locals.configHtml = configHtml;
-		res.render('config');
-  }
-});
 
 router.get('/labels', function(req, res) {
 	//res.locals.labels = LabelService.findLabels();
@@ -115,27 +102,6 @@ router.get('/competitors', function(req, res) {
 });
 
 
-
-/* GET the admin page. */
-router.get('/admin', function(req, res) {
-	if (ensureAuthenticated(req,res)){
-	   res.render('admin/admin', { title: 's p a c e - admin' });
-  }
-});
-
-/* GET the admin page. */
-router.get('/admin/message', function(req, res) {
-	if (ensureAuthenticated(req,res)){
-	   res.render('message', { title: 's p a c e - admin' });
-  }
-});
-
-/* GET the admin page. */
-router.get('/admin/content', function(req, res) {
-	if (ensureAuthenticated(req,res)){
-	   res.render('content', { title: 's p a c e - admin' });
-  }
-});
 
 
 router.get('/playbooks', function(req, res) {

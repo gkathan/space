@@ -79,5 +79,19 @@ describe('IncidentService', function(){
 		});
   });
 
+  describe('#findAll()', function(){
+    it('returns ALL incdients from both oldsnow and newsnow', function(done){
+
+      var incidentService = require('../services/IncidentService');
+			incidentService.findAll(function(err,result){
+					logger.debug("result: "+result.length);
+
+					done();
+			})
+
+		});
+  });
+
+
 
 })
