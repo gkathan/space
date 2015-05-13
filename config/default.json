@@ -13,6 +13,35 @@
 
     "build" : "---should be dynamically assigned",
 
+	"logger": {
+			"dev":{
+				"console":{
+					"colorize":true,
+					"prettyPrint":true,
+					"showLevel":true,
+					"timestamp":true,
+					"level":"debug"
+				},
+			    "file":{
+					"filename": "logs/space.log" ,
+					"prettyPrint":true,
+					"showLevel":true,
+					"level":"info"
+				},
+					"LogstashUDP": {
+      		"port": 9999,
+      		"appName": "space",
+      		"host": "127.0.0.1"
+			}},
+			"production":{
+			    "file":{
+					"filename": "logs/space.log" ,
+					"prettyPrint":true,
+					"showLevel":true,
+					"level":"info"
+				}
+			}
+	},
 
 	"gulp":{
 		"baseDir" : "./",

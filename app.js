@@ -1,4 +1,6 @@
 var express = require('express');
+var winston = require('winston'),
+  LogstashUDP = require('winston-logstash-udp').LogstashUDP;
 
 var path = require('path');
 var favicon = require('serve-favicon');
@@ -8,6 +10,20 @@ var session = require('express-session');
 var mongojs = require("mongojs");
 var fs = require('fs');
 var config = require('config');
+
+// logger
+
+var _loggerconfig;
+if (config.env=="PRODUCTION") _loggerconfig = config.logger.production;
+else _loggerconfig = config.logger.dev;
+
+winston.loggers.add('space_log',_loggerconfig);
+
+
+var logger = winston.loggers.get('space_log');
+
+
+
 
 var app = express();
 
@@ -32,17 +48,6 @@ var authenticate = require('./routes/authenticate');
 var content = require('./routes/content');
 var admin = require('./routes/admin');
 
-// logger
-var winston = require('winston');
-winston.loggers.add('space_log',{
-	console:{
-    colorize:true,prettyPrint:true,showLevel:true,timestamp:true,level:"debug"
-	},
-  file:{
-		filename: 'logs/space.log',prettyPrint:true,showLevel:true,level:"debug"
-	}
-});
-var logger = winston.loggers.get('space_log');
 
 logger.info("[s p a c e] - app initializes...");
 
@@ -221,6 +226,7 @@ app.use(function(err, req, res, next) {
         error: {}
     });
 });
+logger.info("[s p a c e] - app initializes DONE..");
 
 module.exports = app;
 exports.io = app.io;
