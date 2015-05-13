@@ -80,6 +80,8 @@ router.get('/firereport', function(req, res) {
 
 		avc.calculateOverall(_from,_to,_filter,function(avDataOverall){
 			avc.calculateExternal(_from,_to,_filter,function(avDataExternal){
+
+				
 				res.locals.av = avDataOverall;
 				res.locals.avExternal = avDataExternal;
 				res.locals.moment = moment;

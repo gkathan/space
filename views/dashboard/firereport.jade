@@ -91,6 +91,24 @@ mixin renderAVDowntime(title,downtime)
 
 mixin renderAVServicesList(title,av)
 	h4 #{title}
+	
+	
+	div(style="text-align:center")
+		table(style="margin:0 auto")
+			+renderAV("AV planned",av.av.planned,av.totalPeriod)
+			+renderAV("AV unplanned",av.av.unplanned,av.totalPeriod)
+			+renderAV("AV totals",av.av.total,av.totalPeriod)
+		br
+		|revenue impact planned: #{av.revenueImpact.planned}
+		br
+		|revenue impact unplanned: #{av.revenueImpact.unplanned}
+	hr
+	div(style="text-align:center")
+		table(style="margin:0 auto")
+			+renderAVDowntime("planned:",av.downtime.planned)
+			+renderAVDowntime("unplanned:",av.downtime.unplanned)
+			+renderAVDowntime("total:",av.downtime.total)
+	hr
 	table.table-striped.table-hover.table-condensed(style="max-width:1200px")
 		thead
 			tr(style="line-height:14px;font-weight:bold;font-size:14px")
@@ -127,18 +145,7 @@ mixin renderAVServicesList(title,av)
 						td
 							|#{formatAVTime(service.availability.total.time)}
 
-	hr
-	div(style="text-align:center")
-		table(style="margin:0 auto")
-			+renderAV("AV planned",av.av.planned,av.totalPeriod)
-			+renderAV("AV unplanned",av.av.unplanned,av.totalPeriod)
-			+renderAV("AV totals",av.av.total,av.totalPeriod)
-	hr
-	div(style="text-align:center")
-		table(style="margin:0 auto")
-			+renderAVDowntime("planned:",av.downtime.planned)
-			+renderAVDowntime("unplanned:",av.downtime.unplanned)
-			+renderAVDowntime("total:",av.downtime.total)
+	
 	hr
 	div(style="font-style:italic;font-size:10px")
 		|*) downtimes are per definition always "degraded" times by accordong SOC set degradation factor
@@ -209,18 +216,6 @@ block content
 		br
 		img(src="/images/bpty_logo.png" style="display:block;margin-left:auto;margin-right:auto;")
 	h3(style="text-align:center;font-weight:bold") firereport-online prototype
-	if filter && filter.customer!="* ALL *"
-		div(style="text-align:center;font-weight:bold")
-			img(src="/images/customers/#{filter.customer}.png" height="50px")
-	br
-	div(style="text-align:center;font-weight:bold")
-		span(style="font-weight:normal") start: 
-		span(id="start" style="font-weight:bold") #{moment(av.from)}
-	div(style="text-align:center;font-weight:bold")
-		span(style="font-weight:normal") stop: 
-		span(id="stop" style="font-weight:bold") #{moment(av.to)}
-		br
-		br
 	div(style="margin:0px auto;;width:100px;height:100px")
 		select.form-control.floating-label(id="filter"  name="filter" type="select"  placeholder="type" autocomplete="off"  )
 			option * ALL *
@@ -237,6 +232,19 @@ block content
 				i.fa.fa-calendar &nbsp;
 				span -- enter date -- &nbsp;
 				b.caret
+	if filter && filter.customer!="* ALL *"
+		div(style="text-align:center;font-weight:bold")
+			img(src="/images/customers/#{filter.customer}.png" height="50px")
+	br
+	div(style="text-align:center;font-weight:bold")
+		span(style="font-weight:normal") start: 
+		span(id="start" style="font-weight:bold") #{moment(av.from)}
+	div(style="text-align:center;font-weight:bold")
+		span(style="font-weight:normal") stop: 
+		span(id="stop" style="font-weight:bold") #{moment(av.to)}
+		br
+		br
+
 	div.row(style="margin: auto;max-width:1200px")
 		div.panel.panel-default
 			div.panel-heading 

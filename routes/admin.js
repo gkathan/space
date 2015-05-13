@@ -21,6 +21,8 @@ var logger = winston.loggers.get('space_log');
 
 
 
+
+
 /* GET the admin page. */
 router.get('/', function(req, res) {
 	if (ensureAuthenticated(req,res)){
@@ -49,17 +51,28 @@ router.get('/sync', function(req, res) {
   }
 });
 
+/* GET the admin page. */
+router.get('/changelog', function(req, res) {
+	  var changelog=require('../changelog.json');
+		res.locals.changelog=changelog;
+
+		res.render('admin/changelog', { title: 's p a c e - admin.changelog' });
+
+});
+
 router.get('/config', function(req, res) {
 	if (ensureAuthenticated(req,res)){
     var os = require('os');
     var json2html = require('node-json2html');
     var configHtml = json2html.transform(JSON.stringify(config));
 
+
     logger.debug("config:"+config)
     logger.debug("configHtml:"+configHtml)
 
 		res.locals.os = os;
     res.locals.configHtml = configHtml;
+
 		res.render('admin/config');
   }
 });

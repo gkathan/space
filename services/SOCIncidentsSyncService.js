@@ -72,6 +72,7 @@ function _syncSOCIncidents(url,callback){
 							_incident.snowId = _check.sysId;
 							_incident.labels = _check.label;
 							_incident.businessService = _check.businessService;
+							_incident.revenueImpact = _check.revenueImpact;
 						}
 					}
 

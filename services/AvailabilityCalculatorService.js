@@ -119,6 +119,10 @@ function _processServices(type,services,injectedServices,from,to,filter,endUserA
 				unplanned:{all:0.0,core:0.0,nonCore:0.0},
 				total:{all:0.0,core:0.0,nonCore:0.0}
 			};
+
+			var revenueImpactPlanned;
+			var revenueImpactUnplanned;
+
 			//iterate over all services
 			for (var s in services){
 				var serviceDowntime={
@@ -129,11 +133,18 @@ function _processServices(type,services,injectedServices,from,to,filter,endUserA
 				// default we include all
 				services[s].filterExclude=false;
 
+				revenueImpactPlanned=0;
+				revenueImpactUnplanned=0;
+
+
 				// ==> here we can identify services which can be skipped for a given customer filter
 				if (checkServiceToExclude(mapping,filter,services[s])==false){
 				//per service iterate over incidents
 					for (var i in data){
 						var _inc = data[i];
+
+						//logger.debug("+++ revenueImpact: "+_inc.revenueImpact);
+
 
 						var _labels=[];
 						if (_inc.labels){
@@ -143,6 +154,7 @@ function _processServices(type,services,injectedServices,from,to,filter,endUserA
 						if (checkLabels(_filterLabels,_labels) && _inc.serviceName.split(",").indexOf(services[s].ServiceName)>-1 &&_inc.isEndUserDown==endUserAffected && _inc.start>=new Date(from) && _inc.start <=new Date(to)){
 							var _time = _degrade(_inc.resolutionTime,_inc.degradation);
 							if (_inc.isPlanned==true){
+								if (_inc.revenueImpact) revenueImpactPlanned+=parseInt(_inc.revenueImpact);
 								// check core / non-core
 								_checkCoreTime(_inc,function(result){
 									downtime.planned.all+=_time;
@@ -159,6 +171,7 @@ function _processServices(type,services,injectedServices,from,to,filter,endUserA
 								})
 							}
 							else{
+								if (_inc.revenueImpact) revenueImpactUnplanned+=parseInt(_inc.revenueImpact);
 								// check core / non-core
 								_checkCoreTime(_inc,function(result){
 									downtime.unplanned.all+=_time;
@@ -181,6 +194,9 @@ function _processServices(type,services,injectedServices,from,to,filter,endUserA
 
 						}
 					} // end for incident loop
+
+					//logger.debug("+++++++ revenueImpactPlanned: "+revenueImpactPlanned);
+					//logger.debug("+++++++ revenueImpactUnplanned: "+revenueImpactUnplanned);
 
 					// !!! different total times for core and noncore !!!
 					var avService={};
@@ -212,6 +228,9 @@ function _processServices(type,services,injectedServices,from,to,filter,endUserA
 				services = services.concat(injectedServices);
 			}
 
+
+
+
 			var average = _calculateAverages(services);
 
 			var _avResult={};
@@ -229,6 +248,12 @@ function _processServices(type,services,injectedServices,from,to,filter,endUserA
 			_avResult.services= services;
 			_avResult.incidents={planned:incidents.planned,unplanned:incidents.unplanned};
 			_avResult.totalPeriod={all:totalTime.all,core:totalTime.core,nonCore:totalTime.nonCore};
+
+			_avResult.revenueImpact={planned:revenueImpactPlanned,unplanned:revenueImpactUnplanned};
+
+			//logger.debug("xxxxxxxxxxxxxx+++++++ revenueImpactPlanned: "+	_avResult.revenueImpact.planned);
+			//logger.debug("xxxxxxxxxxxxxx+++++++ revenueImpactUnplanned: "+	_avResult.revenueImpact.unplanned);
+
 			/*
 			logger.debug("**************************************************** _averageTotal: "+ average.total.all);
 			logger.debug("**************************************************** _averageTotalCore: "+ 	_avResult.avTotalCore);

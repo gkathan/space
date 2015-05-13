@@ -24,7 +24,6 @@ var logger = winston.loggers.get('space_log');
 
 
 
-
 var app = express();
 
 
@@ -47,6 +46,7 @@ var dashboard = require('./routes/dashboard');
 var authenticate = require('./routes/authenticate');
 var content = require('./routes/content');
 var admin = require('./routes/admin');
+
 
 
 logger.info("[s p a c e] - app initializes...");
@@ -86,6 +86,7 @@ app.use(flash());
 app.use(function(req,res,next){
 	res.locals.session = req.session;
 	res.locals.config = config;
+
 	next();
 });
 

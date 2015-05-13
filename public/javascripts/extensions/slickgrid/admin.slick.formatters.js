@@ -169,6 +169,10 @@ function IncidentPriorityIconFormatter(row, cell, value, columnDef, dataContext)
     if (value=="P08 - High" || value=="P8") _img="P8.png";
     if (value=="P16 - Moderate" || value=="P16") _img="P16.png";
     if (value=="P40 - Low" || value=="P40") _img="P40.png";
+    if (value=="P120 - Low" || value=="P120") _img="P120.png";
+    if (_.startsWith(value,"MA")) _img="MA.png";
+    if (_.startsWith(value,"CH")) _img="CH.png";
+
   }
 
   if (_img) return "<img src='/images/incidents/"+_img+"' height='20px'/>";

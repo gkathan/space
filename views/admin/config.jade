@@ -4,7 +4,7 @@ include ../kanban_menu
 
 block content
 
-div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;background-color:white;width:400px;text-align: left;margin: 10px auto;")
+div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;background-color:white;width:600px;text-align: left;margin: 10px auto;")
 	.panel-heading
 		i.glyphicon.glyphicon-barcode(style="font-size:15px")
 		span(style="font-size:20px") &nbsp;CONFIG
@@ -22,9 +22,6 @@ div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;back
 			li session.CONTEXT:
 				b #{session.CONTEXT}
 
-
-
-
 			li os:
 				ul
 					li platform:
@@ -41,11 +38,6 @@ div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;back
 						b #{os.freemem()}
 					li cpus:
 						b #{os.cpus().length}
-
-		
-
-
-
 
 		br
 		a.btn.btn-xs.btn-warning(id="sendtestnotification" href="#" ) send testmail
@@ -82,7 +74,9 @@ div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;back
 		a.btn.btn-xs.btn-danger(id="sync_apm_login" href="#" ) force sync apm.login
 		br
 		a.btn.btn-xs.btn-warning(id="calc_availability" href="#" ) calculate availability
-
+		
+		hr
+	
 
 
 	include ../includes/material

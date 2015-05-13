@@ -372,6 +372,7 @@ function getSOCIncidentsConfig(){
     { id: "incidentID", name: "incidentID",  field: "incidentID",width:100, editor: Slick.Editors.Number , cssClass: "cell-standard"},
 		{ id: "priority", name: "prio",  field: "priority",width:25, formatter:Slick.Formatters.IncidentPriorityIcon, cssClass: "cell-standard"},
     { id: "degradation", name: "deg", field: "degradation", editor: Slick.Editors.Number ,width:40, cssClass: "cell-standard"},
+    { id: "revenueImpact", name: "revenueImpact", field: "revenueImpact", formatter:Slick.Formatters.EurAmount ,width:100, cssClass: "cell-standard"},
 		{ id: "description", name: "description", field: "description",sortable:true,width:300, editor: Slick.Editors.Text,cssClass: "cell-standard" },
 		{ id: "serviceName", name: "serviceName",  field: "serviceName",width:150, editor: Slick.Editors.Number , cssClass: "cell-standard"},
 		{ id: "labels", name: "labels",  field: "labels",width:250, editor: Slick.Editors.Number , cssClass: "cell-standard"},

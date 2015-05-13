@@ -434,7 +434,8 @@ describe('AvailabilityCalculatorService', function(){
 		    "serviceName" : "test service B",
 		    "start" : new Date("2015-01-01 01:00:00"),
 		    "stop" : new Date("2015-01-01 01:01:00"),
-		    "resolutionTime" : 60000
+		    "resolutionTime" : 60000,
+				"revenueImpact" : 20000
 			};
 			//in core-time
 			var _inc2 = {
@@ -454,7 +455,8 @@ describe('AvailabilityCalculatorService', function(){
 		    "serviceName" : "test service A",
 		    "start" : new Date("2015-01-01 17:00:00"),
 		    "stop" : new Date("2015-01-01 17:01:00"),
-		    "resolutionTime" : 60000
+		    "resolutionTime" : 60000,
+				"revenueImpact" : 10000
 			};
 			test_incidents.push(_inc1);
 			test_incidents.push(_inc2);
@@ -515,6 +517,8 @@ describe('AvailabilityCalculatorService', function(){
 				assert.equal(0.9994792269483024, result.av.total.all);
 				assert.equal(0.9994791757087551, result.av.total.nonCore);
 				assert.equal(0.999479148581548, result.av.total.core);
+
+				assert.equal(20000,result.revenueImpact.unplanned);
 
 
 				done();

@@ -60,7 +60,7 @@ function _syncLogin(done){
 		// and store it
 		var apm_login =  db.collection('apm_login');
 
-		data[0].snapshotTime=new Date();
+		if (data[0]) data[0].snapshotTime=new Date();
 
 		apm_login.insert(data	 , function(err , success){
 			//console.log('Response success '+success);

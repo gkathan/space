@@ -10,11 +10,14 @@ var zip = require('gulp-zip');
 var unzip = require('gulp-unzip');
 var mocha = require('gulp-mocha');
 var git = require('gulp-git');
+var mongojs = require('mongojs');
 
 var jshint = require('gulp-jshint');
 var stylish = require('jshint-stylish');
 
 var config = require('config');
+
+
 
 var fs = require('fs');
 var moment = require('moment');
@@ -357,9 +360,36 @@ gulp.task('mocha', function () {
 });
 
 // Other actions that do not require a Vinyl
-gulp.task('log', function(){
-  git.exec({args : 'log --follow index.js'}, function (err, stdout) {
+gulp.task('changelog', function(){
+  git.exec({args : 'log --oneline --pretty=format:"%ad:: %s;;" --date=short '}, function (err, changelog) {
     if (err) throw err;
+    //console.log(changelog);
+
+
+
+      var _loglines = changelog.split(";;");
+
+      var _logitemlist = [];
+      for (var i in _loglines){
+          var _logitem = {};
+          var _linesplit = _loglines[i].split("::");
+          _logitem.date = _linesplit[0];
+          _logitem.change = _linesplit[1];
+
+          console.log("**** "+JSON.stringify(_logitem));
+
+          _logitemlist.push(_logitem);
+      }
+
+      console.log(JSON.stringify(_logitemlist));
+
+      fs.writeFile("changelog.json", JSON.stringify(_logitemlist), 'utf8', function(err,done){
+        console.log("[done]");
+
+      
+    });
+
+
   });
 });
 
