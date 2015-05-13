@@ -91,7 +91,7 @@ function _processServices(type,services,injectedServices,from,to,filter,endUserA
 	totalTime.nonCore = totalTime.all - totalTime.core;
 
 	var _socIncidents = db.collection('socincidents');
-	var _label2customer = db.collection('label2customer');
+	var _label2customer = db.collection('soclabel2customer');
 
 	_label2customer.find(function(err,mapping){
 		//{customer:"bwin"};

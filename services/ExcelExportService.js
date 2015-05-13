@@ -578,6 +578,7 @@ function excelIncidents(req, res , next){
 		{caption:'closedAt',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'timeToResolve',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'closeCode',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'revenueImpact',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'slaBreach',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'slaBreachTime',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'businessService',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},

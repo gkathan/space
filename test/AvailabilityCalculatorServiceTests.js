@@ -344,7 +344,7 @@ describe('AvailabilityCalculatorService', function(){
 			var avService=require('../services/AvailabilityService');
 			avService.findSOCServicesMain(function(services){
 				//logger.debug("SOC services: "+JSON.stringify(services));
-				var _label2customer = db.collection('label2customer');
+				var _label2customer = db.collection('soclabel2customer');
 				_label2customer.find(function(err,mapping){
 					//logger.debug("mapping: "+JSON.stringify(mapping));
 					var _check = avCalculatorService.checkServiceToExclude(mapping,_filter,services[0]);

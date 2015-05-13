@@ -75,6 +75,8 @@ function _syncIncident(url,done){
 			logger.debug("[_syncIncident]...get data..: _url:"+url);
 			//logger.debug("[_syncIncident]...get data..: data:"+JSON.stringify(data));
 
+			var incService = require('./IncidentService');
+
 			var incidents =  db.collection('incidents');
 			var incidentsdelta =  db.collection('incidentsdelta');
 
@@ -83,150 +85,160 @@ function _syncIncident(url,done){
 
 			// lets first get what we have had
 			incidents.find({},function(err,baseline){
-        _incidentsOLD = baseline;
-			   // and store it
 
-				incidents.drop();
+				incService.findRevenueImpactMapping(function(err,impactMapping){
 
-				var _compareIncidents=[];
-				var _compareIncidentsBaseline=[];
+					_incidentsOLD = baseline;
+				   // and store it
 
-				for (var i in data.records){
-					var _incident = _filterRelevantData(data.records[i]);
-					_incidentsNEW.push(_incident);
-					_compareIncidents.push(_filterRelevantDataForDiff(_incident));
-				}
+					incidents.drop();
 
-        var _diff;
+					var _compareIncidents=[];
+					var _compareIncidentsBaseline=[];
 
-				for (var o in _incidentsOLD){
-					_compareIncidentsBaseline.push(_filterRelevantDataForDiff(_incidentsOLD[o]));
-				}
+					for (var i in data.records){
+						var _incident = _filterRelevantData(data.records[i]);
+						_incidentsNEW.push(_incident);
+						_compareIncidents.push(_filterRelevantDataForDiff(_incident));
+					}
 
-        var _incidentsDELTA_CHANGED =[];
-        for (var n in _incidentsNEW){
-          var _sysId = _incidentsNEW[n].sysId;
-          var _old = _.findWhere(_incidentsOLD,{"sysId":_sysId});
+	        var _diff;
 
-          var _changed={};
-          if (_old){
-            _diff=jsondiffpatch.diff(_filterRelevantDataForDiff(_old),_filterRelevantDataForDiff(_incidentsNEW[n]));
-            if (_diff){
-              var _change ={"id":_old.id,"sysId":_old.sysId,"diff":_diff}
+					for (var o in _incidentsOLD){
+						_compareIncidentsBaseline.push(_filterRelevantDataForDiff(_incidentsOLD[o]));
+					}
 
-              _incidentsDELTA_CHANGED.push(_change);
-            }
-          }
-        }
+	        var _incidentsDELTA_CHANGED =[];
+	        for (var n in _incidentsNEW){
+	          var _sysId = _incidentsNEW[n].sysId;
+	          var _old = _.findWhere(_incidentsOLD,{"sysId":_sysId});
 
-        var _incidentsNEWSysIds = _.pluck(_incidentsNEW,'sysId');
-        var _incidentsOLDSysIds = _.pluck(_incidentsOLD,'sysId');
-
-        // and also check for new incidents !
-        // lodash.difference
-        // lodash.pick for reducing the object proerties
-        // lodash.omit might be better...
-
-        var _incidentsDELTASysIds = _.difference(_incidentsNEWSysIds,_incidentsOLDSysIds);
-
-        logger.debug("OLD *************** "+_incidentsOLDSysIds);
-        logger.debug("NEW *************** "+_incidentsNEWSysIds);
-
-        logger.debug("DELTA *************** delta size: "+_incidentsDELTASysIds.length);
-
-        var _incidentsDELTA_NEW =[];
-        for (var d in _incidentsDELTASysIds){
-          _incidentsDELTA_NEW.push(_.findWhere(_incidentsNEW,{"sysId":_incidentsDELTASysIds[d]}))
-        }
-
-        logger.debug("--------------------------------------------------- incidentsOLD: length="+_incidentsOLD.length);
-        logger.debug("--------------------------------------------------- incidentsNEW: length="+_incidentsNEW.length);
-
-
-        if (_incidentsDELTA_NEW.length>0 || _incidentsDELTA_CHANGED.length>0){
-          var _incidentsDIFF={"createDate":new Date(),"NEW":_incidentsDELTA_NEW,"CHANGED":_incidentsDELTA_CHANGED}
-
-          incidentsdelta.insert(_incidentsDIFF);
-				  // and send a websocket event about the changes ;-)
-					//[TODO]
-
-					var _message={};
-					var _type;
-					var _prio;
-
-					if (config.emit.snow_incidents_new =="on" && _incidentsDIFF.NEW.length>0){
-						// for now we assume there is always only one new INCIDENT
-						var _newincident = _incidentsDIFF.NEW[0];
-						logger.debug("_newincident: "+JSON.stringify(_newincident));
-						if (_.startsWith(_newincident.priority,"P01")){
-							_type="error";
-							_prio = "P1";
-						}
-						else if(_.startsWith(_newincident.priority,"P08")){
-							_type="warning";
-							_prio = "P8";
-						}
-						else if(_.startsWith(_newincident.priority,"P16")){
-							_type="info";
-							_prio = "P16";
-						}
-						else if(_.startsWith(_newincident.priority,"P40")){
-							_type="info";
-							_prio = "P40";
+						//enrich/join with revenue impact
+						var _impact = _.findWhere(impactMapping,{"incident":_incidentsNEW[n].id});
+						if (_impact){
+							 _incidentsNEW[n].revenueImpact = parseInt(_impact.impact);
 						}
 
+	          var _changed={};
+	          if (_old){
+	            _diff=jsondiffpatch.diff(_filterRelevantDataForDiff(_old),_filterRelevantDataForDiff(_incidentsNEW[n]));
+	            if (_diff){
+	              var _change ={"id":_old.id,"sysId":_old.sysId,"diff":_diff}
 
-						_message.title=_newincident.businessService;
-						// TODO format nicely and link to snow
+	              _incidentsDELTA_CHANGED.push(_change);
+	            }
+	          }
+	        }
+
+	        var _incidentsNEWSysIds = _.pluck(_incidentsNEW,'sysId');
+	        var _incidentsOLDSysIds = _.pluck(_incidentsOLD,'sysId');
+
+	        // and also check for new incidents !
+	        // lodash.difference
+	        // lodash.pick for reducing the object proerties
+	        // lodash.omit might be better...
+
+	        var _incidentsDELTASysIds = _.difference(_incidentsNEWSysIds,_incidentsOLDSysIds);
+
+	        logger.debug("OLD *************** "+_incidentsOLDSysIds);
+	        logger.debug("NEW *************** "+_incidentsNEWSysIds);
+
+	        logger.debug("DELTA *************** delta size: "+_incidentsDELTASysIds.length);
+
+	        var _incidentsDELTA_NEW =[];
+	        for (var d in _incidentsDELTASysIds){
+	          _incidentsDELTA_NEW.push(_.findWhere(_incidentsNEW,{"sysId":_incidentsDELTASysIds[d]}))
+	        }
+
+	        logger.debug("--------------------------------------------------- incidentsOLD: length="+_incidentsOLD.length);
+	        logger.debug("--------------------------------------------------- incidentsNEW: length="+_incidentsNEW.length);
 
 
-						_message.body = "+ "+_newincident.label+"\n"+_newincident.shortDescription;;
-						_message.type = _type;
-						_message.desktop={
-							desktop:true,
-							icon:"/images/incidents/"+_prio+".png"
-						};
+	        if (_incidentsDELTA_NEW.length>0 || _incidentsDELTA_CHANGED.length>0){
+	          var _incidentsDIFF={"createDate":new Date(),"NEW":_incidentsDELTA_NEW,"CHANGED":_incidentsDELTA_CHANGED}
 
-						// filter out stuff
-						var _exclude = config.emit.snow_incidents_new_exclude_businessservices;
-						if (!_.startsWith(_newincident.businessService,_exclude)){
+	          incidentsdelta.insert(_incidentsDIFF);
+					  // and send a websocket event about the changes ;-)
+						//[TODO]
+
+						var _message={};
+						var _type;
+						var _prio;
+
+						if (config.emit.snow_incidents_new =="on" && _incidentsDIFF.NEW.length>0){
+							// for now we assume there is always only one new INCIDENT
+							var _newincident = _incidentsDIFF.NEW[0];
+							logger.debug("_newincident: "+JSON.stringify(_newincident));
+							if (_.startsWith(_newincident.priority,"P01")){
+								_type="error";
+								_prio = "P1";
+							}
+							else if(_.startsWith(_newincident.priority,"P08")){
+								_type="warning";
+								_prio = "P8";
+							}
+							else if(_.startsWith(_newincident.priority,"P16")){
+								_type="info";
+								_prio = "P16";
+							}
+							else if(_.startsWith(_newincident.priority,"P40")){
+								_type="info";
+								_prio = "P40";
+							}
+
+
+							_message.title=_newincident.businessService;
+							// TODO format nicely and link to snow
+
+
+							_message.body = "+ "+_newincident.label+"\n"+_newincident.shortDescription;;
+							_message.type = _type;
+							_message.desktop={
+								desktop:true,
+								icon:"/images/incidents/"+_prio+".png"
+							};
+
+							// filter out stuff
+							var _exclude = config.emit.snow_incidents_new_exclude_businessservices;
+							if (!_.startsWith(_newincident.businessService,_exclude)){
+								app.io.emit('message', {msg:_message});
+							}
+
+						}
+
+						if (config.emit.snow_incidents_changes =="on" && _incidentsDIFF.CHANGED.length>0){
+							_message.title="! INCIDENT CHANGES!";
+							_message.body = JSON.stringify(_incidentsDIFF.CHANGED);
+							_message.type = "warning";
+							_message.desktop={desktop:true};
 							app.io.emit('message', {msg:_message});
 						}
-					
-					}
+	        }
 
-					if (config.emit.snow_incidents_changes =="on" && _incidentsDIFF.CHANGED.length>0){
-						_message.title="! INCIDENT CHANGES!";
-						_message.body = JSON.stringify(_incidentsDIFF.CHANGED);
-						_message.type = "warning";
-						_message.desktop={desktop:true};
-						app.io.emit('message', {msg:_message});
-					}
-        }
+					incidents.insert(_incidentsNEW	 , function(err , success){
+						//console.log('Response success '+success);
+						logger.debug('Response error '+err);
+						if(success){
+							logger.info("[success] sync incidents....length: "+_incidentsNEW.length);
 
-				incidents.insert(_incidentsNEW	 , function(err , success){
-					//console.log('Response success '+success);
-					logger.debug('Response error '+err);
-					if(success){
-						logger.info("[success] sync incidents....length: "+_incidentsNEW.length);
+								// get oldsnow data and merge it
+								var incidenttrackeroldsnow =  db.collection('incidenttrackeroldsnow');
+								incidenttrackeroldsnow.find({}, function(err , oldtrackerdata){
 
-							// get oldsnow data and merge it
-							var incidenttrackeroldsnow =  db.collection('incidenttrackeroldsnow');
-							incidenttrackeroldsnow.find({}, function(err , oldtrackerdata){
-
-								if (oldtrackerdata){
-									logger.debug("***** [yep] we got the old tracker data: length= "+oldtrackerdata.length);
-									var _tracker = _calculateDailyTracker(_incidentsNEW,config.context);
-									// and  handle incident tracker
-									var incidenttracker =  db.collection('incidenttracker');
-									incidenttracker.drop();
-									incidenttracker.insert(oldtrackerdata.concat(_tracker)	 , function(err , success){
-											if (err) logger.warn("[incidenttracker insert failed....]"+err.message);
-											logger.info("[success] sync incidenttracker....length: "+_tracker.length);
-									});
-								}
-							});
-					}
+									if (oldtrackerdata){
+										logger.debug("***** [yep] we got the old tracker data: length= "+oldtrackerdata.length);
+										var _tracker = _calculateDailyTracker(_incidentsNEW,config.context);
+										// and  handle incident tracker
+										var incidenttracker =  db.collection('incidenttracker');
+										incidenttracker.drop();
+										incidenttracker.insert(oldtrackerdata.concat(_tracker)	 , function(err , success){
+												if (err) logger.warn("[incidenttracker insert failed....]"+err.message);
+												logger.info("[success] sync incidenttracker....length: "+_tracker.length);
+										});
+									}
+								});
+						}
+					})
 				})
 			})
 			done(data);
@@ -313,7 +325,7 @@ function _filterRelevantData(data){
 	_incident.subCategory = data.subcategory;
 
 	// an do some enriching.....
-	if (data.state=="Resolved"){
+	if (data.state=="Resolved" || data.state=="Closed"){
 		var _open = _incident.openedAt;
 		var _resolved = _incident.resolvedAt;
 		_incident.timeToResolve = _getTimeStringForTimeRange(_open,_resolved);
@@ -333,7 +345,7 @@ function _filterRelevantData(data){
 		var _closed = _incident.closedAt;
 		_incident.timeToClose = _getTimeStringForTimeRange(_open,_closed);
 
-		if (_incident.slaResolutionDate && _closed > _incident.slaResolutionDate){
+		/*if (_incident.slaResolutionDate && _closed > _incident.slaResolutionDate){
 			_incident.slaBreach = true;
 			//logger.debug("################################## SLAB BREACH by  "+_time);
 			_incident.slaBreachTime = _getTimeStringForTimeRange(_incident.slaResolutionDate,_closed);
@@ -341,6 +353,7 @@ function _filterRelevantData(data){
 		else if (_incident.slaResolutionDate && _closed <= _incident.slaResolutionDate){
 			_incident.slaBreach = false;
 		}
+		*/
 	}
 	return _incident;
 }

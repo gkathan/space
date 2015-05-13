@@ -25,6 +25,18 @@ var logger = winston.loggers.get('space_log');
 /**
  *
  */
+function _findRevenueImpactMapping(callback) {
+	var items =  db.collection('socincident2revenueimpact');
+	items.find({},function (err, docs){
+			callback(err,docs);
+			return;
+	});
+}
+
+
+/**
+ *
+ */
 function _find(callback) {
 	var items =  db.collection('incidents');
 	items.find({}).sort({openedAt:-1}, function (err, docs){
@@ -78,6 +90,7 @@ exports.weeklyTracker = _aggregateWeekly;
 exports.monthlyTracker = _aggregateMonthly;
 exports.findTrackerByDate = _findIncidenttrackerByDate;
 exports.getOverdueGroupedByAssignmentGroup = _getOverdueGroupedByAssignmentGroup;
+exports.findRevenueImpactMapping = _findRevenueImpactMapping;
 
 
 function _findIncidenttrackerByDate(aggregate,period,callback){

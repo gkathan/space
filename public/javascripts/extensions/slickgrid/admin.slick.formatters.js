@@ -26,7 +26,8 @@
         "IncidentState":IncidentStateFormatter,
         "IncidentPriority":IncidentPriorityFormatter,
         "IncidentPriorityIcon":IncidentPriorityIconFormatter,
-        "ResolutionTime":ResolutionTimeFormatter
+        "ResolutionTime":ResolutionTimeFormatter,
+        "EurAmount":EurAmountFormatter
       }
     }
   });
@@ -189,6 +190,12 @@ function IncidentPriorityIconFormatter(row, cell, value, columnDef, dataContext)
       }
 
     return _time;
+  }
+
+  function EurAmountFormatter(row, cell, value, columnDef, dataContext) {
+
+
+    if (value) return "<div style='text-align:right'><div style='display:inline-block'>"+accounting.formatMoney(value, "€", 2, ".", ",")+",-</div></div>";
   }
 
 

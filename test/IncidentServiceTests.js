@@ -93,5 +93,24 @@ describe('IncidentService', function(){
   });
 
 
+	describe('#findrevenueImpactMapping()', function(){
+    it('returns ALL incdients2revenue impact', function(done){
+
+      var incidentService = require('../services/IncidentService');
+			incidentService.findRevenueImpactMapping(function(err,result){
+					var _sum = 0;
+					for (var i in result){
+						_sum+=parseInt(result[i].impact);
+					}
+					logger.debug("result: "+result.length);
+					logger.debug("impact sum: "+_sum);
+
+					done();
+			})
+
+		});
+  });
+
+
 
 })

@@ -517,6 +517,7 @@ function getIncidentsConfig(){
       { id:"closedAt", name: "closedAt", field: "closedAt",sortable:true,width:120, formatter:Slick.Formatters.IncidentPriority,cssClass: "cell-standard" },
 			{ id:"timeToResolve", name: "TTR", field: "timeToResolve",sortable:true,width:80, formatter:Slick.Formatters.IncidentPriority,cssClass: "cell-standard" },
       { id:"closeCode", name: "closeCode", field: "closeCode",sortable:true,width:150, editor: Slick.Editors.Text,cssClass: "cell-standard" },
+			{ id:"revenueImpact", name: "revenueImpact", field: "revenueImpact",sortable:true,width:80, formatter:Slick.Formatters.EurAmount,cssClass: "cell-standard" },
 			{ id:"slaBreach", name: "SLA Breach", field: "slaBreach",sortable:true,width:80, formatter:Slick.Formatters.IncidentSLABreach,cssClass: "cell-standard" },
 			{ id:"slaBreachTime", name: "Breach by", field: "slaBreachTime",sortable:true,width:80, editor: Slick.Editors.Text,cssClass: "cell-standard-red" },
 			{ id:"businessService", name: "businessService", field: "businessService",sortable:true,width:200, editor: Slick.Editors.Text,cssClass: "cell-standard" },
@@ -730,10 +731,10 @@ function renderAdminGrid(data,conf){
       var item = args.item;
       item.id=0;
       dataView.addItem(item);
-    });
+  });
 
-    admingrid.onSort.subscribe(function (e, args) {
-		 var comparer = function(a, b) {
+  admingrid.onSort.subscribe(function (e, args) {
+		var comparer = function(a, b) {
 			return (a[args.sortCol.field] > b[args.sortCol.field]) ? 1 : -1;
 		}
 		// Delegate the sorting to DataView.
@@ -752,15 +753,13 @@ function renderAdminGrid(data,conf){
 
 	// ----------------------- column filter --------------------------------
 	$(admingrid.getHeaderRow()).delegate(":input", "change keyup", function (e) {
-      //console.log("~~~~ keyup");
-      var columnId = $(this).data("columnId");
-      //console.log("* columnId: "+columnId);
-      if (columnId != null) {
-        columnFilters[columnId] = $.trim($(this).val());
-        dataView.refresh();
-				$('#countitems').html(dataView.getLength());
-      }
-    });
+	  var columnId = $(this).data("columnId");
+	  if (columnId != null) {
+	    columnFilters[columnId] = $.trim($(this).val());
+	    dataView.refresh();
+			$('#countitems').html(dataView.getLength());
+	  }
+	});
 
     //from query GET string
     if (_id){

@@ -32,7 +32,8 @@
       		"port": 9999,
       		"appName": "space",
       		"host": "127.0.0.1"
-			}},
+				}
+			},
 			"production":{
 			    "file":{
 					"filename": "logs/space.log" ,
@@ -84,7 +85,7 @@
 	},
 
 	"import":{
-		"plainTypes" : ["productportfolio","productcatalog","targets","incidents","labels","customers","competitors","roadmaps","availability","v1teams","scrumteams","incidenttracker","content","incidenttrackeroldsnow","socservices","label2customer","oldsnowincidents"]
+		"plainTypes" : ["productportfolio","productcatalog","targets","incidents","labels","customers","competitors","roadmaps","availability","v1teams","scrumteams","incidenttracker","content","incidenttrackeroldsnow","socservices","soclabel2customer","oldsnowincidents","socincident2revenueimpact"]
 	},
 
   "context" : "bpty.studios",
