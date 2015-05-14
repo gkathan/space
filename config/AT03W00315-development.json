@@ -5,8 +5,8 @@
 
   "sync": {
 		"v1Epics" : {
-			"mode": "off",
-			"intervalMinutes" :60,
+			"mode": "on",
+			"intervalMinutes" :240,
 			"url" : "http://knbnprxy.ea.bwinparty.corp/rest/epics"
 
 		},

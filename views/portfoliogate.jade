@@ -83,29 +83,48 @@ block content
 					| PORTFOLIO BOARD SNAPSHOT 
 					br
 					span(style="font-size:28px;font-weight:bold") #{_date.pDate}
-					ul.list-unstyled
-
-					if _date.stateChangeBucket.length == 0 && _date.healthChangeBucket.length == 0
-						span(style="font-size:11px;font-weight:normal;color:black;text-align:center") <b>NO CHANGES</b>: 
-					else
-						span(style="font-size:11px;font-weight:normal;color:black;text-align:center") <b>STATUS CHANGES</b>:
 					br
-
-
-					if _date.stateChangeBucket.length > 0
-						table(style="width:600px")
+					if _date.portfolioBoardBucket.length > 0
+						span(style="font-size:11px;font-weight:normal;color:black;text-align:center") <b>AGENDA</b>:
+						br
+						table(style="width:900px")
 							// state changes
-							each _change in _date.stateChangeBucket
-								if _change.Status !="New"
-									tr
-										td(style="width:180px;font-size:10px;vertical-align:middle;height:14px")
-											span.glyphicon.glyphicon-star(style="font-size:10px;color:black;")
-											<b>#{_change.oldState}</b> 
-											span.glyphicon.glyphicon-arrow-right 
-											|  <b>#{_change.Status}</b>   
-										td(style="width:420px;font-size:10px;vertical-align:middle;height:14px")
-											a(href="http://v1.bwinparty.corp/V1-Production/Epic.mvc/Summary?oidToken=Epic%3A"+_change.id target="_new" )
-												| <span style="font-size:9px">#{_change.EpicRef}</span>  <b>#{_change.name}</b>  
+							each _pb in _date.portfolioBoardBucket
+								tr(style="line-height:12px")
+									td(style="width:400px;font-size:10px;vertical-align:top")
+										a(href="http://v1.bwinparty.corp/V1-Production/Epic.mvc/Summary?oidToken=Epic%3A"+_pb.id target="_new" )
+											| <span style="font-size:9px">#{_pb.EpicRef}</span>  <b>#{_pb.name}</b>  
+									td(style="width:250px;font-size:10px;vertical-align:tope")
+										| #{_pb.Comment}
+									td(style="width:250px;font-size:10px;vertical-align:top")
+										if (!_pb.Decision)
+											|  -- no decision --   
+										else
+											|  <b>#{_pb.Decision}</b>   
+
+					
+						ul.list-unstyled
+						if _date.stateChangeBucket.length == 0 && _date.healthChangeBucket.length == 0
+							span(style="font-size:11px;font-weight:normal;color:black;text-align:center") <b>NO CHANGES</b>: 
+						else
+							span(style="font-size:11px;font-weight:normal;color:black;text-align:center") <b>STATUS CHANGES</b>:
+						br
+						if _date.stateChangeBucket.length > 0
+							table(style="width:600px")
+								// state changes
+								each _change in _date.stateChangeBucket
+									if _change.Status !="New"
+										tr
+											td(style="width:180px;font-size:10px;vertical-align:middle;height:14px")
+												span.glyphicon.glyphicon-star(style="font-size:10px;color:black;")
+												<b>#{_change.oldState}</b> 
+												span.glyphicon.glyphicon-arrow-right 
+												|  <b>#{_change.Status}</b>   
+											td(style="width:420px;font-size:10px;vertical-align:middle;height:14px")
+												a(href="http://v1.bwinparty.corp/V1-Production/Epic.mvc/Summary?oidToken=Epic%3A"+_change.id target="_new" )
+													| <span style="font-size:9px">#{_change.EpicRef}</span>  <b>#{_change.name}</b>  
+
+
 				div.panel-body
 					each status in _date.pItems
 						// no NEW items for now

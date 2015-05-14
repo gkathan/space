@@ -53,9 +53,14 @@ router.get('/', function(req, res) {
 		//collect the changed items per date in a bucket for later display
 		var _stateChangeBucket=[];
 		var _healthChangeBucket=[];
+		// the ones which were dealed with in portfolioboard (PB==1)
+		var _portfolioBoardBucket=[];
+
 
 		_gates[_date]["stateChangeBucket"]=_stateChangeBucket;
 		_gates[_date]["healthChangeBucket"]=_healthChangeBucket;
+		_gates[_date]["portfolioBoardBucket"]=_portfolioBoardBucket;
+
 		_gates[_date].pDate=moment(_gates[_date].pDate).format('LL');
 		_gates[_date].pBoardDate=moment(_gates[_date].pBoardDate).format('LL');
 		// sort the states by
@@ -106,6 +111,10 @@ router.get('/', function(req, res) {
 						 _epic["oldHealth"]=_compare.Health;
 						// and collect those items in a bucket...
 						_healthChangeBucket.push(_epic);
+					}
+					//3) PB items
+					if (_epic.PB){
+						_portfolioBoardBucket.push(_epic);
 					}
 				}
 			}
