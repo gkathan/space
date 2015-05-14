@@ -4,7 +4,7 @@ var _ = require('lodash');
 
 var config = require('config');
 var moment = require('moment');
-
+var accounting = require('accounting');
 
 var avService = require('../services/AvailabilityService');
 var targetService = require('../services/TargetService');
@@ -81,14 +81,15 @@ router.get('/firereport', function(req, res) {
 		avc.calculateOverall(_from,_to,_filter,function(avDataOverall){
 			avc.calculateExternal(_from,_to,_filter,function(avDataExternal){
 
-				
+
 				res.locals.av = avDataOverall;
 				res.locals.avExternal = avDataExternal;
+				res.locals.coreDef = config.availability.coreTime
 				res.locals.moment = moment;
 				res.locals.from = _from;
 				res.locals.to = _to;
 				res.locals.filter = _filter;
-
+				res.locals.accounting=accounting;
 				logger.debug("*****customer: "+_customer);
 
 				res.render('dashboard/firereport', { title: 's p a c e - firereport' });

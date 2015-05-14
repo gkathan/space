@@ -123,6 +123,12 @@ function _processServices(type,services,injectedServices,from,to,filter,endUserA
 			var revenueImpactPlanned;
 			var revenueImpactUnplanned;
 
+			//make sure we do not double count
+			var revenueImpactDoubleTracker={};
+
+			revenueImpactPlanned=0;
+			revenueImpactUnplanned=0;
+
 			//iterate over all services
 			for (var s in services){
 				var serviceDowntime={
@@ -133,28 +139,23 @@ function _processServices(type,services,injectedServices,from,to,filter,endUserA
 				// default we include all
 				services[s].filterExclude=false;
 
-				revenueImpactPlanned=0;
-				revenueImpactUnplanned=0;
-
-
 				// ==> here we can identify services which can be skipped for a given customer filter
 				if (checkServiceToExclude(mapping,filter,services[s])==false){
 				//per service iterate over incidents
 					for (var i in data){
 						var _inc = data[i];
-
 						//logger.debug("+++ revenueImpact: "+_inc.revenueImpact);
-
-
 						var _labels=[];
 						if (_inc.labels){
 							_labels = _inc.labels.split(", ");
 						}
-
 						if (checkLabels(_filterLabels,_labels) && _inc.serviceName.split(",").indexOf(services[s].ServiceName)>-1 &&_inc.isEndUserDown==endUserAffected && _inc.start>=new Date(from) && _inc.start <=new Date(to)){
 							var _time = _degrade(_inc.resolutionTime,_inc.degradation);
 							if (_inc.isPlanned==true){
-								if (_inc.revenueImpact) revenueImpactPlanned+=parseInt(_inc.revenueImpact);
+								if (_inc.revenueImpact && !revenueImpactDoubleTracker[_inc.incidentID]){
+									revenueImpactPlanned+=parseInt(_inc.revenueImpact);
+									revenueImpactDoubleTracker[_inc.id]=true;
+								}
 								// check core / non-core
 								_checkCoreTime(_inc,function(result){
 									downtime.planned.all+=_time;
@@ -171,7 +172,10 @@ function _processServices(type,services,injectedServices,from,to,filter,endUserA
 								})
 							}
 							else{
-								if (_inc.revenueImpact) revenueImpactUnplanned+=parseInt(_inc.revenueImpact);
+								if (_inc.revenueImpact && !revenueImpactDoubleTracker[_inc.incidentID]){
+									 	revenueImpactUnplanned+=parseInt(_inc.revenueImpact);
+										revenueImpactDoubleTracker[_inc.id]=true;
+								}
 								// check core / non-core
 								_checkCoreTime(_inc,function(result){
 									downtime.unplanned.all+=_time;
@@ -188,16 +192,13 @@ function _processServices(type,services,injectedServices,from,to,filter,endUserA
 								})
 								downtime.total.core=downtime.unplanned.core+downtime.planned.core;
 								downtime.total.nonCore=downtime.unplanned.nonCore+downtime.planned.nonCore;
+								downtime.total.all=downtime.total.nonCore+downtime.total.core;
 							}
 						}
 						else{
 
 						}
 					} // end for incident loop
-
-					//logger.debug("+++++++ revenueImpactPlanned: "+revenueImpactPlanned);
-					//logger.debug("+++++++ revenueImpactUnplanned: "+revenueImpactUnplanned);
-
 					// !!! different total times for core and noncore !!!
 					var avService={};
 					avService.planned={
@@ -251,7 +252,7 @@ function _processServices(type,services,injectedServices,from,to,filter,endUserA
 
 			_avResult.revenueImpact={planned:revenueImpactPlanned,unplanned:revenueImpactUnplanned};
 
-			//logger.debug("xxxxxxxxxxxxxx+++++++ revenueImpactPlanned: "+	_avResult.revenueImpact.planned);
+			//logger.debug("xxxxxxxxxxxxxx+++++++ revenueImpactPlanned: "+	revenueImpactPlanned);
 			//logger.debug("xxxxxxxxxxxxxx+++++++ revenueImpactUnplanned: "+	_avResult.revenueImpact.unplanned);
 
 			/*

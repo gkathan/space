@@ -422,7 +422,7 @@ describe('AvailabilityCalculatorService', function(){
 		    "description" : "this is a test incident",
 		    "extService" : false,
 		    "highlight" : false,
-		    "incidentID" : "INC120861",
+		    "incidentID" : "INC120001",
 		    "isCoreService" : true,
 		    "isEndUserDown" : true,
 		    "isExt" : false,
@@ -443,7 +443,7 @@ describe('AvailabilityCalculatorService', function(){
 		    "description" : "this is a test incident",
 		    "extService" : false,
 		    "highlight" : false,
-		    "incidentID" : "INC120861",
+		    "incidentID" : "INC120002",
 		    "isCoreService" : true,
 		    "isEndUserDown" : true,
 		    "isExt" : false,
@@ -458,8 +458,30 @@ describe('AvailabilityCalculatorService', function(){
 		    "resolutionTime" : 60000,
 				"revenueImpact" : 10000
 			};
+			var _inc3 = {
+				"degradation" : 50,
+		    "description" : "this is a test incident",
+		    "extService" : false,
+		    "highlight" : false,
+		    "incidentID" : "INC120003",
+		    "isCoreService" : true,
+		    "isEndUserDown" : true,
+		    "isExt" : false,
+		    "isIR" : false,
+		    "isPlanned" : false,
+		    "priority" : "P1",
+		    "report" : true,
+		    "rootCause" : "rootcause of test incident",
+		    "serviceName" : "test service B",
+		    "start" : new Date("2015-01-01 05:00:00"),
+		    "stop" : new Date("2015-01-01 05:02:00"),
+		    "resolutionTime" : 120000,
+				"revenueImpact" : 5000
+			};
 			test_incidents.push(_inc1);
 			test_incidents.push(_inc2);
+			test_incidents.push(_inc3);
+
 
 			var _type="TEST";
 			var _services=[];
@@ -505,8 +527,12 @@ describe('AvailabilityCalculatorService', function(){
 				console.log("---------------------");
 				console.log("incidents: "+JSON.stringify(test_incidents));
 				//var av ="xx";
-				assert.equal(60000, result.downtime.unplanned.all);
-				assert.equal(60000, result.downtime.unplanned.nonCore);
+
+				assert.equal(25000,result.revenueImpact.unplanned);
+				assert.equal(10000,result.revenueImpact.planned);
+
+				assert.equal(120000, result.downtime.unplanned.all);
+				assert.equal(120000, result.downtime.unplanned.nonCore);
 				assert.equal(0, result.downtime.unplanned.core);
 
 				assert.equal(30000, result.downtime.planned.all);
@@ -514,11 +540,10 @@ describe('AvailabilityCalculatorService', function(){
 				assert.equal(30000, result.downtime.planned.core);
 
 
-				assert.equal(0.9994792269483024, result.av.total.all);
-				assert.equal(0.9994791757087551, result.av.total.nonCore);
+				assert.equal(0.999132065007716, result.av.total.all);
+				assert.equal(0.9989583514175101, result.av.total.nonCore);
 				assert.equal(0.999479148581548, result.av.total.core);
 
-				assert.equal(20000,result.revenueImpact.unplanned);
 
 
 				done();

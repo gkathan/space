@@ -35,17 +35,44 @@ style.
 	}
 
 
+mixin renderAVCoreDefinition(coreDef)
+	span(style="font-size:10px;font-style:italic") **) core time is configured as:
+	table(style="width:250px")
+		each t in coreDef
+			tr(style="line-height:12px")
+				td(style="width:100px;font-size:10px;text-align:right;font-weight:bold")
+					|#{moment().day(t.dayOfWeek).format('dddd')}&nbsp;&nbsp;&nbsp;
+				td(style="width:70px;font-size:11px")
+					|from: #{t.start}
+				td(style="width:70px;font-size:11px")
+					|to:  #{t.stop}
 
-mixin renderAV(title,av,time)
+mixin renderDisclaimer
+	hr
+	div(style="font-style:italic;font-size:10px")
+		|*) downtimes are per definition always "degraded" times by accordong SOC set degradation factor
+		br
+	+renderAVCoreDefinition(coreDef)
+	br
+	div(style="font-style:italic;font-size:10px")
+		|***) SERVICES - EXTERNAL are "injected" as ProductIntegration in SERVICES OVERALL
+		br
+	hr
+
+			
+mixin renderAV(title,av,downtime,revenueImpact)
 	tr(style="line-height:32px;text-align:right")
-		td(style="width:150px;text-align:right;font-size:18px")
+		td(style="width:150px;text-align:right;font-size:16px")
 			b #{title}:&nbsp;&nbsp;&nbsp; 
 		td(style="width:100px")
 			b(style="font-size:24px")
 				|#{formatAV(av.all)}
 		td(style="width:100px")
-			b(style="font-size:10px")
-				|#{time.all}
+			b(style="font-size:14px")
+				|#{formatAVTime(downtime.all)}
+		td(style="width:150px")
+			b(style="font-size:14px;color:red")
+				|-#{accounting.formatMoney(revenueImpact, "€", 2, ".", ",")}
 
 	tr(style="line-height:32px;text-align:right")
 		td(style="width:150px")
@@ -53,18 +80,24 @@ mixin renderAV(title,av,time)
 		td(style="width:100px")
 			div(style="font-size:20px")
 				|#{formatAV(av.core)}
+		td(style="width:100px")
+			div(style="font-size:14px")
+				|#{formatAVTime(downtime.core)}
 		td
 			div(style="font-size:10px")
-				|#{time.core}
+				| 
 	tr(style="line-height:32px;text-align:right")
 		td(style="width:150px;text-align:right")
 			|NON-CORE:&nbsp;&nbsp;&nbsp; 
 		td(style="width:100px")
 			div(style="font-size:20px")
 				|#{formatAV(av.nonCore)}
+		td(style="width:100px")
+			div(style="font-size:14px")
+				|#{formatAVTime(downtime.nonCore)}
 		td
 			div(style="font-size:10px")
-				|#{time.nonCore}
+				| 
 
 mixin renderAVDowntime(title,downtime)
 	tr(style="line-height:24px;text-align:right")
@@ -86,28 +119,23 @@ mixin renderAVDowntime(title,downtime)
 			div(style="font-size:16px")
 				|#{formatAVTime(downtime.nonCore)}						
 	
-			
-
-
 mixin renderAVServicesList(title,av)
-	h4 #{title}
+	h2(style="text-align:center;font-weight:bold") #{title}
 	
 	
 	div(style="text-align:center")
 		table(style="margin:0 auto")
-			+renderAV("AV planned",av.av.planned,av.totalPeriod)
-			+renderAV("AV unplanned",av.av.unplanned,av.totalPeriod)
-			+renderAV("AV totals",av.av.total,av.totalPeriod)
-		br
-		|revenue impact planned: #{av.revenueImpact.planned}
-		br
-		|revenue impact unplanned: #{av.revenueImpact.unplanned}
-	hr
-	div(style="text-align:center")
-		table(style="margin:0 auto")
-			+renderAVDowntime("planned:",av.downtime.planned)
-			+renderAVDowntime("unplanned:",av.downtime.unplanned)
-			+renderAVDowntime("total:",av.downtime.total)
+			thead
+				tr(style="line-height:50px")
+					th(style="width:150px;text-align:right;font-size:14px") TYPE&nbsp;&nbsp;&nbsp;
+					th(style="width:100px;text-align:right;font-size:14px") AVAILABILITY
+					th(style="width:100px;text-align:right;font-size:14px") DOWNTIME
+					th(style="width:150px;text-align:right;font-size:14px;color:red") REVENUE IMPACT 
+			tbody
+				+renderAV("PLANNED",av.av.planned,av.downtime.planned,av.revenueImpact.planned)
+				+renderAV("UNPLANNED",av.av.unplanned,av.downtime.unplanned,av.revenueImpact.unplanned)
+				+renderAV("TOTAL",av.av.total,av.downtime.total,(av.revenueImpact.planned+av.revenueImpact.unplanned))
+
 	hr
 	table.table-striped.table-hover.table-condensed(style="max-width:1200px")
 		thead
@@ -146,9 +174,6 @@ mixin renderAVServicesList(title,av)
 							|#{formatAVTime(service.availability.total.time)}
 
 	
-	hr
-	div(style="font-style:italic;font-size:10px")
-		|*) downtimes are per definition always "degraded" times by accordong SOC set degradation factor
 	
 
 mixin renderIncidentList(title,incidents)
@@ -248,12 +273,14 @@ block content
 	div.row(style="margin: auto;max-width:1200px")
 		div.panel.panel-default
 			div.panel-heading 
-				|availability: 
-				b planned | unplanned | total 
+				b AVAILABILITY - DOWNTIME - REVENUE IMPACT 
+				| planned | unplanned | total 
 			div.panel-body
-				+renderAVServicesList("SERVICES - INTERNAL",av)
-				+renderAVServicesList("SERVICES - EXTERNAL",avExternal)
-
+				
+				+renderAVServicesList("SERVICES - ALL",av)
+				hr
+				+renderAVServicesList("SERVICES - EXTERNAL ***)",avExternal)
+				+renderDisclaimer
 	div.row(style="margin: auto;max-width:1200px")
 		script(src='/javascripts/dashboards/nvd3_incidents_multi.js')
 
