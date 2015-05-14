@@ -6,23 +6,15 @@
 		"proxy" : "/local/proxy"
 },
 
-	  "sync": {
-  		"v1Epics" : {
-  			"mode": "off",
-  			"intervalMinutes" :10,
-  			"url" : "http://knbnprxy.ea.bwinparty.corp/rest/epics"
-  		},
-  		"availability" : {
-  			"mode": "off",
-  			"intervalMinutes" :1,
-  			"url" : ["http://avreport.bwinparty.corp/API/AvReoprtingService.svc/getYTDDatapoint","http://avreport.bwinparty.corp/API/AvReoprtingService.svc/GetAVGraphDatapoints"]
-  		},
-  		"incident" : {
-  			"mode": "off",
-  			"intervalMinutes" :10,
-  			"url" : "http://snow.bwinparty.corp/incident_list.do?JSON&sysparm_query="
-  		}
-  	},
+		"sync": {
+			"v1Epics" : {
+				"mode": "on",
+				"intervalMinutes" :60,
+				"url" : "http://knbnprxy.ea.bwinparty.corp/rest/epics"
+
+			}
+		},
+
 
 
 

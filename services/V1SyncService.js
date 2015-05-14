@@ -46,6 +46,8 @@ function _syncV1(url){
 			logger.debug('Response error '+err);
 			if(success){
 				logger.info("syncv1 [DONE]");
+
+				//TODO emit websocket to update last sync $('#v1Epics_lastSync').text("timestamp")
 			}
 			//return next(err);
 		})

@@ -2,48 +2,85 @@ include ../kanban_menu
 
 //link(rel='stylesheet', href='/stylesheets/material.css')
 
+
+mixin statusLight(state,size,pulse)
+	div(style="margin-left:5px;width: #{size}px;height: #{size}px;-webkit-animation: pulse #{mapState2Pulse(state)}s ease-out;animation: pulse #{mapState2Pulse(state)}s ease-out;-webkit-animation-iteration-count: infinite;-moz-animation-iteration-count: infinite;	animation-iteration-count: infinite;;-moz-border-radius: 50%; -webkit-border-radius: 50%; border-radius: 50%;background-color:#{mapState2Color(state)};margin-top:3px")
+
+style.
+	@-webkit-keyframes "pulse" {
+	 0% {
+		-webkit-transform: scale(1);
+		opacity: 1.0;
+	 }
+	 25% {
+		-webkit-transform: scale(1);
+		opacity: 0.5;
+	 }
+	 50% {
+		-webkit-transform: scale(1);
+		opacity: 0.1;
+	 }
+	 75% {
+		-webkit-transform: scale(1);
+		opacity: 0.5;
+	 }
+	 100% {
+		-webkit-transform: scale(1);
+		opacity: 1.0;
+	 }
+	}
+
+-	function mapState2Color(state){
+-		if (state=="off") return "red";
+-		if (state=="on") return "limegreen";
+-		if (!state) return "lightgrey"
+-		// red and green are ok
+-		return state;
+-	}
+
+-	function mapState2Pulse(state){
+-		if (state=="off") return 0;
+-		if (state=="on") return 2;
+-		return 0;
+-	}
+
+
 block content
 
-div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;background-color:white;width:900px;text-align: left;margin: 10px auto;")
+div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;background-color:white;width:600px;text-align: left;margin: 10px auto;")
 	.panel-heading
 		i.glyphicon.glyphicon-refresh(style="font-size:15px")
-		span(style="font-size:20px") &nbsp;SYNC
+		span(style="font-size:20px") &nbsp;SYNC PROCESSES
 	.panel-body(style="font-size:12px")
-		|sync processes:
-		table
+		
+		table.table.table-striped.table-hover.table-condensed
 			thead
 				tr(style="line-height:24px")
-					th(style="width:100px") 
+					th(style="width:30px")
+						
+					th(style="width:15	0px") 
 						|syncer
-					th(style="width:700px")
-						|url
+					th(style="width:70px;")
+						|interval
+					th(style="width:70px;")
+						|last sync
+					th(style="width:100px")
+						|force sync
 			tbody
-				tr(style="line-height:18px")
-					td 
-						|soc_incidents:
-					td 
-						a(href="#{config.sync.soc_incidents.url}" target="_new")|#{config.sync.soc_incidents.url}
-				tr(style="line-height:16px")
-					td
-						|soc_services:
-					td
-						a(href="#{config.sync.soc_services.url}" target="_new")|#{config.sync.soc_services.url}
-				tr(style="line-height:16px")
-					td
-						|incident:
-					td 
-						a(href="#{config.sync.incident.url}" target="_new")|#{config.sync.incident.url}
-				tr(style="line-height:16px")
-					td
-						|v1Epics:
-					td
-						a(href="#{config.sync.v1Epics.url}" target="_new")|#{config.sync.v1Epics.url}
-				tr(style="line-height:16px")
-					td 
-						|SOCIncidents:
-					td
-						a(href="#{config.sync.soc_incidents.url}" target="_new")|#{config.sync.soc_incidents.url}
-			
+				each sync in syncers
+					tr(style="line-height:18px")
+						td 
+							+statusLight(sync.sync.mode,12)
+						td 
+							a(href="#{sync.sync.url}" target="_new")|#{sync.name}
+						td 
+							|#{sync.sync.intervalMinutes}
+						td 
+							// on sync done set via $('#v1Epics_lastSync').text("timestamp")
+							span(id="#{sync.name}_lastSync")
+						td(style="font-size:10px")
+							a(id="sync_#{sync.name}" href="#" ) force sync #{sync.name}
+				
 			
 
 

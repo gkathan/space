@@ -40,13 +40,26 @@ router.get('/message', function(req, res) {
 /* GET the admin page. */
 router.get('/content', function(req, res) {
 	if (ensureAuthenticated(req,res)){
-	   res.render('admin/content', { title: 's p a c e - admin.content' });
+
+		res.render('admin/content', { title: 's p a c e - admin.content' });
   }
 });
 
 /* GET the admin page. */
 router.get('/sync', function(req, res) {
 	if (ensureAuthenticated(req,res)){
+		var sync=config.sync;
+		var syncers =[];
+		_.forEach(sync,function(n,key){
+			if(key=="apm"){
+					_.forEach(n,function(sub,subkey){
+							syncers.push({name:key+"."+subkey,sync:sub});
+					})
+			}
+			else syncers.push({name:key,sync:n})
+		});
+
+		res.locals.syncers=syncers;
 	   res.render('admin/sync', { title: 's p a c e - admin.sync' });
   }
 });
