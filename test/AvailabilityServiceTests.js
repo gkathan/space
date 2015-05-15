@@ -50,5 +50,35 @@ describe('AvailabilityService', function(){
 				})
 			});
   	});
+  describe('#findSOCIncidents()', function(){
+    it('should read SOCIncidents data from MongoDB', function(done){
+      var avService = require('../services/AvailabilityService');
+			var _filter={start:{$gte:new Date('2015-04-01'),$lte:new Date('2015-04-30')}};
+			avService.findSOCIncidents(_filter,function(err,data){
+				if(err){
+					logger.error("err: "+err.message);
+
+				}
+				console.log("----------- data: "+data.length);
+				var _rev=0;
+				//make sure we do not double count
+				var revenueImpactDoubleTracker={};
+
+				for (var i in data){
+					logger.debug("inc: "+data[i].incidentID+" revenueImpact: "+data[i].revenueImpact);
+					var _id = data[i].incidentID;
+					if (data[i].revenueImpact &&!revenueImpactDoubleTracker[_id]){
+						_rev+=parseInt(data[i].revenueImpact);
+						logger.debug("**************** OK set tracker for: "+_id);
+						revenueImpactDoubleTracker[_id]=true;
+					}
+				}
+				logger.debug("items: "+data.length);
+				logger.debug("plain sum revenue impact: "+_rev);
+
+				done();
+				})
+			});
+  	});
 
 })

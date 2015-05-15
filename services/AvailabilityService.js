@@ -12,6 +12,10 @@ var DB=config.database.db;
 var HOST = config.database.host;
 var connection_string = HOST+'/'+DB;
 var db = mongojs(connection_string, [DB]);
+// logger
+var winston = require('winston');
+var logger = winston.loggers.get('space_log');
+
 
 /**
  *
@@ -40,6 +44,17 @@ exports.getDowntimeYTD = function (avpercentageYTD,weeks){
 
 exports.findSOCServicesMain = _findSOCServicesMain;
 exports.findSOCServicesExternal = _findSOCServicesExternal;
+exports.findSOCIncidents = _findSOCIncidents;
+
+function _findSOCIncidents(filter,callback) {
+	var items =  db.collection('socincidents');
+	logger.debug("filter: "+JSON.stringify(filter));
+	items.find(filter).sort({$natural:-1}, function (err, docs){
+			callback(err,docs);
+			return;
+	});
+}
+
 
 function _findSOCServices(filter,callback) {
 	var items =  db.collection('socservices');

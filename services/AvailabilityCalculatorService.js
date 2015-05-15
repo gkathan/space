@@ -154,7 +154,7 @@ function _processServices(type,services,injectedServices,from,to,filter,endUserA
 							if (_inc.isPlanned==true){
 								if (_inc.revenueImpact && !revenueImpactDoubleTracker[_inc.incidentID]){
 									revenueImpactPlanned+=parseInt(_inc.revenueImpact);
-									revenueImpactDoubleTracker[_inc.id]=true;
+									revenueImpactDoubleTracker[_inc.incidentID]=true;
 								}
 								// check core / non-core
 								_checkCoreTime(_inc,function(result){
@@ -174,7 +174,7 @@ function _processServices(type,services,injectedServices,from,to,filter,endUserA
 							else{
 								if (_inc.revenueImpact && !revenueImpactDoubleTracker[_inc.incidentID]){
 									 	revenueImpactUnplanned+=parseInt(_inc.revenueImpact);
-										revenueImpactDoubleTracker[_inc.id]=true;
+										revenueImpactDoubleTracker[_inc.incidentID]=true;
 								}
 								// check core / non-core
 								_checkCoreTime(_inc,function(result){
