@@ -538,7 +538,7 @@ function excelSOCIncidents(req, res , next){
 		{caption:'priority',type:'string',width:12,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'incidentID',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'description',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
-		{caption:'degradation',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'revenueImpact',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'start',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'stop',type:'string',width:50,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'serviceName',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
