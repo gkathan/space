@@ -6,6 +6,8 @@ var config = require('config');
 var schedule = require('node-schedule');
 var _ = require('lodash');
 
+var app=require('../app');
+
 var mongojs = require("mongojs");
 var DB="space";
 var connection_string = '127.0.0.1:27017/'+DB;
@@ -64,9 +66,14 @@ function _syncLogin(done){
 
 		apm_login.insert(data	 , function(err , success){
 			//console.log('Response success '+success);
-			logger.debug('Response error '+err);
+			if(err){
+				logger.debug('Response error '+err);
+				app.io.emit('syncUpdate', {status:"[ERROR]",from:"apm.login",timestamp:new Date(),info:err.message});
+
+			}
 			if(success){
 				logger.info("[success] sync apm  ....length: "+data.length);
+				app.io.emit('syncUpdate', {status:"[SUCCESS]",from:"apm.login",timestamp:new Date(),info:data.length+" items synced"});
 
 			}
 		})
@@ -74,6 +81,7 @@ function _syncLogin(done){
 
 	}).on('error',function(err){
 			logger.error('[ApmSyncSerice] says: something went wrong on the request', err.request.options);
+			app.io.emit('syncUpdate', {status:"[ERROR]",from:"apm.login",timestamp:new Date(),info:err.message});
 		})
 
 }

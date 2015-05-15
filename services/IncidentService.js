@@ -50,14 +50,21 @@ function _find(callback) {
  */
 function _findAll(callback) {
 	var items =  db.collection('incidents');
-	items.find({}).sort({openedAt:-1}, function (err, incidents){
-			var olditems =  db.collection('oldsnowincidents');
-			olditems.find({}).sort({openedAt:-1}, function (err, oldincidents){
 
-			callback(err,incidents.concat(oldincidents));
+	items.find({}).sort({openedAt:-1}, function (err, incidents){
+		var olditems =  db.collection('oldsnowincidents');
+		if (err) callback(err);
+		logger.debug(".....findAll....incidents: "+incidents.length);
+		//callback(err,incidents);
+		olditems.find({}).sort({openedAt:-1}, function (err, oldincidents){
+			if (err) callback(err);
+			logger.debug(".....findAll....oldincidents: "+oldincidents.length);
+			var _all = incidents;//_.union(incidents,oldincidents);
+			callback(err,_all);
 			//callback(err,incidents);
-			return;
+			//return;
 		});
+
 	});
 }
 
@@ -65,7 +72,7 @@ function _findAll(callback) {
 exports.findSOC = function (callback) {
 	var items =  db.collection('socincidents');
 	items.find({}).sort({start:-1}, function (err, docs){
-			callback(docs);
+			callback(err,docs);
 			return;
 	});
 }

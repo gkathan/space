@@ -11,6 +11,8 @@ var config = require('config');
 var schedule = require('node-schedule');
 var _ = require('lodash');
 
+var app=require('../app');
+
 var mongojs = require("mongojs");
 var DB="space";
 var connection_string = '127.0.0.1:27017/'+DB;
@@ -78,16 +80,25 @@ function _syncAvailability(urls,callback){
 					availability.drop();
 					availability.insert({createDate:new Date(),avReport:avData}	 , function(err , success){
 						//console.log('Response success '+success);
-						logger.debug('Response error '+err);
+						if (err){
+							logger.debug('Response error '+err.message);
+							app.io.emit('syncUpdate', {status:"[ERROR]",from:"availability",timestamp:new Date(),info:err.message});
+
+						}
 						if(success){
 							logger.info("sync availability [DONE]");
+							app.io.emit('syncUpdate', {status:"[SUCCESS]",from:"availability",timestamp:new Date(),info:"avData synced"});
 						}
 					})
 				}).on('error',function(err){
 		        logger.error('[AvailabilitySyncSerice] says: something went wrong on the request', err.request.options);
+						app.io.emit('syncUpdate', {status:"[ERROR]",from:"availability",timestamp:new Date(),info:err.message});
+
 					})
 			}).on('error',function(err){
 	        logger.error('[AvailabilitySyncSerice] says: something went wrong on the request', err.request.options);
+					app.io.emit('syncUpdate', {status:"[ERROR]",from:"availability",timestamp:new Date(),info:err.message});
+
 				});
 			done();
 		},

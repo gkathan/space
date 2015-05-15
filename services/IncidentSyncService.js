@@ -6,6 +6,8 @@ var schedule = require('node-schedule');
 var _ = require('lodash');
 var moment = require('moment');
 
+var app=require('../app');
+
 var mongojs = require("mongojs");
 var DB="space";
 var connection_string = '127.0.0.1:27017/'+DB;
@@ -185,27 +187,23 @@ function _syncIncident(url,done){
 								_type="info";
 								_prio = "P40";
 							}
-
-
+							else if(_.startsWith(_newincident.priority,"P120")){
+								_type="info";
+								_prio = "P120";
+							}
 							_message.title=_newincident.businessService;
-							// TODO format nicely and link to snow
-
-
 							_message.body = "+ "+_newincident.label+"\n"+_newincident.shortDescription;;
 							_message.type = _type;
 							_message.desktop={
 								desktop:true,
 								icon:"/images/incidents/"+_prio+".png"
 							};
-
 							// filter out stuff
 							var _exclude = config.emit.snow_incidents_new_exclude_businessservices;
 							if (!_.startsWith(_newincident.businessService,_exclude)){
 								app.io.emit('message', {msg:_message});
 							}
-
 						}
-
 						if (config.emit.snow_incidents_changes =="on" && _incidentsDIFF.CHANGED.length>0){
 							_message.title="! INCIDENT CHANGES!";
 							_message.body = JSON.stringify(_incidentsDIFF.CHANGED);
@@ -214,13 +212,11 @@ function _syncIncident(url,done){
 							app.io.emit('message', {msg:_message});
 						}
 	        }
-
 					incidents.insert(_incidentsNEW	 , function(err , success){
 						//console.log('Response success '+success);
 						logger.debug('Response error '+err);
 						if(success){
 							logger.info("[success] sync incidents....length: "+_incidentsNEW.length);
-
 								// get oldsnow data and merge it
 								var incidenttrackeroldsnow =  db.collection('incidenttrackeroldsnow');
 								incidenttrackeroldsnow.find({}, function(err , oldtrackerdata){
@@ -234,6 +230,7 @@ function _syncIncident(url,done){
 										incidenttracker.insert(oldtrackerdata.concat(_tracker)	 , function(err , success){
 												if (err) logger.warn("[incidenttracker insert failed....]"+err.message);
 												logger.info("[success] sync incidenttracker....length: "+_tracker.length);
+												app.io.emit('syncUpdate', {status:"[SUCCESS]",from:"incident",timestamp:new Date(),info:_incidentsNEW.length+" incidents synced"});
 										});
 									}
 								});
@@ -242,26 +239,12 @@ function _syncIncident(url,done){
 				})
 			})
 			done(data);
-
-
 		}).on('error',function(err){
         logger.error('[IncidentSyncSerice] says: something went wrong on the request', err.request.options);
-
-				var _message={};
-				_message.title="INCIDENT UPDATE FAILED";
-				_message.body = "something went wrong on the request: "+err;
-
-				app.io.emit('message', {msg:_message});
-
+				app.io.emit('syncUpdate', {status:"[ERROR]",from:"incident",timestamp:new Date(),info:err.message});
   });
-
 }
 
-
-
-function _pushEvent(event,message){
-	exports.io.sockets.emit(event, message);
-}
 
 /**
 * filters out the relevant attributes of the 87 fields from snow ;-)
@@ -270,7 +253,6 @@ function _filterRelevantDataForDiff(incident){
 	//_id, _syncDate
 	delete incident._id;
 	delete incident.syncDate;
-
 	return incident;
 }
 

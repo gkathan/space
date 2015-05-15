@@ -9,6 +9,7 @@ var _ = require('lodash');
 us = require('underscore');
 us.nst = require('underscore.nest');
 
+var app=require('../app');
 
 var mongojs = require("mongojs");
 var DB="space";
@@ -55,7 +56,14 @@ function _syncSOCIncidents(url,callback){
 				// direct way
 				client.get(url, function(data, response,callback){
 					//logger.debug(data);
-					socIncidents=JSON.parse(data);
+					try{
+						socIncidents=JSON.parse(data);
+					}
+					catch(err){
+							logger.error('[SOCIncdientSyncService] Response error '+err);
+							app.io.emit('syncUpdate', {status:"[ERROR]",from:"soc_incidents",timestamp:new Date(),info:err.message});
+							return;
+					}
 					//logger.debug("------------------------"+socIncidents);
 					// fix the date shit
 					for (var d in socIncidents){
@@ -80,14 +88,22 @@ function _syncSOCIncidents(url,callback){
 					var socincidents =  db.collection('socincidents');
 					socincidents.drop();
 					socincidents.insert(socIncidents	 , function(err , success){
-						//console.log('Response success '+success);
-						logger.debug('Response error '+err);
+						var _from = "soc_incidents";
+						if (err){
+							logger.error('[SOCIncdientSyncService] Response error '+err);
+							app.io.emit('syncUpdate', {status:"[ERROR]",from:_from,timestamp:new Date(),info:err.message});
+						}
 						if(success){
 							logger.info("sync soc_incidents [DONE]");
+							app.io.emit('syncUpdate', {status:"[SUCCESS]",from:_from,timestamp:new Date(),info:socIncidents.length+" items"});
+
 						}
+
 					})
 				}).on('error',function(err){
 		        logger.error('[SOCIncidentSyncService] says: something went wrong on the request', err.request.options);
+						app.io.emit('syncUpdate', {status:"[ERROR]",from:"soc_incdients",timestamp:new Date(),info:err.message});
+
 				})
 		});
 			done();

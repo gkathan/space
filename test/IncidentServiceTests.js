@@ -68,22 +68,33 @@ describe('IncidentService', function(){
 
   describe('#getOverdueGroupedBy()', function(){
     it('returns grouped by incdients', function(done){
-
       var incidentService = require('../services/IncidentService');
 			incidentService.getOverdueGroupedByAssignmentGroup(function(result){
 					logger.debug("result: "+result.children.length);
+					done();
+			})
+		});
+  });
 
+  describe('#findSOC()', function(){
+    it('returns ALL incdients from SOC', function(done){
+      var incidentService = require('../services/IncidentService');
+			incidentService.findSOC(function(err,result){
+					if (err) logger.error("error: "+err);
+					//logger.debug("result: "+result.length);
 					done();
 			})
 
 		});
   });
 
+
   describe('#findAll()', function(){
     it('returns ALL incdients from both oldsnow and newsnow', function(done){
-
-      var incidentService = require('../services/IncidentService');
+      this.timeout(5000);
+			var incidentService = require('../services/IncidentService');
 			incidentService.findAll(function(err,result){
+					if (err) logger.error("error: "+err);
 					logger.debug("result: "+result.length);
 
 					done();

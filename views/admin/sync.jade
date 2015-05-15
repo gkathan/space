@@ -47,7 +47,7 @@ style.
 
 block content
 
-div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;background-color:white;width:600px;text-align: left;margin: 10px auto;")
+div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;background-color:white;width:800px;text-align: left;margin: 10px auto;")
 	.panel-heading
 		i.glyphicon.glyphicon-refresh(style="font-size:15px")
 		span(style="font-size:20px") &nbsp;SYNC PROCESSES
@@ -58,13 +58,17 @@ div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;back
 				tr(style="line-height:24px")
 					th(style="width:30px")
 						
-					th(style="width:15	0px") 
+					th(style="width:120px") 
 						|syncer
-					th(style="width:70px;")
+					th(style="width:50px;")
 						|interval
-					th(style="width:70px;")
+					th(style="width:110px;")
 						|last sync
-					th(style="width:100px")
+					th(style="width:40px;")
+						|status
+					th(style="width:140px;")
+						|last info
+					th(style="width:80px")
 						|force sync
 			tbody
 				each sync in syncers
@@ -75,11 +79,14 @@ div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;back
 							a(href="#{sync.sync.url}" target="_new")|#{sync.name}
 						td 
 							|#{sync.sync.intervalMinutes}
-						td 
-							// on sync done set via $('#v1Epics_lastSync').text("timestamp")
-							span(id="#{sync.name}_lastSync")
 						td(style="font-size:10px")
-							a(id="sync_#{sync.name}" href="#" ) force sync #{sync.name}
+							span(id="#{sync.name}_timestamp")
+						td(style="font-size:10px") 
+							span(id="#{sync.name}_status")
+						td(style="font-size:10px") 
+							span(id="#{sync.name}_info")
+						td(style="font-size:10px")
+							a(id="sync_#{sync.name}" href="#" ) -- force sync --
 				
 			
 
@@ -88,16 +95,13 @@ div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;back
 include ../includes/material
 
 script.
-
 	$('#sync_employeeimages').on('click', function () {
 		$.ajax({
 		  url: '/api/space/rest/sync/employeeimages',
 		  type: 'POST',
 		  data: {
-
 				}
 		});
-		//location.reload();
 	});
 
 	$('#sync_availability').on('click', function () {
@@ -106,16 +110,14 @@ script.
 			url: '/api/space/rest/sync/availability',
 			type: 'POST',
 			data: {
-
 				},
 			success: function(data){
-				alert("data: "+JSON.stringify(data));
+				console.log("[SUCCESS] synced:"+JSON.stringify(data));
 			},
 			error: function(err){
-				alert("err: "+JSON.stringify(err));
+				console.log("[ERROR] :"+err.message);
 			}
 		});
-		//location.reload();
 	});
 	
 	$('#sync_incidents').on('click', function () {
@@ -127,13 +129,12 @@ script.
 
 				},
 			success: function(data){
-				alert("data: "+JSON.stringify(data));
+				console.log("[SUCCESS] synced:"+JSON.stringify(data));
 			},
 			error: function(err){
-				alert("err: "+JSON.stringify(err));
+				console.log("[ERROR] :"+err.message);
 			}
 		});
-		//location.reload();
 	});
 	
 	$('#sync_soc_incidents').on('click', function () {
@@ -145,13 +146,12 @@ script.
 
 				},
 			success: function(data){
-				alert("data: "+JSON.stringify(data));
+				console.log("[SUCCESS] synced:"+JSON.stringify(data));
 			},
 			error: function(err){
-				alert("err: "+JSON.stringify(err));
+				console.log("[ERROR] :"+err.message);
 			}
 		});
-		//location.reload();
 	});
 	
 	$('#sync_problems').on('click', function () {
@@ -163,13 +163,29 @@ script.
 
 				},
 			success: function(data){
-				alert("data: "+JSON.stringify(data));
+				console.log("[SUCCESS] synced:"+JSON.stringify(data));
 			},
 			error: function(err){
-				alert("err: "+JSON.stringify(err));
+				console.log("[ERROR] :"+err.message);
 			}
 		});
-		//location.reload();
+	});
+
+	$('#sync_v1Epics').on('click', function () {
+		console.log("v1EpicsSync request called...");
+		$.ajax({
+			url: '/api/space/rest/sync/v1Epics',
+			type: 'POST',
+			data: {
+
+				},
+			success: function(data){
+				console.log("[SUCCESS] synced:"+JSON.stringify(data));
+			},
+			error: function(err){
+				console.log("[ERROR] :"+err.message);
+			}
+		});
 	});
 
 	$('#sync_apm_login').on('click', function () {
@@ -181,13 +197,12 @@ script.
 
 				},
 			success: function(data){
-				alert("data: "+JSON.stringify(data));
+				console.log("[SUCCESS] synced:"+JSON.stringify(data));
 			},
 			error: function(err){
-				alert("err: "+JSON.stringify(err));
+				console.log("[ERROR] :"+err.message);
 			}
 		});
-		//location.reload();
 	});
 	
 	$('#calc_availability').on('click', function () {
@@ -205,15 +220,13 @@ script.
 				alert("err: "+JSON.stringify(err));
 			}
 		});
-		//location.reload();
 	});
-
-	
-		
-		
-		
-			
-		
-		
-
-	
+	// connect to the socket server
+	var socket = io.connect(); 
+	// if we get an "info" emit from the socket server then console.log the data we recive
+	socket.on('syncUpdate', function (data) {
+		console.log("*********** got a websocket synUpdate: "+data.from+" "+data.status+" "+data.timestamp)
+		$('#'+data.from+'_timestamp').text(data.timestamp);
+		$('#'+data.from+'_status').text(data.status);
+		$('#'+data.from+'_info').text(data.info);
+	});

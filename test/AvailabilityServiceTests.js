@@ -31,7 +31,7 @@ describe('AvailabilityService', function(){
 			avService.findSOCServicesMain(function(data){
 				console.log("----------- data: "+data);
 				var _length = data.length;
-				assert.equal(22, _length);
+				assert.equal(15, _length);
 
 				done();
 				})

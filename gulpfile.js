@@ -184,7 +184,7 @@ gulp.task('deploy',function(callback){
     gutil.log("[s p a c e -deploy] ****** going to deploy to: "+SERVER.host+" -> "+SERVER.env);
 
 
-	runSequence('setup','buildfile','package','copy','transfer','remotedeploy','remotestart','done',callback);
+	runSequence('changelog','mocha','setup','buildfile','package','copy','transfer','remotedeploy','remotestart','done',callback);
 
 });
 
@@ -202,8 +202,8 @@ gulp.task('deployconfig',function(callback){
 });
 
 gulp.task('transferconfig', function () {
-  gutil.log("[s p a c e -deployconfig] scp stuff - source: "+TRANSFERCONFIG,"target: "+TARGETCONFIG);
-  gutil.log("[s p a c e -deployconfig] ssh config: host: "+SERVER.host+" ,port: "+SERVER.port+" ,username: "+SERVER.username+" , password : "+SERVER.password);
+  gutil.log("[s p a c e - transferconfig] scp stuff - source: "+TRANSFERCONFIG,"target: "+TARGETCONFIG);
+  gutil.log("[s p a c e - transferconfig] ssh config: host: "+SERVER.host+" ,port: "+SERVER.port+" ,username: "+SERVER.username+" , password : "+SERVER.password);
 
   return gulp.src(TRANSFERCONFIG)
     .pipe(gulpSSH.sftp('write', TARGETCONFIG));
@@ -352,56 +352,38 @@ gulp.task('concat', function() {
 });
 
 
-
-
 gulp.task('mocha', function () {
+    gutil.log("[s p a c e - mocha unit tests] ****** running all tests");
     return gulp.src('./test/*.js', {read: false})
         .pipe(mocha({reporter: 'nyan'}));
 });
 
 // Other actions that do not require a Vinyl
 gulp.task('changelog', function(){
+  gutil.log("[s p a c e - changelog] ****** creating changelog.json from git commits");
   git.exec({args : 'log --oneline --pretty=format:"%ad:: %s;;" --date=short '}, function (err, changelog) {
     if (err) throw err;
     //console.log(changelog);
-
-
-
       var _loglines = changelog.split(";;");
-
       var _logitemlist = [];
       for (var i in _loglines){
           var _logitem = {};
           var _linesplit = _loglines[i].split("::");
           _logitem.date = _linesplit[0];
           _logitem.change = _linesplit[1];
-
           console.log("**** "+JSON.stringify(_logitem));
-
           _logitemlist.push(_logitem);
       }
 
-      console.log(JSON.stringify(_logitemlist));
+      //console.log(JSON.stringify(_logitemlist));
 
       fs.writeFile("changelog.json", JSON.stringify(_logitemlist), 'utf8', function(err,done){
-        console.log("[done]");
-
-      
+        gutil.log("[s p a c e - changelog] OK ");
     });
 
 
   });
 });
-
-/*
-git log  --pretty=format:'<li> <a href="http://github.com/jerel/<project>/commit/%H">view commit &bull;</a> %s</li> ' --reverse  >changelog.html
-
-*/
-
-
-
-
-
 
 
 /**

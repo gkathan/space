@@ -70,6 +70,7 @@ var PATH = {
 						REST_SYNCSOCINCIDENTS : BASE+'/space/rest/sync/soc_incidents',
 						REST_SYNCPROBLEMS : BASE+'/space/rest/sync/problems',
 						REST_SYNCAPM_LOGIN : BASE+'/space/rest/sync/apm/login',
+						REST_SYNCV1EPICS : BASE+'/space/rest/sync/v1Epics',
 
 						REST_APM_LOGIN : BASE+'/space/rest/apm/login',
 
@@ -206,6 +207,8 @@ router.post(PATH.REST_SYNCINCIDENTS, function(req, res, next) {syncIncidents(req
 router.get(PATH.REST_SYNCINCIDENTS, function(req, res, next) {syncIncidents(req,res,next); });
 router.post(PATH.REST_SYNCSOCINCIDENTS, function(req, res, next) {syncSOCIncidents(req,res,next); });
 router.get(PATH.REST_SYNCSOCINCIDENTS, function(req, res, next) {syncSOCIncidents(req,res,next); });
+router.post(PATH.REST_SYNCV1EPICS, function(req, res, next) {syncV1Epics(req,res,next); });
+router.get(PATH.REST_SYNCV1EPICS, function(req, res, next) {syncV1Epics(req,res,next); });
 
 router.post(PATH.REST_SYNCPROBLEMS, function(req, res, next) {syncProblems(req,res,next); });
 router.get(PATH.REST_SYNCPROBLEMS, function(req, res, next) {syncProblems(req,res,next); });
@@ -686,20 +689,28 @@ function syncEmployeeImages(req,res,next){
 }
 
 function syncAvailability(req,res,next){
-
     var avSyncService = require ('../services/AvailabilitySyncService');
 		var _urls = config.sync.availability.url;
 		logger.debug("*********************** lets sync availability from avreports service... urls: "+_urls);
-
-
 	  avSyncService.sync(_urls,function(av){
-
 			logger.debug("av:"+JSON.stringify(av));
 			res.send("availability: "+JSON.stringify(av));
 	});
-
-
 }
+
+function syncV1Epics(req,res,next){
+    var v1SyncService = require ('../services/V1SyncService');
+		var _url = config.sync.v1Epics.url;
+		logger.debug("*********************** lets sync v1 epics...: "+_url);
+	  v1SyncService.sync(_url,function(err,result){
+			if (err){
+				res.send("syncV1Epics says: "+err);
+				return;
+			}
+			res.send("syncV1Epics says: "+result);
+	});
+}
+
 
 function syncIncidents(req,res,next){
     logger.debug("*********************** lets sync incidents from snow... ");
@@ -707,8 +718,6 @@ function syncIncidents(req,res,next){
     var incSyncService = require ('../services/IncidentSyncService');
     logger.debug("*********************** incservice instantiated ");
 	  incSyncService.sync(_url,function(data){
-
-
 			res.send("incidents: "+JSON.stringify(data));
 	});
 }
