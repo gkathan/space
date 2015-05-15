@@ -62,17 +62,6 @@ div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;back
 
 		br
 		a.btn.btn-xs.btn-danger(id="sync_employeeimages" href="#" ) sync employeeimages
-		br
-		a.btn.btn-xs.btn-danger(id="sync_availability" href="#" ) force sync availability
-		br
-		a.btn.btn-xs.btn-danger(id="sync_incidents" href="#" ) force sync incidents
-		br
-		a.btn.btn-xs.btn-danger(id="sync_soc_incidents" href="#" ) force SOC sync incidents
-		br
-		a.btn.btn-xs.btn-danger(id="sync_problems" href="#" ) force sync problems
-		br
-		a.btn.btn-xs.btn-danger(id="sync_apm_login" href="#" ) force sync apm.login
-		br
 		a.btn.btn-xs.btn-warning(id="calc_availability" href="#" ) calculate availability
 		
 		hr
@@ -117,96 +106,6 @@ div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;back
 			//location.reload();
 		});
 
-		$('#sync_availability').on('click', function () {
-			console.log("avreport request called...");
-			$.ajax({
-				url: '/api/space/rest/sync/availability',
-				type: 'POST',
-				data: {
-
-					},
-				success: function(data){
-					alert("data: "+JSON.stringify(data));
-				},
-				error: function(err){
-					alert("err: "+JSON.stringify(err));
-				}
-			});
-			//location.reload();
-		});
-		
-		$('#sync_incidents').on('click', function () {
-			console.log("incidentsync request called...");
-			$.ajax({
-				url: '/api/space/rest/sync/incidents',
-				type: 'POST',
-				data: {
-
-					},
-				success: function(data){
-					alert("data: "+JSON.stringify(data));
-				},
-				error: function(err){
-					alert("err: "+JSON.stringify(err));
-				}
-			});
-			//location.reload();
-		});
-		
-		$('#sync_soc_incidents').on('click', function () {
-			console.log("soc incidentsync request called...");
-			$.ajax({
-				url: '/api/space/rest/sync/soc_incidents',
-				type: 'POST',
-				data: {
-
-					},
-				success: function(data){
-					alert("data: "+JSON.stringify(data));
-				},
-				error: function(err){
-					alert("err: "+JSON.stringify(err));
-				}
-			});
-			//location.reload();
-		});
-		
-		$('#sync_problems').on('click', function () {
-			console.log("problemsync request called...");
-			$.ajax({
-				url: '/api/space/rest/sync/problems',
-				type: 'POST',
-				data: {
-
-					},
-				success: function(data){
-					alert("data: "+JSON.stringify(data));
-				},
-				error: function(err){
-					alert("err: "+JSON.stringify(err));
-				}
-			});
-			//location.reload();
-		});
-
-		$('#sync_apm_login').on('click', function () {
-			console.log("sync_apm_betplacement request called...");
-			$.ajax({
-				url: '/api/space/rest/sync/apm/login',
-				type: 'POST',
-				data: {
-
-					},
-				success: function(data){
-					alert("data: "+JSON.stringify(data));
-				},
-				error: function(err){
-					alert("err: "+JSON.stringify(err));
-				}
-			});
-			//location.reload();
-		});
-		
 		$('#calc_availability').on('click', function () {
 			console.log("calc_availability request called...");
 			$.ajax({

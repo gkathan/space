@@ -53,13 +53,16 @@ function _findAll(callback) {
 
 	items.find({}).sort({openedAt:-1}, function (err, incidents){
 		var olditems =  db.collection('oldsnowincidents');
-		if (err) callback(err);
+		if (err){
+			callback(err);
+			return;
+		}
 		logger.debug(".....findAll....incidents: "+incidents.length);
 		//callback(err,incidents);
 		olditems.find({}).sort({openedAt:-1}, function (err, oldincidents){
 			if (err) callback(err);
 			logger.debug(".....findAll....oldincidents: "+oldincidents.length);
-			var _all = incidents;//_.union(incidents,oldincidents);
+			var _all = _.union(incidents,oldincidents);
 			callback(err,_all);
 			//callback(err,incidents);
 			//return;

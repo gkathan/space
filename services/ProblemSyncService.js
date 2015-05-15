@@ -6,6 +6,8 @@ var config = require('config');
 var schedule = require('node-schedule');
 var _ = require('lodash');
 
+var app=require('../app');
+
 var mongojs = require("mongojs");
 var DB="space";
 var connection_string = '127.0.0.1:27017/'+DB;
@@ -78,11 +80,13 @@ function _syncProblem(url,done){
 				logger.debug('Response error '+err);
 				if(success){
 					logger.info("[success] sync problems....length: "+_problems.length);
+					app.io.emit('syncUpdate', {status:"[SUCCESS]",from:"problem",timestamp:new Date(),info:_problems.length+" items"});
 				}
 			})
 		done(data);
 	}).on('error',function(err){
 			logger.error('[ProblemSyncService] says: something went wrong on the request', err.request.options);
+				app.io.emit('syncUpdate', {status:"[ERROR]",from:"problem",timestamp:new Date(),info:err.message});
 	})
 }
 

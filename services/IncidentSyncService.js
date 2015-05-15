@@ -142,8 +142,8 @@ function _syncIncident(url,done){
 
 	        var _incidentsDELTASysIds = _.difference(_incidentsNEWSysIds,_incidentsOLDSysIds);
 
-	        logger.debug("OLD *************** "+_incidentsOLDSysIds);
-	        logger.debug("NEW *************** "+_incidentsNEWSysIds);
+	        logger.debug("OLD *************** "+_incidentsOLDSysIds.length);
+	        logger.debug("NEW *************** "+_incidentsNEWSysIds.length);
 
 	        logger.debug("DELTA *************** delta size: "+_incidentsDELTASysIds.length);
 
@@ -161,6 +161,7 @@ function _syncIncident(url,done){
 
 	          incidentsdelta.insert(_incidentsDIFF);
 					  // and send a websocket event about the changes ;-)
+						logger.debug("========================== incidentDIFF OK ===================================");
 						//[TODO]
 
 						var _message={};
@@ -168,6 +169,8 @@ function _syncIncident(url,done){
 						var _prio;
 
 						if (config.emit.snow_incidents_new =="on" && _incidentsDIFF.NEW.length>0){
+							logger.debug("========================== due to config check we should emit websocket message ===================================");
+
 							// for now we assume there is always only one new INCIDENT
 							var _newincident = _incidentsDIFF.NEW[0];
 							logger.debug("_newincident: "+JSON.stringify(_newincident));
@@ -199,16 +202,36 @@ function _syncIncident(url,done){
 								icon:"/images/incidents/"+_prio+".png"
 							};
 							// filter out stuff
+							logger.debug("========================== message: "+JSON.stringify(_message));
+
 							var _exclude = config.emit.snow_incidents_new_exclude_businessservices;
 							if (!_.startsWith(_newincident.businessService,_exclude)){
+								logger.debug("========================== going to emit websocket message ===================================");
 								app.io.emit('message', {msg:_message});
 							}
 						}
 						if (config.emit.snow_incidents_changes =="on" && _incidentsDIFF.CHANGED.length>0){
-							_message.title="! INCIDENT CHANGES!";
-							_message.body = JSON.stringify(_incidentsDIFF.CHANGED);
-							_message.type = "warning";
-							_message.desktop={desktop:true};
+
+							var _changedincident = _incidentsDIFF.CHANGED[0];
+							_message.title="! INCIDENT CHANGED !";
+
+							var _body ="";
+							for (var i in _.keys(_changedincident.diff)){
+								var _key = _.keys(_changedincident.diff)[i];
+								console.log("_key: "+_key);
+								_body+="\n"+_key+" : "+_changedincident.diff[_key][0]+" -> "+_changedincident.diff[_key][1];
+							}
+
+
+					
+
+							_message.body = _changedincident.id+"\n"+_body;
+							_message.type = "info";
+							_message.desktop={
+								desktop:true,
+								icon:"/images/messages/msg_info.png"
+							};
+							logger.debug("========================== going to emit websocket message ===================================");
 							app.io.emit('message', {msg:_message});
 						}
 	        }

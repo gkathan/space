@@ -184,7 +184,7 @@ gulp.task('deploy',function(callback){
     gutil.log("[s p a c e -deploy] ****** going to deploy to: "+SERVER.host+" -> "+SERVER.env);
 
 
-	runSequence('changelog','mocha','setup','buildfile','package','copy','transfer','remotedeploy','remotestart','done',callback);
+	runSequence('changelog','setup','buildfile','package','copy','transfer','remotedeploy','remotestart','done',callback);
 
 });
 

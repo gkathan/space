@@ -47,7 +47,7 @@ style.
 
 block content
 
-div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;background-color:white;width:800px;text-align: left;margin: 10px auto;")
+div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;background-color:white;width:900px;text-align: left;margin: 10px auto;")
 	.panel-heading
 		i.glyphicon.glyphicon-refresh(style="font-size:15px")
 		span(style="font-size:20px") &nbsp;SYNC PROCESSES
@@ -64,7 +64,7 @@ div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;back
 						|interval
 					th(style="width:110px;")
 						|last sync
-					th(style="width:40px;")
+					th(style="width:60px;")
 						|status
 					th(style="width:140px;")
 						|last info
@@ -81,7 +81,7 @@ div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;back
 							|#{sync.sync.intervalMinutes}
 						td(style="font-size:10px")
 							span(id="#{sync.name}_timestamp")
-						td(style="font-size:10px") 
+						td(style="font-size:10px;font-weight:bold") 
 							span(id="#{sync.name}_status")
 						td(style="font-size:10px") 
 							span(id="#{sync.name}_info")
@@ -154,7 +154,7 @@ script.
 		});
 	});
 	
-	$('#sync_problems').on('click', function () {
+	$('#sync_problem').on('click', function () {
 		console.log("problemsync request called...");
 		$.ajax({
 			url: '/api/space/rest/sync/problems',
@@ -231,9 +231,15 @@ script.
 		var _idInfo = '#'+data.from+'_info';
 		$(_idTimestamp).text(data.timestamp);
 		$(_idTimestamp).effect( "highlight", "slow" );
-		if (data.status=="[ERROR]") console.log("MAKE IT RED !");//$(_idTimestamp).effect( "color", "red" );
+		if (data.status=="[ERROR]") $(_idTimestamp).animate({color: "red"}, 1000 );
+		else if (data.status=="[SUCCESS]") $(_idTimestamp).animate({color: "green"}, 1000 );
 		$(_idStatus).text(data.status);
 		$(_idStatus).effect( "highlight", "slow" );
+		if (data.status=="[ERROR]") $(_idStatus).animate({color: "red"}, 1000 );
+		else if (data.status=="[SUCCESS]") $(_idStatus).animate({color: "green"}, 1000 );
 		$(_idInfo).text(data.info);
 		$(_idInfo).effect( "highlight", "slow" );
+		if (data.status=="[ERROR]") $(_idInfo).animate({color: "red"}, 1000 );
+		else if (data.status=="[SUCCESS]") $(_idInfo).animate({color: "green"}, 1000 );
+
 	});

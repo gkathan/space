@@ -31,6 +31,7 @@
 					"LogstashUDP": {
       		"port": 9999,
       		"appName": "space",
+					"level":"debug",
       		"host": "127.0.0.1"
 				}
 			},
@@ -101,7 +102,7 @@
 	"emit": {
 		"snow_incidents_new": "on",
 		"snow_incidents_new_exclude_businessservices":"Workplace",
-		"snow_incidents_changes": "off",
+		"snow_incidents_changes": "on",
 		"space_messages" : "on"
 	},
 
