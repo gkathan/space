@@ -43,70 +43,62 @@ function _syncAvailability(urls,callback){
 	var async=require('async');
 	var avData={};
 
-	async.series([
-		function(done){
-			logger.debug("1) ************************************** STEP-1");
-			// call availability rest service
-			var Client = require('node-rest-client').Client;
-			client = new Client();
-			// direct way
-			client.get(urls[0], function(data, response,callback){
-				// parsed response body as js object
-				var _endpoint = _.last(urls[0].split("/"));
-				logger.debug("...get data..: endpoint: "+_endpoint);
-				logger.debug(data);
-				try{
-					avData[_endpoint]=JSON.parse(data);
-				}
-				catch(e){
-					logger.error("exception "+e);
-					return;
-				}
-				// nested callback
-				client.get(urls[1], function(data, response,callback){
-					// parsed response body as js object
-					var _endpoint = _.last(urls[1].split("/"));
-					logger.debug("...get data..: endpoint: "+_endpoint);
-					logger.debug(data);
-					try{
-						avData[_endpoint]=JSON.parse(data);
-					}
-					catch(e){
-						logger.error("exception "+e);
-						return;
-					}
-					// and store it
-					var availability =  db.collection('availability');
-					availability.drop();
-					availability.insert({createDate:new Date(),avReport:avData}	 , function(err , success){
-						//console.log('Response success '+success);
-						if (err){
-							logger.debug('Response error '+err.message);
-							app.io.emit('syncUpdate', {status:"[ERROR]",from:"availability",timestamp:new Date(),info:err.message});
-
-						}
-						if(success){
-							logger.info("sync availability [DONE]");
-							app.io.emit('syncUpdate', {status:"[SUCCESS]",from:"availability",timestamp:new Date(),info:"avData synced"});
-						}
-					})
-				}).on('error',function(err){
-		        logger.error('[AvailabilitySyncSerice] says: something went wrong on the request', err.request.options);
-						app.io.emit('syncUpdate', {status:"[ERROR]",from:"availability",timestamp:new Date(),info:err.message});
-
-					})
-			}).on('error',function(err){
-	        logger.error('[AvailabilitySyncSerice] says: something went wrong on the request', err.request.options);
-					app.io.emit('syncUpdate', {status:"[ERROR]",from:"availability",timestamp:new Date(),info:err.message});
-
-				});
-			done();
-		},
-		function(done){
-					logger.debug("2) ************************************** STEP-2");
-					// store
-					done();
+	logger.debug("************************************** SYNC AVAILABILITY");
+	// call availability rest service
+	var Client = require('node-rest-client').Client;
+	client = new Client();
+	// direct way
+	client.get(urls[0], function(data, response,done){
+		// parsed response body as js object
+		var _endpoint = _.last(urls[0].split("/"));
+		logger.debug("...get data..: endpoint: "+_endpoint);
+		logger.debug(data);
+		try{
+			avData[_endpoint]=JSON.parse(data);
 		}
-		]);
-		callback(avData);
+		catch(err){
+			logger.error("exception "+err);
+			app.io.emit('syncUpdate', {status:"[ERROR]",from:"availability",timestamp:new Date(),info:err.message});
+			callback(err);
+			return;
+		}
+		// nested callback
+		client.get(urls[1], function(data, response,done){
+			// parsed response body as js object
+			var _endpoint = _.last(urls[1].split("/"));
+			logger.debug("...get data..: endpoint: "+_endpoint);
+			logger.debug(data);
+			try{
+				avData[_endpoint]=JSON.parse(data);
+			}
+			catch(err){
+				logger.error("exception "+err);
+				app.io.emit('syncUpdate', {status:"[ERROR]",from:"availability",timestamp:new Date(),info:err.message});
+				callback(err);
+				return;
+			}
+			// and store it
+			var availability =  db.collection('availability');
+			availability.drop();
+			availability.insert({createDate:new Date(),avReport:avData}	 , function(err , success){
+				//console.log('Response success '+success);
+				if (err){
+					logger.debug('Response error '+err.message);
+					app.io.emit('syncUpdate', {status:"[ERROR]",from:"availability",timestamp:new Date(),info:err.message});
+					callback(err);
+				}
+				if(success){
+					logger.info("sync availability [DONE]");
+					app.io.emit('syncUpdate', {status:"[SUCCESS]",from:"availability",timestamp:new Date(),info:"avData synced"});
+					callback(null,avData);
+				}
+			})
+		}).on('error',function(err){
+        logger.error('[AvailabilitySyncSerice] says: something went wrong on the request', err.request.options);
+				app.io.emit('syncUpdate', {status:"[ERROR]",from:"availability",timestamp:new Date(),info:err.message});
+			})
+	}).on('error',function(err){
+      logger.error('[AvailabilitySyncSerice] says: something went wrong on the request', err.request.options);
+			app.io.emit('syncUpdate', {status:"[ERROR]",from:"availability",timestamp:new Date(),info:err.message});
+	});
 }

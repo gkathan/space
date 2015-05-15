@@ -120,7 +120,7 @@ script.
 		});
 	});
 	
-	$('#sync_incidents').on('click', function () {
+	$('#sync_incident').on('click', function () {
 		console.log("incidentsync request called...");
 		$.ajax({
 			url: '/api/space/rest/sync/incidents',
@@ -226,7 +226,14 @@ script.
 	// if we get an "info" emit from the socket server then console.log the data we recive
 	socket.on('syncUpdate', function (data) {
 		console.log("*********** got a websocket synUpdate: "+data.from+" "+data.status+" "+data.timestamp)
-		$('#'+data.from+'_timestamp').text(data.timestamp);
-		$('#'+data.from+'_status').text(data.status);
-		$('#'+data.from+'_info').text(data.info);
+		var _idTimestamp = '#'+data.from+'_timestamp';
+		var _idStatus = '#'+data.from+'_status';
+		var _idInfo = '#'+data.from+'_info';
+		$(_idTimestamp).text(data.timestamp);
+		$(_idTimestamp).effect( "highlight", "slow" );
+		if (data.status=="[ERROR]") console.log("MAKE IT RED !");//$(_idTimestamp).effect( "color", "red" );
+		$(_idStatus).text(data.status);
+		$(_idStatus).effect( "highlight", "slow" );
+		$(_idInfo).text(data.info);
+		$(_idInfo).effect( "highlight", "slow" );
 	});

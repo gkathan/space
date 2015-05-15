@@ -124,12 +124,6 @@
 			"url" : "https://bwinparty.service-now.com/incident_list.do?JSONv2&sysparm_action=getRecords&sysparm_query="
 		},
 
-		"oldsnowincident" : {
-			"mode": "off",
-			"includePriority" : 2,
-			"intervalMinutes" :60 	,
-			"url" : "https://snow.bwinparty.corp/incident_list.do?JSON&sysparm_query=opened_at%3E2014-01-01"
-		},
 
 
 		"soc_incidents" : {

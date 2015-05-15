@@ -141,8 +141,9 @@ var v1SyncService = require('./services/V1SyncService');
 v1SyncService.init();
 
 var avSyncService = require('./services/AvailabilitySyncService');
-avSyncService.init(function(av){
-  logger.info("[ok]: "+JSON.stringify(av));
+avSyncService.init(function(err,av){
+  if (err) logger.error("[error]: "+err.message);
+  else logger.info("[ok]: "+JSON.stringify(av));
 });
 
 var incidentSyncService = require('./services/IncidentSyncService');

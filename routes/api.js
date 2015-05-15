@@ -692,9 +692,16 @@ function syncAvailability(req,res,next){
     var avSyncService = require ('../services/AvailabilitySyncService');
 		var _urls = config.sync.availability.url;
 		logger.debug("*********************** lets sync availability from avreports service... urls: "+_urls);
-	  avSyncService.sync(_urls,function(av){
-			logger.debug("av:"+JSON.stringify(av));
-			res.send("availability: "+JSON.stringify(av));
+	  avSyncService.sync(_urls,function(err,av){
+			if(err){
+				res.send("syncAvailability says: "+err.message);
+			}
+			if (av){
+				logger.debug("av:"+JSON.stringify(av));
+				res.send("availability: "+JSON.stringify(av));
+			}
+			return;
+
 	});
 }
 
@@ -704,7 +711,7 @@ function syncV1Epics(req,res,next){
 		logger.debug("*********************** lets sync v1 epics...: "+_url);
 	  v1SyncService.sync(_url,function(err,result){
 			if (err){
-				res.send("syncV1Epics says: "+err);
+				res.send("syncV1Epics says: "+err.message);
 				return;
 			}
 			res.send("syncV1Epics says: "+result);
