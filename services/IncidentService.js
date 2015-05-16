@@ -34,6 +34,20 @@ function _findRevenueImpactMapping(callback) {
 }
 
 
+function _findFiltered(filter,callback) {
+	var items =  db.collection('incidents');
+	logger.debug("filter: "+JSON.stringify(filter));
+
+	items.find(filter).sort({openedAt:-1}, function (err, docs){
+			if (err){
+				logger.error("error: "+err.message);
+			}
+			logger.debug("docs: "+docs)
+			callback(err,docs);
+			return;
+	});
+}
+
 /**
  *
  */
@@ -93,6 +107,7 @@ exports.findGroupedByPriority = function (prioritylist){
 }
 
 exports.find = _find;
+exports.findFiltered = _findFiltered;
 exports.findAll = _findAll;
 exports.mapPriority = _mapPriority;
 exports.mapState = _mapState;

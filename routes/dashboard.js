@@ -63,6 +63,7 @@ router.get('/qos', function(req, res) {
 
 router.get('/firereport', function(req, res) {
 		var avc = require ('../services/AvailabilityCalculatorService');
+		var inc = require ('../services/IncidentService');
 
 		//default is in config
 		var _from = moment().startOf('year');
@@ -80,19 +81,24 @@ router.get('/firereport', function(req, res) {
 
 		avc.calculateOverall(_from,_to,_filter,function(avDataOverall){
 			avc.calculateExternal(_from,_to,_filter,function(avDataExternal){
+				var _incfilter={openedAt:{$gte:new Date(_from),$lte:new Date(_to)},priority:"P01 - Critical"};
+
+				inc.findFiltered(_incfilter,function(err,snowIncidents){
 
 
-				res.locals.av = avDataOverall;
-				res.locals.avExternal = avDataExternal;
-				res.locals.coreDef = config.availability.coreTime
-				res.locals.moment = moment;
-				res.locals.from = _from;
-				res.locals.to = _to;
-				res.locals.filter = _filter;
-				res.locals.accounting=accounting;
-				logger.debug("*****customer: "+_customer);
+					res.locals.av = avDataOverall;
+					res.locals.avExternal = avDataExternal;
+					res.locals.snowIncidents = snowIncidents;
+					res.locals.coreDef = config.availability.coreTime
+					res.locals.moment = moment;
+					res.locals.from = _from;
+					res.locals.to = _to;
+					res.locals.filter = _filter;
+					res.locals.accounting=accounting;
+					logger.debug("*****customer: "+_customer);
 
-				res.render('dashboard/firereport', { title: 's p a c e - firereport' });
+					res.render('dashboard/firereport', { title: 's p a c e - firereport' });
+				});
 			});
 		});
 });

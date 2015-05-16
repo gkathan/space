@@ -15,6 +15,12 @@ script(src='/javascripts/components/nvd3/build/nv.d3.min.js')
 -		return d.format("h:mm:ss", { trim: false });
 -	}
 
+-	function formatMoney(money){
+-		return accounting.formatMoney(money, "€", 2, ".", ",")
+-	}
+
+
+
 
 style.
 	#chart svg {
@@ -27,16 +33,18 @@ style.
 	}
 	#chartP8 svg {
 	  height: 400px;
-		width:1200px;
+		width:1000px;
 	}
 	#chartP1 svg {
 	  height: 400px;
-		width:1200px;
+		width:1000px;
 	}
 
 
 mixin renderAVCoreDefinition(coreDef)
-	span(style="font-size:10px;font-style:italic") **) core time is configured as:
+	sup(style="font-size:8px") 
+		|3)
+	span(style="font-size:10px;font-style:italic") core time is configured as:
 	table(style="width:250px")
 		each t in coreDef
 			tr(style="line-height:12px")
@@ -50,12 +58,21 @@ mixin renderAVCoreDefinition(coreDef)
 mixin renderDisclaimer
 	hr
 	div(style="font-style:italic;font-size:10px")
-		|*) downtimes are per definition always "degraded" times by accordong SOC set degradation factor
+		sup 
+			|1)
+		|downtimes are per definition always "degraded" times by accordong SOC set degradation factor
+		br
+	div(style="font-style:italic;font-size:10px")
+		sup 
+			|2)
+		|revenue impact is an approximation
 		br
 	+renderAVCoreDefinition(coreDef)
 	br
 	div(style="font-style:italic;font-size:10px")
-		|***) SERVICES - EXTERNAL are "injected" as ProductIntegration in SERVICES OVERALL
+		sup 
+			|4)
+		|SERVICES - EXTERNAL are "injected" as ProductIntegration in SERVICES OVERALL
 		br
 	hr
 
@@ -72,7 +89,7 @@ mixin renderAV(title,av,downtime,revenueImpact)
 				|#{formatAVTime(downtime.all)}
 		td(style="width:150px")
 			b(style="font-size:14px;color:red")
-				|-#{accounting.formatMoney(revenueImpact, "€", 2, ".", ",")}
+				|-#{formatMoney(revenueImpact)}
 
 	tr(style="line-height:32px;text-align:right")
 		td(style="width:150px")
@@ -129,15 +146,18 @@ mixin renderAVServicesList(title,av)
 				tr(style="line-height:50px")
 					th(style="width:150px;text-align:right;font-size:14px") TYPE&nbsp;&nbsp;&nbsp;
 					th(style="width:100px;text-align:right;font-size:14px") AVAILABILITY
+						|&sup1;
 					th(style="width:100px;text-align:right;font-size:14px") DOWNTIME
+						|&sup2;
 					th(style="width:150px;text-align:right;font-size:14px;color:red") REVENUE IMPACT 
+						|&sup3;
 			tbody
 				+renderAV("PLANNED",av.av.planned,av.downtime.planned,av.revenueImpact.planned)
 				+renderAV("UNPLANNED",av.av.unplanned,av.downtime.unplanned,av.revenueImpact.unplanned)
 				+renderAV("TOTAL",av.av.total,av.downtime.total,(av.revenueImpact.planned+av.revenueImpact.unplanned))
 
 	hr
-	table.table-striped.table-hover.table-condensed(style="max-width:1200px")
+	table.table-striped.table-hover.table-condensed(style="max-width:1000px")
 		thead
 			tr(style="line-height:14px;font-weight:bold;font-size:14px")
 				th(style="width:250px;text-align:right")
@@ -176,16 +196,16 @@ mixin renderAVServicesList(title,av)
 	
 	
 
-mixin renderIncidentList(title,incidents)
+mixin renderSOCIncidentList(title,incidents)
 	h3 #{title}
-	table.table-striped.table-hover.table-condensed(style="max-width:900px")
+	table.table-striped.table-hover.table-condensed(style="max-width:1000px")
 		thead
 			tr(style="line-height:16px;font-weight:bold")
-				th(style="width:50px;text-align:right")
+				th(style="width:40px;text-align:right")
 					|prio
-				th(style="width:100px;text-align:right")
+				th(style="width:90px;text-align:center")
 					|id
-				th(style="width:200px;text-align:right")
+				th(style="width:190px;text-align:left")
 					|description
 				th(style="width:80px;text-align:center")
 					|start
@@ -195,45 +215,110 @@ mixin renderIncidentList(title,incidents)
 					|ttr
 				th(style="width:50px;text-align:right")
 					|deg
-				th(style="width:200px;text-align:right")
+				th(style="width:190px;text-align:left")
 					|rootCause
-				th(style="width:50px;text-align:right")
-					|plan
-				th(style="width:50px;text-align:right")
-					|ext
-				th(style="width:50px;text-align:right")
-					|cust
-				th(style="width:150px;text-align:right")
+				th(style="width:200px;text-align:left")
 					|label
 		tbody
 			each inc in incidents
 				tr(style="line-height:16px;font-size:12px")
-					td(style="width:300px;text-align:right")
+					td(style="text-align:right")
 						img(src="/images/incidents/#{inc.priority}.png" height="25px") 
-					td(style="width:200px;text-align:right")
+					td(style="text-align:right")
 						a(href="https://bwinparty.service-now.com/ess/incident.do?sys_id=#{inc.snowId}" target="_new")
 							|#{inc.incidentID}
-					td(style="width:100px;text-align:right")
+					td(style="text-align:left")
 						|#{inc.description}
-					td(style="width:80px;text-align:right")
+					td(style="text-align:right")
 						|#{moment(inc.start).format("YYYY-MM-DD HH:mm:ss")}
-					td(style="width:80px;text-align:right")
+					td(style="text-align:right")
 						|#{moment(inc.stop).format("YYYY-MM-DD HH:mm:ss")}
-					td(style="width:60px;text-align:right")
+					td(style="text-align:right")
 						|#{(formatAVTime(inc.resolutionTime))}
-					td(style="width:50px;text-align:right")
+					td(style="text-align:right")
 						|#{inc.degradation}%
-					td(style="width:200px;text-align:right")
+					td(style="text-align:left")
 						|#{inc.rootCause}
-					td(style="width:50px;text-align:right")
-						|#{inc.isPlanned}
-					td(style="width:50px;text-align:right")
-						|#{inc.isExt}
-					td(style="width:50px;text-align:right")
-						|#{inc.isEndUserDown}					
-					td(style="width:150px;text-align:right")
+					td(style="text-align:left;font-size:10px")
 						|#{inc.labels}					
 
+mixin renderFromTo(from,to)
+	table
+		tr(style="line-height:14px")
+			td(style="width:40px;font-size:12px")
+				|from: 
+			td(style="width:80px;font-size:12px;font-weight:bold")
+				|#{from}
+		tr(style="line-height:14px")
+			td(style="font-size:12px")
+				|to: 
+			td(style="font-size:12px;font-weight:bold")
+				|#{to}
+
+mixin renderIncidentList(title,incidents)
+	div.panel.panel-default
+		div.panel-heading 
+			span(style="color:black;font-size:24px;font-weight:bold") #{title}
+			br
+			+renderFromTo(from,to)
+			
+		div.panel-body
+			table.table-striped.table-hover.table-condensed(style="max-width:900px")
+				thead
+					tr(style="line-height:16px;font-weight:bold")
+						th(style="width:80px;text-align:center")
+							|Date
+						th(style="width:50px;text-align:right")
+							|Prio
+						th(style="width:120px;text-align:center;background:#efefef;font-weight:bold")
+							|Revenue Impact
+						th(style="width:100px;text-align:center")
+							|Id
+						th(style="width:250px;text-align:left")
+							|Short Description
+						th(style="width:120px;text-align:center")
+							|Time to Resolve
+						th(style="width:250px;text-align:left")
+							|Business Service
+				tbody
+					- var _rev = 100;
+					- var _sum =0;
+					- var _sumTTR=0;
+					each inc in incidents
+						- _sum++;	
+						- _sumTTR+=moment.duration(inc.timeToResolve);
+						tr(style="line-height:16px;font-size:12px")
+							td(style="text-align:right")
+								|#{moment(inc.openedAt).format("YYYY-MM-DD")}
+							td(style="text-align:right;vertical-align:top")
+								img(src="/images/incidents/#{inc.priority.split(' ')[0]}.png" height="25px") 
+							td(style="text-align:right;background:#efefef;font-weight:bold;font-size:12px")
+								if inc.revenueImpact
+									|#{formatMoney(inc.revenueImpact)}
+									- _rev+=inc.revenueImpact;
+								else
+									|n/a
+							td(style="text-align:right")
+								a(href="https://bwinparty.service-now.com/ess/incident.do?sys_id=#{inc.sysId}" target="_new")
+									|#{inc.id}
+							td(style="text-align:left")
+								|#{inc.shortDescription}
+							td(style="text-align:right")
+								|#{(formatAVTime(inc.timeToResolve))}
+							td(style="text-align:left")
+								|#{inc.businessService}
+			hr
+			|sum revenue impact: 
+			b
+				|#{formatMoney(_rev)}
+			br
+			|sum incidents: 
+			b
+				|#{_sum}
+			br
+			|sum ttr: 
+			b
+				|#{formatAVTime(_sumTTR)}
 
 
 block content
@@ -252,53 +337,56 @@ block content
 			option danske spil
 			option pmu
 		br
-		div(style="margin:0px auto;width:120px;")
+		div(style="margin-left:-170px;width:400px;")
 			#daterange.selectbox.pull-right
 				i.fa.fa-calendar &nbsp;
-				span -- enter date -- &nbsp;
+				span(id="enter_date") #{moment(from).format('dddd, Do of MMMM YYYY')} - #{moment(to).format('dddd, Do of MMMM YYYY')}
 				b.caret
 	if filter && filter.customer!="* ALL *"
 		div(style="text-align:center;font-weight:bold")
 			img(src="/images/customers/#{filter.customer}.png" height="50px")
 	br
-	div(style="text-align:center;font-weight:bold")
-		span(style="font-weight:normal") start: 
-		span(id="start" style="font-weight:bold") #{moment(av.from)}
-	div(style="text-align:center;font-weight:bold")
-		span(style="font-weight:normal") stop: 
-		span(id="stop" style="font-weight:bold") #{moment(av.to)}
-		br
-		br
 
-	div.row(style="margin: auto;max-width:1200px")
+	div.row(style="margin: auto;max-width:1000px")
 		div.panel.panel-default
 			div.panel-heading 
-				b AVAILABILITY - DOWNTIME - REVENUE IMPACT 
+				span(style="color:black;font-size:24px;font-weight:bold") Availability - Downtime - Revenue Impact 
 				| planned | unplanned | total 
+				br
+				+renderFromTo(from,to)
+
 			div.panel-body
 				
 				+renderAVServicesList("SERVICES - ALL",av)
 				hr
 				+renderAVServicesList("SERVICES - EXTERNAL ***)",avExternal)
 				+renderDisclaimer
-	div.row(style="margin: auto;max-width:1200px")
+	div.row(style="margin: auto;max-width:1000px")
 		script(src='/javascripts/dashboards/nvd3_incidents_multi.js')
 
-		+chartIncident("P1","chartP1")
-		+chartIncident("P8","chartP8")
+		+renderIncidentList("snow reported P1 incidents",snowIncidents)
+		
+
+
+		+chartIncident("Incidents Trend - P1","chartP1")
+		+chartIncident("Incidents Trend - P8","chartP8")
 
 		
 		div.panel.panel-default
 			div.panel-heading 
-				|SOC reported incidents: 
+				span(style="color:black;font-size:24px;font-weight:bold") SOC reported incidents / outages
+				br
+				+renderFromTo(from,to)
+
 			div.panel-body
-				
-				+renderIncidentList("unplanned",av.incidents.unplanned)
-				+renderIncidentList("planned",av.incidents.planned)
+				+renderSOCIncidentList("unplanned",av.incidents.unplanned)
+				+renderSOCIncidentList("planned",av.incidents.planned)
 				
 
+
+
 	script(src='/javascripts/dashboards/nvd3_availability.js')
-	div.row(style="margin: auto;max-width:1200px")
+	div.row(style="margin: auto;max-width:1000px")
 		div.panel.panel-default
 			div.panel-heading 
 				|availability: 
@@ -308,7 +396,7 @@ block content
 					svg
 					
 	script(src='/javascripts/dashboards/nvd3_availability_multi.js')
-	div.row(style="margin: auto;max-width:1200px")
+	div.row(style="margin: auto;max-width:1000px")
 		div.panel.panel-default
 			div.panel-heading 
 				|availability: 
