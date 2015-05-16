@@ -54,6 +54,7 @@ var BASE = config.gulp.baseDir;
 var REMOTE_BASE = config.gulp.remoteBaseDir;
 var DIST = BASE+"dist/package/";
 var DUMP = BASE+"dist/dump/";
+var DROPBOX = "Dropbox/_work/space/";
 var RESTORE = "./";
 var PACKAGE = "space_v"+version+"_build_"+timestamp;
 var PACKAGE_EXTENSION = ".zip";
@@ -73,8 +74,8 @@ var REMOTE_MONGODUMP = ['./space/scripts/space_mongodump.sh'];
 var REMOTE_FILESDUMP = ['./space/scripts/space_filesdump.sh'];
 var REMOTE_MONGORESTORE = ['./space/scripts/space_mongorestore.sh'];
 
-var MONGODUMP = './mongodump_space'+SERVER.env+".zip";
-var FILESDUMP = './filesdump_space.zip';
+var MONGODUMP = 'mongodump_space'+SERVER.env+".zip";
+var FILESDUMP = 'filesdump_space.zip';
 
 var MONGORESTORE = DUMP + 'mongodump_space'+SERVER.env+".zip";
 var MONGORESTORE_TARGET = './mongorestore_space'+SERVER.env+".zip";
@@ -215,7 +216,7 @@ gulp.task('transferconfig', function () {
  * and the stuf in files/directory (uploads)
  */
 gulp.task('dump',function(callback){
-	runSequence('remotemongodump','remotefilesdump','transfermongodump','transferfilesdump',callback);
+	runSequence('remotemongodump','remotefilesdump','transfermongodump','transferfilesdump','transfermongodumptodropbox',callback);
 });
 
 gulp.task('remotemongodump', function () {
@@ -241,7 +242,7 @@ gulp.task('transfermongodump', function () {
   gutil.log("[s p a c e - transfermongodump] transfer mongodump from remote: "+MONGODUMP);
   gutil.log("[s p a c e - transfermongodump] destination: "+DUMP);
 
-	return gulpSSH.sftp('read',MONGODUMP)
+	return gulpSSH.sftp('read','./'+MONGODUMP)
     .pipe(gulp.dest(DUMP))
     .pipe(unzip())
     .pipe(gulp.dest(DUMP+'mongodump_space'+SERVER.env+'_'+timestamp));
@@ -252,11 +253,25 @@ gulp.task('transferfilesdump', function () {
   gutil.log("[s p a c e - transferfilesdump] transfer filesdump from remote: "+FILESDUMP);
   gutil.log("[s p a c e - transferfilesdump] destination: "+DUMP);
 
-	return gulpSSH.sftp('read',FILESDUMP)
+	return gulpSSH.sftp('read','./'+FILESDUMP)
     .pipe(gulp.dest(DUMP))
     .pipe(unzip())
     .pipe(gulp.dest(DUMP+'files_space'+SERVER.env+'_'+timestamp));
 });
+
+gulp.task('transfermongodumptodropbox',function(){
+
+  var _time = moment().format("YYYYMMDD_HHmmss");
+  var _target = BASE+DROPBOX+'dist/data/mongo/'+MONGODUMP+"-"+_time;
+  var _source = DUMP+MONGODUMP;
+
+	 gutil.log("[s p a c e - transfermongodumptodropbox] copy the mongozip to dropbox - source:"+_source);
+	 gutil.log("[s p a c e - transfermongodumptodropbox] target: "+_target);
+	 return gulp.src(_source)
+        .pipe(gulp.dest(_target));
+
+});
+
 
 
 gulp.task('remotemongorestore', function () {
