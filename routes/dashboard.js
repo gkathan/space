@@ -66,8 +66,8 @@ router.get('/firereport', function(req, res) {
 		var inc = require ('../services/IncidentService');
 
 		//default is in config
-		var _from = moment().startOf('year');
-		var _to = moment();
+		var _from = moment().startOf('year').format("YYYY-MM-DD");
+		var _to = moment().format("YYYY-MM-DD");
 		var _customer;
 		var _filter;
 

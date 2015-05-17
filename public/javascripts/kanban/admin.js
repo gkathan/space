@@ -15,6 +15,7 @@ $("#admintype").text(_type);
 initShortcuts();
 refresh(_type);
 
+console.log("filter: "+_filter)
 
 function refresh(collection){
 		console.log("---------------------- dataSourceFor(collection): "+dataSourceFor(collection));

@@ -197,7 +197,7 @@ mixin renderAVServicesList(title,av)
 	
 
 mixin renderSOCIncidentList(title,incidents)
-	h3 #{title}
+	h3(style="font-size:20px;font-weight:bold") #{title}
 	table.table-striped.table-hover.table-condensed(style="max-width:1000px")
 		thead
 			tr(style="line-height:16px;font-weight:bold")
@@ -205,19 +205,21 @@ mixin renderSOCIncidentList(title,incidents)
 					|prio
 				th(style="width:90px;text-align:center")
 					|id
-				th(style="width:190px;text-align:left")
+				th(style="width:150px;text-align:left")
 					|description
-				th(style="width:80px;text-align:center")
+				th(style="width:80px;text-align:left")
+					|service
+				th(style="width:75px;text-align:center")
 					|start
-				th(style="width:80px;text-align:center")
+				th(style="width:75px;text-align:center")
 					|stop
-				th(style="width:60px;text-align:right")
+				th(style="width:60px;text-align:center")
 					|ttr
-				th(style="width:50px;text-align:right")
+				th(style="width:40px;text-align:right")
 					|deg
-				th(style="width:190px;text-align:left")
+				th(style="width:175px;text-align:left")
 					|rootCause
-				th(style="width:200px;text-align:left")
+				th(style="width:190px;text-align:left")
 					|label
 		tbody
 			each inc in incidents
@@ -229,6 +231,8 @@ mixin renderSOCIncidentList(title,incidents)
 							|#{inc.incidentID}
 					td(style="text-align:left")
 						|#{inc.description}
+					td(style="text-align:left")
+						|#{inc.serviceName}
 					td(style="text-align:right")
 						|#{moment(inc.start).format("YYYY-MM-DD HH:mm:ss")}
 					td(style="text-align:right")
@@ -265,23 +269,23 @@ mixin renderIncidentList(title,incidents)
 		div.panel-body
 			table.table-striped.table-hover.table-condensed(style="max-width:900px")
 				thead
-					tr(style="line-height:16px;font-weight:bold")
-						th(style="width:80px;text-align:center")
+					tr(style="line-height:20px;font-weight:bold")
+						th(style="width:80px;text-align:center;border-bottom:1px solid black")
 							|Date
-						th(style="width:50px;text-align:right")
+						th(style="width:50px;text-align:right;border-bottom:1px solid black")
 							|Prio
-						th(style="width:120px;text-align:center;background:#efefef;font-weight:bold")
+						th(style="width:150px;text-align:center;background:#efefef;font-weight:bold;border-bottom:1px solid black")
 							|Revenue Impact
-						th(style="width:100px;text-align:center")
+						th(style="width:100px;text-align:center;border-bottom:1px solid black")
 							|Id
-						th(style="width:250px;text-align:left")
+						th(style="width:250px;text-align:left;border-bottom:1px solid black")
 							|Short Description
-						th(style="width:120px;text-align:center")
+						th(style="width:120px;text-align:center;border-bottom:1px solid black")
 							|Time to Resolve
-						th(style="width:250px;text-align:left")
+						th(style="width:200px;text-align:left;border-bottom:1px solid black")
 							|Business Service
 				tbody
-					- var _rev = 100;
+					- var _rev = 0;
 					- var _sum =0;
 					- var _sumTTR=0;
 					each inc in incidents
@@ -307,6 +311,24 @@ mixin renderIncidentList(title,incidents)
 								|#{(formatAVTime(inc.timeToResolve))}
 							td(style="text-align:left")
 								|#{inc.businessService}
+					//sum row
+					tr(style="line-height:32px;font-size:12px")
+						td(colspan="2" style="text-align:right;border-top:1px solid black;border-bottom:1px solid black;")
+							b(style="font-size:24px") #{_sum} 
+							|Incidents
+						td(style="text-align:right;background:#efefef;font-weight:bold;font-size:18px;border-top:1px solid black;border-bottom:1px solid black")
+							if _rev
+								|#{formatMoney(_rev)}
+							else
+								|n/a
+						td(style="text-align:rightt;border-top:1px solid black;border-bottom:1px solid black;")
+							|Revenue Impact	
+						td(style="text-align:leftt;border-top:1px solid black;border-bottom:1px solid black")
+							
+						td(style="text-align:right;border-top:1px solid black;border-bottom:1px solid black")
+							b(style="font-size:18px;margin-top:15px") #{(formatAVTime(_sumTTR))}
+						td(style="text-align:left;border-top:1px solid black;border-bottom:1px solid black")
+							|Resolution Time
 			hr
 			|sum revenue impact: 
 			b
@@ -374,12 +396,13 @@ block content
 		
 		div.panel.panel-default
 			div.panel-heading 
-				span(style="color:black;font-size:24px;font-weight:bold") SOC reported incidents / outages
+				span(style="color:black;font-size:24px;font-weight:bold") SOC reported Outages
 				br
 				+renderFromTo(from,to)
 
 			div.panel-body
 				+renderSOCIncidentList("unplanned",av.incidents.unplanned)
+				hr
 				+renderSOCIncidentList("planned",av.incidents.planned)
 				
 

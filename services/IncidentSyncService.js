@@ -14,7 +14,6 @@ var connection_string = '127.0.0.1:27017/'+DB;
 var db = mongojs(connection_string, [DB]);
 
 var jsondiffpatch=require('jsondiffpatch');
-
 // logger
 var winston = require('winston');
 var logger = winston.loggers.get('space_log');
@@ -41,20 +40,14 @@ exports.init = function(){
 exports.sync = _syncIncident;
 
 function _syncIncident(url,done){
-	debugger;
 	logger.debug("**** _syncIncident, url: "+url);
-	//logger.debug("**** _syncIncident, req: "+req.baseUrl);
-
-		var _secret = require("../config/secret.json");
-
-		var options_auth={user:_secret.snowUser,password:_secret.snowPassword};
-		logger.debug("snowUser: "+_secret.snowUser);
-
-		var Client = require('node-rest-client').Client;
-		client = new Client(options_auth);
-		// direct way
-		logger.debug("**** node rest client: "+client);
-
+	var _secret = require("../config/secret.json");
+	var options_auth={user:_secret.snowUser,password:_secret.snowPassword};
+	logger.debug("snowUser: "+_secret.snowUser);
+	var Client = require('node-rest-client').Client;
+	client = new Client(options_auth);
+	// direct way
+	logger.debug("**** node rest client: "+client);
 		/*
 			Priority:
 			Display Value	Actual Value
@@ -63,211 +56,195 @@ function _syncIncident(url,done){
 			P16 - Moderate	3
 			P40 – Low	4
 		*/
-		url+="priority<="+config.sync.incident.includePriority;
+	url+="priority<="+config.sync.incident.includePriority;
+	client.get(url, function(data, response,callback){
+		// parsed response body as js object
+		logger.debug("...data:"+data);
+		logger.debug("...response:"+response.records);
+		logger.debug("arguments.callee.name: "+arguments.callee.name);
+		logger.debug("[_syncIncident]...get data..: _url:"+url);
 
-		logger.debug("*** client.get data : url = "+url);
+		var incService = require('./IncidentService');
+		var incidents =  db.collection('incidents');
+		var incidentsdelta =  db.collection('incidentsdelta');
+    var _incidentsNEW=[];
+    var _incidentsOLD;
 
+		// lets first get what we have had
+		incidents.find({},function(err,baseline){
+			incService.findRevenueImpactMapping(function(err,impactMapping){
+				_incidentsOLD = baseline;
 
-		client.get(url, function(data, response,callback){
-			// parsed response body as js object
-			logger.debug("...data:"+data);
-			logger.debug("...response:"+response.records);
+				var _compareIncidents=[];
+				var _compareIncidentsBaseline=[];
 
-			logger.debug("arguments.callee.name: "+arguments.callee.name);
-			logger.debug("[_syncIncident]...get data..: _url:"+url);
-			//logger.debug("[_syncIncident]...get data..: data:"+JSON.stringify(data));
+				for (var i in data.records){
+					var _incident = _filterRelevantData(data.records[i]);
+					_incidentsNEW.push(_incident);
+					_compareIncidents.push(_filterRelevantDataForDiff(_incident));
+				}
 
-			var incService = require('./IncidentService');
+        var _diff;
+				for (var o in _incidentsOLD){
+					_compareIncidentsBaseline.push(_filterRelevantDataForDiff(_incidentsOLD[o]));
+				}
 
-			var incidents =  db.collection('incidents');
-			var incidentsdelta =  db.collection('incidentsdelta');
+        var _incidentsDELTA_CHANGED =[];
+        // enrich with data from other sources
+				for (var n in _incidentsNEW){
+          var _sysId = _incidentsNEW[n].sysId;
+          var _old = _.findWhere(_incidentsOLD,{"sysId":_sysId});
+					//enrich/join with revenue impact
+					var _impact = _.findWhere(impactMapping,{"incident":_incidentsNEW[n].id});
+					if (_impact){
+						 _incidentsNEW[n].revenueImpact = parseInt(_impact.impact);
+					}
+          var _changed={};
+          if (_old){
+            _diff=jsondiffpatch.diff(_filterRelevantDataForDiff(_old),_filterRelevantDataForDiff(_incidentsNEW[n]));
+            if (_diff){
+              var _change ={"id":_old.id,"sysId":_old.sysId,"diff":_diff}
+              _incidentsDELTA_CHANGED.push(_change);
+            }
+          }
+        }
 
-      var _incidentsNEW=[];
-      var _incidentsOLD;
+        var _incidentsNEWSysIds = _.pluck(_incidentsNEW,'sysId');
+        var _incidentsOLDSysIds = _.pluck(_incidentsOLD,'sysId');
+        var _incidentsDELTASysIds = _.difference(_incidentsNEWSysIds,_incidentsOLDSysIds);
+        logger.debug("OLD *************** "+_incidentsOLDSysIds.length);
+        logger.debug("NEW *************** "+_incidentsNEWSysIds.length);
+        logger.debug("DELTA *************** delta size: "+_incidentsDELTASysIds.length);
+        var _incidentsDELTA_NEW =[];
+        for (var d in _incidentsDELTASysIds){
+          _incidentsDELTA_NEW.push(_.findWhere(_incidentsNEW,{"sysId":_incidentsDELTASysIds[d]}))
+        }
+        logger.debug("--------------------------------------------------- incidentsOLD: length="+_incidentsOLD.length);
+        logger.debug("--------------------------------------------------- incidentsNEW: length="+_incidentsNEW.length);
+        if (_incidentsDELTA_NEW.length>0 || _incidentsDELTA_CHANGED.length>0){
+          var _incidentsDIFF={"createDate":new Date(),"NEW":_incidentsDELTA_NEW,"CHANGED":_incidentsDELTA_CHANGED}
+          incidentsdelta.insert(_incidentsDIFF);
 
-			// lets first get what we have had
-			incidents.find({},function(err,baseline){
-
-				incService.findRevenueImpactMapping(function(err,impactMapping){
-
-					_incidentsOLD = baseline;
-				   // and store it
-
-					incidents.drop();
-
-					var _compareIncidents=[];
-					var _compareIncidentsBaseline=[];
-
-					for (var i in data.records){
-						var _incident = _filterRelevantData(data.records[i]);
-						_incidentsNEW.push(_incident);
-						_compareIncidents.push(_filterRelevantDataForDiff(_incident));
+					if (config.emit.snow_incidents_new =="on" && _incidentsDIFF.NEW.length>0){
+						_emitNEWIncidentMessage(_incidentsDIFF.NEW[0]);
+					}
+					if (config.emit.snow_incidents_changes =="on" && _incidentsDIFF.CHANGED.length>0){
+						_emitCHANGEIncidentMessage(_incidentsDIFF.CHANGED[0]);
 					}
 
-	        var _diff;
-
-					for (var o in _incidentsOLD){
-						_compareIncidentsBaseline.push(_filterRelevantDataForDiff(_incidentsOLD[o]));
+        }
+				incidents.drop();
+				incidents.insert(_incidentsNEW	 , function(err , success){
+					if (err){
+						logger.error('incidents.insert failed: '+err.message);
 					}
-
-	        var _incidentsDELTA_CHANGED =[];
-	        for (var n in _incidentsNEW){
-	          var _sysId = _incidentsNEW[n].sysId;
-	          var _old = _.findWhere(_incidentsOLD,{"sysId":_sysId});
-
-						//enrich/join with revenue impact
-						var _impact = _.findWhere(impactMapping,{"incident":_incidentsNEW[n].id});
-						if (_impact){
-							 _incidentsNEW[n].revenueImpact = parseInt(_impact.impact);
-						}
-
-	          var _changed={};
-	          if (_old){
-	            _diff=jsondiffpatch.diff(_filterRelevantDataForDiff(_old),_filterRelevantDataForDiff(_incidentsNEW[n]));
-	            if (_diff){
-	              var _change ={"id":_old.id,"sysId":_old.sysId,"diff":_diff}
-
-	              _incidentsDELTA_CHANGED.push(_change);
-	            }
-	          }
-	        }
-
-	        var _incidentsNEWSysIds = _.pluck(_incidentsNEW,'sysId');
-	        var _incidentsOLDSysIds = _.pluck(_incidentsOLD,'sysId');
-
-	        // and also check for new incidents !
-	        // lodash.difference
-	        // lodash.pick for reducing the object proerties
-	        // lodash.omit might be better...
-
-	        var _incidentsDELTASysIds = _.difference(_incidentsNEWSysIds,_incidentsOLDSysIds);
-
-	        logger.debug("OLD *************** "+_incidentsOLDSysIds.length);
-	        logger.debug("NEW *************** "+_incidentsNEWSysIds.length);
-
-	        logger.debug("DELTA *************** delta size: "+_incidentsDELTASysIds.length);
-
-	        var _incidentsDELTA_NEW =[];
-	        for (var d in _incidentsDELTASysIds){
-	          _incidentsDELTA_NEW.push(_.findWhere(_incidentsNEW,{"sysId":_incidentsDELTASysIds[d]}))
-	        }
-
-	        logger.debug("--------------------------------------------------- incidentsOLD: length="+_incidentsOLD.length);
-	        logger.debug("--------------------------------------------------- incidentsNEW: length="+_incidentsNEW.length);
-
-
-	        if (_incidentsDELTA_NEW.length>0 || _incidentsDELTA_CHANGED.length>0){
-	          var _incidentsDIFF={"createDate":new Date(),"NEW":_incidentsDELTA_NEW,"CHANGED":_incidentsDELTA_CHANGED}
-
-	          incidentsdelta.insert(_incidentsDIFF);
-					  // and send a websocket event about the changes ;-)
-						logger.debug("========================== incidentDIFF OK ===================================");
-						//[TODO]
-
-						var _message={};
-						var _type;
-						var _prio;
-
-						if (config.emit.snow_incidents_new =="on" && _incidentsDIFF.NEW.length>0){
-							logger.debug("========================== due to config check we should emit websocket message ===================================");
-
-							// for now we assume there is always only one new INCIDENT
-							var _newincident = _incidentsDIFF.NEW[0];
-							logger.debug("_newincident: "+JSON.stringify(_newincident));
-							if (_.startsWith(_newincident.priority,"P01")){
-								_type="error";
-								_prio = "P1";
-							}
-							else if(_.startsWith(_newincident.priority,"P08")){
-								_type="warning";
-								_prio = "P8";
-							}
-							else if(_.startsWith(_newincident.priority,"P16")){
-								_type="info";
-								_prio = "P16";
-							}
-							else if(_.startsWith(_newincident.priority,"P40")){
-								_type="info";
-								_prio = "P40";
-							}
-							else if(_.startsWith(_newincident.priority,"P120")){
-								_type="info";
-								_prio = "P120";
-							}
-							_message.title=_newincident.businessService;
-							_message.body = "+ "+_newincident.label+"\n"+_newincident.shortDescription;;
-							_message.type = _type;
-							_message.desktop={
-								desktop:true,
-								icon:"/images/incidents/"+_prio+".png"
-							};
-							// filter out stuff
-							logger.debug("========================== message: "+JSON.stringify(_message));
-
-							var _exclude = config.emit.snow_incidents_new_exclude_businessservices;
-							if (!_.startsWith(_newincident.businessService,_exclude)){
-								logger.debug("========================== going to emit websocket message ===================================");
-								app.io.emit('message', {msg:_message});
-							}
-						}
-						if (config.emit.snow_incidents_changes =="on" && _incidentsDIFF.CHANGED.length>0){
-
-							var _changedincident = _incidentsDIFF.CHANGED[0];
-							_message.title="! INCIDENT CHANGED !";
-
-							var _body ="";
-							for (var i in _.keys(_changedincident.diff)){
-								var _key = _.keys(_changedincident.diff)[i];
-								console.log("_key: "+_key);
-								_body+="\n"+_key+" : "+_changedincident.diff[_key][0]+" -> "+_changedincident.diff[_key][1];
-							}
-
-
-					
-
-							_message.body = _changedincident.id+"\n"+_body;
-							_message.type = "info";
-							_message.desktop={
-								desktop:true,
-								icon:"/images/messages/msg_info.png"
-							};
-							logger.debug("========================== going to emit websocket message ===================================");
-							app.io.emit('message', {msg:_message});
-						}
-	        }
-					incidents.insert(_incidentsNEW	 , function(err , success){
-						//console.log('Response success '+success);
-						logger.debug('Response error '+err);
-						if(success){
-							logger.info("[success] sync incidents....length: "+_incidentsNEW.length);
-								// get oldsnow data and merge it
-								var incidenttrackeroldsnow =  db.collection('incidenttrackeroldsnow');
-								incidenttrackeroldsnow.find({}, function(err , oldtrackerdata){
-
-									if (oldtrackerdata){
-										logger.debug("***** [yep] we got the old tracker data: length= "+oldtrackerdata.length);
-										var _tracker = _calculateDailyTracker(_incidentsNEW,config.context);
-										// and  handle incident tracker
-										var incidenttracker =  db.collection('incidenttracker');
-										incidenttracker.drop();
-										incidenttracker.insert(oldtrackerdata.concat(_tracker)	 , function(err , success){
-												if (err) logger.warn("[incidenttracker insert failed....]"+err.message);
-												logger.info("[success] sync incidenttracker....length: "+_tracker.length);
-												app.io.emit('syncUpdate', {status:"[SUCCESS]",from:"incident",timestamp:new Date(),info:_incidentsNEW.length+" incidents synced"});
-										});
-									}
+					else if(success){
+						logger.info("[success] sync incidents....length: "+_incidentsNEW.length);
+						// get oldsnow data and merge it
+						var incidenttrackeroldsnow =  db.collection('incidenttrackeroldsnow');
+						incidenttrackeroldsnow.find({}, function(err , oldtrackerdata){
+							if (oldtrackerdata){
+								logger.debug("***** [yep] we got the old tracker data: length= "+oldtrackerdata.length);
+								var _tracker = _calculateDailyTracker(_incidentsNEW,config.context);
+								// and  handle incident tracker
+								var incidenttracker =  db.collection('incidenttracker');
+								incidenttracker.drop();
+								incidenttracker.insert(oldtrackerdata.concat(_tracker)	 , function(err , success){
+										if (err) logger.warn("[incidenttracker insert failed....]"+err.message);
+										logger.info("[success] sync incidenttracker....length: "+_tracker.length);
+										app.io.emit('syncUpdate', {status:"[SUCCESS]",from:"incident",timestamp:new Date(),info:_incidentsNEW.length+" incidents synced"});
 								});
-						}
-					})
-				})
+							} //end if (oldtrackerdata)
+						}); //incidenttrackeroldsnow.find()
+					} //else if (success) end
+				}) //incidents.insert()
 			})
-			done(data);
-		}).on('error',function(err){
-        logger.error('[IncidentSyncSerice] says: something went wrong on the request', err.request.options);
-				app.io.emit('syncUpdate', {status:"[ERROR]",from:"incident",timestamp:new Date(),info:err.message});
+		})
+		done(data);
+	}).on('error',function(err){
+      logger.error('[IncidentSyncSerice] says: something went wrong on the request', err.request.options);
+			app.io.emit('syncUpdate', {status:"[ERROR]",from:"incident",timestamp:new Date(),info:err.message});
   });
 }
 
+
+
+function _emitNEWIncidentMessage(incident){
+	var _newincident = incident;
+
+	var _message={};
+	var _type;
+	var _prio;
+	logger.debug("_newincident: "+JSON.stringify(_newincident));
+	if (_.startsWith(_newincident.priority,"P01")){
+		_type="error";
+		_prio = "P1";
+	}
+	else if(_.startsWith(_newincident.priority,"P08")){
+		_type="warning";
+		_prio = "P8";
+	}
+	else if(_.startsWith(_newincident.priority,"P16")){
+		_type="info";
+		_prio = "P16";
+	}
+	else if(_.startsWith(_newincident.priority,"P40")){
+		_type="info";
+		_prio = "P40";
+	}
+	else if(_.startsWith(_newincident.priority,"P120")){
+		_type="info";
+		_prio = "P120";
+	}
+	_message.title=_newincident.businessService;
+	_message.body = "+ "+_newincident.label+"\n"+_newincident.shortDescription;;
+	_message.type = _type;
+	_message.desktop={
+		desktop:true,
+		icon:"/images/incidents/"+_prio+".png"
+	};
+	logger.debug("========================== message: "+JSON.stringify(_message));
+	// filter out stuff
+	var _exclude = config.emit.snow_incidents_new_exclude_businessservices;
+	if (!_.startsWith(_newincident.businessService,_exclude)){
+		logger.debug("========================== going to emit websocket message ===================================");
+		app.io.emit('message', {msg:_message});
+	}
+}
+
+
+function _emitCHANGEIncidentMessage(change){
+
+	var _message={};
+	var _type;
+	var _prio;
+
+	_message.title=change.id+" CHANGED";
+
+	var _body ="";
+	for (var i in _.keys(change.diff)){
+		var _key = _.keys(change.diff)[i];
+		console.log("_key: "+_key);
+		_body+="\n"+_key+" : "+change.diff[_key][0]+" -> "+change.diff[_key][1];
+	}
+
+
+	_message.body = _body
+	_message.type = _type;
+	_message.desktop={
+		desktop:true,
+		icon:"/images/incidents/"+_prio+".png"
+	};
+	logger.debug("========================== message: "+JSON.stringify(_message));
+	// filter out stuff
+	/*
+	var _exclude = config.emit.snow_incidents_new_exclude_businessservices;
+	if (!_.startsWith(_newincident.businessService,_exclude)){
+		logger.debug("========================== going to emit websocket message ===================================");
+		app.io.emit('message', {msg:_message});
+	}
+	*/
+}
 
 /**
 * filters out the relevant attributes of the 87 fields from snow ;-)
