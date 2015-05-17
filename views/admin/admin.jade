@@ -2,33 +2,32 @@ include ../kanban_menu
 include admin_imports
 
 block content
-	
-div.notifications.top-left
-
-div.btn-group-xs(style="margin-left:20px;")
-	span(style="font-family:arial;font-weight:normal;font-size:50px;color:lightgrey") admin :: 
-	span(id="admintype" style="font-family:arial;font-weight:bold;font-size:50px;color:lightgrey")
-	span(style="font-size:32px")
-		span(style="font-family:arial;font-weight:bold;color:lightgrey") . 
-		span(id="countitems" style="font-family:arial;font-weight:bold;color:lightgrey")
-		span(style="font-family:arial;font-weight:normal;color:lightgrey") &nbsp;items
-	br
-	
-	button.btn.btn-primary(id="bsave" type="button" data-toggle="tooltip" data-placement="top" title="Tooltip on top") 
-		span.glyphicon.glyphicon-floppy-save 
-		span  save selected
+	div(style="margin-left:20px")
 		
-	button.btn.btn-danger(id="bremove" type="button" data-toggle="tooltip" data-placement="top" title="Tooltip on top")
-		span.glyphicon.glyphicon-trash 
-		span  remove selected
-		
-	a.btn.btn-info(id="lexcel")
-		span.glyphicon.glyphicon-export 
-		span  export excel
-div(id="adminGrid")
+		span(style="font-family:arial;font-weight:normal;font-size:32px;color:lightgrey") admin :: 
+		span(id="admintype" style="font-family:arial;font-weight:bold;font-size:32px;color:lightgrey")
+		span(style="font-size:32px")
+			span(style="font-family:arial;font-weight:bold;color:lightgrey") . 
+			span(id="countitems" style="font-family:arial;font-weight:bold;color:lightgrey")
+			span(style="font-family:arial;font-weight:normal;color:lightgrey") &nbsp;items
+		br
 
+		div.btn-group-xs
+			button.btn.btn-primary.btn-xs(id="bsave" type="button" data-toggle="tooltip" data-placement="top" title="Tooltip on top") 
+				span.glyphicon.glyphicon-floppy-save 
+				span  save selected
+				
+			button.btn.btn-danger.btn-xs(id="bremove" type="button" data-toggle="tooltip" data-placement="top" title="Tooltip on top")
+				span.glyphicon.glyphicon-trash 
+				span  remove selected
+				
+			a.btn.btn-info.btn-xs(id="lexcel")
+				span.glyphicon.glyphicon-export 
+				span  export excel
+		div(id="adminGrid")
+		div(id="pager" style="height:20px")
 
-	
-script(src="/javascripts/kanban/admin.js")
+include ../includes/material
 
-
+script(src="/javascripts/admin/admin_config.js")
+script(src="/javascripts/admin/admin.js")

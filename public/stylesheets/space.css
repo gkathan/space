@@ -85,8 +85,6 @@ code {
 }
 
 
-
-
 svg {
   font-family:arial, sans-serif;
 }
@@ -102,9 +100,6 @@ ul
 	padding-left:10px;
 }
 
-h1{
-	font-size:6px;
-	}
 
 
 .targetLine{
@@ -460,7 +455,7 @@ h1{
 	cursor:pointer;
 }
 
-
+/*
 table      { width:110px;
 			 border: outset 0px;
              word-wrap:break-word;
@@ -472,6 +467,7 @@ td         { border: 0px solid black;
 			 word-wrap:break-word;
 			 vertical-align:top;
 			 }
+*/
 td.small    { font-size: 5px;
 			  font-weight:normal;
 			  text-align:right;
@@ -490,11 +486,12 @@ td.bold		{font-weight:bold;
 
 
 tr.header	{line-height:8px;
-
 			 padding: 0 0 0 0;}
+
+/*
 tr	{line-height:6px;
 			 padding: 0 0 0 0;}
-
+*/
 
 .indicator
 {

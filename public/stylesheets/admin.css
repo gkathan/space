@@ -1,57 +1,10 @@
-body {
-  background-color: #ff9f9;
-  font-family: Roboto, 'Helvetica Neue', Helvetica, Arial;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-  -webkit-tap-highlight-color: rgba(0,0,0,0);
-  -webkit-touch-callout: none;
-  overflow: auto;
-  margin-bottom: 20px;
-  border:0px;
-}
-
-table {border: none;}
-
-
-#adminGrid {
-  background: white;
-  outline: 0;
-  border: 0px solid gray;
-
-  width:3000px;
-  min-width:700px;
-  /*width:3000px;*/
-  margin-left:10px;
-
-     -webkit-box-flex: 1;
-     -moz-box-flex: 1;
-      box-flex: 1;
+.slick-header.ui-state-default, .slick-headerrow.ui-state-default {
+  width: 100%;
+  overflow: hidden;
+  border: 0px solid white;
 
 }
 
-.grid-header {
-  border: 0px solid gray;
-  border-bottom: 0;
-  border-top: 0;
-  background: white;
-  color: white;
-  height: 24px;
-  line-height: 24px;
-}
-
-
-h2 {
-  font-size: 10pt;
-  border-bottom: 1px dotted gray;
-}
-
-ul {
-  margin-left: 0;
-  padding: 0;
-  cursor: default;
-}
 
 
 .slick-row.odd {
@@ -67,13 +20,25 @@ ul {
   overflow: hidden;
   -o-text-overflow: ellipsis;
   text-overflow: ellipsis;
-  vertical-align: middle;
   z-index: 1;
-  padding: 1px 2px 2px 1px;
-  margin: 0;
+  margin-top:2px;
   white-space: nowrap;
   cursor: default;
+
 }
+
+.slick-header-column.ui-state-default {
+  height: 24px;
+  line-height: 24px;
+  margin: 0;
+  border-right: 0px solid silver;
+  border-left: 0px;
+  border-top: 0px;
+  border-bottom: 0px;
+  float: left;
+  background:#efefef;
+}
+
 
 .slick-header-columns, .slick-headerrow-columns {
   position: relative;
@@ -81,7 +46,6 @@ ul {
   cursor: default;
   overflow: hidden;
   border: 0px;
-  border-right: 0px;
   background-color:white;
 }
 
@@ -110,6 +74,7 @@ ul {
 .cell-standard {
   font-weight: normal;
   font-size:10px;
+  vertical-align:top;
 }
 
 .cell-standard-red {
@@ -166,11 +131,11 @@ font-size:11px;
 
 
 .slick-headerrow-column {
-  background: #dddddd;
+  background: none;
   text-overflow: clip;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
-  font-size:11px;
+  font-size:12px;
   border: 0px;
   border-right: 0px;
 
@@ -183,9 +148,9 @@ font-size:11px;
   height: 100%;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
-  font-size:11px;
-  border: 0px;
-  border-right: 0px;
+  font-size:10px;
+  border: 1px solid #efefef;
+
 
 }
 
