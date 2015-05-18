@@ -122,8 +122,10 @@ function renderAdminGrid(data,conf){
 	  var columnId = $(this).data("columnId");
 	  if (columnId != null) {
 	    columnFilters[columnId] = $.trim($(this).val());
-	    dataView.refresh();
+	    $('#countitems').html(admingrid.getDataLength());
+			dataView.refresh();
 			_updateGrid();
+
 	  }
 	});
 
