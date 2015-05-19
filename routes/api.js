@@ -50,6 +50,7 @@ var PATH = {
 
 
 						REST_SOCINCIDENTS : BASE+'/space/rest/socincidents',
+						REST_SOCINCIDENT2REVENUEIMPACT : BASE+'/space/rest/socincident2revenueimpact',
 						REST_SOCSERVICES : BASE+'/space/rest/socservices',
 
 						REST_INCIDENTTRACKER : BASE+'/space/rest/incidenttracker',
@@ -154,6 +155,11 @@ router.get(PATH.REST_INCIDENTCOMMUNICATIONTRAIL, function(req, res, next) {findI
 
 
 router.get(PATH.REST_SOCINCIDENTS, function(req, res, next) {findAllByName(req,res,next);});
+
+router.get(PATH.REST_SOCINCIDENT2REVENUEIMPACT, function(req, res, next) {findAllByName(req,res,next);});
+router.post(PATH.REST_SOCINCIDENT2REVENUEIMPACT, function(req, res, next) {save(req,res,next); });
+router.delete(PATH.REST_SOCINCIDENT2REVENUEIMPACT, function(req, res, next) {remove(req,res,next); });
+
 router.get(PATH.REST_SOCSERVICES, function(req, res, next) {findAllByName(req,res,next);});
 router.post(PATH.REST_SOCSERVICES, function(req, res, next) {save(req,res,next); });
 router.delete(PATH.REST_SOCSERVICES, function(req, res, next) {remove(req,res,next); });

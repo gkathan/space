@@ -22,6 +22,7 @@ function getConfig(collection){
 		case "domains":  return getDomainsConfig();
 		case "socincidents" : return getSOCIncidentsConfig();
 		case "socservices" : return getSOCServicesConfig();
+		case "socincident2revenueimpact" : return getSOCIncident2RevenueImpactConfig();
 	}
 }
 
@@ -126,6 +127,19 @@ function getDomainsConfig(){
 	var _config ={};
 	_config.mode="readonly";
 	_config.fields = _domains;
+	return _config;
+}
+
+function getSOCIncident2RevenueImpactConfig(){
+	var _inc2revimpact = [
+    { id:"id", name: "id", field: "_id",sortable:true,cssClass:"onKanbanImmutable" },
+    { id: "incident", name: "incidentId",  field: "incident",editor:Slick.Editors.Text,sortable:true, cssClass: "cell-standard",width:150 },
+    { id: "impact", name: "revenueImpact",  field: "impact",editor:Slick.Editors.Text,sortable:true, cssClass: "cell-standard",width:150 }
+
+	];
+	var _config ={};
+	_config.mode="editable";
+	_config.fields = _inc2revimpact;
 	return _config;
 }
 
