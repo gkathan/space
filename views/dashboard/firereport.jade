@@ -138,8 +138,6 @@ mixin renderAVDowntime(title,downtime)
 	
 mixin renderAVServicesList(title,av)
 	h2(style="text-align:center;font-weight:bold") #{title}
-	
-	
 	div(style="text-align:center")
 		table(style="margin:0 auto")
 			thead
@@ -193,7 +191,6 @@ mixin renderAVServicesList(title,av)
 						td
 							|#{formatAVTime(service.availability.total.time)}
 
-	
 	
 
 mixin renderSOCIncidentList(title,incidents)
@@ -267,23 +264,25 @@ mixin renderIncidentList(title,incidents)
 			+renderFromTo(from,to)
 			
 		div.panel-body
-			table.table-striped.table-hover.table-condensed(style="max-width:900px")
+			table.table-striped.table-hover.table-condensed(style="max-width:1000px")
 				thead
 					tr(style="line-height:20px;font-weight:bold")
 						th(style="width:80px;text-align:center;border-bottom:1px solid black")
 							|Date
 						th(style="width:50px;text-align:right;border-bottom:1px solid black")
 							|Prio
-						th(style="width:150px;text-align:center;background:#efefef;font-weight:bold;border-bottom:1px solid black")
-							|Revenue Impact
+						th(style="width:100px;text-align:center;background:#efefef;font-weight:bold;border-bottom:1px solid black")
+							|Rev Impact
 						th(style="width:100px;text-align:center;border-bottom:1px solid black")
 							|Id
 						th(style="width:250px;text-align:left;border-bottom:1px solid black")
 							|Short Description
 						th(style="width:120px;text-align:center;border-bottom:1px solid black")
 							|Time to Resolve
-						th(style="width:200px;text-align:left;border-bottom:1px solid black")
+						th(style="width:150px;text-align:left;border-bottom:1px solid black")
 							|Business Service
+						th(style="width:100px;text-align:left;border-bottom:1px solid black")
+							|ProblemId
 				tbody
 					- var _rev = 0;
 					- var _sum =0;
@@ -311,6 +310,9 @@ mixin renderIncidentList(title,incidents)
 								|#{(formatAVTime(inc.timeToResolve))}
 							td(style="text-align:left")
 								|#{inc.businessService}
+							td(style="text-align:left")
+								if inc.ProblemId
+									|#{inc.businessService}
 					//sum row
 					tr(style="line-height:32px;font-size:12px")
 						td(colspan="2" style="text-align:right;border-top:1px solid black;border-bottom:1px solid black;")

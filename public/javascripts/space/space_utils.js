@@ -41,9 +41,11 @@ function ajaxCall(verb,action,itemList,_type,afterHandlerCallback){
 		console.log("++ verb: "+verb);
 		console.log("++ action: "+action);
 		console.log("++ _type: "+_type);
+		console.log("++ _url: "+dataSourceFor(_type));
 
 
 		var _json = JSON.stringify(itemList);
+		
 
 		console.log("JSON.stringify tha shit..."+_json);
 
@@ -56,34 +58,43 @@ function ajaxCall(verb,action,itemList,_type,afterHandlerCallback){
 		dataType:"json",
 		success: function(msg)
 			{
-				console.log("==== success handler...");
+				console.log("[space_utils.ajaxCall] ==== success handler...");
 				if (afterHandlerCallback !=undefined) afterHandlerCallback(_type);
-				var _items="";
-				for (var i in itemList){
-					_items+=itemList[i].name;
-					//console.log("*****i: "+i+" - "+itemList[i].name);
-					if (i< itemList.length-1) _items+=", "
-				}
+
+
 
 				console.log("==== and now lets notify...");
-				$('.top-left').notify({
-						message: { html: "<span class=\"glyphicon glyphicon-ok\"></span><span style=\"font-size:10px;font-weight:bold\"> ajaxCall.("+action+") says:</span> <br/><div style=\"font-size:10px;font-weight:normal;margin-left:20px\">* "+action+": "+_type+": [SUCCESS]  </div>" },
-						fadeOut: {enabled:true,delay:3000},
-						type: "success"
-					  }).show(); // for the ones that aren't closable and don't fade out there is a .hide() function.
 
-
+				$(function(){
+					PNotify.desktop.permission();
+					new PNotify({
+						title: "SAVE successful",
+						text: "[OK] ... "+itemList.length+ " item(s) of type ["+_type+"] saved: "+_json,
+						type: "success",
+						desktop:  {
+							desktop: true,
+							icon:"/images/messages/msg_success.png"
+						}
+					});
+				});
 			},
 		error: function(msg)
 			{
-				if (afterHandlerCallback !=undefined)
-				$('.top-left').notify({
-						message: { html: "<span class=\"glyphicon glyphicon-fire\"></span><span style=\"font-size:10px;font-weight:bold\"> ajaxCall.("+action+") says:</span> <br/><div style=\"font-size:10px;font-weight:normal;margin-left:20px\">* synced item [_id:"+itemList[0]._id+"] #failed<br>"+JSON.stringify(msg)+"</div>" },
-						fadeOut: {enabled:false},
-						type: "danger"
-					  }).show(); // for the ones that aren't closable and don't fade out there is a .hide() function.
+				console.log("[space_utils.ajaxCall] ==== error handler...");
+				if (afterHandlerCallback !=undefined) afterHandlerCallback(_type);
 
-
+				$(function(){
+					PNotify.desktop.permission();
+					new PNotify({
+						title: "SAVE failed !",
+						text: JSON.stringify(msg),
+						type: "error",
+						desktop:  {
+							desktop: true,
+							icon:"/images/messages/msg_error.png"
+						}
+					});
+				});
 			}
 		});
 

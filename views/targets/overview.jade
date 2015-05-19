@@ -133,7 +133,7 @@ mixin renderTarget(target)
 														data-rag="#{line.rag}"
 														data-ragComment="#{line.ragComment}"
 														data-outcome="#{line.outcome}"
-														data-bywhen="#{line.bywhen}"
+														data-bywhen="#{line.byWhen}"
 														data-description="#{line.description}"
 														data-baseline="#{line.baseline}"
 														data-measure="#{line.measure}"
@@ -346,7 +346,7 @@ script.
 		var _rag = _self.data('rag');
 		var _ragComment = _self.data('ragComment');
 		var _outcome = _self.data('outcome');
-		var _bywhen = _self.data('bywhen');
+		var _byWhen = _self.data('bywhen');
 		var _description = _self.data('description');
 		var _baseline = _self.data('baseline');
 		var _measure = _self.data('measure');
@@ -377,7 +377,8 @@ script.
 		console.log("**************** outcome: "+_outcome+" *************************");
 		console.log("**************** description: "+_description+" *************************");
 		console.log("**************** sponsor: "+_sponsor+" *************************");
-
+		console.log("**************** byWhen: "+_byWhen+" *************************");
+		
 		$(".modal-header #targetId").text(_id);
 		$(".modal-header #targetTheme").text(_theme);
 		$(".modal-header #targetCluster").text(_cluster);
@@ -387,7 +388,7 @@ script.
 		$(".modal-header #targetName").text(_name);
 		$(".modal-body #targetName").text(_name);
 		$(".modal-body #targetOutcome").text(_outcome);
-		$(".modal-body #targetByWhen").text(_bywhen);
+		$(".modal-body #targetByWhen").text(_byWhen);
 		$(".modal-body #targetDescription").text(_description);
 		$(".modal-body #targetBaseline").text(_baseline);
 		$(".modal-body #targetMeasure").text(_measure);
@@ -414,11 +415,14 @@ script.
 		if (_sponsor){
 			$.get( "/api/space/rest/organization/employee/"+_sponsor, function( data ) {
 				//$( ".result" ).html( data );
-				console.log("**** employee: "+data["Employee Number"]);
+				console.log("**** IMAGE employee: "+data["Employee Number"]);
 				if (data) {
 					var _url = "http://my.bwinparty.com/api/people/images/"+data["Employee Number"];
 					console.log("url: "+_url);
 					$("#modal_sponsor_icon").attr("src",_url);
+				}
+				else{
+					$("#modal_sponsor_icon").attr("src","/images/iconexp/user.png");
 				}
 				$(_self.attr('href')).modal('show');
 			});

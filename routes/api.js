@@ -46,6 +46,9 @@ var PATH = {
 						REST_PRODUCTCATALOG : BASE+'/space/rest/productcatalog',
 
 						REST_INCIDENTS : BASE+'/space/rest/incidents',
+						REST_INCIDENTCOMMUNICATIONTRAIL : BASE+'/space/rest/incidents/commtrail/:sysid',
+
+
 						REST_SOCINCIDENTS : BASE+'/space/rest/socincidents',
 						REST_SOCSERVICES : BASE+'/space/rest/socservices',
 
@@ -146,8 +149,15 @@ router.get(PATH.REST_PROBLEMS, function(req, res, next) {findAllByName(req,res,n
 
 //router.get(PATH.REST_INCIDENTS, function(req, res, next) {findAllByName(req,res,next);});
 router.get(PATH.REST_INCIDENTS, function(req, res, next) {findIncidents(req,res,next);});
+
+router.get(PATH.REST_INCIDENTCOMMUNICATIONTRAIL, function(req, res, next) {findIncidentCommTrail(req,res,next);});
+
+
 router.get(PATH.REST_SOCINCIDENTS, function(req, res, next) {findAllByName(req,res,next);});
 router.get(PATH.REST_SOCSERVICES, function(req, res, next) {findAllByName(req,res,next);});
+router.post(PATH.REST_SOCSERVICES, function(req, res, next) {save(req,res,next); });
+router.delete(PATH.REST_SOCSERVICES, function(req, res, next) {remove(req,res,next); });
+
 
 router.get(PATH.REST_INCIDENTTRACKER, function(req, res, next) {findAllByName(req,res,next);});
 //router.post(PATH.REST_INCIDENTTRACKER, function(req, res, next) {save(req,res,next);});
@@ -416,7 +426,23 @@ function findIncidents(req,res,next){
 				res.send(data);
 				return;
 		});
+}
 
+/**
+*/
+function findIncidentCommTrail(req,res,next){
+	  logger.debug("findIncidentCommTrail() called");
+
+		var incService = require("../services/IncidentService");
+		/*incService.find(function(err,data){
+				if (err){
+					logger.error("[error] findincidents says: "+err)
+					res.send(err);
+				}
+				res.send(data);
+				return;
+		});
+		*/
 }
 
 
@@ -494,8 +520,21 @@ function getTargetsTree(req,res,next){
  */
 function findEmployeeByName(req, res , next){
     var collection = "organization";
+
+		var _firstName="";
+		var _lastName="";
+
     var _name = req.params.name.split(" ");
-    db.collection(collection).findOne({"First Name":_.capitalize(_name[0]),"Last Name":_.capitalize(_name[1])} , function(err , success){
+
+		if (_name.length==2){
+			_firstName = _name[0];
+			_lastName = _name[1];
+		}
+		if (_name.length==3){
+			_firstName = _name[0];
+			_lastName = _name[1]+" "+_name[2];
+		}
+    db.collection(collection).findOne({"First Name":_.capitalize(_firstName),"Last Name":_.capitalize(_lastName)} , function(err , success){
       logger.debug('Response success '+success);
       logger.debug('Response error '+err);
       if(success){

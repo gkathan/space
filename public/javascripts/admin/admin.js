@@ -242,7 +242,7 @@ function NumericSorter(a, b) {
 var syncList;
 var itemInsertList;
 
-d3.select("#bremove").on("click", function(){
+$("#bremove").click(function(){
 		console.log("REMOVE selected rows: "+admingrid.getSelectedRows());
 		deleteList = new Array();
 		var _sel = admingrid.getSelectedRows();
@@ -253,7 +253,7 @@ d3.select("#bremove").on("click", function(){
 		ajaxCall("DELETE","remove",deleteList,_type,refresh);
 	});
 
-d3.select("#bsave").on("click", function(){
+$("#bsave").click(function(){
 		console.log("[DEBUG] SAVE selected rows: "+admingrid.getSelectedRows());
 		saveList = new Array();
 		var _sel = admingrid.getSelectedRows();

@@ -318,15 +318,15 @@ function getSOCServicesConfig(){
 	var _soc_services =[
     { id: "id", name: "id", field: "_id",sortable:true,width:20,cssClass:"onKanbanImmutable"},
     { id: "context", name: "context", field: "context",sortable:true,width:80,cssClass:"onKanbanImmutable"},
-		{ id: "ServiceName", name: "ServiceName",  field: "ServiceName",width:250,editor: Slick.Editors.Number , cssClass: "cell-standard"},
-  	{ id: "ServiceGroupID", name: "ServiceGroupID",  field: "ServiceGroupID",width:80,  editor: Slick.Editors.Number , cssClass: "cell-standard"},
-  	{ id: "Report", name: "Report",  field: "Report",width:80,  editor: Slick.Editors.Number , cssClass: "cell-standard"},
-  	{ id: "CoreService", name: "CoreService",  field: "CoreService",width:80,  editor: Slick.Editors.Number , cssClass: "cell-standard"},
-  	{ id: "Highlight", name: "Highlight",  field: "Highlight",width:80,  editor: Slick.Editors.Number , cssClass: "cell-standard"},
-  	{ id: "ext_service", name: "ext_service",  field: "ext_service",width:80,editor: Slick.Editors.Number , cssClass: "cell-standard"}
+		{ id: "ServiceName", name: "ServiceName",  field: "ServiceName",width:250, editor: Slick.Editors.Text , cssClass: "cell-standard"},
+  	{ id: "ServiceGroupID", name: "ServiceGroupID",  field: "ServiceGroupID",width:80,editor: Slick.Editors.Text , cssClass: "cell-standard"},
+  	{ id: "Report", name: "Report",  field: "Report",width:80, editor: Slick.Editors.Text, cssClass: "cell-standard"},
+  	{ id: "CoreService", name: "CoreService",  field: "CoreService",width:80,   editor: Slick.Editors.Text , cssClass: "cell-standard"},
+  	{ id: "Highlight", name: "Highlight",  field: "Highlight",width:80,   editor: Slick.Editors.Text , cssClass: "cell-standard"},
+  	{ id: "ext_service", name: "ext_service",  field: "ext_service",width:80, editor: Slick.Editors.Text , cssClass: "cell-standard"}
   ];
 	var _config ={};
-	_config.mode="readonly";
+	_config.mode="editable";
   _config.addRow="disabled";
 	_config.fields = _soc_services;
 	return _config;

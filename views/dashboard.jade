@@ -33,7 +33,10 @@ block content
 								div(style="font-size:12px;text-align:center")
 									if target.id=="K1"
 										br
-										|last update: #{moment(availability.createDate).format('YYYY-MM-DD HH:mm:ss')}
+										if availability
+											|last update: #{moment(availability.createDate).format('YYYY-MM-DD HH:mm:ss')}
+										else
+											|-- no data accessible --
 										br
 										a(href="http://dashboard.bwin.corp/" target="_blank") :: appdynamics dashboard
 									else if target.id =="K2"

@@ -31,10 +31,13 @@ router.get('/', function(req, res) {
 	else{
 		avService.getLatest(function(av){
 
-			res.locals.availability = av;
-			res.locals.downtime = avService.getDowntimeYTD(av.unplannedYTD,av.week);
-			res.locals.targetdowntime = avService.getDowntimeYTD(av,52);
-			res.locals.leftdowntime = avService.getDowntimeYTD(av,52);
+			if (av){
+				res.locals.availability = av;
+				res.locals.downtime = avService.getDowntimeYTD(av.unplannedYTD,av.week);
+				res.locals.targetdowntime = avService.getDowntimeYTD(av,52);
+				res.locals.leftdowntime = avService.getDowntimeYTD(av,52);
+			}
+			
 			res.locals.moment = moment;
 
 			targetService.getL1(_context,function(l1targets){
