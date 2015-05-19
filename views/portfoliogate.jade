@@ -41,15 +41,15 @@ mixin renderEpic(epic)
 	div.col 
 		tr
 			if epic.id
-				td(style="width:15px;vertical-align:middle")
+				td(style="max-width:15px;vertical-align:middle")
 					if epic.Status != "Monitoring"
 						div(style="margin-left:5px;width: 10px;height: 10px;-moz-border-radius: 50%; -webkit-border-radius: 50%; border-radius: 50%;background-color:#{mapHealth2Color(epic.Health)};margin-top:2px")
-				td(style="font-weight:normal;font-size:8px;width:35px;height:14px;vertical-align:middle")
+				td(style="font-weight:normal;font-size:8px;max-width:50px;height:14px;vertical-align:middle")
 					| #{epic.EpicRef} 
-				td(style="font-weight:bold;font-size:9px;width:180px;vertical-align:middle;white-space:nowrap")
+				td(style="font-weight:bold;font-size:9px;max-width:180px;vertical-align:middle;white-space:nowrap;overflow:hidden;text-overflow:ellipsis")
 					a(href="http://v1.bwinparty.corp/V1-Production/Epic.mvc/Summary?oidToken=Epic%3A"+epic.id target="_new" data-toggle="tooltip" data-placement="top" title="click link to see initiative in V1" )
 						| <b>#{epic.name}</b> 
-				td(style="font-weight:normal;font-size:8px;width:35px;height:14px;vertical-align:middle;text-align:left")
+				td(style="font-weight:normal;font-size:8px;max-width:35px;height:14px;vertical-align:middle;text-align:left")
 					&nbsp;&nbsp;
 					if epic.attachmentProposal
 						a(href="http://v1.bwinparty.corp/V1-Production/attachment.img/"+epic.attachmentProposal.oid+"/" target="_new" data-toggle="tooltip" data-placement="top" title="download #{epic.attachmentProposal.type} for #{epic.name}")
@@ -58,7 +58,7 @@ mixin renderEpic(epic)
 						a(href="http://v1.bwinparty.corp/V1-Production/attachment.img/"+epic.attachmentClosing.oid+"/" target="_new" data-toggle="tooltip" data-placement="top" title="download #{epic.attachmentClosing.type} for #{epic.name}" )
 							| [CD] 
 							
-				td(style="width:15px;vertical-align:middle;text-align:center")
+				td(style="max-width:15px;vertical-align:middle;text-align:center")
 					if epic.oldState
 						span.glyphicon.glyphicon-star(style="font-size:12px;color:black; ") 
 						span(style="opacity:0") x
