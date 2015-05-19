@@ -18,12 +18,12 @@ nv.addGraph(function() {
 
       var chart = nv.models.discreteBarChart()
         .x(function(d) { return d.date })
-        .y(function(d) { return d.value.planned })
+        .y(function(d) { return d.value.unplanned })
         .staggerLabels(true)
         .tooltips(true)
         .showValues(true)
         .color(d3.scale.myColors().range())
-        
+
         ;
 
         chart.forceY([96,98,100])
