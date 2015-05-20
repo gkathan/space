@@ -96,7 +96,7 @@ function renderAdminGrid(data,conf){
 	admingrid.onAddNewRow.subscribe(function (e, args) {
       console.log("[DEBUG] onAddNewRow() fired");
       var item = args.item;
-      item.id=0;
+      item._id=0;
       dataView.addItem(item);
   });
 

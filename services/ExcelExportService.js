@@ -42,8 +42,8 @@ exports.excelAvailability = excelAvailability;
 exports.excelCustomers = excelCustomers;
 exports.excelCompetitors = excelCompetitors;
 exports.excelInitiatives = excelInitiatives;
-exports.excelSOCIncidents = excelSOCIncidents;
-
+exports.excelSOCOutages= excelSOCOutages;
+exports.excelSOCServices= excelSOCServices;
 
 
 /**
@@ -530,7 +530,7 @@ function excelInitiatives(req, res , next){
 /**
  * generate customers excel
  */
-function excelSOCIncidents(req, res , next){
+function excelSOCOutages(req, res , next){
 	var conf ={};
     conf.stylesXmlFile = "views/excel_export/styles.xml";
     conf.cols = [
@@ -554,8 +554,29 @@ function excelSOCIncidents(req, res , next){
 		{caption:'highlight',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'url',type:'string',width:40,captionStyleIndex:2,beforeCellWrite:_formatCell}
 	];
-    _generateAndSendExcel("socincidents",conf,req,res,next);
+    _generateAndSendExcel("soc_outages",conf,req,res,next);
 }
+
+
+/**
+ * generate customers excel
+ */
+function excelSOCServices(req, res , next){
+	var conf ={};
+    conf.stylesXmlFile = "views/excel_export/styles.xml";
+    conf.cols = [
+		{caption:'_id',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'context',type:'string',width:12,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'ServiceName',type:'string',width:30,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'ServiceGroupID',type:'string',width:12,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'Report',type:'string',width:12,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'CoreService',type:'string',width:12,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'Highlight',type:'string',width:12,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'ext_service',type:'string',width:12,captionStyleIndex:2,beforeCellWrite:_formatCell},
+	];
+    _generateAndSendExcel("soc_services",conf,req,res,next);
+}
+
 
 
 

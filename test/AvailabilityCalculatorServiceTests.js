@@ -341,12 +341,12 @@ describe('AvailabilityCalculatorService', function(){
 
 			var _filter = {customer:"bwin"};//["bwin.com","bwin.it","bwin.fr","bwin.es","gamebookers.com"];
 
-			var avService=require('../services/AvailabilityService');
-			avService.findSOCServicesMain(function(services){
+			var socService=require('../services/SOCService');
+			socService.findServicesMain(function(err,services){
 				//logger.debug("SOC services: "+JSON.stringify(services));
-				var _label2customer = db.collection('soclabel2customer');
-				_label2customer.find(function(err,mapping){
-					//logger.debug("mapping: "+JSON.stringify(mapping));
+
+				socService.findLabel2Customer(null,function(err,mapping){
+					logger.debug("mapping: "+JSON.stringify(mapping));
 					var _check = avCalculatorService.checkServiceToExclude(mapping,_filter,services[0]);
 					done();
 				})
@@ -384,12 +384,12 @@ describe('AvailabilityCalculatorService', function(){
 			var _services=[];
 
 			var _s1 = {
-		    "ext_service" : "0",
+		    "ext_service" : false,
 		    "ServiceName" : "test service",
-		    "ServiceGroupID" : "1",
-		    "Report" : "1",
-		    "CoreService" : "1",
-		    "Highlight" : "0",
+		    "ServiceGroupID" : 1,
+		    "Report" : true,
+		    "CoreService" : true,
+		    "Highlight" : false,
 				"filterExclude" : false
 			}
 
@@ -487,30 +487,30 @@ describe('AvailabilityCalculatorService', function(){
 			var _services=[];
 
 			var _s1 = {
-		    "ext_service" : "0",
+		    "ext_service" : false,
 		    "ServiceName" : "test service A",
-		    "ServiceGroupID" : "1",
-		    "Report" : "1",
-		    "CoreService" : "1",
-		    "Highlight" : "0",
+		    "ServiceGroupID" : 1,
+		    "Report" : true,
+		    "CoreService" : true,
+		    "Highlight" : false,
 				"filterExclude" : false
 			}
 			var _s2 = {
-				"ext_service" : "0",
+				"ext_service" : false,
 				"ServiceName" : "test service B",
-				"ServiceGroupID" : "1",
-				"Report" : "1",
-				"CoreService" : "1",
-				"Highlight" : "0",
+				"ServiceGroupID" : 1,
+				"Report" : true,
+				"CoreService" : true,
+				"Highlight" : false,
 				"filterExclude" : false
 			}
 			var _s3 = {
-				"ext_service" : "0",
+				"ext_service" : false,
 				"ServiceName" : "test service C",
-				"ServiceGroupID" : "1",
-				"Report" : "1",
-				"CoreService" : "1",
-				"Highlight" : "0",
+				"ServiceGroupID" : 1,
+				"Report" : true,
+				"CoreService" : true,
+				"Highlight" : false,
 				"filterExclude" : false
 			}
 

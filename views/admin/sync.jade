@@ -87,10 +87,6 @@ div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;back
 							span(id="#{sync.name}_info")
 						td(style="font-size:10px")
 							a(id="sync_#{sync.name}" href="#" ) -- force sync --
-				
-			
-
-
 
 include ../includes/material
 
@@ -137,10 +133,10 @@ script.
 		});
 	});
 	
-	$('#sync_soc_incidents').on('click', function () {
-		console.log("soc incidentsync request called...");
+	$('#sync_soc_outages').on('click', function () {
+		console.log("soc outagessync request called...");
 		$.ajax({
-			url: '/api/space/rest/sync/soc_incidents',
+			url: '/api/space/rest/sync/soc_outages',
 			type: 'POST',
 			data: {
 
@@ -154,7 +150,25 @@ script.
 		});
 	});
 	
-	$('#sync_problem').on('click', function () {
+	$('#sync_soc_services').on('click', function () {
+		console.log("soc servicessync request called...");
+		$.ajax({
+			url: '/api/space/rest/sync/soc_services',
+			type: 'POST',
+			data: {
+
+				},
+			success: function(data){
+				console.log("[SUCCESS] synced:"+JSON.stringify(data));
+			},
+			error: function(err){
+				console.log("[ERROR] :"+err.message);
+			}
+		});
+	});
+
+
+	$('#sync_problems').on('click', function () {
 		console.log("problemsync request called...");
 		$.ajax({
 			url: '/api/space/rest/sync/problems',
@@ -171,10 +185,10 @@ script.
 		});
 	});
 
-	$('#sync_v1Epics').on('click', function () {
+	$('#sync_v1epics').on('click', function () {
 		console.log("v1EpicsSync request called...");
 		$.ajax({
-			url: '/api/space/rest/sync/v1Epics',
+			url: '/api/space/rest/sync/v1epics',
 			type: 'POST',
 			data: {
 

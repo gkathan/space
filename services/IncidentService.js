@@ -95,15 +95,6 @@ function _findAll(callback) {
 }
 
 
-exports.findSOC = function (callback) {
-	var items =  db.collection('socincidents');
-	items.find({}).sort({start:-1}, function (err, docs){
-			callback(err,docs);
-			return;
-	});
-}
-
-
 /**
  * param prioritylist: ["P1","P8","P40"]
  *

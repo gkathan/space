@@ -31,9 +31,9 @@ var _endUserAffected = true;
 function _calculateOverall(from, to, filter,done){
 	if (!filter || filter.customer=="* ALL *") filter = null;
 
-	var avService=require('./AvailabilityService');
+	var socService=require('./SOCService');
 	//first we grab the external services as we need them to calculate the "ProductIntegration" service
-	avService.findSOCServicesExternal(function(servicesExt){
+	socService.findServicesExternal(function(err,servicesExt){
 		_processServices("EXTERNAL",servicesExt,null,from,to,filter,_endUserAffected,function(data){
 			// the result of this will be injected as "ProductIntegration row in MAIN "
 			var _injectServices = [];
@@ -45,16 +45,16 @@ function _calculateOverall(from, to, filter,done){
 
 			var _productIntegration={
 				ServiceName:"Product Integration",
-				ext_service:0,
+				ext_service:false,
 				ServiceGroupID:1,
-				Report:1,
-				CoreService:1,
-				Highlight:0,
+				Report:true,
+				CoreService:true,
+				Highlight:false,
 				availability:_avProductIntegration
 			};
 			_injectServices.push(_productIntegration);
 
-			avService.findSOCServicesMain(function(servicesMain){
+			socService.findServicesMain(function(err,servicesMain){
 				_processServices("MAIN",servicesMain,_injectServices,from,to,filter,_endUserAffected,function(data){
 				//callback
 				done(data);
@@ -70,8 +70,8 @@ function _calculateOverall(from, to, filter,done){
 function _calculateExternal(from, to,filter,done){
 	if (!filter || filter.customer=="* ALL *") filter = null;
 
-	var avService=require('./AvailabilityService');
-	avService.findSOCServicesExternal(function(servicesExt){
+	var socService=require('./SOCService');
+	socService.findServicesExternal(function(err,servicesExt){
 		_processServices("EXTERNAL",servicesExt,null,from,to,filter,_endUserAffected,function(data){
 			done(data);
 		});
@@ -84,16 +84,14 @@ function _calculateExternal(from, to,filter,done){
 * testMapping : only used for unit tests
 * testIncidents : only used to inject test inicidents for unit tests
 **/
-function _processServices(type,services,injectedServices,from,to,filter,endUserAffected,callback,testMapping,testIncidents){
+function _processServices(type,services,injectedServices,from,to,filter,endUserAffected,callback,testMapping,testOutages){
 	var totalTime={};
 	totalTime.all = new Date(to)-new Date(from);
 	totalTime.core = _calculateTotalCoreTime(new Date(from),new Date(to));
 	totalTime.nonCore = totalTime.all - totalTime.core;
 
-	var _socIncidents = db.collection('socincidents');
-	var _label2customer = db.collection('soclabel2customer');
-
-	_label2customer.find(function(err,mapping){
+	var _socService = require('./SOCService');
+	_socService.findLabel2Customer(null,function(err,mapping){
 		//{customer:"bwin"};
 		var _filterLabels=[];
 		if (testMapping) mapping = testMapping;
@@ -107,9 +105,9 @@ function _processServices(type,services,injectedServices,from,to,filter,endUserA
 			_filterLabels =  _.pluck(_.where(mapping,{"customer":filter.customer}),"label");
 		}
 		// grab the SOC incidents for the intervall (from to)
-		_socIncidents.find(function(err,data){
-			if (testIncidents) data = testIncidents;
-			//logger.debug("***** SOCIncidents: "+JSON.stringify(data));
+			_socService.findOutages(null,function(err,data){
+			if (testOutages) data = testOutages;
+			//logger.debug("***** SOCOutages: "+JSON.stringify(data));
 
 			var incidents={};
 			incidents.planned = [];
@@ -330,7 +328,7 @@ function checkServiceToExclude(mapping,filter,service){
 	var count =0;
 	for (var m in _filteredMapping){
 			var _line = _filteredMapping[m];
-			if (_line[service.ServiceName] =="1") {
+			if (_line[service.ServiceName] ==true) {
 				count++;
 			}
 	}
@@ -400,21 +398,21 @@ function _checkCoreTime(incident,callback){
 function _getCoreTime(_start,_stop,coreDef){
 	// case 1 = INC.start before core.start, INC.end after core.start
 	if (moment(_start).day() == coreDef.dayOfWeek && _start <=_getDateForTimeString(coreDef.start,_start) && (_stop <=_getDateForTimeString(coreDef.stop,_stop) && _stop >=_getDateForTimeString(coreDef.start,_start))){
-		console.log("CASE-1) where INC start is BEFORE coretime.start definition and stops within coretime");
+		//logger.debug("CASE-1) where INC start is BEFORE coretime.start definition and stops within coretime");
 		var _coreDuration = _stop-_getDateForTimeString(coreDef.start,_start);
 		//milliseconds
 		return _coreDuration;
 	}
 	// case 2 = INC.start after core.start, INC.end before core.send
 	else if (moment(_start).day() == coreDef.dayOfWeek && _start >=_getDateForTimeString(coreDef.start,_start) && (_stop <=_getDateForTimeString(coreDef.stop,_stop) )){
-		console.log("CASE-2) where INC start is AFTER coretime.start definition and stops within coretime");
+		//logger.debug("CASE-2) where INC start is AFTER coretime.start definition and stops within coretime");
 		var _coreDuration = _stop-_start;
 		//milliseconds
 		return _coreDuration;
 	}
 	// case 3 = INC.start after core.start, INC.end after core.end
 	else if (moment(_start).day() == coreDef.dayOfWeek && _start >=_getDateForTimeString(coreDef.start,_start) && (_stop >=_getDateForTimeString(coreDef.stop,_stop)) &&(_start <=_getDateForTimeString(coreDef.stop,_stop))){
-		console.log("CASE-3) where INC start is AFTER coretime.start definition and stops after coretime");
+		//logger.debug("CASE-3) where INC start is AFTER coretime.start definition and stops after coretime");
 		var _coreDuration = _start-_getDateForTimeString(coreDef.stop,_stop);
 		//milliseconds
 		return _coreDuration;

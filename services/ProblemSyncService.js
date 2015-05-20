@@ -17,76 +17,89 @@ var db = mongojs(connection_string, [DB]);
 var winston = require('winston');
 var logger = winston.loggers.get('space_log');
 
+var _syncName = "problems";
 
 exports.init = function(callback){
 	var rule = new schedule.RecurrenceRule();
 	// every 10 minutes
-	rule.minute = new schedule.Range(0, 59, config.sync.problem.intervalMinutes);
-	logger.info("[s p a c e] ProblemSyncService init(): "+config.sync.problem.intervalMinutes+" minutes - mode: "+config.sync.problem.mode);
-	if (config.sync.problem.mode!="off"){
+	rule.minute = new schedule.Range(0, 59, config.sync[_syncName].intervalMinutes);
+	logger.info("[s p a c e] ProblemSyncService init(): "+config.sync[_syncName].intervalMinutes+" minutes - mode: "+config.sync[_syncName].mode);
+	if (config.sync.problems.mode!="off"){
 		var j = schedule.scheduleJob(rule, function(){
 			logger.debug('...going to sync Problem stuff ....');
 
-			var _url = config.sync.problem.url;
-
-			_syncProblem(_url,function(data){
-				logger.debug("** [DONE] problemSync ");
-			});
-
+			var _url = config.sync[_syncName].url;
+			var _type = "scheduled - automatic";
+			_syncProblem(_url,_type,callback);
 		});
 	}
 }
 
 exports.sync = _syncProblem;
 
-function _syncProblem(url,done){
+function _syncProblem(url,type,callback){
 	logger.debug("**** _syncProblem, url: "+url);
 
-		var _secret = require("../config/secret.json");
+	var _syncStatus = require('./SyncService');
+	var _timestamp = new Date();
+	var _statusERROR = "[ERROR]";
+	var _statusSUCCESS = "[SUCCESS]";
 
-		var options_auth={user:_secret.snowUser,password:_secret.snowPassword};
-		logger.debug("snowUser: "+_secret.snowUser);
+	var _secret = require("../config/secret.json");
 
-		var Client = require('node-rest-client').Client;
-		client = new Client(options_auth);
-		// direct way
-		logger.debug("**** node rest client: "+client);
+	var options_auth={user:_secret.snowUser,password:_secret.snowPassword};
+	logger.debug("snowUser: "+_secret.snowUser);
 
-		//url+="priority<=3";
+	var Client = require('node-rest-client').Client;
+	client = new Client(options_auth);
+	// direct way
+	logger.debug("**** node rest client: "+client);
+	//url+="priority<=3";
+	logger.debug("*** client.get data : url = "+url);
+	client.get(url, function(data, response,done){
+		// parsed response body as js object
+		logger.debug("...data:"+data);
+		logger.debug("...response:"+response.records);
 
-		logger.debug("*** client.get data : url = "+url);
+		logger.debug("arguments.callee.name: "+arguments.callee.name);
+		logger.debug("[_syncProblem]...get data..: _url:"+url);
+		//logger.debug("[_syncIncident]...get data..: data:"+JSON.stringify(data));
 
+		// and store it
+		var problems =  db.collection(_syncName);
+		problems.drop();
 
-		client.get(url, function(data, response,callback){
-			// parsed response body as js object
-			logger.debug("...data:"+data);
-			logger.debug("...response:"+response.records);
+		var _problems=[];
+		for (var p in data.records){
+			_problems.push(_filterRelevantData(data.records[p]));
+		}
 
-			logger.debug("arguments.callee.name: "+arguments.callee.name);
-			logger.debug("[_syncProblem]...get data..: _url:"+url);
-			//logger.debug("[_syncIncident]...get data..: data:"+JSON.stringify(data));
+		problems.insert(_problems	 , function(err , success){
+			//console.log('Response success '+success);
+			if (err){
+				var _message = '[ProblemSyncSerice] says: something went wrong on the request: '+err.message;
+				logger.error(_message);
+				app.io.emit('syncUpdate', {status:_statusERROR,from:_syncName,timestamp:_timestamp,info:err.message});
 
-			// and store it
-			var problems =  db.collection('problems');
-			problems.drop();
+				_syncStatus.saveLastSync(_syncName,_timestamp,_message,_statusERROR,type);
+				callback(null,result);
+				return;
 
-			var _problems=[];
-			for (var p in data.records){
-				_problems.push(_filterRelevantData(data.records[p]));
 			}
+			else if(success){
+				var _message = "sync problems....length: "+_problems.length;
+				logger.info(_message);
+				app.io.emit('syncUpdate', {status:_statusSUCCESS,from:_syncName,timestamp:_timestamp,info:_problems.length+" items"});
 
-			problems.insert(_problems	 , function(err , success){
-				//console.log('Response success '+success);
-				logger.debug('Response error '+err);
-				if(success){
-					logger.info("[success] sync problems....length: "+_problems.length);
-					app.io.emit('syncUpdate', {status:"[SUCCESS]",from:"problem",timestamp:new Date(),info:_problems.length+" items"});
-				}
-			})
-		done(data);
+				_syncStatus.saveLastSync(_syncName,_timestamp,_message,_statusSUCCESS,type);
+				callback(err);
+			}
+		})
+
 	}).on('error',function(err){
 			logger.error('[ProblemSyncService] says: something went wrong on the request', err.request.options);
-				app.io.emit('syncUpdate', {status:"[ERROR]",from:"problem",timestamp:new Date(),info:err.message});
+			app.io.emit('syncUpdate', {status:_statusERROR,from:_syncName,timestamp:_timestamp,info:err.message});
+			_syncStatus.saveLastSync(_syncName,_timestamp,_message,_statusERROR,type);
 	})
 }
 

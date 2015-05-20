@@ -49,9 +49,9 @@ var PATH = {
 						REST_INCIDENTCOMMUNICATIONTRAIL : BASE+'/space/rest/incidents/commtrail/:sysid',
 
 
-						REST_SOCINCIDENTS : BASE+'/space/rest/socincidents',
+						REST_SOCOUTAGES : BASE+'/space/rest/soc_outages',
 						REST_SOCINCIDENT2REVENUEIMPACT : BASE+'/space/rest/socincident2revenueimpact',
-						REST_SOCSERVICES : BASE+'/space/rest/socservices',
+						REST_SOCSERVICES : BASE+'/space/rest/soc_services',
 
 						REST_INCIDENTTRACKER : BASE+'/space/rest/incidenttracker',
 						REST_INCIDENTTRACKER_DATE : BASE+'/space/rest/incidenttracker/:date',
@@ -71,10 +71,11 @@ var PATH = {
 						REST_SYNCEMPLOYEEIMAGES : BASE+'/space/rest/sync/employeeimages',
 						REST_SYNCAVAILABILITY : BASE+'/space/rest/sync/availability',
 						REST_SYNCINCIDENTS : BASE+'/space/rest/sync/incidents',
-						REST_SYNCSOCINCIDENTS : BASE+'/space/rest/sync/soc_incidents',
+						REST_SYNCSOCOUTAGES : BASE+'/space/rest/sync/soc_outages',
+						REST_SYNCSOCSERVICES : BASE+'/space/rest/sync/soc_services',
 						REST_SYNCPROBLEMS : BASE+'/space/rest/sync/problems',
 						REST_SYNCAPM_LOGIN : BASE+'/space/rest/sync/apm/login',
-						REST_SYNCV1EPICS : BASE+'/space/rest/sync/v1Epics',
+						REST_SYNCV1EPICS : BASE+'/space/rest/sync/v1epics',
 
 						REST_APM_LOGIN : BASE+'/space/rest/apm/login',
 
@@ -105,7 +106,8 @@ var PATH = {
 						EXPORT_AVAILABILITY : BASE+'/space/export/xlsx/availability',
 						EXPORT_FIREREPORT : BASE+'/space/export/xlsx/firereport',
 						EXPORT_CONTENT : BASE+'/space/export/xlsx/content',
-						EXPORT_SOCINCIDENTS : BASE+'/space/export/xlsx/socincidents',
+						EXPORT_SOCOUTAGES : BASE+'/space/export/xlsx/soc_outages',
+						EXPORT_SOCSERVICES : BASE+'/space/export/xlsx/soc_services',
 						EXPORT_INCIDENTS : BASE+'/space/export/xlsx/incidents',
 						EXPORT_PROBLEMS : BASE+'/space/export/xlsx/problems',
 
@@ -154,7 +156,7 @@ router.get(PATH.REST_INCIDENTS, function(req, res, next) {findIncidents(req,res,
 router.get(PATH.REST_INCIDENTCOMMUNICATIONTRAIL, function(req, res, next) {findIncidentCommTrail(req,res,next);});
 
 
-router.get(PATH.REST_SOCINCIDENTS, function(req, res, next) {findAllByName(req,res,next);});
+router.get(PATH.REST_SOCOUTAGES, function(req, res, next) {findAllByName(req,res,next);});
 
 router.get(PATH.REST_SOCINCIDENT2REVENUEIMPACT, function(req, res, next) {findAllByName(req,res,next);});
 router.post(PATH.REST_SOCINCIDENT2REVENUEIMPACT, function(req, res, next) {save(req,res,next); });
@@ -221,8 +223,12 @@ router.post(PATH.REST_SYNCAVAILABILITY, function(req, res, next) {syncAvailabili
 router.get(PATH.REST_SYNCAVAILABILITY, function(req, res, next) {syncAvailability(req,res,next); });
 router.post(PATH.REST_SYNCINCIDENTS, function(req, res, next) {syncIncidents(req,res,next); });
 router.get(PATH.REST_SYNCINCIDENTS, function(req, res, next) {syncIncidents(req,res,next); });
-router.post(PATH.REST_SYNCSOCINCIDENTS, function(req, res, next) {syncSOCIncidents(req,res,next); });
-router.get(PATH.REST_SYNCSOCINCIDENTS, function(req, res, next) {syncSOCIncidents(req,res,next); });
+router.post(PATH.REST_SYNCSOCOUTAGES, function(req, res, next) {syncSOCOutages(req,res,next); });
+router.get(PATH.REST_SYNCSOCOUTAGES, function(req, res, next) {syncSOCOutages(req,res,next); });
+router.post(PATH.REST_SYNCSOCSERVICES, function(req, res, next) {syncSOCServices(req,res,next); });
+router.get(PATH.REST_SYNCSOCSERVICES, function(req, res, next) {syncSOCServices(req,res,next); });
+
+
 router.post(PATH.REST_SYNCV1EPICS, function(req, res, next) {syncV1Epics(req,res,next); });
 router.get(PATH.REST_SYNCV1EPICS, function(req, res, next) {syncV1Epics(req,res,next); });
 
@@ -271,7 +277,8 @@ router.get(PATH.EXPORT_AVAILABILITY, function(req, res, next) {exporter.excelAva
 router.get(PATH.EXPORT_FIREREPORT, function(req, res, next) {exporter.excelFirereport(req,res,next);});
 router.get(PATH.EXPORT_CONTENT, function(req, res, next) {exporter.excelContent(req,res,next);});
 router.get(PATH.EXPORT_ORGANIZATION, function(req, res, next) {exporter.excelOrganization(req,res,next);});
-router.get(PATH.EXPORT_SOCINCIDENTS, function(req, res, next) {exporter.excelSOCIncidents(req,res,next);});
+router.get(PATH.EXPORT_SOCOUTAGES, function(req, res, next) {exporter.excelSOCOutages(req,res,next);});
+router.get(PATH.EXPORT_SOCSERVICES, function(req, res, next) {exporter.excelSOCServices(req,res,next);});
 router.get(PATH.EXPORT_INCIDENTS, function(req, res, next) {exporter.excelIncidents(req,res,next);});
 router.get(PATH.EXPORT_PROBLEMS, function(req, res, next) {exporter.excelProblems(req,res,next);});
 
@@ -752,9 +759,10 @@ function syncAvailability(req,res,next){
 
 function syncV1Epics(req,res,next){
     var v1SyncService = require ('../services/V1SyncService');
-		var _url = config.sync.v1Epics.url;
+		var _url = config.sync.v1epics.url;
+		var _type = "API - manual";
 		logger.debug("*********************** lets sync v1 epics...: "+_url);
-	  v1SyncService.sync(_url,function(err,result){
+	  v1SyncService.sync(_url,_type,function(err,result){
 			if (err){
 				res.send("syncV1Epics says: "+err.message);
 				return;
@@ -774,26 +782,43 @@ function syncIncidents(req,res,next){
 	});
 }
 
-function syncSOCIncidents(req,res,next){
-    logger.debug("*********************** lets sync SOC incidents from avreport... ");
-		var _url = config.sync.soc_incidents.url;
-    var soc_incSyncService = require ('../services/SOCIncidentsSyncService');
-    logger.debug("*********************** SOC incservice instantiated ");
-	  soc_incSyncService.sync(_url,function(data){
-
-
-			res.send("SOC incidents: "+JSON.stringify(data));
+function syncSOCOutages(req,res,next){
+    logger.debug("*********************** lets sync SOC outages from avreport... ");
+		var _url = config.sync.soc_outages.url;
+    var _type = "API - manual";
+		var socOutSyncService = require ('../services/SOCOutagesSyncService');
+    logger.debug("*********************** SOCOutagesSyncService instantiated ");
+	  socOutSyncService.sync(_url,_type,function(err,data){
+			if (err){
+				res.send("syncSOCOutages says: "+err.message);
+				return;
+			}
+			else
+			{
+				res.send("SOC outages: "+data.length+" items synced");
+			}
 	});
 }
 
+function syncSOCServices(req,res,next){
+		logger.debug("*********************** lets sync SOC services from avreport... ");
+		var _url = config.sync.soc_services.url;
+    var soc_servicesSyncService = require ('../services/GenericSyncService');
+		var _type = "API - manual";
+    logger.debug("*********************** SOC services Sync instantiated ");
+	  soc_servicesSyncService.sync("soc_services",_url,_type,null,function(data){
+		res.send("SOC services: "+JSON.stringify(data));
+	});
+}
+
+
 function syncProblems(req,res,next){
-    logger.debug("*********************** lets sync problems from snow... ");
-		var _url = config.sync.problem.url;
+		logger.debug("*********************** lets sync problems from snow... ");
+		var _url = config.sync.problems.url;
+			var _type = "API - manual";
     var probSyncService = require ('../services/ProblemSyncService');
     logger.debug("*********************** probservice instantiated ");
-	  probSyncService.sync(_url,function(data){
-
-
+	  probSyncService.sync(_url,_type,function(err,data){
 			res.send("problems: "+JSON.stringify(data));
 	});
 }

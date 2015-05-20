@@ -136,9 +136,32 @@ app.use('/authenticate', authenticate);
 app.use('/content', content);
 app.use('/admin', admin);
 
+
+var sockets=[];
+app.io = require('socket.io')();
+
+app.io.sockets.on('connection', function (socket) {
+    logger.debug('[socket.io] says: new user connected!');
+
+    socket.on('disconnect',function(){
+      logger.debug("[socket.io] says: someone disconnected")
+    })
+});
+
+
+
 // services
+
 var v1SyncService = require('./services/V1SyncService');
-v1SyncService.init();
+v1SyncService.init(function(err,result){
+    if (err){
+      logger.error("error: "+err.message);
+    }
+    else
+    {
+      logger.info("init ok: "+result);
+    }
+});
 
 var avSyncService = require('./services/AvailabilitySyncService');
 avSyncService.init(function(err,av){
@@ -149,26 +172,38 @@ avSyncService.init(function(err,av){
 var incidentSyncService = require('./services/IncidentSyncService');
 incidentSyncService.init();
 
-var sockets=[];
-app.io = require('socket.io')();
-
-
-app.io.sockets.on('connection', function (socket) {
-    logger.debug('[socket.io] says: new user connected!');
-
-    socket.on('disconnect',function(){
-      logger.debug("[socket.io] says: someone disconnected")
-    })
+var soc_outagesSyncService = require('./services/SOCOutagesSyncService');
+soc_outagesSyncService.init(function(err,data){
+    if (err){
+        logger.error("error: "+err.message);
+    }
+    else{
+      logger.debug("soc_outagesSyncService.init() says: "+data.length+" items synced");
+    }
 });
 
-var soc_incidentSyncService = require('./services/SOCIncidentsSyncService');
-soc_incidentSyncService.init(function(data){
-  logger.debug("soc_incidentSyncService.init() says: "+JSON.stringify(data));
+var soc_servicesSyncService = require('./services/GenericSyncService');
+soc_servicesSyncService.init("soc_services",function(err, data){
+  if (err){
+      logger.error("error: "+err.message);
+  }
+  else{
+    logger.debug("soc_servicesSyncService.init() says: "+JSON.stringify(data));
+  }
 });
+
 
 
 var problemSyncService = require('./services/ProblemSyncService');
-problemSyncService.init();
+problemSyncService.init(function(err,result){
+  if (err){
+    logger.error("error: "+err.message);
+  }
+  else
+  {
+    logger.info("init ok: "+result);
+  }
+});
 
 var apmSyncService = require('./services/ApmSyncService');
 apmSyncService.init();

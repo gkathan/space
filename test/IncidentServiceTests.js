@@ -76,17 +76,7 @@ describe('IncidentService', function(){
 		});
   });
 
-  describe('#findSOC()', function(){
-    it('returns ALL incdients from SOC', function(done){
-      var incidentService = require('../services/IncidentService');
-			incidentService.findSOC(function(err,result){
-					if (err) logger.error("error: "+err);
-					//logger.debug("result: "+result.length);
-					done();
-			})
 
-		});
-  });
 
 
   describe('#findAll()', function(){

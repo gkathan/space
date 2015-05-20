@@ -4,7 +4,7 @@
 
 
   "sync": {
-		"v1Epics" : {
+		"v1epics" : {
 			"mode": "on",
 			"intervalMinutes" :240,
 			"url" : "http://knbnprxy.ea.bwinparty.corp/rest/epics"
@@ -22,22 +22,19 @@
 			"url" : "https://bwinparty.service-now.com/incident_list.do?JSONv2&sysparm_action=getRecords&sysparm_query="
 		},
 
-		"soc_incidents" : {
+		"soc_outages" : {
 			"mode": "on",
 			"intervalMinutes" :1,
 			"url" : "http://avreport.bwinparty.corp/API/AvReportingService.svc/GetIncidentsDatapoints/?from=2014-01-01"
 		},
 
 		"soc_services" : {
-			"mode": "off",
-			"intervalMinutes" :3600,
+			"mode": "on",
+			"intervalMinutes" :1,
 			"url" : "http://avreport.bwinparty.corp/API/AvReportingService.svc/GetServicesDatapoints"
 		},
 
-
-
-
-		"problem" : {
+		"problems" : {
 			"mode": "on",
 			"intervalMinutes" :60 	,
 			"url" : "https://bwinparty.service-now.com/problem_list.do?JSONv2&sysparm_action=getRecords&sysparm_query="

@@ -13,19 +13,20 @@ var app=require('../app');
 var winston = require('winston');
 var logger = winston.loggers.get('space_log');
 
+var _syncName = "v1epics";
+
 exports.sync = _sync;
 
 exports.init = function(callback){
 	var rule = new schedule.RecurrenceRule();
 	// every 10 minutes
-	rule.minute = new schedule.Range(0, 59, config.sync.v1Epics.intervalMinutes);
-	logger.info("[s p a c e] V1SyncService init(): "+config.sync.v1Epics.intervalMinutes+" minutes - mode: "+config.sync.v1Epics.mode);
-	if (config.sync.v1Epics.mode!="off"){
+	rule.minute = new schedule.Range(0, 59, config.sync[_syncName].intervalMinutes);
+	logger.info("[s p a c e] V1SyncService init(): "+config.sync[_syncName].intervalMinutes+" minutes - mode: "+config.sync[_syncName].mode);
+	if (config.sync[_syncName].mode!="off"){
 		var j = schedule.scheduleJob(rule, function(){
 			logger.debug('...going to sync V1 ....');
-			_sync(config.sync.v1Epics.url,function(err,result){
-				logger.info("[v1EpicsSync]: "+result);
-			});
+			var _type = "scheduled - automatic";
+			_sync(config.sync[_syncName].url,_type,callback);
 		});
 	}
 }
@@ -33,10 +34,18 @@ exports.init = function(callback){
 
 
 
-function _sync(url,callback){
+function _sync(url,type,callback){
+	logger.debug("**** _syncV1Epics, url: "+url);
+
+	var _syncStatus = require('./SyncService');
+	var _timestamp = new Date();
+	var _statusERROR = "[ERROR]";
+	var _statusSUCCESS = "[SUCCESS]";
+
+
 	// call v1 rest service
-    var Client = require('node-rest-client').Client;
-   client = new Client();
+  var Client = require('node-rest-client').Client;
+	client = new Client();
 	// direct way
 	client.get(url, function(data, response){
 		// parsed response body as js object
@@ -45,7 +54,7 @@ function _sync(url,callback){
 		//console.log(response);
 		// and insert
 		var _epics = JSON.parse(data);
-		var v1epics =  db.collection('v1epics');
+		var v1epics =  db.collection(_syncName);
 		v1epics.drop();
 		v1epics.insert({createDate:new Date(),epics:_epics}	 , function(err , success){
 			//console.log('Response success '+success);
@@ -53,18 +62,20 @@ function _sync(url,callback){
 				logger.error('Response error '+err.message);
 			}
 			if(success){
-				logger.info("syncv1 [DONE]");
-				var _from = "v1Epics";
-				app.io.emit('syncUpdate', {status:"[SUCCESS]",from:_from,timestamp:new Date(),info:_epics.length+" epics"});
+				var _message = "syncv1 [DONE]: "+_epics.length+" epics";
+				logger.info(_message);
+
+				app.io.emit('syncUpdate', {status:"[SUCCESS]",from:_syncName,timestamp:_timestamp,info:_epics.length+" epics"});
+				_syncStatus.saveLastSync(_syncName,_timestamp,_message,_statusSUCCESS,type);
 				callback(null,"syncv1 [DONE]: "+_epics.length+ " epics synced")
-
-
 			}
 			//return next(err);
 		})
 	}).on('error',function(err){
+			var _message = er.message;
 			logger.warn('[V1SyncService] says: something went wrong on the request', err.request.options,err.message);
-			app.io.emit('syncUpdate', {status:"[ERROR]",from:"v1Epics",timestamp:new Date(),info:err.message});
+			app.io.emit('syncUpdate', {status:"[ERROR]",from:_syncName,timestamp:_timestamp,info:err.message});
+			_syncStatus.saveLastSync(_syncName,_timestamp,_message,_statusERROR,type);
 			callback(err);
 	});
 }

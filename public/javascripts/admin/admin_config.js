@@ -20,8 +20,8 @@ function getConfig(collection){
 		case "content":  return getContentConfig();
     case "incidenttracker":  return getIncidenttrackerConfig();
 		case "domains":  return getDomainsConfig();
-		case "socincidents" : return getSOCIncidentsConfig();
-		case "socservices" : return getSOCServicesConfig();
+		case "soc_outages" : return getSOCOutagesConfig();
+		case "soc_services" : return getSOCServicesConfig();
 		case "socincident2revenueimpact" : return getSOCIncident2RevenueImpactConfig();
 	}
 }
@@ -140,6 +140,7 @@ function getSOCIncident2RevenueImpactConfig(){
 	var _config ={};
 	_config.mode="editable";
 	_config.fields = _inc2revimpact;
+	  _config.addRow="enabled";
 	return _config;
 }
 
@@ -294,8 +295,8 @@ function getIncidenttrackerConfig(){
 	return _config;
 }
 
-function getSOCIncidentsConfig(){
-	var _soc_incidents =[
+function getSOCOutagesConfig(){
+	var _socoutages =[
     { id: "id", name: "id", field: "_id",sortable:true,width:20,cssClass:"onKanbanImmutable"},
     { id: "context", name: "context", field: "context",sortable:true,width:80,cssClass:"onKanbanImmutable"},
 		{ id: "snowId", name: "snowId",  field: "snowId",width:150,  formatter:Slick.Formatters.SnowIncidentURL,editor: Slick.Editors.Number , cssClass: "cell-standard"},
@@ -323,7 +324,7 @@ function getSOCIncidentsConfig(){
 	_config.mode="readonly";
   _config.addRow="enabled";
 	_config.sortBy="start";
-	_config.fields = _soc_incidents;
+	_config.fields = _socoutages;
 	return _config;
 }
 
