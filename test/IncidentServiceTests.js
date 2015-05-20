@@ -122,6 +122,18 @@ describe('IncidentService', function(){
 		});
   });
 
+	describe('#findOld()', function(){
+    it('returns incidents from old snow', function(done){
+			this.timeout(10000);
+      var incidentService = require('../services/IncidentService');
+			incidentService.findOld({active:"TRUE"},function(err,result){
+					logger.debug("result: "+result.length);
+
+					done();
+			})
+
+		});
+  });
 
 
 })

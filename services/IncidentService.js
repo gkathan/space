@@ -59,6 +59,15 @@ function _find(callback) {
 	});
 }
 
+function _findOld(filter,callback) {
+	var items =  db.collection('oldsnowincidents');
+	items.find(filter).sort({openedAt:-1}, function (err, docs){
+			callback(err,docs);
+			return;
+	});
+}
+
+
 /**
  * test find method which gets incidents transparently for caller from old and new snow repo
  */
@@ -109,6 +118,7 @@ exports.findGroupedByPriority = function (prioritylist){
 exports.find = _find;
 exports.findFiltered = _findFiltered;
 exports.findAll = _findAll;
+exports.findOld = _findOld;
 exports.mapPriority = _mapPriority;
 exports.mapState = _mapState;
 exports.weeklyTracker = _aggregateWeekly;
