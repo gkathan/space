@@ -20,7 +20,9 @@ var db = mongojs(connection_string, [DB]);
 var winston = require('winston');
 var logger = winston.loggers.get('space_log');
 
-
+var _incidentsCollection="incidents";
+var _incidentsDeltaCollection="incidentsdelta";
+var _incidentTrackerCollection="incidenttracker";
 
 /**
  *
@@ -35,7 +37,7 @@ function _findRevenueImpactMapping(callback) {
 
 
 function _findFiltered(filter,callback) {
-	var items =  db.collection('incidents');
+	var items =  db.collection(_incidentsCollection);
 	logger.debug("filter: "+JSON.stringify(filter));
 
 	items.find(filter).sort({openedAt:-1}, function (err, docs){
@@ -52,7 +54,7 @@ function _findFiltered(filter,callback) {
  *
  */
 function _find(callback) {
-	var items =  db.collection('incidents');
+	var items =  db.collection(_incidentsCollection);
 	items.find({}).sort({openedAt:-1}, function (err, docs){
 			callback(err,docs);
 			return;
@@ -72,7 +74,7 @@ function _findOld(filter,callback) {
  * test find method which gets incidents transparently for caller from old and new snow repo
  */
 function _findAll(callback) {
-	var items =  db.collection('incidents');
+	var items =  db.collection(_incidentsCollection);
 
 	items.find({}).sort({openedAt:-1}, function (err, incidents){
 		var olditems =  db.collection('oldsnowincidents');
@@ -90,10 +92,59 @@ function _findAll(callback) {
 			//callback(err,incidents);
 			//return;
 		});
-
 	});
 }
 
+/**
+* drops and saves
+*/
+function _flush(data,callback){
+	var items =  db.collection(_incidentsCollection);
+	items.drop();
+	items.insert(data, function(err , success){
+		if (err){
+			callback(err);
+			return;
+		}
+		else{
+			callback(null,success);
+			return;
+		}
+}
+
+/**
+* drops and saves
+*/
+function _flushTracker(data,callback){
+	var items =  db.collection(_incidentTrackerCollection);
+	items.drop();
+	items.insert(data, function(err , success){
+		if (err){
+			callback(err);
+			return;
+		}
+		else{
+			callback(null,success);
+			return;
+		}
+}
+
+
+/**
+* insertsdelta
+*/
+function _saveDelta(data,callback){
+	var items =  db.collection(_incidentsDeltaCollection);
+	items.insert(data, function(err , success){
+		if (err){
+			callback(err);
+			return;
+		}
+		else{
+			callback(null,success);
+			return;
+		}
+}
 
 /**
  * param prioritylist: ["P1","P8","P40"]
@@ -110,6 +161,12 @@ exports.find = _find;
 exports.findFiltered = _findFiltered;
 exports.findAll = _findAll;
 exports.findOld = _findOld;
+exports.flush = _flush;
+exports.flushTracker = _flushTracker;
+
+exports.saveDelta = _saveDelta;
+
+
 exports.mapPriority = _mapPriority;
 exports.mapState = _mapState;
 exports.weeklyTracker = _aggregateWeekly;

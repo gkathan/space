@@ -18,29 +18,35 @@ var jsondiffpatch=require('jsondiffpatch');
 var winston = require('winston');
 var logger = winston.loggers.get('space_log');
 
+var _syncName = "incidents";
+
 var app=require('../app');
 
-exports.init = function(){
+exports.init = function(callback){
 	var rule = new schedule.RecurrenceRule();
 	// every 10 minutes
-	rule.minute = new schedule.Range(0, 59, config.sync.incident.intervalMinutes);
-	logger.info("[s p a c e] IncidentSyncService init(): "+config.sync.incident.intervalMinutes+" minutes - mode: "+config.sync.incident.mode);
-	if (config.sync.incident.mode!="off"){
+	rule.minute = new schedule.Range(0, 59, config.sync[_syncName].intervalMinutes);
+	logger.info("[s p a c e] IncidentSyncService init(): "+config.sync[_syncName].intervalMinutes+" minutes - mode: "+config.sync[_syncName].mode);
+	if (config.sync[_syncName].mode!="off"){
 		var j = schedule.scheduleJob(rule, function(){
 			logger.debug('...going to sync Incident stuff ....');
-			var _url = config.sync.incident.url;
-
-			_syncIncident(_url,function(data){
-				logger.debug("** [DONE] incidentSync ");
-			});
+			var _url = config.sync[_syncName].url;
+			var _type = "scheduled - automatic";
+			_syncIncident(_url,_type,callback);
 		});
 	}
 }
 
-exports.sync = _syncIncident;
+exports.sync = _sync;
 
-function _syncIncident(url,done){
+function _sync(url,type,callback){
 	logger.debug("**** _syncIncident, url: "+url);
+
+	var _syncStatus = require('./SyncService');
+	var _timestamp = new Date();
+	var _statusERROR = "[ERROR]";
+	var _statusSUCCESS = "[SUCCESS]";
+
 	var _secret = require("../config/secret.json");
 	var options_auth={user:_secret.snowUser,password:_secret.snowPassword};
 	logger.debug("snowUser: "+_secret.snowUser);
@@ -56,8 +62,8 @@ function _syncIncident(url,done){
 			P16 - Moderate	3
 			P40 – Low	4
 		*/
-	url+="priority<="+config.sync.incident.includePriority;
-	client.get(url, function(data, response,callback){
+	url+="priority<="+config.sync[_syncName].includePriority;
+	client.get(url, function(data, response,done){
 		// parsed response body as js object
 		logger.debug("...data:"+data);
 		logger.debug("...response:"+response.records);
@@ -65,13 +71,12 @@ function _syncIncident(url,done){
 		logger.debug("[_syncIncident]...get data..: _url:"+url);
 
 		var incService = require('./IncidentService');
-		var incidents =  db.collection('incidents');
-		var incidentsdelta =  db.collection('incidentsdelta');
+
     var _incidentsNEW=[];
     var _incidentsOLD;
 
 		// lets first get what we have had
-		incidents.find({},function(err,baseline){
+		inService.find(function(err,baseline){
 			incService.findRevenueImpactMapping(function(err,impactMapping){
 				_incidentsOLD = baseline;
 
@@ -123,47 +128,66 @@ function _syncIncident(url,done){
         logger.debug("--------------------------------------------------- incidentsNEW: length="+_incidentsNEW.length);
         if (_incidentsDELTA_NEW.length>0 || _incidentsDELTA_CHANGED.length>0){
           var _incidentsDIFF={"createDate":new Date(),"NEW":_incidentsDELTA_NEW,"CHANGED":_incidentsDELTA_CHANGED}
-          incidentsdelta.insert(_incidentsDIFF);
+          incService.saveDelta(_incidentsDIFF,function(err,result){
+						if (err){
+								logger.error("err: "+err.message);
+						}
+						else{
+							incService.flush(_incidentsNEW	 , function(err , success){
+								if (err){
+									logger.error('incidents.insert failed: '+err.message);
+								}
+								else if(success){
+									logger.info("[success] sync incidents....length: "+_incidentsNEW.length);
+									// get oldsnow data and merge it
+									var incidenttrackeroldsnow =  db.collection('incidenttrackeroldsnow');
+									incidenttrackeroldsnow.find({}, function(err , oldtrackerdata){
+										if (oldtrackerdata){
+											logger.debug("***** [yep] we got the old tracker data: length= "+oldtrackerdata.length);
+											var _tracker = _calculateDailyTracker(_incidentsNEW,config.context);
+											// and  handle incident tracker
+											incService.flushTracker(oldtrackerdata.concat(_tracker)	 , function(err , success){
+													if (err){
+														var _message=err.message;
+														logger.error("[incidenttracker insert failed....]"+err.message);
+														_syncStatus.saveLastSync(_syncName,_timestamp,_message,_statusERROR,type);
+														callback(err);
+													}
+													else{
+														var _message=_incidentsNEW.length+" incidents synced";
+														logger.info("[success] sync incidenttracker....length: "+_tracker.length);
+														app.io.emit('syncUpdate', {status:"[SUCCESS]",from:_syncName,timestamp:_timestamp,info:_incidentsNEW.length+" incidents synced"});
+														_syncStatus.saveLastSync(_syncName,_timestamp,_message,_statusSUCCESS,type);
+														callback(null,data);
+													}
+											});
+										} //end if (oldtrackerdata)
+									}); //incidenttrackeroldsnow.find()
+								} //else if (success) end
+							}) //incidents.insert()
 
-					if (config.emit.snow_incidents_new =="on" && _incidentsDIFF.NEW.length>0){
-						_emitNEWIncidentMessage(_incidentsDIFF.NEW[0]);
-					}
-					if (config.emit.snow_incidents_changes =="on" && _incidentsDIFF.CHANGED.length>0){
-						_emitCHANGEIncidentMessage(_incidentsDIFF.CHANGED[0]);
-					}
+
+							if (config.emit.snow_incidents_new =="on" && _incidentsDIFF.NEW.length>0){
+								_emitNEWIncidentMessage(_incidentsDIFF.NEW[0]);
+							}
+							if (config.emit.snow_incidents_changes =="on" && _incidentsDIFF.CHANGED.length>0){
+								_emitCHANGEIncidentMessage(_incidentsDIFF.CHANGED[0]);
+							}
+						}
+					});
+
 
         }
-				incidents.drop();
-				incidents.insert(_incidentsNEW	 , function(err , success){
-					if (err){
-						logger.error('incidents.insert failed: '+err.message);
-					}
-					else if(success){
-						logger.info("[success] sync incidents....length: "+_incidentsNEW.length);
-						// get oldsnow data and merge it
-						var incidenttrackeroldsnow =  db.collection('incidenttrackeroldsnow');
-						incidenttrackeroldsnow.find({}, function(err , oldtrackerdata){
-							if (oldtrackerdata){
-								logger.debug("***** [yep] we got the old tracker data: length= "+oldtrackerdata.length);
-								var _tracker = _calculateDailyTracker(_incidentsNEW,config.context);
-								// and  handle incident tracker
-								var incidenttracker =  db.collection('incidenttracker');
-								incidenttracker.drop();
-								incidenttracker.insert(oldtrackerdata.concat(_tracker)	 , function(err , success){
-										if (err) logger.warn("[incidenttracker insert failed....]"+err.message);
-										logger.info("[success] sync incidenttracker....length: "+_tracker.length);
-										app.io.emit('syncUpdate', {status:"[SUCCESS]",from:"incident",timestamp:new Date(),info:_incidentsNEW.length+" incidents synced"});
-								});
-							} //end if (oldtrackerdata)
-						}); //incidenttrackeroldsnow.find()
-					} //else if (success) end
-				}) //incidents.insert()
+
 			})
 		})
-		done(data);
+
 	}).on('error',function(err){
-      logger.error('[IncidentSyncSerice] says: something went wrong on the request', err.request.options);
+      var _message=err.message;
+			logger.error('[IncidentSyncSerice] says: something went wrong on the request', err.request.options);
 			app.io.emit('syncUpdate', {status:"[ERROR]",from:"incident",timestamp:new Date(),info:err.message});
+			_syncStatus.saveLastSync(_syncName,_timestamp,_message,_statusERROR,type);
+			callback(err);
   });
 }
 
