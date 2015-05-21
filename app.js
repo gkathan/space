@@ -170,7 +170,14 @@ avSyncService.init(function(err,av){
 });
 
 var incidentSyncService = require('./services/IncidentSyncService');
-incidentSyncService.init();
+incidentSyncService.init(function(err,result){
+  if (err){
+    logger.error("[error]: "+err.message);
+  }
+  else{
+    logger.info("IncidentSyncService.init() says: "+result);
+  }
+});
 
 var soc_outagesSyncService = require('./services/SOCOutagesSyncService');
 soc_outagesSyncService.init(function(err,data){
@@ -188,7 +195,7 @@ soc_servicesSyncService.init("soc_services",function(err, data){
       logger.error("error: "+err.message);
   }
   else{
-    logger.debug("soc_servicesSyncService.init() says: "+JSON.stringify(data));
+    logger.debug("soc_servicesSyncService.init() says: "+data.length+" items synced");
   }
 });
 

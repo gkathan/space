@@ -1,0 +1,73 @@
+include ../kanban_menu
+
+block content
+
+div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;background-color:white;margin-top: 60px;width:400px;text-align: left;margin: 10px auto;")
+	div.panel-heading
+		i.glyphicon.glyphicon-floppy-open(style="font-size:20px")
+		span(style="font-size:25px") &nbsp; IMPORT 
+		span(style="font-size:14px") target2employee mapping" 
+		
+	div.panel-body 
+		
+		table.table
+			tr
+				td.td(style="width:80px")
+					img(src="/images/pi/logo.gif") 
+				td.td(style="font-size:14px;font-weight:bold;vertical-align:middle")
+					span Target2Employee Mapping
+			tr
+				td(style="font-size:12px;vertical-align:middle")
+					|format:
+				td(style="font-style:italic;font-size:12px;vertical-align:middle")
+					|target2employee_{YYYY}-{MM}-{DD}.xlsx
+		
+			tr
+				td(colspan="2")
+			
+		div.form-box
+			form(id="uploadForm" enctype="multipart/form-data" action="/upload/process/xlsx?type=target2employee" method="post")
+				
+				
+				.fileinput.fileinput-new.input-group(data-provides="fileinput")
+					.form-control(data-trigger="fileinput")
+						i.glyphicon.glyphicon-file.fileinput-exists
+							span.fileinput-filename(style="width:190px;font-size:12px;font-family:arial")
+					span.input-group-addon.btn.btn-info.btn-file
+						span.fileinput-new Select file
+						span.fileinput-exists(style="width:190px") Change
+						input(type="file" name="userFile")
+					a.input-group-addon.btn.btn-default.fileinput-exists(href="#" data-dismiss="fileinput")
+							Remove
+				
+				
+				
+				input.btn.btn-primary.btn-block(id="uploadxlsxsubmit" type="submit" value="Upload xlsx" data-loading-text="...processing..." name="submit" data-toggle="tooltip" data-placement="top" title="......explanaotry stuff")
+		
+			if success && uploadfilename
+				.alert.alert-success(role="alert" style="font-size:10px; font-weight:normal")
+					i.glyphicon.glyphicon-ok
+					br
+					|[s p a c e ] says:  File: #{uploadfilename} uploaded, converted and imported to DB
+			else if !success && uploadfilename
+				.alert.alert-warning(role="alert" style="font-size:10px; font-weight:normal")
+					i.glyphicon.glyphicon-flash
+					br
+					|[ERROR] File upload failed !
+			else if !success &&message
+				.alert.alert-warning(role="alert" style="font-size:10px; font-weight:normal")
+					i.glyphicon.glyphicon-flash
+					br
+					|#{message}
+			
+				
+include ../includes/material
+
+
+	script.
+		$('#uploadxlsxsubmit').on('click', function () {
+			//alert("holy crap");
+			var $btn = $(this).button('loading')
+			// business logic...
+			//$btn.button('reset')
+		})

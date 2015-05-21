@@ -52,7 +52,7 @@
   			"intervalMinutes" :1440,
   			"url" : ["http://avreport.bwinparty.corp/API/AvReoprtingService.svc/getYTDDatapoint","http://avreport.bwinparty.corp/API/AvReoprtingService.svc/GetAVGraphDatapoints"]
   		},
-  		"incident" : {
+  		"incidents" : {
   			"mode": "on",
   			"intervalMinutes" :1 	,
         "includePriority" : 4,

@@ -56,6 +56,10 @@ exports.convertXlsx2Json = function convertXlsx2Json (filename,req,done) {
 			else if (_collection=="organization"){
 				_handlers = [_handleOrganization];
 			}
+			else if (_collection=="target2employee"){
+				_handlers = [_handleTarget2Employee];
+			}
+
 			else if (_.indexOf(_plainElements,_collection) >-1){
 				 _handlers = [_handlePlain];
 				 _dropBeforeInsert = true;
@@ -83,7 +87,7 @@ exports.convertXlsx2Json = function convertXlsx2Json (filename,req,done) {
 								logger.debug("****async.series: 1) check if we should drop...");
 
 								// ok - this is also not beautiful ;-)
-								if (_getFunctionName(_handler) == "_handleOrganization") {
+								if (_getFunctionName(_handler) == "_handleOrganization" ||_getFunctionName(_handler) == "_handleTarget2Employee") {
 									_dropBeforeInsert=true;
 								}
 
@@ -123,12 +127,7 @@ exports.convertXlsx2Json = function convertXlsx2Json (filename,req,done) {
 											callback();
 										 });
 									});
-
-
-
 								}
-
-
 								//done = true;
 								callback();
 							},
@@ -149,7 +148,6 @@ exports.convertXlsx2Json = function convertXlsx2Json (filename,req,done) {
 							function(callback){
 
 							}
-
 						]);
 					callback();
 					});
@@ -286,6 +284,35 @@ function _handleOrganization(json,date,fillblanks,callback){
 	callback(json);
 	return;
 }
+
+/**
+ * pre-process target2employee mapping
+ */
+function _handleTarget2Employee(json,date,fillblanks,callback){
+		// 1) overwrite latest into organization
+		// 2) add the same with date to organizationhistory
+
+		logger.debug("######################## _handleOrganization called with date: "+date);
+
+		var _mapping=[];
+		for (var i in json){
+			var _targets = [];
+			if (json[i].Target1) _targets.push(json[i].Target1.split(" ")[0]);
+			if (json[i].Target2) _targets.push(json[i].Target2.split(" ")[0]);
+			if (json[i].Target3) _targets.push(json[i].Target3.split(" ")[0]);
+			if (json[i].Target4) _targets.push(json[i].Target4.split(" ")[0]);
+			if (json[i].Target5) _targets.push(json[i].Target5.split(" ")[0]);
+
+			var _item = {employeeID:"E"+json[i].EmployeeID,targets:_targets}
+			_mapping.push(_item);
+		}
+
+
+
+		callback(_mapping);
+	return;
+}
+
 
 
 

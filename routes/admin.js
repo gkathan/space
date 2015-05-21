@@ -5,6 +5,7 @@ var mongojs = require("mongojs");
 var express = require('express');
 var router = express.Router();
 var _ = require('lodash');
+var moment = require('moment');
 
 var config = require('config');
 var DB=config.database.db;
@@ -48,7 +49,11 @@ router.get('/content', function(req, res) {
 /* GET the admin page. */
 router.get('/sync', function(req, res) {
 	if (ensureAuthenticated(req,res)){
+
+		var syncService = require('../services/SyncService');
+
 		var sync=config.sync;
+
 		var syncers =[];
 		_.forEach(sync,function(n,key){
 			if(key=="apm"){
@@ -59,8 +64,27 @@ router.get('/sync', function(req, res) {
 			else syncers.push({name:key,sync:n})
 		});
 
-		res.locals.syncers=syncers;
-	   res.render('admin/sync', { title: 's p a c e - admin.sync' });
+
+		res.locals.moment = moment;
+
+		syncService.getLastSyncs(syncers,function(err,syncInfos){
+
+				for (var i in syncInfos){
+					if (syncInfos[i]){
+						logger.debug("+++++++++++++ syncInfo: "+JSON.stringify(syncInfos[i]));
+						logger.debug("+++++++++++++ syncInfo.name: "+syncInfos[i].name);
+
+						_.findWhere(syncers,{"name":syncInfos[i].name}).syncInfo= syncInfos[i];
+					}
+				}
+				//res.locals.syncInfos=syncInfos;
+				res.locals.syncers=syncers;
+
+				res.render('admin/sync', { title: 's p a c e - admin.sync' });
+		})
+
+
+
   }
 });
 

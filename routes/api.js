@@ -34,6 +34,9 @@ var PATH = {
 						REST_TARGETS_TYPE : BASE+'/space/rest/targets/:type',
 						REST_TARGETSTREE : BASE+'/space/rest/targetstree',
 
+						REST_TARGET2EMPLOYEE : BASE+'/space/rest/target2employee',
+						REST_EMPLOYEEBYTARGETS : BASE+'/space/rest/employeebytargets',
+
 						REST_BOARDS : BASE+'/space/rest/boards',
 
 						REST_RELEASES : BASE+'/space/rest/releases',
@@ -82,6 +85,7 @@ var PATH = {
 						REST_INITIATIVES_DIFF_TRAIL : BASE+'/space/rest/initiatives_diff_trail',
 						REST_ORGANIZATION : BASE+'/space/rest/organization',
 						REST_ORGANIZATION_EMPLOYEE : BASE+'/space/rest/organization/employee/:name',
+						REST_ORGANIZATION_EMPLOYEEBYID : BASE+'/space/rest/organization/employeeById/:employeeId',
 						REST_ORGANIZATIONHISTORY : BASE+'/space/rest/organization/history/:date',
 						REST_ORGANIZATIONSNAPSHOTDATES : BASE+'/space/rest/organization/snapshotdates',
 
@@ -133,6 +137,8 @@ router.post(PATH.REST_TARGETS, function(req, res, next) {save(req,res,next); });
 router.delete(PATH.REST_TARGETS, function(req, res, next) {remove(req,res,next); });
 router.get(PATH.REST_TARGETS_TYPE, function(req, res, next) {findByKey("type",req,res,next);});
 router.get(PATH.REST_TARGETSTREE, function(req, res, next) {getTargetsTree(req,res,next);});
+router.get(PATH.REST_TARGET2EMPLOYEE, function(req, res, next) {findAllByName(req,res,next);});
+router.get(PATH.REST_EMPLOYEEBYTARGETS, function(req, res, next) {getEmployeesByTarget(req,res,next);});
 
 
 router.get(PATH.REST_BOARDS, function(req, res, next) {findAllByName(req,res,next);});
@@ -247,6 +253,7 @@ router.get(PATH.REST_SWITCHCONTEXT, function(req, res, next) {switchcontext(req,
 
 router.get(PATH.REST_ORGANIZATION, function(req, res, next) {findAllByName(req,res,next); });
 router.get(PATH.REST_ORGANIZATION_EMPLOYEE, function(req, res, next) {findEmployeeByName(req,res,next); });
+router.get(PATH.REST_ORGANIZATION_EMPLOYEEBYID, function(req, res, next) {findEmployeeById(req,res,next); });
 router.get(PATH.REST_ORGANIZATIONSNAPSHOTDATES, function(req, res, next) {getOrganizationSnapshotDates(req,res,next); });
 
 router.get(PATH.REST_ORGANIZATIONHISTORY, function(req, res, next) {
@@ -562,6 +569,58 @@ function findEmployeeByName(req, res , next){
     });
 }
 
+/**
+ * find single object by Id
+ */
+function findEmployeeById(req, res , next){
+    var orgService = require('../services/OrganizationService');
+
+		var _employeeId="";
+
+    var _employeeId = req.params.employeeId;
+
+		logger.debug("++++++++++++++employeeId: "+_employeeId);
+
+		//orgService.findEmployeeById(_employeeId , function(err , success){
+		orgService.findEmployeeById(_employeeId,function(err,success){
+      if(success){
+      	logger.debug('[success]: '+success);
+				res.send(success);
+        return;
+      }
+      else {
+        logger.debug('[error]: '+err);
+				res.send(err);
+        return;
+			}
+      return next(err);
+    });
+}
+
+function getEmployeesByTarget(req, res , next){
+  var orgService = require('../services/OrganizationService');
+
+	orgService.findTarget2EmployeeMapping(function(err,mapping){
+		logger.debug("...all good: "+JSON.stringify(mapping));
+		orgService.getEmployeesByTargets(mapping,function(err,success){
+			if(success){
+				logger.debug('[success]: '+success);
+				res.send(success);
+				return;
+			}
+			else {
+				logger.debug('[error]: '+err);
+				res.send(err);
+				return;
+			}
+			return next(err);
+		});
+	})
+
+}
+
+
+
 
 
 /**
@@ -773,30 +832,38 @@ function syncV1Epics(req,res,next){
 
 
 function syncIncidents(req,res,next){
-    logger.debug("*********************** lets sync incidents from snow... ");
-		var _url = config.sync.incident.url;
-    var incSyncService = require ('../services/IncidentSyncService');
-    logger.debug("*********************** incservice instantiated ");
-	  incSyncService.sync(_url,function(data){
+  logger.debug("*********************** lets sync incidents from snow... ");
+	var _url = config.sync.incidents.url;
+  var incSyncService = require ('../services/IncidentSyncService');
+  logger.debug("*********************** incservice instantiated ");
+	var _type = "API - manual";
+  incSyncService.sync(_url,_type,function(err,data){
+		if (err){
+			res.send("syncIncidents says: "+err.message);
+			return;
+		}
+		else
+		{
 			res.send("incidents: "+JSON.stringify(data));
+		}
 	});
 }
 
 function syncSOCOutages(req,res,next){
-    logger.debug("*********************** lets sync SOC outages from avreport... ");
-		var _url = config.sync.soc_outages.url;
-    var _type = "API - manual";
-		var socOutSyncService = require ('../services/SOCOutagesSyncService');
-    logger.debug("*********************** SOCOutagesSyncService instantiated ");
-	  socOutSyncService.sync(_url,_type,function(err,data){
-			if (err){
-				res.send("syncSOCOutages says: "+err.message);
-				return;
-			}
-			else
-			{
-				res.send("SOC outages: "+data.length+" items synced");
-			}
+  logger.debug("*********************** lets sync SOC outages from avreport... ");
+	var _url = config.sync.soc_outages.url;
+  var _type = "API - manual";
+	var socOutSyncService = require ('../services/SOCOutagesSyncService');
+  logger.debug("*********************** SOCOutagesSyncService instantiated ");
+  socOutSyncService.sync(_url,_type,function(err,data){
+		if (err){
+			res.send("syncSOCOutages says: "+err.message);
+			return;
+		}
+		else
+		{
+			res.send("SOC outages: "+data.length+" items synced");
+		}
 	});
 }
 
@@ -806,7 +873,7 @@ function syncSOCServices(req,res,next){
     var soc_servicesSyncService = require ('../services/GenericSyncService');
 		var _type = "API - manual";
     logger.debug("*********************** SOC services Sync instantiated ");
-	  soc_servicesSyncService.sync("soc_services",_url,_type,null,function(data){
+	  soc_servicesSyncService.sync("soc_services",_url,_type,function(data){
 		res.send("SOC services: "+JSON.stringify(data));
 	});
 }

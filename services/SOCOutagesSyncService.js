@@ -68,7 +68,7 @@ function _sync(url,type,callback){
 			}
 			catch(err){
 					logger.error('[SOCOutagesSyncService] Response error '+err);
-					app.io.emit('syncUpdate', {status:"[ERROR]",from:_syncName,timestamp:_timestamp,info:err.message});
+					app.io.emit('syncUpdate', {status:"[ERROR]",from:_syncName,timestamp:_timestamp,info:err.message,type:type});
 					return;
 			}
 			//logger.debug("------------------------"+socOutages);
@@ -98,13 +98,13 @@ function _sync(url,type,callback){
 				if (err){
 					var _message = err.message;
 					logger.error('[SOCOutagesSyncService] Response error '+err);
-					app.io.emit('syncUpdate', {status:"[ERROR]",from:_syncName,timestamp:_timestamp,info:err.message});
+					app.io.emit('syncUpdate', {status:"[ERROR]",from:_syncName,timestamp:_timestamp,info:err.message,type:type});
 					_syncStatus.saveLastSync(_syncName,_timestamp,_message,_statusERROR,type);
 				}
 				if(success){
 					var _message = "sync soc_outages [DONE]: "+socOutages.length+" items";
 					logger.info(_message);
-					app.io.emit('syncUpdate', {status:"[SUCCESS]",from:_syncName,timestamp:_timestamp,info:socOutages.length+" items"});
+					app.io.emit('syncUpdate', {status:"[SUCCESS]",from:_syncName,timestamp:_timestamp,info:socOutages.length+" items",type:type});
 					_syncStatus.saveLastSync(_syncName,_timestamp,_message,_statusSUCCESS,type);
 					callback(null,socOutages);
 				}
@@ -113,7 +113,7 @@ function _sync(url,type,callback){
 		}).on('error',function(err){
         	var _message = err.message;
 				logger.error('[SOCOutagesSyncService] says: something went wrong on the request', err.request.options);
-				app.io.emit('syncUpdate', {status:"[ERROR]",from:_syncName,timestamp:_timestamp,info:err.message});
+				app.io.emit('syncUpdate', {status:"[ERROR]",from:_syncName,timestamp:_timestamp,info:err.message,type:type});
 				_syncStatus.saveLastSync(_syncName,_timestamp,_message,_statusERROR,type);
 		})
 	})

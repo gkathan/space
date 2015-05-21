@@ -79,7 +79,7 @@ function _syncProblem(url,type,callback){
 			if (err){
 				var _message = '[ProblemSyncSerice] says: something went wrong on the request: '+err.message;
 				logger.error(_message);
-				app.io.emit('syncUpdate', {status:_statusERROR,from:_syncName,timestamp:_timestamp,info:err.message});
+				app.io.emit('syncUpdate', {status:_statusERROR,from:_syncName,timestamp:_timestamp,info:err.message,type:type});
 
 				_syncStatus.saveLastSync(_syncName,_timestamp,_message,_statusERROR,type);
 				callback(null,result);
@@ -89,7 +89,7 @@ function _syncProblem(url,type,callback){
 			else if(success){
 				var _message = "sync problems....length: "+_problems.length;
 				logger.info(_message);
-				app.io.emit('syncUpdate', {status:_statusSUCCESS,from:_syncName,timestamp:_timestamp,info:_problems.length+" items"});
+				app.io.emit('syncUpdate', {status:_statusSUCCESS,from:_syncName,timestamp:_timestamp,info:_problems.length+" items",type:type});
 
 				_syncStatus.saveLastSync(_syncName,_timestamp,_message,_statusSUCCESS,type);
 				callback(err);
@@ -98,7 +98,7 @@ function _syncProblem(url,type,callback){
 
 	}).on('error',function(err){
 			logger.error('[ProblemSyncService] says: something went wrong on the request', err.request.options);
-			app.io.emit('syncUpdate', {status:_statusERROR,from:_syncName,timestamp:_timestamp,info:err.message});
+			app.io.emit('syncUpdate', {status:_statusERROR,from:_syncName,timestamp:_timestamp,info:err.message,type:type});
 			_syncStatus.saveLastSync(_syncName,_timestamp,_message,_statusERROR,type);
 	})
 }

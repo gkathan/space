@@ -44,6 +44,11 @@ style.
 -		return 0;
 -	}
 
+-	function formatTime(time){
+- 	var d = moment.duration(time);
+-		if (d>=86400000) return d.format("d[d] h:mm:ss", { trim: false });
+-		return d.format("h:mm:ss", { trim: false });
+-	}
 
 block content
 
@@ -57,7 +62,7 @@ div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;back
 			thead
 				tr(style="line-height:24px")
 					th(style="width:30px")
-						
+
 					th(style="width:120px") 
 						|syncer
 					th(style="width:50px;")
@@ -66,6 +71,8 @@ div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;back
 						|last sync
 					th(style="width:60px;")
 						|status
+					th(style="width:100px;text-align:center")
+						|type
 					th(style="width:140px;")
 						|last info
 					th(style="width:80px")
@@ -78,13 +85,28 @@ div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;back
 						td 
 							a(href="#{sync.sync.url}" target="_new")|#{sync.name}
 						td 
-							|#{sync.sync.intervalMinutes}
+							|#{formatTime(sync.sync.intervalMinutes*60*1000)}
 						td(style="font-size:10px")
-							span(id="#{sync.name}_timestamp")
+							span(id="#{sync.name}_timestamp")  
+								if sync.syncInfo
+									|#{moment(sync.syncInfo.lastSync).format("YYYY-MM-DD HH:mm:ss")}
+							
+							
 						td(style="font-size:10px;font-weight:bold") 
 							span(id="#{sync.name}_status")
+								if sync.syncInfo
+									|#{sync.syncInfo.status}
+
+						td(style="font-size:10px;font-weight:bold;text-align:center") 
+							span(id="#{sync.name}_type")
+								if sync.syncInfo
+									|#{sync.syncInfo.type}
+							
 						td(style="font-size:10px") 
 							span(id="#{sync.name}_info")
+								if sync.syncInfo
+									|#{sync.syncInfo.message}
+							
 						td(style="font-size:10px")
 							a(id="sync_#{sync.name}" href="#" ) -- force sync --
 
@@ -116,7 +138,7 @@ script.
 		});
 	});
 	
-	$('#sync_incident').on('click', function () {
+	$('#sync_incidents').on('click', function () {
 		console.log("incidentsync request called...");
 		$.ajax({
 			url: '/api/space/rest/sync/incidents',
@@ -243,7 +265,9 @@ script.
 		var _idTimestamp = '#'+data.from+'_timestamp';
 		var _idStatus = '#'+data.from+'_status';
 		var _idInfo = '#'+data.from+'_info';
-		$(_idTimestamp).text(data.timestamp);
+		var _idType = '#'+data.from+'_type';
+		
+		$(_idTimestamp).text(moment(data.timestamp).format("YYYY-MM-DD HH:mm:ss"));
 		$(_idTimestamp).effect( "highlight", "slow" );
 		if (data.status=="[ERROR]") $(_idTimestamp).animate({color: "red"}, 1000 );
 		else if (data.status=="[SUCCESS]") $(_idTimestamp).animate({color: "green"}, 1000 );
@@ -251,6 +275,9 @@ script.
 		$(_idStatus).effect( "highlight", "slow" );
 		if (data.status=="[ERROR]") $(_idStatus).animate({color: "red"}, 1000 );
 		else if (data.status=="[SUCCESS]") $(_idStatus).animate({color: "green"}, 1000 );
+		$(_idType).text(data.type);
+		$(_idType).effect( "highlight", "slow" );
+	
 		$(_idInfo).text(data.info);
 		$(_idInfo).effect( "highlight", "slow" );
 		if (data.status=="[ERROR]") $(_idInfo).animate({color: "red"}, 1000 );

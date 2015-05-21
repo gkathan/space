@@ -69,9 +69,17 @@ router.get('/xlsx/portfolio', function(req, res) {
 		req.session.ORIGINAL_URL = req.originalUrl;
 		res.redirect("/login");
 	}
-
     res.render('upload/portfolio',{title:'upload portfolio .xlsx'});
 });
+
+router.get('/xlsx/target2employee', function(req, res) {
+   if (!req.session.AUTH){
+		req.session.ORIGINAL_URL = req.originalUrl;
+		res.redirect("/login");
+	}
+    res.render('upload/target2employee',{title:'upload target2employee .xlsx'});
+});
+
 
 router.get('/firereport', function(req, res) {
    if (!req.session.AUTH){

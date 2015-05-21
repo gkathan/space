@@ -110,6 +110,7 @@ function _flush(data,callback){
 			callback(null,success);
 			return;
 		}
+	});
 }
 
 /**
@@ -127,8 +128,8 @@ function _flushTracker(data,callback){
 			callback(null,success);
 			return;
 		}
+	})
 }
-
 
 /**
 * insertsdelta
@@ -144,6 +145,7 @@ function _saveDelta(data,callback){
 			callback(null,success);
 			return;
 		}
+	});
 }
 
 /**

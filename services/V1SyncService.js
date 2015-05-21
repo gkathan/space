@@ -65,7 +65,7 @@ function _sync(url,type,callback){
 				var _message = "syncv1 [DONE]: "+_epics.length+" epics";
 				logger.info(_message);
 
-				app.io.emit('syncUpdate', {status:"[SUCCESS]",from:_syncName,timestamp:_timestamp,info:_epics.length+" epics"});
+				app.io.emit('syncUpdate', {status:"[SUCCESS]",from:_syncName,timestamp:_timestamp,info:_epics.length+" epics",type:type});
 				_syncStatus.saveLastSync(_syncName,_timestamp,_message,_statusSUCCESS,type);
 				callback(null,"syncv1 [DONE]: "+_epics.length+ " epics synced")
 			}
@@ -74,7 +74,7 @@ function _sync(url,type,callback){
 	}).on('error',function(err){
 			var _message = er.message;
 			logger.warn('[V1SyncService] says: something went wrong on the request', err.request.options,err.message);
-			app.io.emit('syncUpdate', {status:"[ERROR]",from:_syncName,timestamp:_timestamp,info:err.message});
+			app.io.emit('syncUpdate', {status:"[ERROR]",from:_syncName,timestamp:_timestamp,info:err.message,type:type});
 			_syncStatus.saveLastSync(_syncName,_timestamp,_message,_statusERROR,type);
 			callback(err);
 	});

@@ -7,7 +7,7 @@
 	},
 
   "sync": {
-		"v1Epics" : {
+		"v1epics" : {
 			"mode": "off",
 			"intervalMinutes" :60,
 			"url" : "http://knbnprxy.ea.bwinparty.corp/rest/epics"
@@ -18,7 +18,7 @@
 			"intervalMinutes" :1 	,
 			"url" : ["http://avreport.bwinparty.corp/API/AvReoprtingService.svc/getYTDDatapoint","http://avreport.bwinparty.corp/API/AvReoprtingService.svc/GetAVGraphDatapoints"]
 		},
-		"incident" : {
+		"incidents" : {
 			"mode": "off",
 			"intervalMinutes" :1 	,
 			"url" : "http://snow.bwinparty.corp/incident_list.do?JSON&sysparm_query="

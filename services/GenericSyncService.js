@@ -68,7 +68,7 @@ function _sync(name,url,type,callback){
 		}
 		catch(err){
 			logger.error("[GenericSyncSerice] says: exception "+err);
-			app.io.emit('syncUpdate', {status:_statusERROR,from:_syncName,timestamp:_timestamp,info:err.message});
+			app.io.emit('syncUpdate', {status:_statusERROR,from:_syncName,timestamp:_timestamp,info:err.message,type:type});
 			callback(err);
 			return;
 		}
@@ -80,7 +80,7 @@ function _sync(name,url,type,callback){
 			if (err){
 				var _message = '[GenericSyncSerice] says: something went wrong on the request: '+err.message;
 				logger.debug(_message);
-				app.io.emit('syncUpdate', {status:_statusERROR,from:_syncName,timestamp:_timestamp,info:err.message});
+				app.io.emit('syncUpdate', {status:_statusERROR,from:_syncName,timestamp:_timestamp,info:err.message,type:type});
 
 				_syncStatus.saveLastSync(_syncName,_timestamp,_message,_statusERROR,type);
 				callback(null,syncData);
@@ -88,7 +88,7 @@ function _sync(name,url,type,callback){
 			if(success){
 				var _message = syncData.length+" "+name+" synced";
 				logger.info("[GenericSyncSerice] says: sync "+name+" [DONE]");
-				app.io.emit('syncUpdate', {status:_statusSUCCESS,from:_syncName,timestamp:_timestamp,info:_message});
+				app.io.emit('syncUpdate', {status:_statusSUCCESS,from:_syncName,timestamp:_timestamp,info:_message,type:type});
 
 				_syncStatus.saveLastSync(_syncName,_timestamp,_message,_statusSUCCESS,type);
 				callback(null,syncData);
@@ -97,7 +97,7 @@ function _sync(name,url,type,callback){
 	}).on('error',function(err){
       var _message = '[GenericSyncSerice] says: something went wrong on the request: '+err.message;
 			logger.error(_message);
-			app.io.emit('syncUpdate', {status:_statusERROR,from:_syncName,timestamp:_timestamp,info:err.message});
+			app.io.emit('syncUpdate', {status:_statusERROR,from:_syncName,timestamp:_timestamp,info:err.message,type:type});
 			_syncStatus.saveLastSync(_syncName,_timestamp,_message,_statusERROR,type);
 	});
 }

@@ -32,7 +32,7 @@ exports.init = function(callback){
 			logger.debug('...going to sync Incident stuff ....');
 			var _url = config.sync[_syncName].url;
 			var _type = "scheduled - automatic";
-			_syncIncident(_url,_type,callback);
+			_sync(_url,_type,callback);
 		});
 	}
 }
@@ -76,7 +76,7 @@ function _sync(url,type,callback){
     var _incidentsOLD;
 
 		// lets first get what we have had
-		inService.find(function(err,baseline){
+		incService.find(function(err,baseline){
 			incService.findRevenueImpactMapping(function(err,impactMapping){
 				_incidentsOLD = baseline;
 
@@ -156,9 +156,9 @@ function _sync(url,type,callback){
 													else{
 														var _message=_incidentsNEW.length+" incidents synced";
 														logger.info("[success] sync incidenttracker....length: "+_tracker.length);
-														app.io.emit('syncUpdate', {status:"[SUCCESS]",from:_syncName,timestamp:_timestamp,info:_incidentsNEW.length+" incidents synced"});
+														app.io.emit('syncUpdate', {status:"[SUCCESS]",from:_syncName,timestamp:_timestamp,info:_incidentsNEW.length+" incidents synced",type:type});
 														_syncStatus.saveLastSync(_syncName,_timestamp,_message,_statusSUCCESS,type);
-														callback(null,data);
+														callback(null,"OK");
 													}
 											});
 										} //end if (oldtrackerdata)
@@ -175,17 +175,17 @@ function _sync(url,type,callback){
 							}
 						}
 					});
-
-
         }
-
+				else{
+					logger.debug("----------------------------------------------- IncidentSyncService: <no change - nothing to do>")
+				}
 			})
 		})
 
 	}).on('error',function(err){
       var _message=err.message;
 			logger.error('[IncidentSyncSerice] says: something went wrong on the request', err.request.options);
-			app.io.emit('syncUpdate', {status:"[ERROR]",from:"incident",timestamp:new Date(),info:err.message});
+			app.io.emit('syncUpdate', {status:"[ERROR]",from:"incident",timestamp:new Date(),info:err.message,type:type});
 			_syncStatus.saveLastSync(_syncName,_timestamp,_message,_statusERROR,type);
 			callback(err);
   });
