@@ -34,8 +34,8 @@
   		height = 1000;
   var color = d3.scale.category20();
   var force = d3.layout.force()
-      .charge(-100)
-      .linkDistance(300)
+      .charge(-5)
+      .linkDistance(200)
       .size([width, height]);
   var svg = d3.select("body").append("svg")
       .attr("width", width)
@@ -48,8 +48,8 @@
 
 
   //var _dataUri = "/api/space/rest/initiatives";
-  //var _dataUri = "/api/space/rest/target2employee";
-  var _dataUri = "/api/space/rest/employeebytargets";
+  var _dataUri = "/api/space/rest/target2employee";
+  //var _dataUri = "/api/space/rest/employeebytargets";
   var _orgUri = "/api/space/rest/organization";
   var _targetUri = "/api/space/rest/targets";
 
@@ -58,7 +58,7 @@
       console.log("*************data: "+JSON.stringify(data));
       console.log("*************organization: "+organization.length);
 
-  	  root = _.nest(data,["target,employeeID"]);
+  	  root = _.nest(data,["context","employeeID","targets"]);
       console.log("root: "+JSON.stringify(root));
 
       //root = data;
@@ -86,7 +86,7 @@
         .append("g")
 
         .each(function(d){
-          // items
+          // items on leaf level
           if (!d.children){
             var _r = 5;//d.size*1.2;
           	d3.select(this).append("circle")
@@ -96,7 +96,7 @@
               .style("fill", function(d) { return color(d.lane); })
               .style("opacity",1);
 
-      		   d3.select(this).append("use").attr("xlink:href","#"+d.Type).attr("transform","scale("+d.size/12+")");
+      		   //d3.select(this).append("use").attr("xlink:href","#"+d.Type).attr("transform","scale("+d.size/12+")");
 
 
 /*
@@ -129,36 +129,24 @@
 
     	    }
     	    else{
-    	   /*d3.select(this).append("circle")
-          .attr("class", "node")
-          .attr("r", function(d){if (!d.children) return 20; return 10;})//d.Swag/200})
-          .style("fill", function(d) { return color(d.lane); })
-         */
 
-         console.log("***** has children: "+d.name+" i: "+i+" x,y "+d.x+" , "+d.y);
+           console.log("***** has children: "+d.name+" i: "+i+" x,y "+d.x+" , "+d.y);
 
-       	 var _logo=d.name;
-       	 if (d.name=="bwin") _logo = "bwin_black";
-       	 console.log(".....logo: "+_logo);
 
-       	 d3.select(this).append("use").attr("xlink:href","#"+_logo).attr("transform","scale(1.5)").style("opacity",1);//+_logo)
+           var _size = 10;
+           if (d.size) _size = d.size;
 
-         var _size = 10;
-         if (d.size) _size = d.size;
+           d3.select(this).append("circle")
+            .attr("class", "node")
+            .attr("r", function(d){return _size/2;})
+            .style("fill", "grey");
 
-         d3.select(this).append("circle")
-          .attr("class", "node")
-          .attr("r", function(d){return _size/2;})
-          //.attr("cx",d.x)
-          //.attr("cy",d.y)//d.Swag/200})
-          .style("fill", "grey");//function(d) { return color(d.lane); })
+          	d3.select(this).append("text").text(function(d){return d.name})
+          	.style("font-size","8px")
+          	.style("font-family","arial")
+          	.attr("dy",14).style("text-anchor","middle");
 
-        	d3.select(this).append("text").text(function(d){return d.name})
-        	.style("font-size","8px")
-        	.style("font-family","arial")
-        	.attr("dy",14).style("text-anchor","middle");
-
-        }
+          }
           d3.select(this).call(force.drag);
 
       d3.select(this).append("title")

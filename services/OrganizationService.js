@@ -122,7 +122,7 @@ exports.getEmployeesByTargets = function (target2employeeMapping,callback) {
 					if (!_.findWhere(_results,{"target":_targets[t]})){
 						// this has to be done for a new target
 						logger.debug("-------- new target added: "+_targets[t]);
-						var _item ={target:_targets[t],employees:[]};
+						var _item ={context:"bpty.studios",target:_targets[t],employees:[]};
 						_results.push(_item);
 					}
 
