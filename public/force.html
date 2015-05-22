@@ -30,12 +30,12 @@
 <script>
 
   var data,root;
-  var width = 1600,
-  		height = 1000;
+  var width = 2000,
+  		height = 2400;
   var color = d3.scale.category20();
   var force = d3.layout.force()
-      .charge(-50)
-      .linkDistance(50)
+      .charge(-200)
+      .linkDistance(80)
       .size([width, height]);
   var svg = d3.select("body").append("svg")
       .attr("width", width)
@@ -49,8 +49,9 @@
 
   //var _dataUri = "/api/space/rest/initiatives";
   //var _dataUri = "/api/space/rest/target2employee";
-  //var _dataUri = "/api/space/rest/employeebytargets";
-  var _dataUri = "./test.json";
+  var _dataUri = "/api/space/rest/employeebytargets";
+  //var _dataUri = "./test.json";
+
   var _orgUri = "/api/space/rest/organization";
   var _targetUri = "/api/space/rest/targets";
   console.log("...");
@@ -120,6 +121,13 @@
              var _x = -(_w/2);
              var _y =0;//(_h-15);
 
+             /*
+             if (d.id =="E2988"){
+               _w=100;
+               _h=125;
+             }
+             */
+
              var _weight="normal";
 
              if (d.type=="target") _weight="bold";
@@ -132,8 +140,9 @@
           	 .attr("dy",_h+8).style("text-anchor","middle");
 
             d3.select(this).append("svg:image")
-            	//.attr("xlink:href", function(d){return "http://my.bwinparty.com/api/people/images/"+d.employeeID;})
-            	.attr("xlink:href", function(d){return "/images/employees/"+d.id+".png";})
+            	.attr("xlink:href", function(d){return "http://my.bwinparty.com/api/people/images/"+d.id;})
+            	//.attr("xlink:href", function(d){return "/images/employees/"+d.id+".png";})
+                      .attr("imageID",d.id)
                       .attr("x", _x)
                       .attr("y", _y)
                       .attr("width", _w)
@@ -176,6 +185,7 @@
 
       force.on("tick", function(e) {
         // Push sources up and targets down to form a weak tree.
+      /*
         var k = 6 * e.alpha;
         links.forEach(function(d, i) {
           d.source.y -= k;
@@ -183,6 +193,8 @@
         });
          node.attr("cx", function(d) { return d.x; })
         .attr("cy", function(d) { return d.y; });
+
+*/
 
         link.attr("x1", function(d) { return d.source.x; })
             .attr("y1", function(d) { return d.source.y; })

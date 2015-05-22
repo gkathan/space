@@ -40,6 +40,10 @@ router.get('/sunburst', function(req, res, next) {
 	res.render('targets/sunburst')
 });
 
+/* GET targets . */
+router.get('/employee2target', function(req, res, next) {
+	res.render('targets/employee2target')
+});
 
 
 

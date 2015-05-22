@@ -21,10 +21,22 @@ var logger = winston.loggers.get('space_log');
 
 
 
+
+exports.findEmployeeByFirstLastName = _findEmployeeByFirstLastName;
+exports.findEmployeeById = _findEmployeeById;
+exports.findEmployeesByFilter = _findEmployeesByFilter;
+exports.findEmployeesByFunction = _findEmployeesByFunction;
+exports.findEmployees = _findEmployees;
+exports.getEmployeesByTargets = _getEmployeesByTargets;
+exports.syncEmployeeImages = _syncEmployeeImages;
+exports.getOrganizationHistoryDates = _getOrganizationHistoryDates;
+exports.findTarget2EmployeeMapping = _findTarget2EmployeeMapping;
+
+
 /**
  *
  */
-exports.findEmployeeByFirstLastName = function (firstname,lastname, callback) {
+function _findEmployeeByFirstLastName(firstname,lastname, callback) {
 	logger.debug("findEmployeeByFirstLastName first: "+firstname+", last: "+lastname);
 	var organization =  db.collection('organization');
 		organization.find({'First Name':firstname,'Last Name':lastname}).sort({$natural:1}, function (err, docs){
@@ -34,7 +46,7 @@ exports.findEmployeeByFirstLastName = function (firstname,lastname, callback) {
 	});
 }
 
-exports.findEmployeeById = function (employeeId, callback) {
+function _findEmployeeById(employeeId, callback) {
 	logger.debug("findEmployeeById ID: "+employeeId);
 	var organization =  db.collection('organization');
 		organization.findOne({'Employee Number':employeeId}, function (err, result){
@@ -46,8 +58,20 @@ exports.findEmployeeById = function (employeeId, callback) {
 
 
 
-exports.findEmployeesByFunction = function (_function, callback) {
+function _findEmployeesByFilter(filter, callback) {
+	logger.debug("findEmployeesByFilter filter: "+filter);
+	var organization =  db.collection('organization');
+		organization.find(filter).sort({$natural:1}, function (err, docs){
+			if (docs) logger.debug("[ok] found some shit ... : "+docs);
+			callback(err,docs);
+			return;
+	});
+}
+
+
+function _findEmployeesByFunction(_function, callback) {
 	logger.debug("findEmployeesByFunction _function: "+_function);
+
 	var organization =  db.collection('organization');
 		organization.find({'Function':_function}).sort({$natural:1}, function (err, docs){
 			if (docs) logger.debug("[ok] found some shit ... : "+docs);
@@ -56,7 +80,7 @@ exports.findEmployeesByFunction = function (_function, callback) {
 	});
 }
 
-exports.findEmployees = function (callback) {
+function _findEmployees(callback) {
 	logger.debug("findEmployees: all");
 	var organization =  db.collection('organization');
 		organization.find({}).sort({$natural:1}, function (err, docs){
@@ -67,11 +91,11 @@ exports.findEmployees = function (callback) {
 }
 
 
-exports.findTarget2EmployeeMapping = function (callback) {
+function _findTarget2EmployeeMapping(callback) {
 	logger.debug("findTarget2EmployeeMapping");
 	var mapping =  db.collection('target2employee');
 		mapping.find({}).sort({$natural:1}, function (err, docs){
-			if (docs) logger.debug("[ok] found some shit ... : "+docs);
+			//if (docs) logger.debug("[ok] found some shit ... : "+docs);
 			callback(err,docs);
 			return;
 	});
@@ -92,51 +116,75 @@ exports.findTarget2EmployeeMapping = function (callback) {
 			{"G1.2":["E2988","E2987"]}
 		]
 */
-exports.getEmployeesByTargets = function (target2employeeMapping,callback) {
+function _getEmployeesByTargets(target2employeeMapping,callback) {
 	logger.debug("getEmployeesByTargets for mapping");
 
 	var targetService = require('./TargetService');
+
 	var _context="bpty.studios";
-	targetService.getL2(_context,function(err,targets){
+	_findEmployees(function(employees){
+		targetService.getL2(_context,function(err,targets){
 
-		var _targets=[];
+			var _targets=[];
 
-		for (var i in target2employeeMapping){
-			var _map = target2employeeMapping[i];
-			for (var t in _map.targets){
-				if (_targets.indexOf(_map.targets[t])<0){
-					_targets.push(_map.targets[t]);
-				}
-			}
-		}
-
-		logger.debug("[1st round:] targets collected:"+_targets)
-
-		var _results = [];
-
-		for (var t in _targets){
-			for (var m in target2employeeMapping){
-				var _map = target2employeeMapping[m];
-				if (_map.targets.indexOf(_targets[t])>-1){
-
-					if (!_.findWhere(_results,{"target":_targets[t]})){
-						// this has to be done for a new target
-						logger.debug("-------- new target added: "+_targets[t]);
-						var _item ={context:"bpty.studios",target:_targets[t],employees:[]};
-						_results.push(_item);
+			for (var i in target2employeeMapping){
+				var _map = target2employeeMapping[i];
+				for (var t in _map.targets){
+					if (_targets.indexOf(_map.targets[t])<0){
+						_targets.push(_map.targets[t]);
 					}
-
-					_.findWhere(_results,{"target":_targets[t]}).employees.push(_map.employeeID);
-
-					logger.debug("!!!!! target match");// this employee (_map.employeeID) is mapped to this target _targets[t]
 				}
 			}
-		}
 
-		logger.debug("[2nd round:] result:"+JSON.stringify(_results));
+			//logger.debug("[1st round:] targets collected:"+_targets)
 
-		callback(err,_results);
+			// add "Cost Center" attribute from orgshit
 
+
+			var _data=[];
+
+			for (var t in _targets){
+				for (var m in target2employeeMapping){
+					var _map = target2employeeMapping[m];
+					if (_map.targets.indexOf(_targets[t])>-1){
+
+						if (!_.findWhere(_data,{"name":_targets[t]})){
+							// this has to be done for a new target
+							//logger.debug("-------- new target added: "+_targets[t]);
+							var _item ={name:_targets[t],type:"L2target",children:[]};
+							_data.push(_item);
+						}
+						var _target = _.findWhere(_data,{"name":_targets[t]});
+
+						// do some enriching from org collection
+						var _employee = _.findWhere(employees,{"Employee Number":_map.employeeId});
+						var _costCenter;
+						if (_employee){
+							_costcenter = _employee["Cost Centre"];
+						}
+
+						// check whether this employee is already in
+						if (!_.findWhere(_target.children,{"id":_map.employeeId})){
+							_target.children.push({id:_map.employeeId,name:_map.employeeName,costCenter:_costcenter});
+						}
+
+					}
+				}
+			}
+
+			//logger.debug("[2nd round:] result:"+JSON.stringify(_results));
+
+
+
+			// adding the root node
+			var _results = [];
+			var _context = "bpty.studios";
+			// tha root
+			_results.push({name:_context,children:_data})
+
+
+			callback(err,_results);
+				})
 	})
 }
 
@@ -146,7 +194,7 @@ exports.getEmployeesByTargets = function (target2employeeMapping,callback) {
 /**
  * http://my.bwinparty.com/api/people/images/e1000
  */
-exports.syncEmployeeImages = function (req,res,callback) {
+function _syncEmployeeImages(req,res,callback) {
 
 
 	var fs = require('fs');
@@ -167,14 +215,10 @@ exports.syncEmployeeImages = function (req,res,callback) {
 		organization.find({}).sort({$natural:1}, function (err, docs){
 
 			if (docs){
-
-
 				for (var employee in docs){
 					logger.debug("* e: "+docs[employee]["First Name"]);
 					var _id = docs[employee]["Employee Number"];
 					var _imageURL = "http://my.bwinparty.com/api/people/images/";
-
-
 					download(_imageURL, _id+'.png', function(){
 					  console.log('done: '+_id);
 					});
@@ -182,22 +226,14 @@ exports.syncEmployeeImages = function (req,res,callback) {
 			}
 
 		});
-
 	}
-
-
-
-
-
-
-
 
 
 /**
  * organization snapsho dates
  * => should be moved in a service class ;-)
  */
-exports.getOrganizationHistoryDates = function(callback){
+function _getOrganizationHistoryDates(callback){
    db.collection("organizationhistory").find({},{oDate:1}).sort({oDate:-1},function(err,data){
 			logger.debug("OrganizationService.getOrganizationHistoryDates(): ");
 			if (err) {

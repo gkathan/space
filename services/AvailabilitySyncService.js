@@ -22,24 +22,33 @@ var db = mongojs(connection_string, [DB]);
 var winston = require('winston');
 var logger = winston.loggers.get('space_log');
 
+var _syncName = "availability";
+
 exports.init = _init;
-exports.sync=_syncAvailability;
+exports.sync=_sync;
 
 function _init(callback){
 	var rule = new schedule.RecurrenceRule();
 	// every 10 minutes
-	rule.minute = new schedule.Range(0, 59, config.sync.availability.intervalMinutes);
-	logger.info("[s p a c e] AvailabilitySyncService init(): "+config.sync.availability.intervalMinutes+" minutes - mode: "+config.sync.availability.mode );
-	if (config.sync.availability.mode!="off"){
+	rule.minute = new schedule.Range(0, 59, config.sync[_syncName].intervalMinutes);
+	logger.info("[s p a c e] AvailabilitySyncService init(): "+config.sync[_syncName].intervalMinutes+" minutes - mode: "+config.sync[_syncName].mode );
+	if (config.sync[_syncName].mode!="off"){
 		var j = schedule.scheduleJob(rule, function(){
 			logger.debug('...going to sync Availability stuff ....');
-			var _urls = config.sync.availability.url;
-			_syncAvailability(_urls,callback);
+			var _urls = config.sync[_syncName].url;
+			var _type = "scheduled - automatic";
+			_sync(_urls,_type,callback);
 		});
 	}
 }
 
-function _syncAvailability(urls,callback){
+function _sync(urls,type,callback){
+
+	var _syncStatus = require('./SyncService');
+	var _timestamp = new Date();
+	var _statusERROR = "[ERROR]";
+	var _statusSUCCESS = "[SUCCESS]";
+
 	var async=require('async');
 	var avData={};
 
@@ -58,7 +67,7 @@ function _syncAvailability(urls,callback){
 		}
 		catch(err){
 			logger.error("exception "+err);
-			app.io.emit('syncUpdate', {status:"[ERROR]",from:"availability",timestamp:new Date(),info:err.message});
+			app.io.emit('syncUpdate', {status:"[ERROR]",from:"availability",timestamp:new Date(),info:err.message,type:type});
 			callback(err);
 			return;
 		}
@@ -73,7 +82,8 @@ function _syncAvailability(urls,callback){
 			}
 			catch(err){
 				logger.error("exception "+err);
-				app.io.emit('syncUpdate', {status:"[ERROR]",from:"availability",timestamp:new Date(),info:err.message});
+				app.io.emit('syncUpdate', {status:"[ERROR]",from:"availability",timestamp:new Date(),info:err.message,type:type});
+				_syncStatus.saveLastSync(_syncName,_timestamp,err.message,_statusERROR,type);
 				callback(err);
 				return;
 			}
@@ -84,21 +94,26 @@ function _syncAvailability(urls,callback){
 				//console.log('Response success '+success);
 				if (err){
 					logger.debug('Response error '+err.message);
-					app.io.emit('syncUpdate', {status:"[ERROR]",from:"availability",timestamp:new Date(),info:err.message});
+					app.io.emit('syncUpdate', {status:"[ERROR]",from:_syncName,timestamp:_timestamp,info:err.message,type:type});
+					_syncStatus.saveLastSync(_syncName,_timestamp,err.message,_statusERROR,type);
 					callback(err);
 				}
 				if(success){
+					var _message = "AV Data synced";
 					logger.info("sync availability [DONE]");
-					app.io.emit('syncUpdate', {status:"[SUCCESS]",from:"availability",timestamp:new Date(),info:"avData synced"});
+					_syncStatus.saveLastSync(_syncName,_timestamp,_message,_statusSUCCESS,type);
+					app.io.emit('syncUpdate', {status:"[SUCCESS]",from:_syncName,timestamp:_timestamp,info:"avData synced",type:type});
 					callback(null,avData);
 				}
 			})
 		}).on('error',function(err){
         logger.error('[AvailabilitySyncSerice] says: something went wrong on the request', err.request.options);
-				app.io.emit('syncUpdate', {status:"[ERROR]",from:"availability",timestamp:new Date(),info:err.message});
+				app.io.emit('syncUpdate', {status:"[ERROR]",from:_syncName,timestamp:_timestamp,info:err.message,type:type});
+				_syncStatus.saveLastSync(_syncName,_timestamp,err.message,_statusERROR,type);
 			})
 	}).on('error',function(err){
       logger.error('[AvailabilitySyncSerice] says: something went wrong on the request', err.request.options);
-			app.io.emit('syncUpdate', {status:"[ERROR]",from:"availability",timestamp:new Date(),info:err.message});
+			app.io.emit('syncUpdate', {status:"[ERROR]",from:_syncName,timestamp:_timestamp,info:err.message,type:type});
+			_syncStatus.saveLastSync(_syncName,_timestamp,err.message,_statusERROR,type);
 	});
 }

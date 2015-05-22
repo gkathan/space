@@ -323,7 +323,7 @@ function findAllByName(req, res , next){
         //console.log("[DEBUG] findAllByName() for: "+_name+", Response success: "+JSON.stringify(success));
         //console.log('Response error '+err);
         if(success){
-            logger.debug("******************* success: "+success);
+            //logger.debug("******************* success: "+success);
 
             res.send(success);
             return ;//next();
@@ -524,7 +524,7 @@ function getTargetsTree(req,res,next){
 
 						var tree = us.nst.nest(success,nestLevels);
 
-						logger.debug("******************* success: "+tree);
+						//logger.debug("******************* success: "+tree);
 
             res.send(tree.children);
             return ;//next();
@@ -601,15 +601,15 @@ function getEmployeesByTarget(req, res , next){
   var orgService = require('../services/OrganizationService');
 
 	orgService.findTarget2EmployeeMapping(function(err,mapping){
-		logger.debug("...all good: "+JSON.stringify(mapping));
+		//logger.debug("...all good: "+JSON.stringify(mapping));
 		orgService.getEmployeesByTargets(mapping,function(err,success){
 			if(success){
-				logger.debug('[success]: '+success);
+				//logger.debug('[success]: '+success);
 				res.send(success);
 				return;
 			}
 			else {
-				logger.debug('[error]: '+err);
+				//logger.debug('[error]: '+err);
 				res.send(err);
 				return;
 			}
@@ -802,8 +802,9 @@ function syncEmployeeImages(req,res,next){
 function syncAvailability(req,res,next){
     var avSyncService = require ('../services/AvailabilitySyncService');
 		var _urls = config.sync.availability.url;
+		var _type = "API - manual";
 		logger.debug("*********************** lets sync availability from avreports service... urls: "+_urls);
-	  avSyncService.sync(_urls,function(err,av){
+	  avSyncService.sync(_urls,_type,function(err,av){
 			if(err){
 				res.send("syncAvailability says: "+err.message);
 			}

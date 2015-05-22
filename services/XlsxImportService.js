@@ -303,7 +303,16 @@ function _handleTarget2Employee(json,date,fillblanks,callback){
 			if (json[i].Target4) _targets.push(json[i].Target4.split(" ")[0]);
 			if (json[i].Target5) _targets.push(json[i].Target5.split(" ")[0]);
 
-			var _item = {employeeID:"E"+json[i].EmployeeID,targets:_targets}
+			var _employeeId = json[i]["Id"];
+			if (!_.startsWith(_employeeId,"E")){
+				_employeeId = "E"+_employeeId;
+			}
+			var _employeeName = json[i]["Name"];
+
+			var _context = json[i]["Context"];
+
+
+			var _item = {context:_context,employeeId:_employeeId ,employeeName:_employeeName, targets:_targets,outcomeTitle: json[i]["OutcomeTitle"],outcomeDescription:json[i]["OutcomeDescription"] , successCriteria:json[i]["SuccessCriteria"]}
 			_mapping.push(_item);
 		}
 

@@ -49,8 +49,8 @@ describe('OrganizationService', function(){
 			var orgService = require('../services/OrganizationService');
 
 			var _mapping = [];
-			_mapping.push({employeeID:"E2988",targets:["R1.1","G1.2"]})
-			_mapping.push({employeeID:"E2987",targets:["R1.2","G1.2"]})
+			_mapping.push({employeeId:"E2988",targets:["R1.1","G1.2"]})
+			_mapping.push({employeeId:"E2987",targets:["R1.2","G1.2"]})
 
 			/*
 				{"R1.1":["E2988"]},
@@ -72,4 +72,18 @@ describe('OrganizationService', function(){
 			});
     })
   })
+
+	  describe('#findEmployeesByFilter(filter)', function(){
+	    it('should return employees record for a given filter', function(done){
+				var orgService = require('../services/OrganizationService');
+	      orgService.findEmployeesByFilter({"Cost Centre":"Studios Commercial Management"},function(err,employees){
+
+					console.log("employees found: "+employees.length);
+					//assert.equal("E2988", employee["Employee Number"]);
+					done();
+				});
+	    })
+	  })
+
+
 })

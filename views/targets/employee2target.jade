@@ -1,0 +1,134 @@
+include ../kanban_menu
+
+block content
+#chart(style='margin:10px 10px')
+
+script.
+	var data,root;
+	var width = 2000
+	var height = 2000;
+	//var color = d3.scale.category20();
+	var force = d3.layout.force().charge(-200).linkDistance(80).size([width, height]);
+	var svg = d3.select("body").append("svg").attr("width", width).attr("height", height);
+
+	var nodes,links;
+
+	// /api/space/rest/organization/employee/
+	// http://my.bwinparty.com/api/people/images/e2988
+
+
+	//var _dataUri = "/api/space/rest/initiatives";
+	//var _dataUri = "/api/space/rest/target2employee";
+	var _dataUri = "/api/space/rest/employeebytargets";
+	//var _dataUri = "./test.json";
+
+	var _orgUri = "/api/space/rest/organization";
+	var _targetUri = "/api/space/rest/targets";
+	console.log("...");
+	d3.json(_orgUri,function(organization){
+		console.log("...org");
+		d3.json(_dataUri,function(data){
+			console.log("*************data: "+JSON.stringify(data));
+			console.log("*************organization: "+organization.length);
+
+			//root = _.nest(data,["context","employeeID","targets"]);
+			console.log("root: "+JSON.stringify(root));
+
+			root = data[0];
+
+			nodes = flatten(root),
+			links = d3.layout.tree().links(nodes);
+
+			console.log("nodes: "+JSON.stringify(nodes));
+
+			force.nodes(nodes).links(links).start();
+
+			var link = svg.selectAll(".link").data(links).enter().append("line").attr("class", "link").style("stroke-width", function(d) { return Math.sqrt(d.value); });
+
+			var i=0;
+			var node = svg.selectAll("node").data(nodes).enter().append("g").each(function(d){
+					// items on leaf level
+					if (!d.children){
+						 var _w = 100/4;
+						 var _h = 125/4;
+						 var _x = -(_w/2);
+						 var _y =0;//(_h-15);
+
+						 /*
+						 if (d.id =="E2988"){
+							 _w=100;
+							 _h=125;
+						 }
+						 */
+
+						 var _weight="normal";
+
+						 if (d.type=="target") _weight="bold";
+
+						d3.select(this).append("text").text(function(d){return d.name}).style("font-size","6px").style("font-weight",_weight).style("font-family","arial").attr("dy",_h+8).style("text-anchor","middle");
+
+						d3.select(this).append("svg:image").attr("xlink:href", function(d){return "http://my.bwinparty.com/api/people/images/"+d.id;}).attr("imageID",d.id).attr("x", _x).attr("y", _y).attr("width", _w).attr("height", _h);
+
+
+					}
+					else{
+						//not leaf
+				 console.log("***** has children: "+d.name+" i: "+i+" x,y "+d.x+" , "+d.y);
+
+				 var _weight="normal";
+				 var _color ="limegreen";
+
+				 if (d.type=="target") _weight="bold";
+				 if (d.name=="bpty.studios") _color="grey";
+
+
+					 var _size = 10;
+					 if (d.size) _size = d.size;
+
+					 d3.select(this).append("circle").attr("class", "node").attr("r", function(d){return _size/2;}).style("fill", function(d) { return _color; });
+						d3.select(this).append("text").text(function(d){return d.name}).style("font-size","8px").style("font-family","arial").style("font-weight",_weight).attr("dy",14).style("text-anchor","middle");
+
+					}
+					d3.select(this).call(force.drag);
+
+			d3.select(this).append("title").text(function(d) { return d.name; });
+			i++;
+
+
+			force.on("tick", function(e) {
+				// Push sources up and targets down to form a weak tree.
+			/*
+				var k = 6 * e.alpha;
+				links.forEach(function(d, i) {
+					d.source.y -= k;
+					d.target.y += k;
+				});
+				 node.attr("cx", function(d) { return d.x; }).attr("cy", function(d) { return d.y; });
+
+				*/
+
+				link.attr("x1", function(d) { return d.source.x; }).attr("y1", function(d) { return d.source.y; }).attr("x2", function(d) { return d.target.x; }).attr("y2", function(d) { return d.target.y; });
+
+				var _size;
+				if (d.size) _size=d.size/10;
+				else _size = 1;
+
+					node.attr("transform",function(d){return "translate ("+d.x+","+d.y+") scale("+_size+")"});
+			});
+		});
+	});
+
+	})
+
+	// Returns a list of all nodes under the root.
+	function flatten(root) {
+		var nodes = [], i = 0;
+
+		function recurse(node) {
+			if (node.children) node.children.forEach(recurse);
+			if (!node.id) node.id = ++i;
+			nodes.push(node);
+		}
+		recurse(root);
+		return nodes;
+	}
