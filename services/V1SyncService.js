@@ -72,7 +72,7 @@ function _sync(url,type,callback){
 			//return next(err);
 		})
 	}).on('error',function(err){
-			var _message = er.message;
+			var _message = err.message;
 			logger.warn('[V1SyncService] says: something went wrong on the request', err.request.options,err.message);
 			app.io.emit('syncUpdate', {status:"[ERROR]",from:_syncName,timestamp:_timestamp,info:err.message,type:type});
 			_syncStatus.saveLastSync(_syncName,_timestamp,_message,_statusERROR,type);

@@ -34,8 +34,8 @@
   		height = 1000;
   var color = d3.scale.category20();
   var force = d3.layout.force()
-      .charge(-5)
-      .linkDistance(200)
+      .charge(-50)
+      .linkDistance(50)
       .size([width, height]);
   var svg = d3.select("body").append("svg")
       .attr("width", width)
@@ -48,20 +48,22 @@
 
 
   //var _dataUri = "/api/space/rest/initiatives";
-  var _dataUri = "/api/space/rest/target2employee";
+  //var _dataUri = "/api/space/rest/target2employee";
   //var _dataUri = "/api/space/rest/employeebytargets";
+  var _dataUri = "./test.json";
   var _orgUri = "/api/space/rest/organization";
   var _targetUri = "/api/space/rest/targets";
-
+  console.log("...");
   d3.json(_orgUri,function(organization){
-  	d3.json(_dataUri,function(data){
+  	console.log("...org");
+    d3.json(_dataUri,function(data){
       console.log("*************data: "+JSON.stringify(data));
       console.log("*************organization: "+organization.length);
 
-  	  root = _.nest(data,["context","employeeID","targets"]);
+  	  //root = _.nest(data,["context","employeeID","targets"]);
       console.log("root: "+JSON.stringify(root));
 
-      //root = data;
+      root = data[0];
 
       nodes = flatten(root),
       links = d3.layout.tree().links(nodes);
@@ -88,6 +90,8 @@
         .each(function(d){
           // items on leaf level
           if (!d.children){
+
+            /*
             var _r = 5;//d.size*1.2;
           	d3.select(this).append("circle")
               .attr("class", "node")
@@ -95,7 +99,7 @@
               .attr("transform","translate("+_r+","+_r+")")
               .style("fill", function(d) { return color(d.lane); })
               .style("opacity",1);
-
+*/
       		   //d3.select(this).append("use").attr("xlink:href","#"+d.Type).attr("transform","scale("+d.size/12+")");
 
 
@@ -111,26 +115,41 @@
             	.style("font-family","arial");
             	//.attr("dy",(2*_r)+5).style("text-anchor","middle");
 */
+             var _w = 100/4;
+             var _h = 125/4;
+             var _x = -(_w/2);
+             var _y =0;//(_h-15);
+
+             var _weight="normal";
+
+             if (d.type=="target") _weight="bold";
 
             d3.select(this).append("text")
-             .text(function(d){return d.target})
-             .style("font-size","10px")
-             .style("font-weight","bold")
-             .style("font-family","arial");
+             .text(function(d){return d.name})
+             .style("font-size","6px")
+             .style("font-weight",_weight)
+             .style("font-family","arial")
+          	 .attr("dy",_h+8).style("text-anchor","middle");
 
-/*
             d3.select(this).append("svg:image")
-            	.attr("xlink:href", function(d){return "http://my.bwinparty.com/api/people/images/"+d.employeeID;})
-                      .attr("x", "-20")
-                      .attr("y", "-140")
-                      .attr("width", "100")
-                      .attr("height", "125");
-*/
+            	//.attr("xlink:href", function(d){return "http://my.bwinparty.com/api/people/images/"+d.employeeID;})
+            	.attr("xlink:href", function(d){return "/images/employees/"+d.id+".png";})
+                      .attr("x", _x)
+                      .attr("y", _y)
+                      .attr("width", _w)
+                      .attr("height", _h);
+
 
     	    }
     	    else{
+            //not leaf
+         console.log("***** has children: "+d.name+" i: "+i+" x,y "+d.x+" , "+d.y);
 
-           console.log("***** has children: "+d.name+" i: "+i+" x,y "+d.x+" , "+d.y);
+         var _weight="normal";
+         var _color ="limegreen";
+
+         if (d.type=="target") _weight="bold";
+         if (d.name=="bpty.studios") _color="grey";
 
 
            var _size = 10;
@@ -139,12 +158,13 @@
            d3.select(this).append("circle")
             .attr("class", "node")
             .attr("r", function(d){return _size/2;})
-            .style("fill", "grey");
+            .style("fill", function(d) { return _color; });
 
           	d3.select(this).append("text").text(function(d){return d.name})
           	.style("font-size","8px")
           	.style("font-family","arial")
-          	.attr("dy",14).style("text-anchor","middle");
+          	.style("font-weight",_weight)
+            .attr("dy",14).style("text-anchor","middle");
 
           }
           d3.select(this).call(force.drag);
@@ -154,20 +174,29 @@
     	i++;
 
 
-      force.on("tick", function() {
+      force.on("tick", function(e) {
+        // Push sources up and targets down to form a weak tree.
+        var k = 6 * e.alpha;
+        links.forEach(function(d, i) {
+          d.source.y -= k;
+          d.target.y += k;
+        });
+         node.attr("cx", function(d) { return d.x; })
+        .attr("cy", function(d) { return d.y; });
+
         link.attr("x1", function(d) { return d.source.x; })
             .attr("y1", function(d) { return d.source.y; })
             .attr("x2", function(d) { return d.target.x; })
             .attr("y2", function(d) { return d.target.y; });
 
-    	var _size;
-    	if (d.size) _size=d.size/10;
-    	else _size = 1;
+      	var _size;
+      	if (d.size) _size=d.size/10;
+      	else _size = 1;
 
-        node//.attr("x", function(d) { return d.x; })
-            //.attr("y", function(d) { return d.y; })
-            .attr("transform",function(d){return "translate ("+d.x+","+d.y+") scale("+_size+")"});
-    });
+          node//.attr("x", function(d) { return d.x; })
+              //.attr("y", function(d) { return d.y; })
+              .attr("transform",function(d){return "translate ("+d.x+","+d.y+") scale("+_size+")"});
+      });
   });
 
 });
