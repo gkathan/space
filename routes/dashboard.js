@@ -37,10 +37,10 @@ router.get('/', function(req, res) {
 				res.locals.targetdowntime = avService.getDowntimeYTD(av,52);
 				res.locals.leftdowntime = avService.getDowntimeYTD(av,52);
 			}
-			
+
 			res.locals.moment = moment;
 
-			targetService.getL1(_context,function(l1targets){
+			targetService.getL1(_context,function(err,l1targets){
 					res.locals.l1targets=l1targets;
 					logger.debug("l1 targets: "+ l1targets);
 					res.render('dashboard', { title: 's p a c e - dashboards' });

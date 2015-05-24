@@ -3,43 +3,66 @@
     "name": "bpty.studios",
     "children": [
       {
-        "name": "G1.1 Execute Mobile First",
+        "name": "GROW",
         "type": "target",
         "children": [
           {
-            "id": "E517",
-            "organization": "product",
-            "name": "S.Guthrie"
-          },
-          {
-            "id": "E8116",
-            "name": "C.Haas",
-            "organization": "delivery EU"
-          },
-          {
-            "id": "E7996",
-            "name": "S.Tiku",
-            "organization": "delivery IND"
+            "name": "G1 ",
+            "type": "target",
+            "children": [
+              {
+                "name": "G1.2 Execute Mobile FIrst",
+                "type": "target",
+                "children": [
+                  {
+                    "id": "E517",
+                    "organization": "product",
+                    "name": "S.Guthrie"
+                  },
+                  {
+                    "id": "E8116",
+                    "name": "C.Haas",
+                    "organization": "delivery EU"
+                  },
+                  {
+                    "id": "E7996",
+                    "name": "S.Tiku",
+                    "organization": "delivery IND"
+                  }
+                ]
+              }
+            ]
           }
         ]
       },
       {
-        "name": "R3.3 DO important stuff",
+        "name": "RUN",
         "type": "target",
         "children": [
           {
-            "name": "A.Pikard",
-            "id": "E7713",
-            "organization": "BI"
-          },
-          {
-            "name": "S.Heffetz",
-            "id": "E1159",
-            "organization": "something"
-          }
-        ]
-
-      }
-    ]
-  }
+            "name": "R3 Increase Availability",
+            "type": "target",
+            "children": [
+            {
+              "name": "R3.3 DO important stuff",
+              "type": "target",
+              "children": [
+                {
+                  "name": "A.Pikard",
+                  "id": "E7713",
+                  "organization": "BI"
+                },
+                {
+                  "name": "S.Heffetz",
+                  "id": "E1159",
+                  "organization": "something"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
 ]

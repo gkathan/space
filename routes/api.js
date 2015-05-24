@@ -504,7 +504,24 @@ function _transformDomains(data){
 /**
 */
 function getTargetsTree(req,res,next){
-	  logger.debug("getTargetsTree() called");
+  logger.debug("getTargetsTree() called");
+
+	var context = config.context;
+	if (req.query.context) context=req.query.context;
+	logger.debug("[api.getTargetsTree] context: "+context);
+
+	var targetService =require('../services/TargetService');
+	targetService.getL2Tree(context,function(err,result){
+		if(err){
+			logger.error("error: "+err.message);
+			res.send("error: "+err.message);
+		}
+		else{
+			res.send(result);
+			return;
+		}
+	})
+		/*
 		db.collection("targets").find().sort({id : 1} , function(err , success){
         //console.log("[DEBUG] findAllByName() for: "+_name+", Response success: "+JSON.stringify(success));
         //console.log('Response error '+err);
@@ -532,6 +549,7 @@ function getTargetsTree(req,res,next){
             return next(err);
         }
     });
+		*/
 
 }
 
@@ -600,9 +618,12 @@ function findEmployeeById(req, res , next){
 function getEmployeesByTarget(req, res , next){
   var orgService = require('../services/OrganizationService');
 
+	// to just pick a specific L2 target pass it via query 
+	var pickL2 = req.query.pickL2;
+
 	orgService.findTarget2EmployeeMapping(function(err,mapping){
 		//logger.debug("...all good: "+JSON.stringify(mapping));
-		orgService.getEmployeesByTargets(mapping,function(err,success){
+		orgService.getEmployeesByTargets(mapping,pickL2, function(err,success){
 			if(success){
 				//logger.debug('[success]: '+success);
 				res.send(success);

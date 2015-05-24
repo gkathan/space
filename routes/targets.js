@@ -42,6 +42,9 @@ router.get('/sunburst', function(req, res, next) {
 
 /* GET targets . */
 router.get('/employee2target', function(req, res, next) {
+	var pickL2 = req.query.pickL2;
+	res.locals.pickL2=pickL2;
+
 	res.render('targets/employee2target')
 });
 
@@ -69,7 +72,7 @@ res.locals._=require('lodash');
 
 	logger.debug("-------------------------");
 
-	targetService.getAll(_context,function(data){
+	targetService.getAll(_context,function(err,data){
 		var _L2targets = [];
 		var _L1targets = [];
 
@@ -156,7 +159,7 @@ res.locals._=require('lodash');
 
 
 
-	targetService.getAll(_context,function(data){
+	targetService.getAll(_context,function(err,data){
 		var _L2targets = [];
 		var _L1targets = [];
 

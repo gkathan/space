@@ -5,10 +5,10 @@ block content
 
 script.
 	var data,root;
-	var width = 2000
-	var height = 2000;
+	var width = 1000
+	var height = 500;
 	//var color = d3.scale.category20();
-	var force = d3.layout.force().charge(-200).linkDistance(80).size([width, height]);
+	var force = d3.layout.force().charge(-50).linkDistance(50).size([width, height]);
 	var svg = d3.select("body").append("svg").attr("width", width).attr("height", height);
 
 	var nodes,links;
@@ -19,7 +19,7 @@ script.
 
 	//var _dataUri = "/api/space/rest/initiatives";
 	//var _dataUri = "/api/space/rest/target2employee";
-	var _dataUri = "/api/space/rest/employeebytargets";
+	var _dataUri = "/api/space/rest/employeebytargets?pickL2=#{pickL2}";
 	//var _dataUri = "./test.json";
 
 	var _orgUri = "/api/space/rest/organization";
@@ -28,13 +28,14 @@ script.
 	d3.json(_orgUri,function(organization){
 		console.log("...org");
 		d3.json(_dataUri,function(data){
-			console.log("*************data: "+JSON.stringify(data));
-			console.log("*************organization: "+organization.length);
+			//console.log("*************data: "+JSON.stringify(data));
+			//console.log("*************organization: "+organization.length);
 
 			//root = _.nest(data,["context","employeeID","targets"]);
-			console.log("root: "+JSON.stringify(root));
-
+			
 			root = data[0];
+			
+			console.log("---------------------- root: "+JSON.stringify(root));
 
 			nodes = flatten(root),
 			links = d3.layout.tree().links(nodes);
@@ -64,6 +65,7 @@ script.
 						 var _weight="normal";
 
 						 if (d.type=="target") _weight="bold";
+						
 
 						d3.select(this).append("text").text(function(d){return d.name}).style("font-size","6px").style("font-weight",_weight).style("font-family","arial").attr("dy",_h+8).style("text-anchor","middle");
 
@@ -77,16 +79,43 @@ script.
 
 				 var _weight="normal";
 				 var _color ="limegreen";
-
-				 if (d.type=="target") _weight="bold";
+				 var _circleColor ="lightgrey";
+				 var _fontSize=8; 
+				 var _size = 10;
+				 var _text =""; 
+				 var _color="black";
+				 var _dy=10;
+				
+				if (d.type=="L2target") _weight="bold";
 				 if (d.name=="bpty.studios") _color="grey";
-
-
-					 var _size = 10;
+				 if (_.startsWith(d.name,"R")) _circleColor="#00b8e4";
+				 if (_.startsWith(d.name,"G")) _circleColor="#82cec1";
+				 if (_.startsWith(d.name,"T")) _circleColor="#f99d1c";
+				
+				 if (d.name=="RUN" || d.name=="GROW" || d.name=="TRANSFORM"){
+						_weight="bold";
+						_fontSize = 20;
+						_size=15;
+						_text = d.name;
+						_color =_circleColor;
+						_dy =30;
+				 }
+				
+					else if (d.group) {
+						_text = d.name+" - "+d.group;
+						_fontSize=14;
+						_weight="bold";
+					}
+					else {
+						_text =d.name;
+						_fontSize=10;
+					}
+						
+					 
 					 if (d.size) _size = d.size;
 
-					 d3.select(this).append("circle").attr("class", "node").attr("r", function(d){return _size/2;}).style("fill", function(d) { return _color; });
-						d3.select(this).append("text").text(function(d){return d.name}).style("font-size","8px").style("font-family","arial").style("font-weight",_weight).attr("dy",14).style("text-anchor","middle");
+						d3.select(this).append("circle").attr("class", "node").attr("r", function(d){return _size/2;}).style("fill", _circleColor);
+					 	d3.select(this).append("text").text(_text).style("font-size",_fontSize+"px").style("font-family","arial").style("font-weight",_weight).attr("dy",_dy).style("text-anchor","middle").style("fill",_color);
 
 					}
 					d3.select(this).call(force.drag);
@@ -97,15 +126,15 @@ script.
 
 			force.on("tick", function(e) {
 				// Push sources up and targets down to form a weak tree.
-			/*
+				/*
 				var k = 6 * e.alpha;
 				links.forEach(function(d, i) {
 					d.source.y -= k;
 					d.target.y += k;
 				});
 				 node.attr("cx", function(d) { return d.x; }).attr("cy", function(d) { return d.y; });
-
 				*/
+			
 
 				link.attr("x1", function(d) { return d.source.x; }).attr("y1", function(d) { return d.source.y; }).attr("x2", function(d) { return d.target.x; }).attr("y2", function(d) { return d.target.y; });
 

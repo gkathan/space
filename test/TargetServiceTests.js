@@ -26,7 +26,7 @@ describe('TargetService', function(){
 
       var targetService = require('../services/TargetService');
 
-			targetService.getL1("bpty.studios",function(L1targets){
+			targetService.getL1("bpty.studios",function(err,L1targets){
 					console.log("--- test");
 					console.log("L1targets: "+JSON.stringify(L1targets));
 

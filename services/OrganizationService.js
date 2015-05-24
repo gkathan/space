@@ -116,7 +116,7 @@ function _findTarget2EmployeeMapping(callback) {
 			{"G1.2":["E2988","E2987"]}
 		]
 */
-function _getEmployeesByTargets(target2employeeMapping,callback) {
+function _getEmployeesByTargets(target2employeeMapping,pickL2,callback) {
 	logger.debug("getEmployeesByTargets for mapping");
 
 	var targetService = require('./TargetService');
@@ -124,67 +124,94 @@ function _getEmployeesByTargets(target2employeeMapping,callback) {
 	var _context="bpty.studios";
 	_findEmployees(function(employees){
 		targetService.getL2(_context,function(err,targets){
-
+			logger.debug("************ L2Targets: "+targets.length);
 			var _targets=[];
 
 			for (var i in target2employeeMapping){
 				var _map = target2employeeMapping[i];
 				for (var t in _map.targets){
 					if (_targets.indexOf(_map.targets[t])<0){
-						_targets.push(_map.targets[t]);
+					//if (!_.findWhere(_targets,{"id":_map.targets[t]})){
+						var _targetId = _map.targets[t];
+						logger.debug("_targetId: "+_targetId);
+						//var _t = _.findWhere(targets,{"id":_targetId});
+						_targets.push(_targetId);
 					}
 				}
 			}
-
-			//logger.debug("[1st round:] targets collected:"+_targets)
-
-			// add "Cost Center" attribute from orgshit
-
+			logger.debug("************ mapped targets: "+_targets.length);
 
 			var _data=[];
 
 			for (var t in _targets){
-				for (var m in target2employeeMapping){
-					var _map = target2employeeMapping[m];
-					if (_map.targets.indexOf(_targets[t])>-1){
+				var _target = _.findWhere(targets,{"id":_targets[t]});
+				logger.debug("--- find target: "+_targets[t]);
+				if (_target){
+					var _targetId = _target.id;
+					for (var m in target2employeeMapping){
+						var _map = target2employeeMapping[m];
+						if (_map.targets.indexOf(_targetId)>-1){
 
-						if (!_.findWhere(_data,{"name":_targets[t]})){
-							// this has to be done for a new target
-							//logger.debug("-------- new target added: "+_targets[t]);
-							var _item ={name:_targets[t],type:"L2target",children:[]};
-							_data.push(_item);
+							if (!_.findWhere(_data,{"name":_targetId})){
+								// this has to be done for a new target
+								_data.push({name:_targetId,theme:_target.theme,cluster:_target.cluster,group:_target.group,target:_target.target,type:"L2target",children:[]});
+							}
+							var _targetBucket = _.findWhere(_data,{"name":_targetId});
+							// do some enriching from org collection
+							var _employee = _.findWhere(employees,{"Employee Number":_map.employeeId});
+							var _costCenter;
+							var _location;
+							var _function;
+
+							if (_employee){
+								_costcenter = _employee["Cost Centre"];
+								_location = _employee["Location"];
+								_function = _employee["Function"];
+							}
+
+							// check whether this employee is already in
+							if (!_.findWhere(_target.children,{"id":_map.employeeId})){
+								_targetBucket.children.push({id:_map.employeeId,name:_map.employeeName,location:_location,function:_function,costCenter:_costcenter});
+							}
 						}
-						var _target = _.findWhere(_data,{"name":_targets[t]});
-
-						// do some enriching from org collection
-						var _employee = _.findWhere(employees,{"Employee Number":_map.employeeId});
-						var _costCenter;
-						if (_employee){
-							_costcenter = _employee["Cost Centre"];
-						}
-
-						// check whether this employee is already in
-						if (!_.findWhere(_target.children,{"id":_map.employeeId})){
-							_target.children.push({id:_map.employeeId,name:_map.employeeName,costCenter:_costcenter});
-						}
-
-					}
+					} // end if (_target)
 				}
 			}
 
-			//logger.debug("[2nd round:] result:"+JSON.stringify(_results));
+			var _showTargetTree=null;//["theme"];
+			var _showEmployeeTree=["costCenter"];
+			//var pickL2 = "G1.1";
 
+			if (pickL2){
+				_data = _.where(_data,{"name":pickL2});
+			}
 
+			_.nst = require('underscore.nest');
 
-			// adding the root node
+			if (_showEmployeeTree){
+				//for every target
+				for (var t in _data){
+					// we go over every employee per target
+					_data[t].children = _.nst.nest(_data[t].children,_showEmployeeTree).children;
+				}
+			}
+			if (_showTargetTree){
+					var _data = _.nst.nest(_data,_showTargetTree).children;
+			}
 			var _results = [];
-			var _context = "bpty.studios";
-			// tha root
-			_results.push({name:_context,children:_data})
-
-
+			// adding the root node
+			if (!pickL2){
+				var _context = "bpty.studios";
+				// tha root
+				_results.push({name:_context,children:_data})
+			}
+			else{
+				logger.debug("***************** _data: "+JSON.stringify(_data));
+				var _context = _.findWhere(targets,{"id":pickL2}).theme;
+				_results.push({name:_context,children:_data})
+			}
 			callback(err,_results);
-				})
+		})
 	})
 }
 
@@ -194,35 +221,50 @@ function _getEmployeesByTargets(target2employeeMapping,callback) {
 /**
  * http://my.bwinparty.com/api/people/images/e1000
  */
-function _syncEmployeeImages(req,res,callback) {
-
-
+function _syncEmployeeImages(filter,callback) {
 	var fs = require('fs');
-    var request = require('request');
+  var request = require('request');
 
+/*
 	var download = function(uri, filename, callback){
 		request.head(uri, function(err, res, body){
-			console.log('content-type:', res.headers['content-type']);
-			console.log('content-length:', res.headers['content-length']);
+			//console.log('content-type:', res.headers['content-type']);
+			//console.log('content-length:', res.headers['content-length']);
 
-			//request(uri).pipe(fs.createWriteStream(filename)).on('close', callback);
+			request(uri).pipe(fs.createWriteStream(filename)).on('close', callback);
 		});
 	};
-
+*/
 	logger.debug("***** sync....");
 
+
 	var organization =  db.collection('organization');
-		organization.find({}).sort({$natural:1}, function (err, docs){
+		organization.find(filter).sort({$natural:1}, function (err, docs){
 
 			if (docs){
 				for (var employee in docs){
-					logger.debug("* e: "+docs[employee]["First Name"]);
+					logger.debug(employee+" :  E: "+docs[employee]["First Name"]+" "+docs[employee]["Last Name"]);
 					var _id = docs[employee]["Employee Number"];
 					var _imageURL = "http://my.bwinparty.com/api/people/images/";
+
+					//Lets define a write stream for our destination file
+					var destination = fs.createWriteStream('./'+_id+'.jpg');
+
+
+					//Lets save the modulus logo now
+					request(_imageURL+_id)
+					.pipe(destination)
+					.on('error', function(error){
+					    console.log(error);
+					});
+
+					/*
 					download(_imageURL, _id+'.png', function(){
 					  console.log('done: '+_id);
 					});
+					*/
 				}
+				callback(null,"done");
 			}
 
 		});

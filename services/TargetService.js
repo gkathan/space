@@ -31,42 +31,60 @@ winston.loggers.add('test_log',{
 
 var logger = winston.loggers.get('test_log');
 
+exports.getL1 = _getL1;
+exports.getL2 = _getL2;
+
+exports.getAll = _getAll;
+exports.getL2Tree = _getL2Tree;
+
 /**
  *
  */
-exports.getL1 = function (context,callback) {
+function _getL1(context,callback) {
 	var targets =  db.collection('targets');
 	targets.find({context:context,"type":"L1"}).sort({id:1}, function (err, docs){
-			debugger;
-
-			callback(docs);
-			return;
+		callback(err,docs);
+		return;
 	});
 }
 
-exports.getL2 = function (context,callback) {
+function _getL2(context,callback) {
 	var targets =  db.collection('targets');
 	targets.find({context:context,"type":"L2"}).sort({id:1}, function (err, docs){
-
-			callback(docs);
-			return;
+		callback(err,docs);
+		return;
 	});
 }
 
-exports.getAll = function (context,callback) {
+function _getAll(context,callback) {
 	var targets =  db.collection('targets');
-
-
 
 	targets.find({context:{$regex: '^'+context}}).sort({context:-1}, function (err, docs){
 		if(err){
 			logger.info("error:"+err);
+			callback(err);
 		}
 		else if(docs){
 			logger.debug("find targets: "+docs);
-			callback(docs);
+			callback(err,docs);
 			return;
 		}
 		return;
+	});
+}
+
+function _getL2Tree(context,callback){
+	_getL2(context,function(err,result){
+		if (err){
+				callback(err);
+		}
+		else{
+				_.nst = require('underscore.nest');
+			var nestLevels = ["context","theme","group"];
+			var tree = _.nst.nest(result,nestLevels);
+
+	    callback(null,tree.children);
+	    return;
+		}
 	});
 }

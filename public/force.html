@@ -34,8 +34,8 @@
   		height = 2400;
   var color = d3.scale.category20();
   var force = d3.layout.force()
-      .charge(-200)
-      .linkDistance(80)
+      .charge(-100)
+      .linkDistance(30)
       .size([width, height]);
   var svg = d3.select("body").append("svg")
       .attr("width", width)
@@ -49,8 +49,8 @@
 
   //var _dataUri = "/api/space/rest/initiatives";
   //var _dataUri = "/api/space/rest/target2employee";
-  var _dataUri = "/api/space/rest/employeebytargets";
-  //var _dataUri = "./test.json";
+//  var _dataUri = "/api/space/rest/employeebytargets";
+  var _dataUri = "./test.json";
 
   var _orgUri = "/api/space/rest/organization";
   var _targetUri = "/api/space/rest/targets";
@@ -140,8 +140,8 @@
           	 .attr("dy",_h+8).style("text-anchor","middle");
 
             d3.select(this).append("svg:image")
-            	.attr("xlink:href", function(d){return "http://my.bwinparty.com/api/people/images/"+d.id;})
-            	//.attr("xlink:href", function(d){return "/images/employees/"+d.id+".png";})
+            	//.attr("xlink:href", function(d){return "http://my.bwinparty.com/api/people/images/"+d.id;})
+            	.attr("xlink:href", function(d){return "/images/employees/"+d.id+".png";})
                       .attr("imageID",d.id)
                       .attr("x", _x)
                       .attr("y", _y)
