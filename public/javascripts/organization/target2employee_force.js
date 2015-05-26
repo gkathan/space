@@ -1,72 +1,21 @@
-include ../kanban_menu
+	/** does NOT work yet as outsourced module .....
 
-mixin renderEmployee(employee,nameSize,imageSize)
-	if employee 
-		table
-			tr
-				td(rowspan="2")
-					img.img-circle(src='/images/employees/squared/#{employee["Employee Number"]}_square.png' height="#{imageSize}px") 
-				td(style="padding-left:5px;font-size:#{nameSize}px")
-					|#{employee["First Name"]} #{employee["Last Name"]}
-			tr
-				td(style="padding-left:5px")
-					span(style="font-size:10px;font-weight:normal;") #{employee["Organization"]}
-	else
-		span(style="font-size:10px;font-weight:normal;color:red;text-align:center") -- no employee data found --
-		
-block content
+	=> used by the different "employee2target BROCCOLI" views
 
 
-	div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;background-color:white;;width:1000px;text-align: center;margin: 10px auto;")
-		.panel-heading
-			h3.panel-title(style="font-size:24px;font-weight:bold") L2 TARGET "BROCCOLI"
-			br
-			i.glyphicon.glyphicon-list-alt &nbsp;
-			a(href="/targets/target2outcomes/#{target.id}") list &nbsp;|
-		.panel-body
-		
-		div(style="text-align:center")
-
-			
-			table.table.table-responsive(style="margin:0 auto;max-width:580px")
-						
-				tr
-					td(style="text-align:right;font-size:10px") L2:
-					td(style="text-align:left;font-weight:bold;padding-left:10px;font-size:16px") 
-						|#{target.id} | #{target.target} 
-						img(id="modal_group_icon" src="/images/iconexp/#{target.icon}" height="25px")
-
-				tr
-					td(style="text-align:right;font-size:10px") L1:
-					td(style="text-align:left;font-weight:normal;padding-left:10px") 
-						//img(id="modal_group_icon" src="/images/iconexp/#{target.icon}" height="25px")
-						|#{target.group} | #{target.cluster} | #{target.theme} 
-
-			
-
-				tr(style="padding-top:20px")
-					td(style="text-align:right;font-size:10px") sponsor:
-					td(style="text-align:left;font-weight:bold;padding-left:10px") 
-						+renderEmployee(sponsor,16,40)
-		br
-		hr
-		div(id="broccoli")
-			#chart(style='margin:10px 10px')
-
-script.
 	var data,root;
-	
-	
+
+
 	var width = 1000
 	var height = 600;
-	
+
 	var _charge = -80;
 	var _distance = 120;
-	
+
 	if(!"#{pickL2}"){
 		width=2000;
 		height=1500;
-		
+
 		_charge=-50;
 		_distance=50;
 	}
@@ -95,9 +44,9 @@ script.
 			//console.log("*************organization: "+organization.length);
 
 			//root = _.nest(data,["context","employeeID","targets"]);
-			
+
 			root = data[0];
-			
+
 			console.log("---------------------- root: "+JSON.stringify(root));
 
 			nodes = flatten(root),
@@ -128,14 +77,14 @@ script.
 						 var _weight="normal";
 
 						 if (d.type=="target") _weight="bold";
-						
+
 
 						d3.select(this).append("text").text(function(d){return d.name+" "+d.id}).style("font-size","6px").style("font-weight",_weight).style("font-family","arial").attr("dy",_h+8).style("text-anchor","middle");
-						
+
 						//var _imageSource="http://my.bwinparty.com/api/people/images/";
 						var _imageSource="/images/employees/squared/";
 						var _imageExtension ="_square.png";
-						
+
 						d3.select(this).append("svg:image").attr("xlink:href", function(d){return _imageSource+d.id+_imageExtension;}).attr("imageID",d.id).attr("x", _x).attr("y", _y).attr("width", _w).attr("height", _h);
 
 
@@ -147,18 +96,18 @@ script.
 				 var _weight="normal";
 				 var _color ="limegreen";
 				 var _circleColor ="lightgrey";
-				 var _fontSize=8; 
+				 var _fontSize=8;
 				 var _size = 10;
-				 var _text =""; 
+				 var _text ="";
 				 var _color="black";
 				 var _dy=10;
-				
+
 				if (d.type=="L2target") _weight="bold";
 				 if (d.name=="bpty.studios") _color="grey";
 				 if (_.startsWith(d.name,"R")) _circleColor="#00b8e4";
 				 if (_.startsWith(d.name,"G")) _circleColor="#82cec1";
 				 if (_.startsWith(d.name,"T")) _circleColor="#f99d1c";
-				
+
 				 if (d.name=="RUN" || d.name=="GROW" || d.name=="TRANSFORM"){
 						_weight="bold";
 						_fontSize = 20;
@@ -167,7 +116,7 @@ script.
 						_color =_circleColor;
 						_dy =30;
 				 }
-				
+
 					else if (d.group) {
 						_text = d.name+" - "+d.group;
 						_fontSize=18;
@@ -178,8 +127,8 @@ script.
 						_fontSize=12;
 						_weight="bold";
 					}
-						
-					 
+
+
 					 if (d.size) _size = d.size;
 
 						d3.select(this).append("circle").attr("class", "node").attr("r", function(d){return _size/2;}).style("fill", _circleColor);
@@ -202,7 +151,7 @@ script.
 				});
 				 node.attr("cx", function(d) { return d.x; }).attr("cy", function(d) { return d.y; });
 				*/
-			
+
 
 				link.attr("x1", function(d) { return d.source.x; }).attr("y1", function(d) { return d.source.y; }).attr("x2", function(d) { return d.target.x; }).attr("y2", function(d) { return d.target.y; });
 

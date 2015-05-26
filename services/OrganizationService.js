@@ -142,7 +142,7 @@ function _getTarget2EmployeeMappingByL2Target(L2TargetId,callback) {
 						var _target = _employee.children[o];
 
 						if (_target.targets.indexOf(L2TargetId)>-1) {
-							logger.debug("*** _target: MATCH !!!!"+_target.targets);
+							//logger.debug("*** _target: MATCH !!!!"+_target.targets);
 							_e.outcomes.push({id:_target.id,title:_target.outcomeTitle,description:_target.outcomeDescription,successCriteria:_target.successCriteria});
 						}
 					}

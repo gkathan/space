@@ -1,15 +1,18 @@
 include ../kanban_menu
 
 mixin renderEmployee(employee,nameSize,imageSize)
-	table
-		tr
-			td(rowspan="2")
-				img.img-circle(src='/images/employees/squared/#{employee["Employee Number"]}_square.png' height="#{imageSize}px") 
-			td(style="padding-left:5px;font-size:#{nameSize}px")
-				|#{employee["First Name"]} #{employee["Last Name"]}
-		tr
-			td(style="padding-left:5px")
-				span(style="font-size:10px;font-weight:normal;") #{employee["Organization"]}
+	if employee 
+		table
+			tr
+				td(rowspan="2")
+					img.img-circle(src='/images/employees/squared/#{employee["Employee Number"]}_square.png' height="#{imageSize}px") 
+				td(style="padding-left:5px;font-size:#{nameSize}px")
+					|#{employee["First Name"]} #{employee["Last Name"]}
+			tr
+				td(style="padding-left:5px")
+					span(style="font-size:10px;font-weight:normal;") #{employee["Organization"]}
+	else
+		span(style="font-size:10px;font-weight:normal;color:red;text-align:center") -- no employee data found --
 				
 
 block content
@@ -17,6 +20,9 @@ block content
 	div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;background-color:white;;width:1000px;text-align: center;margin: 10px auto;")
 		.panel-heading
 			h3.panel-title(style="font-size:24px;font-weight:bold") L2 TARGET &rarr; EMPLOYEES &rarr; OUTCOMES 
+			br
+			i.glyphicon.glyphicon-stats &nbsp;
+			a(href="/targets/employee2target?pickL2=#{target.id}&showEmployeeTree=organization") broccoli &nbsp;|
 		.panel-body
 		
 		div(style="text-align:center")
@@ -86,3 +92,8 @@ block content
 							td(style="text-align:left;vertical-align:middle;font-size:11px") #{o.title}
 							td(style="text-align:left;vertical-align:middle;font-size:10px") #{o.description}
 							td(style="text-align:left;vertical-align:middle;font-size:10px") #{o.successCriteria}
+
+		br
+		hr
+		br
+		|-- and maybe some statistics here ;-) --	

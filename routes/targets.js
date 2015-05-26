@@ -40,20 +40,50 @@ router.get('/sunburst', function(req, res, next) {
 	res.render('targets/sunburst')
 });
 
-/* GET targets . */
+/* GET targets by targetID . */
 router.get('/employee2target', function(req, res, next) {
+	var pickL2 = req.query.pickL2;
+	var showTargetTree = req.query.showTargetTree;
+	var showEmployeeTree = req.query.showEmployeeTree;
+
+	var targetService = require('../services/TargetService');
+		var orgService = require('../services/OrganizationService');
+
+	targetService.getL2ById(config.context,pickL2,function(err,L2Target){
+
+		var _first = L2Target.sponsor.split(" ")[0];
+		var _last = _.rest(L2Target.sponsor.split(" ")).join(" ");
+		logger.debug("L2Target.sponsor: "+L2Target.sponsor);
+		logger.debug("first: "+_first+ "last: "+_last);
+		orgService.findEmployeeByFirstLastName(_first, _last,function(err,sponsor){
+
+			logger.debug("--------- showEmployeeTree: "+showEmployeeTree);
+			logger.debug("--------- showTargetTree: "+showTargetTree);
+				res.locals.sponsor = sponsor;
+			res.locals.pickL2=pickL2;
+			res.locals.target = L2Target;
+			res.locals.showTargetTree=showTargetTree;
+			res.locals.showEmployeeTree=showEmployeeTree;
+
+			res.render('targets/employee2target')
+		});
+	});
+});
+
+/* GET ALL full broccoli targets by targetID . */
+router.get('/employee2targetall', function(req, res, next) {
 	var pickL2 = req.query.pickL2;
 	var showTargetTree = req.query.showTargetTree;
 	var showEmployeeTree = req.query.showEmployeeTree;
 
 	logger.debug("--------- showEmployeeTree: "+showEmployeeTree);
 	logger.debug("--------- showTargetTree: "+showTargetTree);
-
 	res.locals.pickL2=pickL2;
+
 	res.locals.showTargetTree=showTargetTree;
 	res.locals.showEmployeeTree=showEmployeeTree;
 
-	res.render('targets/employee2target')
+	res.render('targets/employee2targetall')
 });
 
 

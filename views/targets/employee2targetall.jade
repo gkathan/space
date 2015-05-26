@@ -1,57 +1,9 @@
 include ../kanban_menu
 
-mixin renderEmployee(employee,nameSize,imageSize)
-	if employee 
-		table
-			tr
-				td(rowspan="2")
-					img.img-circle(src='/images/employees/squared/#{employee["Employee Number"]}_square.png' height="#{imageSize}px") 
-				td(style="padding-left:5px;font-size:#{nameSize}px")
-					|#{employee["First Name"]} #{employee["Last Name"]}
-			tr
-				td(style="padding-left:5px")
-					span(style="font-size:10px;font-weight:normal;") #{employee["Organization"]}
-	else
-		span(style="font-size:10px;font-weight:normal;color:red;text-align:center") -- no employee data found --
-		
+	
 block content
-
-
-	div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;background-color:white;;width:1000px;text-align: center;margin: 10px auto;")
-		.panel-heading
-			h3.panel-title(style="font-size:24px;font-weight:bold") L2 TARGET "BROCCOLI"
-			br
-			i.glyphicon.glyphicon-list-alt &nbsp;
-			a(href="/targets/target2outcomes/#{target.id}") list &nbsp;|
-		.panel-body
-		
-		div(style="text-align:center")
-
-			
-			table.table.table-responsive(style="margin:0 auto;max-width:580px")
-						
-				tr
-					td(style="text-align:right;font-size:10px") L2:
-					td(style="text-align:left;font-weight:bold;padding-left:10px;font-size:16px") 
-						|#{target.id} | #{target.target} 
-						img(id="modal_group_icon" src="/images/iconexp/#{target.icon}" height="25px")
-
-				tr
-					td(style="text-align:right;font-size:10px") L1:
-					td(style="text-align:left;font-weight:normal;padding-left:10px") 
-						//img(id="modal_group_icon" src="/images/iconexp/#{target.icon}" height="25px")
-						|#{target.group} | #{target.cluster} | #{target.theme} 
-
-			
-
-				tr(style="padding-top:20px")
-					td(style="text-align:right;font-size:10px") sponsor:
-					td(style="text-align:left;font-weight:bold;padding-left:10px") 
-						+renderEmployee(sponsor,16,40)
-		br
-		hr
-		div(id="broccoli")
-			#chart(style='margin:10px 10px')
+	div(id="broccoli")
+	#chart(style='margin:10px 10px')
 
 script.
 	var data,root;
@@ -64,8 +16,8 @@ script.
 	var _distance = 120;
 	
 	if(!"#{pickL2}"){
-		width=2000;
-		height=1500;
+		width=2200;
+		height=1800;
 		
 		_charge=-50;
 		_distance=50;
