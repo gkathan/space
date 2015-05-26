@@ -4,6 +4,7 @@
 
 
 var config = require('config');
+var secret = require('../config/secret');
 
 var mongojs = require('mongojs');
 
@@ -18,16 +19,16 @@ var db = mongojs(connection_string, [DB]);
 
 
 var users = [
-    { id: 1, username: 'admin', password: '4dm1n', role: 'admin' },
-    { id: 2, username: 'exec', password: '3x3c', role: 'exec' },
-     { id: 2, username: 'bpty', password: 'bPt7', role: 'bpty' }
+    { id: 1, username: secret.space_admin_user, password: secret.space_admin_pass, role: 'admin' },
+    { id: 2, username: secret.space_exec_user, password: secret.space_exec_pass, role: 'exec' },
+    { id: 2, username: secret.space_bpty_user, password: secret.space_bpty_user, role: 'bpty' }
 ];
 
 
 
 
 /**
- * 
+ *
  */
 exports.findById = function (id, fn) {
 
@@ -49,11 +50,3 @@ exports.findByUsername = function (username,fn) {
   }
   return fn(null, null);
 }
-
-
-
-
-
-
-
-
