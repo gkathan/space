@@ -11,25 +11,9 @@ var DB=config.database.db;
 var HOST = config.database.host;
 var connection_string = HOST+'/'+DB;
 var db = mongojs(connection_string, [DB]);
-
+// logger
 var winston = require('winston');
-winston.loggers.add('test_log',{
-	console:{
-		colorize:true,
-		prettyPrint:true,
-		showLevel:true,
-		timestamp:true,
-		level:"debug"
-	},
-    file:{
-		filename: 'logs/test.log' ,
-		prettyPrint:true,
-		showLevel:true,
-		level:"debug"
-	}
-});
-
-var logger = winston.loggers.get('test_log');
+var logger = winston.loggers.get('space_log');
 
 exports.getL1 = _getL1;
 exports.getL2 = _getL2;

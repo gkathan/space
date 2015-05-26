@@ -35,7 +35,9 @@ var PATH = {
 						REST_TARGETSTREE : BASE+'/space/rest/targetstree',
 
 						REST_TARGET2EMPLOYEE : BASE+'/space/rest/target2employee',
+						REST_TARGET2EMPLOYEECLUSTERED : BASE+'/space/rest/target2employeeclustered',
 						REST_EMPLOYEEBYTARGETS : BASE+'/space/rest/employeebytargets',
+						REST_OUTCOMESFOREMPLOYEE : BASE+'/space/rest/outcomesforemployee/:employeeId',
 
 						REST_BOARDS : BASE+'/space/rest/boards',
 
@@ -138,7 +140,9 @@ router.delete(PATH.REST_TARGETS, function(req, res, next) {remove(req,res,next);
 router.get(PATH.REST_TARGETS_TYPE, function(req, res, next) {findByKey("type",req,res,next);});
 router.get(PATH.REST_TARGETSTREE, function(req, res, next) {getTargetsTree(req,res,next);});
 router.get(PATH.REST_TARGET2EMPLOYEE, function(req, res, next) {findAllByName(req,res,next);});
+router.get(PATH.REST_TARGET2EMPLOYEECLUSTERED, function(req, res, next) {getTarget2EmployeeClustered(req,res,next);});
 router.get(PATH.REST_EMPLOYEEBYTARGETS, function(req, res, next) {getEmployeesByTarget(req,res,next);});
+router.get(PATH.REST_OUTCOMESFOREMPLOYEE, function(req, res, next) {getOutcomesForEmployee(req,res,next);});
 
 
 router.get(PATH.REST_BOARDS, function(req, res, next) {findAllByName(req,res,next);});
@@ -615,15 +619,35 @@ function findEmployeeById(req, res , next){
     });
 }
 
+function getTarget2EmployeeClustered(req, res , next){
+  var orgService = require('../services/OrganizationService');
+	orgService.findTarget2EmployeeMappingClustered(function(err,result){
+
+		res.send(result);
+	})
+}
+
+function getOutcomesForEmployee(req,res,next){
+	var orgService = require('../services/OrganizationService');
+	var _employeeId = req.params.employeeId;
+	orgService.findOutcomesForEmployee(_employeeId,function(err,result){
+
+		res.send(result);
+	})
+
+}
+
 function getEmployeesByTarget(req, res , next){
   var orgService = require('../services/OrganizationService');
 
-	// to just pick a specific L2 target pass it via query 
+	// to just pick a specific L2 target pass it via query
 	var pickL2 = req.query.pickL2;
+	var showTargetTree = req.query.showTargetTree;
+	var showEmployeeTree = req.query.showEmployeeTree;
 
 	orgService.findTarget2EmployeeMapping(function(err,mapping){
 		//logger.debug("...all good: "+JSON.stringify(mapping));
-		orgService.getEmployeesByTargets(mapping,pickL2, function(err,success){
+		orgService.getEmployeesByTargets(mapping,pickL2,showTargetTree,showEmployeeTree, function(err,success){
 			if(success){
 				//logger.debug('[success]: '+success);
 				res.send(success);

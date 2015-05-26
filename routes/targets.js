@@ -43,9 +43,43 @@ router.get('/sunburst', function(req, res, next) {
 /* GET targets . */
 router.get('/employee2target', function(req, res, next) {
 	var pickL2 = req.query.pickL2;
+	var showTargetTree = req.query.showTargetTree;
+	var showEmployeeTree = req.query.showEmployeeTree;
+
+	logger.debug("--------- showEmployeeTree: "+showEmployeeTree);
+	logger.debug("--------- showTargetTree: "+showTargetTree);
+
+
 	res.locals.pickL2=pickL2;
+	res.locals.showTargetTree=showTargetTree;
+	res.locals.showEmployeeTree=showEmployeeTree;
+
 
 	res.render('targets/employee2target')
+});
+
+router.get('/employeeoutcomes/:employeeId', function(req, res, next) {
+	var employeeId = req.params.employeeId;
+
+	logger.debug("--------- employeeId: "+employeeId);
+
+	var orgService = require('../services/OrganizationService');
+	orgService.findEmployeeById(employeeId,function(err,employee){
+		res.locals.employee=employee;
+		orgService.findOutcomesForEmployee(employeeId,function(err,outcomes){
+			if (outcomes){
+				res.locals.outcomes=outcomes;
+				res.render('targets/employeeoutcomes');
+			}
+			else{
+				res.locals.outcomes=[];
+				res.render('targets/employeeoutcomes');
+				//res.send("no outcomes (yet;-) for: "+employee["Full Name"]);
+			}
+
+		})
+	})
+
 });
 
 

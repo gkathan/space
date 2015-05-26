@@ -5,10 +5,23 @@ block content
 
 script.
 	var data,root;
+	
+	
 	var width = 1000
 	var height = 500;
+	
+	var _charge = -80;
+	var _distance = 120;
+	
+	if(!"#{pickL2}"){
+		width=2000;
+		height=1500;
+		
+		_charge=-50;
+		_distance=50;
+	}
 	//var color = d3.scale.category20();
-	var force = d3.layout.force().charge(-50).linkDistance(50).size([width, height]);
+	var force = d3.layout.force().charge(_charge).linkDistance(_distance).size([width, height]);
 	var svg = d3.select("body").append("svg").attr("width", width).attr("height", height);
 
 	var nodes,links;
@@ -19,7 +32,7 @@ script.
 
 	//var _dataUri = "/api/space/rest/initiatives";
 	//var _dataUri = "/api/space/rest/target2employee";
-	var _dataUri = "/api/space/rest/employeebytargets?pickL2=#{pickL2}";
+	var _dataUri = "/api/space/rest/employeebytargets?pickL2=#{pickL2}&showEmployeeTree=#{showEmployeeTree}&showTargetTree=#{showTargetTree}";
 	//var _dataUri = "./test.json";
 
 	var _orgUri = "/api/space/rest/organization";
@@ -50,8 +63,8 @@ script.
 			var node = svg.selectAll("node").data(nodes).enter().append("g").each(function(d){
 					// items on leaf level
 					if (!d.children){
-						 var _w = 100/4;
-						 var _h = 125/4;
+						 var _w = 100/5;
+						 var _h = 125/5;
 						 var _x = -(_w/2);
 						 var _y =0;//(_h-15);
 
@@ -67,9 +80,12 @@ script.
 						 if (d.type=="target") _weight="bold";
 						
 
-						d3.select(this).append("text").text(function(d){return d.name}).style("font-size","6px").style("font-weight",_weight).style("font-family","arial").attr("dy",_h+8).style("text-anchor","middle");
-
-						d3.select(this).append("svg:image").attr("xlink:href", function(d){return "http://my.bwinparty.com/api/people/images/"+d.id;}).attr("imageID",d.id).attr("x", _x).attr("y", _y).attr("width", _w).attr("height", _h);
+						d3.select(this).append("text").text(function(d){return d.name+" "+d.id}).style("font-size","6px").style("font-weight",_weight).style("font-family","arial").attr("dy",_h+8).style("text-anchor","middle");
+						
+						//var _imageSource="http://my.bwinparty.com/api/people/images/";
+						var _imageSource="/images/employees/";
+						
+						d3.select(this).append("svg:image").attr("xlink:href", function(d){return _imageSource+d.id;}).attr("imageID",d.id).attr("x", _x).attr("y", _y).attr("width", _w).attr("height", _h);
 
 
 					}
@@ -103,12 +119,13 @@ script.
 				
 					else if (d.group) {
 						_text = d.name+" - "+d.group;
-						_fontSize=14;
+						_fontSize=18;
 						_weight="bold";
 					}
 					else {
 						_text =d.name;
-						_fontSize=10;
+						_fontSize=12;
+						_weight="bold";
 					}
 						
 					 

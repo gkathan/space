@@ -1,0 +1,48 @@
+include ../kanban_menu
+
+block content
+
+	div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;background-color:white;;width:1400px;text-align: center;margin: 10px auto;")
+		.panel-heading
+			h3.panel-title(style="font-size:24px;font-weight:bold") OUTCOMES
+		.panel-body
+		
+		div(style="text-align:center")
+			table(style="margin:0 auto")
+				tr
+					td
+					td(style="text-align:left;font-weight:bold;padding-left:10px")
+						img(src='/images/employees/#{employee["Employee Number"]}' height="80px")
+				tr
+					td(style="text-align:right") name:
+					td(style="text-align:left;font-weight:bold;padding-left:10px") #{employee["Full Name"]}
+				tr
+					td(style="text-align:right") job:
+					td(style="text-align:left;font-weight:bold;padding-left:10px") #{employee["Corporate Job Title"]}
+				tr
+					td(style="text-align:right") location: 
+					td(style="text-align:left;font-weight:bold;padding-left:10px") #{employee["Location"]}
+				tr
+					td(style="text-align:right") cost center: 
+					td(style="text-align:left;font-weight:bold;padding-left:10px") #{employee["Cost Centre"]}
+				tr
+					td(style="text-align:right") boss: 
+					td(style="text-align:left;font-weight:bold;padding-left:10px") 
+						a(href='/targets/employeeoutcomes/#{employee["Supervisor Employee Number"]}') #{employee["Supervisor Full Name"]}
+			
+		
+		br
+		table.table.table-striped.table-hover.table-condensed
+			thead
+				tr
+					th(style="width:150px") L2Targets 
+					th(style="width:150px") Outcome Title
+					th(style="width:150px") Outcome Description
+					th(style="width:150px") Success Criteria
+			tbody
+				each o in outcomes
+					tr
+						td(style="text-align:left;vertical-align:middle") #{o.L2Targets}
+						td(style="vertical-align:top;text-align:left;font-size:11px;vertical-align:middle") #{o.title} 
+						td(style="vertical-align:top;text-align:left;font-size:11px;vertical-align:middle") #{o.description} 
+						td(style="vertical-align:top;text-align:left;font-size:11px;vertical-align:middle") #{o.successCriteria} 

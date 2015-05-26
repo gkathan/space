@@ -10,5 +10,6 @@ temp
 config/secret.json
 Dockerfile
 public/files
+public/images/employees
 change.log
 !.gitignore

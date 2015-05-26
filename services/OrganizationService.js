@@ -31,6 +31,8 @@ exports.getEmployeesByTargets = _getEmployeesByTargets;
 exports.syncEmployeeImages = _syncEmployeeImages;
 exports.getOrganizationHistoryDates = _getOrganizationHistoryDates;
 exports.findTarget2EmployeeMapping = _findTarget2EmployeeMapping;
+exports.findTarget2EmployeeMappingClustered = _findTarget2EmployeeMappingClustered;
+exports.findOutcomesForEmployee = _findOutcomesForEmployee;
 
 
 /**
@@ -40,7 +42,7 @@ function _findEmployeeByFirstLastName(firstname,lastname, callback) {
 	logger.debug("findEmployeeByFirstLastName first: "+firstname+", last: "+lastname);
 	var organization =  db.collection('organization');
 		organization.find({'First Name':firstname,'Last Name':lastname}).sort({$natural:1}, function (err, docs){
-			if (docs) logger.debug("[ok] found some shit ... : "+JSON.stringify(docs));
+			if (docs) logger.debug("[ok] found some stuff ... : "+JSON.stringify(docs));
 			callback(err,docs[0]);
 			return;
 	});
@@ -50,7 +52,7 @@ function _findEmployeeById(employeeId, callback) {
 	logger.debug("findEmployeeById ID: "+employeeId);
 	var organization =  db.collection('organization');
 		organization.findOne({'Employee Number':employeeId}, function (err, result){
-			if (result) logger.debug("[ok] found some shit ... : "+JSON.stringify(result));
+			if (result) logger.debug("[ok] found some stuff ... : "+JSON.stringify(result));
 			callback(err,result);
 			return;
 	});
@@ -62,7 +64,7 @@ function _findEmployeesByFilter(filter, callback) {
 	logger.debug("findEmployeesByFilter filter: "+filter);
 	var organization =  db.collection('organization');
 		organization.find(filter).sort({$natural:1}, function (err, docs){
-			if (docs) logger.debug("[ok] found some shit ... : "+docs);
+			if (docs) logger.debug("[ok] found some stuff ... : "+docs.length+" employees");
 			callback(err,docs);
 			return;
 	});
@@ -74,7 +76,7 @@ function _findEmployeesByFunction(_function, callback) {
 
 	var organization =  db.collection('organization');
 		organization.find({'Function':_function}).sort({$natural:1}, function (err, docs){
-			if (docs) logger.debug("[ok] found some shit ... : "+docs);
+			if (docs) logger.debug("[ok] found some stuff ... : "+docs.length+ " employees");
 			callback(err,docs);
 			return;
 	});
@@ -84,7 +86,7 @@ function _findEmployees(callback) {
 	logger.debug("findEmployees: all");
 	var organization =  db.collection('organization');
 		organization.find({}).sort({$natural:1}, function (err, docs){
-			if (docs) logger.debug("[ok] found some shit ... : "+docs);
+			if (docs) logger.debug("[ok] found some stuff ... : "+docs.length+" employees");
 			callback(docs);
 			return;
 	});
@@ -102,6 +104,43 @@ function _findTarget2EmployeeMapping(callback) {
 }
 
 /**
+gets the targets per clustered employee
+*/
+function _findTarget2EmployeeMappingClustered(callback) {
+	logger.debug("findTarget2EmployeeMappingClustered");
+	_.nst = require('underscore.nest');
+
+	_findTarget2EmployeeMapping(function(err,docs){
+			//if (docs) logger.debug("[ok] found some shit ... : "+docs);
+			docs = _.nst.nest(docs,["employeeId"])
+			callback(err,docs);
+			return;
+	});
+}
+
+function _findOutcomesForEmployee(employeeId,callback) {
+	logger.debug("_findOutcomesForEmployee: "+employeeId);
+
+	var _outcomes =[];
+	_findTarget2EmployeeMappingClustered(function(err,employees){
+			var _targets=_.findWhere(employees.children,{name:employeeId});
+			if (_targets && _targets.children){
+				logger.debug("_targets.children: "+_targets.children.length);
+				for (var t in _targets.children){
+					var _target = _targets.children[t];
+					_outcomes.push({L2Targets:_target.targets,title:_target.outcomeTitle,description:_target.outcomeDescription,successCriteria:_target.successCriteria});
+				}
+				callback(err,_outcomes);
+				return;
+			}
+			else{
+				callback(err,null);
+			}
+	});
+}
+
+
+/**
 * returns target arrays and per target mapped the employees
 * param target2employeeMApping (input from HR)
 	[
@@ -115,9 +154,16 @@ function _findTarget2EmployeeMapping(callback) {
 			{"R1.2":["E2987"]},
 			{"G1.2":["E2988","E2987"]}
 		]
+
+param showEmployeeTree supported values are "costcenter,location,function,organization,vertical"
+param showZTargetTree supported values are "theme,group,cluster"
 */
-function _getEmployeesByTargets(target2employeeMapping,pickL2,callback) {
+function _getEmployeesByTargets(target2employeeMapping,pickL2,showTargetTree,showEmployeeTree,callback) {
 	logger.debug("getEmployeesByTargets for mapping");
+	var _showTargetTree;
+	var _showEmployeeTree;
+	if (showTargetTree) _showTargetTree=showTargetTree.split(",");
+	if (showEmployeeTree) _showEmployeeTree=showEmployeeTree.split(",");
 
 	var targetService = require('./TargetService');
 
@@ -126,7 +172,6 @@ function _getEmployeesByTargets(target2employeeMapping,pickL2,callback) {
 		targetService.getL2(_context,function(err,targets){
 			logger.debug("************ L2Targets: "+targets.length);
 			var _targets=[];
-
 			for (var i in target2employeeMapping){
 				var _map = target2employeeMapping[i];
 				for (var t in _map.targets){
@@ -167,20 +212,25 @@ function _getEmployeesByTargets(target2employeeMapping,pickL2,callback) {
 								_costcenter = _employee["Cost Centre"];
 								_location = _employee["Location"];
 								_function = _employee["Function"];
+								_organization = _employee["Organization"];
+								_vertical = _employee["Vertical"];
 							}
 
 							// check whether this employee is already in
 							if (!_.findWhere(_target.children,{"id":_map.employeeId})){
-								_targetBucket.children.push({id:_map.employeeId,name:_map.employeeName,location:_location,function:_function,costCenter:_costcenter});
+								_targetBucket.children.push({id:_map.employeeId,name:_map.employeeName,location:_location,function:_function,costCenter:_costcenter,vertical:_vertical,organization:_organization});
 							}
 						}
 					} // end if (_target)
 				}
 			}
 
-			var _showTargetTree=null;//["theme"];
-			var _showEmployeeTree=["costCenter"];
+			//var _showTargetTree=["theme"];
+			//var _showEmployeeTree=["costCenter"];
 			//var pickL2 = "G1.1";
+
+			logger.debug("+++++++++++++++ showEmployeeTree: "+showEmployeeTree);
+			logger.debug("+++++++++++++++ showTargetTree: "+showTargetTree);
 
 			if (pickL2){
 				_data = _.where(_data,{"name":pickL2});
@@ -207,8 +257,11 @@ function _getEmployeesByTargets(target2employeeMapping,pickL2,callback) {
 			}
 			else{
 				logger.debug("***************** _data: "+JSON.stringify(_data));
-				var _context = _.findWhere(targets,{"id":pickL2}).theme;
-				_results.push({name:_context,children:_data})
+				var _pickedTarget = _.findWhere(targets,{"id":pickL2});
+				if (_pickedTarget){
+					var _context = _pickedTarget.theme;
+					_results.push({name:_context,children:_data})
+				}
 			}
 			callback(err,_results);
 		})
@@ -225,30 +278,24 @@ function _syncEmployeeImages(filter,callback) {
 	var fs = require('fs');
   var request = require('request');
 
-/*
-	var download = function(uri, filename, callback){
-		request.head(uri, function(err, res, body){
-			//console.log('content-type:', res.headers['content-type']);
-			//console.log('content-length:', res.headers['content-length']);
-
-			request(uri).pipe(fs.createWriteStream(filename)).on('close', callback);
-		});
-	};
-*/
 	logger.debug("***** sync....");
-
 
 	var organization =  db.collection('organization');
 		organization.find(filter).sort({$natural:1}, function (err, docs){
-
 			if (docs){
 				for (var employee in docs){
 					logger.debug(employee+" :  E: "+docs[employee]["First Name"]+" "+docs[employee]["Last Name"]);
 					var _id = docs[employee]["Employee Number"];
 					var _imageURL = "http://my.bwinparty.com/api/people/images/";
 
+
+					// [TODO]
+					// 1) detect type (PngService.detectType)
+					// 2) convert everything to png which is not png
+					// 3) squarifyandcirclecrop
+
 					//Lets define a write stream for our destination file
-					var destination = fs.createWriteStream('./'+_id+'.jpg');
+					var destination = fs.createWriteStream('./temp/'+_id);
 
 
 					//Lets save the modulus logo now
