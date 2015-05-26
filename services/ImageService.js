@@ -14,7 +14,7 @@ var lwip = require('lwip');
 var winston = require('winston');
 var logger = winston.loggers.get('space_log');
 
-exports.squarifyAndCircleCrop = _squarifyAndCircleCrop;
+exports.circleCrop = _circleCrop;
 exports.detectType = _detectType;
 exports.convertToSquarePng = _convertToSquarePng;
 
@@ -42,12 +42,17 @@ function _convertToSquarePng(_source,size,callback){
 			var _ratio = _w/size;
 
 			image.resize(_w/_ratio,_h/_ratio,"lanczos",function(err,image){
-
+				logger.debug("4) lwip images resize: [OK] width: "+(_w/_ratio)+" height: "+_h/_ratio);
 		    var _cropSize = size;
 		    image.crop(_cropSize,_cropSize,function(err,image){
-		      //image.toBuffer("png",{},function(err,buffer){
+		      if (err){
+							logger.error("5) lwip image crop: [FAILED] "+err.message);
+					}
+					logger.debug("5) lwip image crop: [OK] "+_cropSize+" cropSize");
+					//image.toBuffer("png",{},function(err,buffer){
+
 					image.writeFile(_source+"_square.png","png",{},function(err,buffer){
-		        logger.debug("4) lwip writes PNG file..."+_source+"_square.png");
+		        logger.debug("6) lwip writes PNG file..."+_source+"_square.png");
 						callback(err,"OK");
 		      })
 		    })
@@ -61,12 +66,15 @@ function _convertToSquarePng(_source,size,callback){
 * and circle crops it
 * and saves it as "source_circle.png"
 */
-function _squarifyAndCircleCrop(source,callback) {
+function _circleCrop(source,callback) {
+
 	PNGImage.readImage(source, function (err,image) {
 			if (err){
 				logger.debug("Error: "+err.message);
 			}
 			else if (image){
+				logger.debug("+++++ IMAGE read [OK] _circleCrop for: "+source);
+				/*
 				// Get width and height
 		    var _w = image.getWidth();
 		    var _h = image.getHeight();
@@ -85,6 +93,11 @@ function _squarifyAndCircleCrop(source,callback) {
 		      _clipX = _diff;
 		    }
 		    image.clip(_clipX, _clipY, _w, _w);
+				*/
+
+				var _outCircle = source+"_circle";
+
+
 				image.toBlob( function(err,blob){
 		      //  circle crop
 					var _type = _detectType(blob);

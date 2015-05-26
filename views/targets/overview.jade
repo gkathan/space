@@ -241,7 +241,9 @@ mixin renderTargetDetail(target)
 					td(style="text-align:right;font-style:italic;color:grey;font-size:10px;vertical-align:top")
 						|contributors
 					td
-						a(href="#" id="targetContributors" style=";font-size:12px;vertical-align:top")
+						a(href="#" id="targetContributorTree" style=";font-size:12px;vertical-align:top")
+						br
+						a(href="#" id="targetContributorList" style=";font-size:12px;vertical-align:top")
 						
 				tr(style="vertical-align:middle")
 					td(style="text-align:right;font-style:italic;color:grey;font-size:10px;vertical-align:top")
@@ -396,8 +398,13 @@ script.
 		$(".modal-body #targetLink").text(_link);
 		$(".modal-body #targetComments").text(_comments);
 		$(".modal-body #targetSponsor").text(_sponsor);
-		$(".modal-body #targetContributors").text(_contributors);
-		$(".modal-body #targetContributors").attr("href","/targets/employee2target?pickL2="+_id);
+		
+		$(".modal-body #targetContributorTree").html("&rarr; show outcome2employee 'broccoli'");
+		$(".modal-body #targetContributorTree").attr("href","/targets/employee2target?pickL2="+_id);
+		
+		$(".modal-body #targetContributorList").html("&rarr; show target2employee list");
+		$(".modal-body #targetContributorList").attr("href","/targets/target2outcomes/"+_id);
+		
 		$(".modal-body #targetTime").text(_time);
 		$(".modal-body #targetRAGComment").text(_ragComment);
 

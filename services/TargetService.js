@@ -17,6 +17,7 @@ var logger = winston.loggers.get('space_log');
 
 exports.getL1 = _getL1;
 exports.getL2 = _getL2;
+exports.getL2ById = _getL2ById;
 
 exports.getAll = _getAll;
 exports.getL2Tree = _getL2Tree;
@@ -39,6 +40,16 @@ function _getL2(context,callback) {
 		return;
 	});
 }
+
+function _getL2ById(context,id,callback) {
+	var targets =  db.collection('targets');
+	targets.findOne({context:context,"type":"L2",id:id}, function (err, target){
+		callback(err,target);
+		return;
+	});
+}
+
+
 
 function _getAll(context,callback) {
 	var targets =  db.collection('targets');

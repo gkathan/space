@@ -7,7 +7,8 @@ var config = require('config');
 
 var mongojs = require('mongojs');
 
-var _ = require('lodash');
+_ = require('lodash');
+	_.nst = require('underscore.nest');
 
 var DB=config.database.db;
 var HOST = config.database.host;
@@ -32,6 +33,7 @@ exports.syncEmployeeImages = _syncEmployeeImages;
 exports.getOrganizationHistoryDates = _getOrganizationHistoryDates;
 exports.findTarget2EmployeeMapping = _findTarget2EmployeeMapping;
 exports.findTarget2EmployeeMappingClustered = _findTarget2EmployeeMappingClustered;
+exports.getTarget2EmployeeMappingByL2Target = _getTarget2EmployeeMappingByL2Target;
 exports.findOutcomesForEmployee = _findOutcomesForEmployee;
 
 
@@ -42,6 +44,7 @@ function _findEmployeeByFirstLastName(firstname,lastname, callback) {
 	logger.debug("findEmployeeByFirstLastName first: "+firstname+", last: "+lastname);
 	var organization =  db.collection('organization');
 		organization.find({'First Name':firstname,'Last Name':lastname}).sort({$natural:1}, function (err, docs){
+			if (err) logger.error("[ERROR] something went wrong..."+err.message);
 			if (docs) logger.debug("[ok] found some stuff ... : "+JSON.stringify(docs));
 			callback(err,docs[0]);
 			return;
@@ -87,7 +90,7 @@ function _findEmployees(callback) {
 	var organization =  db.collection('organization');
 		organization.find({}).sort({$natural:1}, function (err, docs){
 			if (docs) logger.debug("[ok] found some stuff ... : "+docs.length+" employees");
-			callback(docs);
+			callback(err, docs);
 			return;
 	});
 }
@@ -108,7 +111,6 @@ gets the targets per clustered employee
 */
 function _findTarget2EmployeeMappingClustered(callback) {
 	logger.debug("findTarget2EmployeeMappingClustered");
-	_.nst = require('underscore.nest');
 
 	_findTarget2EmployeeMapping(function(err,docs){
 			//if (docs) logger.debug("[ok] found some shit ... : "+docs);
@@ -117,6 +119,41 @@ function _findTarget2EmployeeMappingClustered(callback) {
 			return;
 	});
 }
+
+
+/**
+gets the targets per clustered employee
+*/
+function _getTarget2EmployeeMappingByL2Target(L2TargetId,callback) {
+	logger.debug("_getTarget2EmployeeMappingByL2Target for L2TargetId: "+L2TargetId);
+
+	_findTarget2EmployeeMappingClustered(function(err,docs){
+		_findEmployees(function(err,allEmployees){
+				logger.debug("allEmployees.length: "+allEmployees.length);
+				var _employees=[];
+				logger.debug("docs.children length: "+docs.children.length);
+
+				for (var i in docs.children){
+					var _employee = docs.children[i];
+					//logger.debug("*** _employee: "+JSON.stringify(_employee));
+					var _e ={employee:_.findWhere(allEmployees,{"Employee Number":_employee.name}),outcomes:[]};
+					// targets - outcomes
+					for (var o in _employee.children){
+						var _target = _employee.children[o];
+
+						if (_target.targets.indexOf(L2TargetId)>-1) {
+							logger.debug("*** _target: MATCH !!!!"+_target.targets);
+							_e.outcomes.push({id:_target.id,title:_target.outcomeTitle,description:_target.outcomeDescription,successCriteria:_target.successCriteria});
+						}
+					}
+					_employees.push(_e);
+				}
+				callback(err,_employees);
+				return;
+		});
+	})
+}
+
 
 function _findOutcomesForEmployee(employeeId,callback) {
 	logger.debug("_findOutcomesForEmployee: "+employeeId);
@@ -168,7 +205,7 @@ function _getEmployeesByTargets(target2employeeMapping,pickL2,showTargetTree,sho
 	var targetService = require('./TargetService');
 
 	var _context="bpty.studios";
-	_findEmployees(function(employees){
+	_findEmployees(function(err,employees){
 		targetService.getL2(_context,function(err,targets){
 			logger.debug("************ L2Targets: "+targets.length);
 			var _targets=[];

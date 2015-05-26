@@ -1,5 +1,6 @@
 var winston = require('winston');
 
+
 winston.loggers.add('test_log',{
 	console:{
 		colorize:true,
@@ -44,6 +45,19 @@ describe('OrganizationService', function(){
     })
   })
 
+
+  describe('#_findEmployeeByFirstLastName()', function(){
+    it('should return a employee record for a given first and last name', function(done){
+			var orgService = require('../services/OrganizationService');
+      orgService.findEmployeeByFirstLastName("Christoph","Haas", function(err,employee){
+				console.log("******************** employee found: "+employee);
+				assert.equal("E8116", employee["Employee Number"]);
+				done();
+			});
+    })
+  })
+
+
 	describe('#getEmployeesByTarget()', function(){
     it('should return per target the employees mapped to them', function(done){
 			var orgService = require('../services/OrganizationService');
@@ -59,31 +73,49 @@ describe('OrganizationService', function(){
 			*/
 
 
-			orgService.getEmployeesByTargets(_mapping,function(err,result){
+			orgService.getEmployeesByTargets(_mapping,null,null,null,function(err,result){
 				logger.debug("**");
 				logger.debug("++++++++++++++++ : "+result["G1.2"]);
+
+				/*
 				assert.equal("E2988", result["R1.1"][0]);
 				assert.equal("E2987", result["R1.2"][0]);
 				assert.equal("E2988", result["G1.2"][0]);
 				assert.equal("E2987", result["G1.2"][1]);
-
+*/
 
 				done();
 			});
     })
   })
 
-	  describe('#findEmployeesByFilter(filter)', function(){
-	    it('should return employees record for a given filter', function(done){
-				var orgService = require('../services/OrganizationService');
-	      orgService.findEmployeesByFilter({"Cost Centre":"Studios Commercial Management"},function(err,employees){
+  describe('#findEmployeesByFilter(filter)', function(){
+    it('should return employees record for a given filter', function(done){
+			var orgService = require('../services/OrganizationService');
+      orgService.findEmployeesByFilter({"Cost Centre":"Studios Commercial Management"},function(err,employees){
 
-					console.log("employees found: "+employees.length);
-					//assert.equal("E2988", employee["Employee Number"]);
-					done();
-				});
-	    })
-	  })
+				console.log("employees found: "+employees.length);
+				//assert.equal("E2988", employee["Employee Number"]);
+				done();
+			});
+    })
+  })
+
+  describe('#_getTarget2EmployeeMappingByL2Target(L2TargetId)', function(){
+    it('should return employees records for a given L2TargetId', function(done){
+			var L2TargetId = "G1.1";
+
+			var orgService = require('../services/OrganizationService');
+      orgService.getTarget2EmployeeMappingByL2Target(L2TargetId,function(err,employees){
+
+				console.log("employees found for target: "+L2TargetId+": "+employees.length);
+				//assert.equal("E2988", employee["Employee Number"]);
+				done();
+			});
+    })
+  })
+
+
 
 
 })

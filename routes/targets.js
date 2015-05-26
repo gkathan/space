@@ -49,14 +49,45 @@ router.get('/employee2target', function(req, res, next) {
 	logger.debug("--------- showEmployeeTree: "+showEmployeeTree);
 	logger.debug("--------- showTargetTree: "+showTargetTree);
 
-
 	res.locals.pickL2=pickL2;
 	res.locals.showTargetTree=showTargetTree;
 	res.locals.showEmployeeTree=showEmployeeTree;
 
-
 	res.render('targets/employee2target')
 });
+
+
+
+
+
+router.get('/target2outcomes/:L2TargetId', function(req, res, next) {
+	var L2TargetId = req.params.L2TargetId;
+
+	var orgService = require('../services/OrganizationService');
+
+
+	logger.debug("--------- L2TargetId: "+L2TargetId);
+	var targetService = require('../services/TargetService');
+	targetService.getL2ById(config.context,L2TargetId,function(err,L2Target){
+
+		var _first = L2Target.sponsor.split(" ")[0];
+		var _last = _.rest(L2Target.sponsor.split(" ")).join(" ");
+		logger.debug("L2Target.sponsor: "+L2Target.sponsor);
+		logger.debug("first: "+_first+ "last: "+_last);
+
+		orgService.findEmployeeByFirstLastName(_first, _last,function(err,sponsor){
+				logger.debug("***** sponsor: "+sponsor);
+				res.locals.target = L2Target;
+				orgService.getTarget2EmployeeMappingByL2Target(L2TargetId,function(err,employees){
+						res.locals.sponsor = sponsor;
+						res.locals.employees = employees;
+						res.render('targets/target2outcomes');
+
+				})
+		})
+	})
+});
+
 
 router.get('/employeeoutcomes/:employeeId', function(req, res, next) {
 	var employeeId = req.params.employeeId;
@@ -76,10 +107,8 @@ router.get('/employeeoutcomes/:employeeId', function(req, res, next) {
 				res.render('targets/employeeoutcomes');
 				//res.send("no outcomes (yet;-) for: "+employee["Full Name"]);
 			}
-
 		})
 	})
-
 });
 
 

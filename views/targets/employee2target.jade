@@ -8,7 +8,7 @@ script.
 	
 	
 	var width = 1000
-	var height = 500;
+	var height = 700;
 	
 	var _charge = -80;
 	var _distance = 120;
@@ -83,9 +83,10 @@ script.
 						d3.select(this).append("text").text(function(d){return d.name+" "+d.id}).style("font-size","6px").style("font-weight",_weight).style("font-family","arial").attr("dy",_h+8).style("text-anchor","middle");
 						
 						//var _imageSource="http://my.bwinparty.com/api/people/images/";
-						var _imageSource="/images/employees/";
+						var _imageSource="/images/employees/squared/";
+						var _imageExtension ="_square.png";
 						
-						d3.select(this).append("svg:image").attr("xlink:href", function(d){return _imageSource+d.id;}).attr("imageID",d.id).attr("x", _x).attr("y", _y).attr("width", _w).attr("height", _h);
+						d3.select(this).append("svg:image").attr("xlink:href", function(d){return _imageSource+d.id+_imageExtension;}).attr("imageID",d.id).attr("x", _x).attr("y", _y).attr("width", _w).attr("height", _h);
 
 
 					}

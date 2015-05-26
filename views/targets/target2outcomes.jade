@@ -1,0 +1,88 @@
+include ../kanban_menu
+
+mixin renderEmployee(employee,nameSize,imageSize)
+	table
+		tr
+			td(rowspan="2")
+				img.img-circle(src='/images/employees/squared/#{employee["Employee Number"]}_square.png' height="#{imageSize}px") 
+			td(style="padding-left:5px;font-size:#{nameSize}px")
+				|#{employee["First Name"]} #{employee["Last Name"]}
+		tr
+			td(style="padding-left:5px")
+				span(style="font-size:10px;font-weight:normal;") #{employee["Organization"]}
+				
+
+block content
+
+	div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;background-color:white;;width:1000px;text-align: center;margin: 10px auto;")
+		.panel-heading
+			h3.panel-title(style="font-size:24px;font-weight:bold") L2 TARGET &rarr; EMPLOYEES &rarr; OUTCOMES 
+		.panel-body
+		
+		div(style="text-align:center")
+
+			
+			table.table.table-responsive(style="margin:0 auto;max-width:580px")
+						
+				tr
+					td(style="text-align:right;font-size:10px") L2:
+					td(style="text-align:left;font-weight:bold;padding-left:10px;font-size:16px") 
+						|#{target.id} | #{target.target} 
+						img(id="modal_group_icon" src="/images/iconexp/#{target.icon}" height="25px")
+
+				tr
+					td(style="text-align:right;font-size:10px") L1:
+					td(style="text-align:left;font-weight:normal;padding-left:10px") 
+						//img(id="modal_group_icon" src="/images/iconexp/#{target.icon}" height="25px")
+						|#{target.group} | #{target.cluster} | #{target.theme} 
+
+				tr
+					td(style="text-align:right;font-size:10px") Outcome:
+					td(style="text-align:left;font-weight:normal;padding-left:10px;font-size:12px;vertical-align:top") 
+						//img(id="modal_group_icon" src="/images/iconexp/#{target.icon}" height="25px")
+						| #{target.outcome} 
+
+				tr
+					td(style="text-align:right;font-size:10px") Description:
+					td(style="text-align:left;font-weight:normal;padding-left:10px;font-size:12px") 
+						//img(id="modal_group_icon" src="/images/iconexp/#{target.icon}" height="25px")
+						| #{target.description} 
+
+				tr
+					td(style="text-align:right;font-size:10px") Measure:
+					td(style="text-align:left;font-weight:normal;padding-left:10px;font-size:12px") 
+						//img(id="modal_group_icon" src="/images/iconexp/#{target.icon}" height="25px")
+						| #{target.measure} 
+
+				tr
+					td(style="text-align:right;font-size:10px") Timeline:
+					td(style="text-align:left;font-weight:normal;padding-left:10px;font-size:12px") 
+						//img(id="modal_group_icon" src="/images/iconexp/#{target.icon}" height="25px")
+						| #{target.byWhen} 
+
+				tr(style="padding-top:20px")
+					td(style="text-align:right;font-size:10px") sponsor:
+					td(style="text-align:left;font-weight:bold;padding-left:10px") 
+						+renderEmployee(sponsor,16,40)
+		br
+		hr
+		table.table.table-striped.table-hover.table-condensed.table-responsive
+			thead
+				tr
+					th(style="width:200px") Employee 
+					th(style="width:200px") Outcome Title
+					th(style="width:150px") Outcome Description
+					th(style="width:150px") Success Criteria
+			tbody
+				each e in employees 
+					each o in e.outcomes
+						tr
+							td(style="text-align:left;vertical-align:middle;font-size:12px;font-weight:bold") 
+								+renderEmployee(e.employee,12,30)
+											
+								
+							
+								
+							td(style="text-align:left;vertical-align:middle;font-size:11px") #{o.title}
+							td(style="text-align:left;vertical-align:middle;font-size:10px") #{o.description}
+							td(style="text-align:left;vertical-align:middle;font-size:10px") #{o.successCriteria}
