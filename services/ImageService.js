@@ -14,16 +14,19 @@ var lwip = require('lwip');
 var winston = require('winston');
 var logger = winston.loggers.get('space_log');
 
-exports.circleCrop = _circleCrop;
+
 exports.detectType = _detectType;
-exports.convertToSquarePng = _convertToSquarePng;
+exports.convertToCirclePng = _convertToCirclePng;
 
 /**
 *
-scales down to normalized size
-converts to PNG
++ converts to png
++ scales down to normalized size
++ squarifies crop
++ circle crop
++ save as png
 */
-function _convertToSquarePng(_source,size,callback){
+function _convertToCirclePng(_source,size,callback){
 	_openFile(_source,function(err,buffer){
 	  logger.debug("1) loaded file: "+_source+" into buffer...");
 	  var _type;
@@ -36,9 +39,6 @@ function _convertToSquarePng(_source,size,callback){
 	    var _h = image.height();
 	    logger.debug("3) lwip loaded buffer: "+_source+" width: "+_w+" - height: "+_h);
 
-			//image.resize(width, height, inter, callback)
-			//resize image down to width =100
-			// width =800 => ratio = 8
 			var _ratio = _w/size;
 
 			image.resize(_w/_ratio,_h/_ratio,"lanczos",function(err,image){
@@ -46,88 +46,50 @@ function _convertToSquarePng(_source,size,callback){
 		    var _cropSize = size;
 		    image.crop(_cropSize,_cropSize,function(err,image){
 		      if (err){
-							logger.error("5) lwip image crop: [FAILED] "+err.message);
+						logger.error("5) lwip image crop: [FAILED] "+err.message);
 					}
 					logger.debug("5) lwip image crop: [OK] "+_cropSize+" cropSize");
-					//image.toBuffer("png",{},function(err,buffer){
-
-					image.writeFile(_source+"_square.png","png",{},function(err,buffer){
-		        logger.debug("6) lwip writes PNG file..."+_source+"_square.png");
-						callback(err,"OK");
-		      })
+					image.toBuffer("png",{},function(err,buffer){
+						logger.debug("6) lwip creates buffer...");
+						_toCircle(_source,buffer,function(err,result){
+			        logger.debug("7) lwip writes PNG file..."+_source+"_circle.png");
+							callback(err,"OK");
+	      		})
+	      	})
 		    })
 	  	})
 	  })
 	});
 }
 
-/**
-* clips (if not already) a square image
-* and circle crops it
-* and saves it as "source_circle.png"
-*/
-function _circleCrop(source,callback) {
 
-	PNGImage.readImage(source, function (err,image) {
-			if (err){
-				logger.debug("Error: "+err.message);
+
+function _toCircle(source,buffer,callback){
+	logger.debug("_toCircle for buffer called...");
+	var bufferStream = new stream.PassThrough();
+	bufferStream.end( buffer );
+	bufferStream
+		.pipe(new PNG({
+				filterType: 4
+		}))
+		.on('parsed', function() {
+		for (var y = 0; y < this.height; y++) {
+			for (var x = 0; x < this.width; x++) {
+				var idx = (this.width * y + x) << 2;
+				var radius = this.width / 2;
+				if(y >= Math.sqrt(Math.pow(radius, 2) - Math.pow(x - radius, 2)) + radius || y <= -(Math.sqrt(Math.pow(radius, 2) - Math.pow(x - radius, 2))) + radius) {
+						this.data[idx + 3] = 0;
+				}
 			}
-			else if (image){
-				logger.debug("+++++ IMAGE read [OK] _circleCrop for: "+source);
-				/*
-				// Get width and height
-		    var _w = image.getWidth();
-		    var _h = image.getHeight();
-				var _outCircle = source+"_circle";
-		    // clipping diff from top and bottom if source is not square format
-		    var _diff = 0;
-		    var _clipX = 0;
-		    var _clipY = 0;
-
-		    if (_h > _w){
-		      _diff=(_h-_w)/2;
-		      _clipY = _diff;
-		    }
-		    else if (_h < _w){
-		      _diff=(_w-_h)/2;
-		      _clipX = _diff;
-		    }
-		    image.clip(_clipX, _clipY, _w, _w);
-				*/
-
-				var _outCircle = source+"_circle";
-
-
-				image.toBlob( function(err,blob){
-		      //  circle crop
-					var _type = _detectType(blob);
-					logger.debug("------------------------- type: "+_type);
-					if (_type=="png"){
-						var bufferStream = new stream.PassThrough();
-						bufferStream.end( blob );
-						bufferStream
-			        .pipe(new PNG({
-			            filterType: 4
-			        }))
-			        .on('parsed', function() {
-			        for (var y = 0; y < this.height; y++) {
-			          for (var x = 0; x < this.width; x++) {
-			            var idx = (this.width * y + x) << 2;
-			            var radius = this.width / 2;
-			            if(y >= Math.sqrt(Math.pow(radius, 2) - Math.pow(x - radius, 2)) + radius || y <= -(Math.sqrt(Math.pow(radius, 2) - Math.pow(x - radius, 2))) + radius) {
-			                this.data[idx + 3] = 0;
-			            }
-			          }
-			        }
-			        this.pack().pipe(fs.createWriteStream(__dirname + "/../"+_outCircle));
-			      });
-					} //end if (type=="png")
-		    })
-			callback(null,"OK");
-			} // end if (image)
-			else{
-				callback(null,"source: "+source+ "NOT OK");
-			}
+		}
+		var _dir = _.initial(source.split("/")).join("/");
+		var _file = _.last(source.split("/"));
+		logger.debug("_dir: "+_dir);
+		logger.debug("_file: "+_file);
+		var _out = _dir+"/"+_file+"_circle.png";
+		//logger.debug("_out: "+_out);
+		this.pack().pipe(fs.createWriteStream(_out));
+		callback(null,"ok");
 	});
 }
 
@@ -135,6 +97,7 @@ function _circleCrop(source,callback) {
 * thanks to http://stackoverflow.com/questions/8473703/in-node-js-given-a-url-how-do-i-check-whether-its-a-jpg-png-gif
 */
 function _detectType(buffer){
+	console.log("------------------");
 	var magic = {
 	    jpg: 'ffd8ffe0',
 			jpg2: 'ffd8ffe1',
