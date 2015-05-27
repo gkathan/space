@@ -71,7 +71,7 @@ router.post('/', function(req,res,next){
 				var sess = req.session;
 				sess.AUTH = user.role;
 				sess.USER = user.username;
-				sess.CONTEXT = config.context;
+				sess.CONTEXT = user.context;
 				//return res.json({detail: info});
 				res.send({AUTH:user.role,ORIGINAL_URL:req.session.ORIGINAL_URL});
 			});

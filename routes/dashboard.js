@@ -106,6 +106,61 @@ router.get('/firereport', function(req, res) {
 		});
 });
 
+
+
+/** cloned from firerport
+* [TODO] harmoniaze the crap again after bwin report is downtime
+*/
+router.get('/opsreport/:customer', function(req, res) {
+		var avc = require ('../services/AvailabilityCalculatorService');
+		var inc = require ('../services/IncidentService');
+
+		var _customer = req.params.customer;
+
+		//default is in config
+		var _from = moment().startOf('year').format("YYYY-MM-DD");
+		var _to = moment().format("YYYY-MM-DD");
+		var _customer;
+		var _filter = {customer:_customer};;
+
+		if (req.query.from)	 _from = req.query.from;//"2015-01-01";
+		if (req.query.to) _to = req.query.to;//"2015-01-10";
+
+
+		var labelService = require('../services/LabelService');
+
+		avc.calculateOverall(_from,_to,_filter,function(avDataOverall){
+			avc.calculateExternal(_from,_to,_filter,function(avDataExternal){
+				var _incfilter={openedAt:{$gte:new Date(_from),$lte:new Date(_to)},priority:"P01 - Critical"};
+
+				inc.findFiltered(_incfilter,function(err,snowIncidents){
+					logger.debug("++++++++++++++++++++++++++ all snow incidents.length: "+snowIncidents.length);
+					labelService.filterIncidents(snowIncidents,_customer,function(err,filteredIncidents){
+						logger.debug("++++++++++++++++++++++++++ filtered snow incidents.length: "+filteredIncidents.length);
+						res.locals.av = avDataOverall;
+						res.locals.labelService = labelService;
+						res.locals.customer = _customer;
+						res.locals.avExternal = avDataExternal;
+						res.locals.snowIncidents = filteredIncidents;
+						res.locals.coreDef = config.availability.coreTime
+						res.locals.moment = moment;
+						res.locals.from = _from;
+						res.locals.to = _to;
+						res.locals.filter = _filter;
+						res.locals.accounting=accounting;
+						logger.debug("*****customer: "+_customer);
+
+						res.render('dashboard/opsreport', { title: 's p a c e - firereport' });
+					})
+				});
+			});
+		});
+	});
+
+
+
+
+
 router.get('/corpIT', function(req, res) {
 		var apps=[{name:"lync",rag:"green"},{name:"servicenow",rag:"amber"},{name:"email",rag:"green"},{name:"versionone",rag:"green"},{name:"Pi",rag:"green"},{name:"oracle financials",rag:"green"},{name:"moss",rag:"green"},{name:"confluence",rag:"green"},{name:"myrewards",rag:"green"}];
 		var telephony=[{name:"polycom video conferencing",rag:"green"},{name:"telephony landlines",rag:"red"},{name:"blackberry",rag:"green"},{name:"other mobile",rag:"green"}];

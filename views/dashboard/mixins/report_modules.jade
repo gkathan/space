@@ -1,0 +1,310 @@
+
+
+mixin renderAVCoreDefinition(coreDef)
+	sup(style="font-size:8px") 
+		|3)
+	span(style="font-size:10px;font-style:italic") core time is configured as:
+	table(style="width:250px")
+		each t in coreDef
+			tr(style="line-height:12px")
+				td(style="width:100px;font-size:10px;text-align:right;font-weight:bold")
+					|#{moment().day(t.dayOfWeek).format('dddd')}&nbsp;&nbsp;&nbsp;
+				td(style="width:70px;font-size:11px")
+					|from: #{t.start}
+				td(style="width:70px;font-size:11px")
+					|to:  #{t.stop}
+
+mixin renderDisclaimer
+	hr
+	div(style="font-style:italic;font-size:10px")
+		sup 
+			|1)
+		|downtimes are per definition always "degraded" times by accordong SOC set degradation factor
+		br
+	div(style="font-style:italic;font-size:10px")
+		sup 
+			|2)
+		|revenue impact is an approximation
+		br
+	+renderAVCoreDefinition(coreDef)
+	br
+	div(style="font-style:italic;font-size:10px")
+		sup 
+			|4)
+		|SERVICES - EXTERNAL are "injected" as ProductIntegration in SERVICES OVERALL
+		br
+	hr
+
+			
+mixin renderAV(title,av,downtime,revenueImpact)
+	tr(style="line-height:32px;text-align:right")
+		td(style="width:150px;text-align:right;font-size:16px")
+			b #{title}:&nbsp;&nbsp;&nbsp; 
+		td(style="width:100px")
+			b(style="font-size:24px")
+				|#{formatAV(av.all)}
+		td(style="width:100px")
+			b(style="font-size:14px")
+				|#{formatAVTime(downtime.all)}
+		td(style="width:150px")
+			b(style="font-size:14px;color:red")
+				|-#{formatMoney(revenueImpact)}
+
+	tr(style="line-height:32px;text-align:right")
+		td(style="width:150px")
+			|CORE:&nbsp;&nbsp;&nbsp; 
+		td(style="width:100px")
+			div(style="font-size:20px")
+				|#{formatAV(av.core)}
+		td(style="width:100px")
+			div(style="font-size:14px")
+				|#{formatAVTime(downtime.core)}
+		td
+			div(style="font-size:10px")
+				| 
+	tr(style="line-height:32px;text-align:right")
+		td(style="width:150px;text-align:right")
+			|NON-CORE:&nbsp;&nbsp;&nbsp; 
+		td(style="width:100px")
+			div(style="font-size:20px")
+				|#{formatAV(av.nonCore)}
+		td(style="width:100px")
+			div(style="font-size:14px")
+				|#{formatAVTime(downtime.nonCore)}
+		td
+			div(style="font-size:10px")
+				| 
+
+mixin renderAVDowntime(title,downtime)
+	tr(style="line-height:24px;text-align:right")
+		td(style="width:200px;text-align:right")
+			b downtime*) #{title}:&nbsp;&nbsp;&nbsp; 
+		td(style="width:150px")
+			b(style="font-size:16px")
+				|#{formatAVTime(downtime.all)}
+	tr(style="line-height:24px;font-style:italic;text-align:right")
+		td(style="text-align:right")
+			|CORE:&nbsp;&nbsp;&nbsp; 
+		td
+			div(style="font-size:16px")
+				|#{formatAVTime(downtime.core)}
+	tr(style="line-height:24px;font-style:italic;text-align:right")
+		td(style="text-align:right")
+			|NON-CORE:&nbsp;&nbsp;&nbsp; 
+		td
+			div(style="font-size:16px")
+				|#{formatAVTime(downtime.nonCore)}						
+	
+mixin renderAVServicesList(title,av)
+	h2(style="text-align:center;font-weight:bold") #{title}
+	div(style="text-align:center")
+		table(style="margin:0 auto")
+			thead
+				tr(style="line-height:50px")
+					th(style="width:150px;text-align:right;font-size:14px") TYPE&nbsp;&nbsp;&nbsp;
+					th(style="width:100px;text-align:right;font-size:14px") AVAILABILITY
+						|&sup1;
+					th(style="width:100px;text-align:right;font-size:14px") DOWNTIME
+						|&sup2;
+					th(style="width:150px;text-align:right;font-size:14px;color:red") REVENUE IMPACT 
+						|&sup3;
+			tbody
+				+renderAV("PLANNED",av.av.planned,av.downtime.planned,av.revenueImpact.planned)
+				+renderAV("UNPLANNED",av.av.unplanned,av.downtime.unplanned,av.revenueImpact.unplanned)
+				+renderAV("TOTAL",av.av.total,av.downtime.total,(av.revenueImpact.planned+av.revenueImpact.unplanned))
+
+	hr
+	table.table-striped.table-hover.table-condensed(style="max-width:1000px")
+		thead
+			tr(style="line-height:14px;font-weight:bold;font-size:14px")
+				th(style="width:250px;text-align:right")
+					|service
+				th(style="width:100px;text-align:right")
+					|planned %
+				th(style="width:100px;text-align:right")
+					|planned t
+				th(style="width:100px;text-align:right")
+					|unplanned %
+				th(style="width:100px;text-align:right")
+					|unplanned t
+				th(style="width:100px;text-align:right")
+					|total %
+				th(style="width:100px;text-align:right")
+					|total t
+		tbody
+			each service in av.services
+				if service.filterExclude != true 
+					tr(style="line-height:14px;font-size:14px;text-align:right")
+						td
+							|#{service.ServiceName}
+						td
+							|#{formatAV(service.availability.planned.all)}
+						td
+							|#{formatAVTime(service.availability.planned.time)}
+						td
+							|#{formatAV(service.availability.unplanned.all)}
+						td
+							|#{formatAVTime(service.availability.unplanned.time)}
+						td
+							|#{formatAV(service.availability.total.all)}
+						td
+							|#{formatAVTime(service.availability.total.time)}
+
+	
+
+mixin renderSOCIncidentList(title,incidents)
+	h3(style="font-size:20px;font-weight:bold") #{title}
+	table.table-striped.table-hover.table-condensed(style="max-width:1000px")
+		thead
+			tr(style="line-height:16px;font-weight:bold")
+				th(style="width:40px;text-align:right")
+					|prio
+				th(style="width:90px;text-align:center")
+					|id
+				th(style="width:150px;text-align:left")
+					|description
+				th(style="width:80px;text-align:left")
+					|service
+				th(style="width:75px;text-align:center")
+					|start
+				th(style="width:75px;text-align:center")
+					|stop
+				th(style="width:60px;text-align:center")
+					|ttr
+				th(style="width:40px;text-align:right")
+					|deg
+				th(style="width:175px;text-align:left")
+					|rootCause
+				th(style="width:190px;text-align:left")
+					|label
+		tbody
+			each inc in incidents
+				tr(style="line-height:16px;font-size:12px")
+					td(style="text-align:right")
+						img(src="/images/incidents/#{inc.priority}.png" height="25px") 
+					td(style="text-align:right")
+						a(href="https://bwinparty.service-now.com/ess/incident.do?sys_id=#{inc.snowId}" target="_new")
+							|#{inc.incidentID}
+					td(style="text-align:left")
+						|#{inc.description}
+					td(style="text-align:left")
+						|#{inc.serviceName}
+					td(style="text-align:right")
+						|#{moment(inc.start).format("YYYY-MM-DD HH:mm:ss")}
+					td(style="text-align:right")
+						|#{moment(inc.stop).format("YYYY-MM-DD HH:mm:ss")}
+					td(style="text-align:right")
+						|#{(formatAVTime(inc.resolutionTime))}
+					td(style="text-align:right")
+						|#{inc.degradation}%
+					td(style="text-align:left")
+						|#{inc.rootCause}
+					td(style="text-align:left;font-size:10px")
+						|#{inc.labels}					
+
+mixin renderFromTo(from,to)
+	table
+		tr(style="line-height:14px")
+			td(style="width:40px;font-size:12px")
+				|from: 
+			td(style="width:80px;font-size:12px;font-weight:bold")
+				|#{from}
+		tr(style="line-height:14px")
+			td(style="font-size:12px")
+				|to: 
+			td(style="font-size:12px;font-weight:bold")
+				|#{to}
+
+mixin renderIncidentList(title,incidents)
+	div.panel.panel-default
+		div.panel-heading 
+			span(style="color:black;font-size:24px;font-weight:bold") #{title}
+			br
+			+renderFromTo(from,to)
+			
+		div.panel-body
+			table.table-striped.table-hover.table-condensed(style="max-width:1000px")
+				thead
+					tr(style="line-height:20px;font-weight:bold")
+						th(style="width:100px;text-align:center;border-bottom:1px solid black")
+							|Date
+						th(style="width:50px;text-align:right;border-bottom:1px solid black")
+							|Prio
+						th(style="width:100px;text-align:center;background:#efefef;font-weight:bold;border-bottom:1px solid black")
+							|Rev Impact
+						th(style="width:80px;text-align:center;border-bottom:1px solid black")
+							|Id
+						th(style="width:200px;text-align:left;border-bottom:1px solid black")
+							|Short Description
+						th(style="width:100px;text-align:left;border-bottom:1px solid black")
+							|Business Service
+						th(style="width:100px;text-align:right;border-bottom:1px solid black")
+							|TTR
+						th(style="width:200px;text-align:left;border-bottom:1px solid black")
+							|Label
+						th(style="width:60px;text-align:left;border-bottom:1px solid black")
+							|Problem
+
+				tbody
+					- var _rev = 0;
+					- var _sum =0;
+					- var _sumTTR=0;
+					each inc in incidents
+						- _sum++;	
+						- _sumTTR+=moment.duration(inc.timeToResolve);
+						tr(style="line-height:16px;font-size:12px")
+							td(style="text-align:right;font-size:10px")
+								|#{moment(inc.openedAt).format("YYYY-MM-DD")}
+							td(style="text-align:right;vertical-align:center")
+								img(src="/images/incidents/#{inc.priority.split(' ')[0]}.png" height="25px") 
+							td(style="text-align:right;background:#efefef;font-weight:bold;font-size:12px")
+								if inc.revenueImpact
+									|#{formatMoney(inc.revenueImpact)}
+									- _rev+=inc.revenueImpact;
+								else
+									|n/a
+							td(style="text-align:right;font-size:10px")
+								a(href="https://bwinparty.service-now.com/ess/incident.do?sys_id=#{inc.sysId}" target="_new")
+									|#{inc.id}
+							td(style="text-align:left;font-size:10px")
+								|#{inc.shortDescription}
+							td(style="text-align:left;font-size:10px")
+								|#{inc.businessService}
+							td(style="text-align:right")
+								|#{(formatAVTime(inc.timeToResolve))}
+							td(style="text-align:left;font-size:10px")
+									|#{inc.label}
+							td(style="text-align:left;font-size:10px")
+								if inc.problemId
+									|#{inc.problemId}
+					//sum row
+					tr(style="line-height:32px;font-size:12px")
+						td(colspan="2" style="text-align:right;border-top:1px solid black;border-bottom:1px solid black;")
+							b(style="font-size:24px") #{_sum} 
+							|Incidents
+						td(style="text-align:right;background:#efefef;font-weight:bold;font-size:18px;border-top:1px solid black;border-bottom:1px solid black")
+							if _rev
+								|#{formatMoney(_rev)}
+							else
+								|n/a
+						td(colspan="2" style="text-align:rightt;border-top:1px solid black;border-bottom:1px solid black;")
+							|Total Revenue Impact	
+						td(colspan="2" style="text-align:right;border-top:1px solid black;border-bottom:1px solid black")
+							b(style="font-size:18px;margin-top:15px") #{(formatAVTime(_sumTTR))}
+						td(colspan="2" style="text-align:left;border-top:1px solid black;border-bottom:1px solid black")
+							|Total Time to Resolve
+					//average row
+					tr(style="line-height:32px;font-size:12px")
+						td(colspan="2" style="text-align:right;border-top:1px solid black;border-bottom:2px solid black;")
+							
+						td(style="text-align:right;background:#efefef;font-weight:bold;font-size:18px;border-top:1px solid black;border-bottom:2px solid black")
+							if _rev
+								|#{formatMoney(_rev/_sum)}
+							else
+								|n/a
+						td(colspan="2" style="text-align:rightt;border-top:1px solid black;border-bottom:2px solid black;")
+							|Average Revenue Impact	
+						td(colspan="2" style="text-align:right;border-top:1px solid black;border-bottom:2px solid black")
+							b(style="font-size:18px;margin-top:15px") #{(formatAVTime(_sumTTR/_sum))}
+						td(colspan="2" style="text-align:left;border-top:1px solid black;border-bottom:2px solid black")
+							|Average Time to Resolve

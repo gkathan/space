@@ -53,7 +53,7 @@ function _getL2ById(context,id,callback) {
 
 function _getAll(context,callback) {
 	var targets =  db.collection('targets');
-
+	logger.debug("---- targets._getAll: context = "+context);
 	targets.find({context:{$regex: '^'+context}}).sort({context:-1}, function (err, docs){
 		if(err){
 			logger.info("error:"+err);

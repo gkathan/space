@@ -44,11 +44,44 @@ block content
 						li.active
 							a(href='/logout') logout
 
+						
+						
+
+
+					ul.nav.navbar-nav
+						li.dropdown(id="fat-menu")
+							a.dropdown-toggle(id="org" href="#" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false") initiatives & portfolio
+								span.caret
+							ul.dropdown-menu(role="menu" aria-labelledby="portfolio")
+								li(role="presentation")
+									a(role="menuitem" tabindex="-1" href="/portfolio") [portfolio meeting] list
+
+					
+				
+									
+					if session.AUTH && session.CONTEXT=="bpty.customer.bwin"
+						ul.nav.navbar-nav
+							li.dropdown(id="fat-menu")
+								a.dropdown-toggle(id="import" href="#" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false") reports
+									span.caret
+								ul.dropdown-menu(role="menu" aria-labelledby="reports")
+									li(role="presentation")
+										a(role="menuitem" tabindex="-1" href="/dashboard/opsreport/bwin") opsreport	
+						
+						ul.nav.navbar-nav
+							li.dropdown(id="fat-menu")
+								a.dropdown-toggle(id="import" href="#" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false") targets
+									span.caret
+								ul.dropdown-menu(role="menu" aria-labelledby="targets")
+									li(role="presentation")
+											a(role="menuitem" tabindex="-1" href="/targets/overview") targets overview
+					
+
+					if session.AUTH=="exec" || session.AUTH=="admin"
 						ul.nav.navbar-nav
 							li.dropdown(id="fat-menu")
 								a.dropdown-toggle(id="targets" href="#" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false") environment
 									span.caret
-
 								ul.dropdown-menu(role="menu" aria-labelledby="admin")
 									li(role="presentation")
 										a(role="menuitem" tabindex="-1" href="/customers") customers
@@ -64,11 +97,11 @@ block content
 										a(href='/incidentmatrix') incident matrix
 
 
+						
 						ul.nav.navbar-nav
 							li.dropdown(id="fat-menu")
 								a.dropdown-toggle(id="targets" href="#" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false") targets
 									span.caret
-
 								ul.dropdown-menu(role="menu" aria-labelledby="admin")
 									li(role="presentation")
 										a(role="menuitem" tabindex="-1" href="/targets/overview") targets overview
@@ -80,35 +113,18 @@ block content
 										a(role="menuitem" tabindex="-1" href="/targets/employee2targetall?showEmployeeTree=organization") employee2target ALL
 									li(role="presentation")
 										a(role="menuitem" tabindex="-1" href="/targets/employeeoutcomes/E2988") employee outcomes (example cactus)
-
 									li(role="presentation")
 										a(role="menuitem" tabindex="-1" href="/targets/target2outcomes/R1.1") target2outcomes (example R1.1)
-
-
 									li(role="presentation")
 										a(role="menuitem" tabindex="-1" href="/organization/partition/targets") targets partition
 									li(role="presentation")
 										a(role="menuitem" tabindex="-1" href="/targets/sunburst") targets sunburst
-
 									li(role="presentation")
 										a(role="menuitem" tabindex="-1" href="/targets/overview/old") targets overview (old)
-
 									li(role="presentation")
 										a(role="menuitem" tabindex="-1" href="/organization/circlecontain/targets") targets circle contain map
 
-
-
-					ul.nav.navbar-nav
-						li.dropdown(id="fat-menu")
-							a.dropdown-toggle(id="org" href="#" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false") initiatives & portfolio
-								span.caret
-							ul.dropdown-menu(role="menu" aria-labelledby="portfolio")
-								li(role="presentation")
-									a(role="menuitem" tabindex="-1" href="/portfolio") [portfolio meeting] list
-
-
-
-					if session.AUTH=="exec" || session.AUTH=="admin"
+						
 						ul.nav.navbar-nav
 							li.dropdown(id="fat-menu")
 								a.dropdown-toggle(id="admin" href="#" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false") boards
@@ -189,16 +205,18 @@ block content
 										a(role="menuitem" tabindex="-1" href="/upload/xlsx/plain") plain **you should know what you do !
 						ul.nav.navbar-nav
 							li.dropdown(id="fat-menu")
-								a.dropdown-toggle(id="import" href="#" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false") firereport
+								a.dropdown-toggle(id="import" href="#" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false") reports
 									span.caret
 
-								ul.dropdown-menu(role="menu" aria-labelledby="firereport")
+								ul.dropdown-menu(role="menu" aria-labelledby="reports")
 									li(role="presentation")
-										a(role="menuitem" tabindex="-1" href="/upload/firereport") upload pdf
+										a(role="menuitem" tabindex="-1" href="/upload/firereport") upload firereport pdf
 									li(role="presentation")
 										a(role="menuitem" tabindex="-1" href="/firereports") firerport list
 									li(role="presentation")
 										a(role="menuitem" tabindex="-1" href="/dashboard/firereport") firerport online prototype
+									li(role="presentation")
+										a(role="menuitem" tabindex="-1" href="/dashboard/opsreport/bwin") opsreport - bwin 
 
 						ul.nav.navbar-nav
 							li.dropdown(id="fat-menu")

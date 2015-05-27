@@ -47,29 +47,17 @@ style.
 
 
 block content
-	div
-		br
-		img(src="/images/bpty_logo.png" style="display:block;margin-left:auto;margin-right:auto;")
-	h3(style="text-align:center;font-weight:bold") firereport-online prototype
-	div(style="margin:0px auto;;width:100px;height:100px")
-		select.form-control.floating-label(id="filter"  name="filter" type="select"  placeholder="type" autocomplete="off"  )
-			option * ALL *
-			option bwin
-			option games
-			option premium
-			option kalixa
-			option party US
-			option danske spil
-			option pmu
-		br
-		div(style="margin-left:-170px;width:400px;")
-			#daterange.selectbox.pull-right
-				i.fa.fa-calendar &nbsp;
-				span(id="enter_date") #{moment(from).format('dddd, Do of MMMM YYYY')} - #{moment(to).format('dddd, Do of MMMM YYYY')}
-				b.caret
-	if filter && filter.customer!="* ALL *"
-		div(style="text-align:center;font-weight:bold")
-			img(src="/images/customers/#{filter.customer}.png" height="50px")
+	div(style="text-align:center;font-weight:bold")
+		img(src="/images/customers/#{filter.customer}.png" height="50px")
+	h3(style="text-align:center;font-weight:bold") OPSREPORT
+	
+		
+	div(style="margin:0px auto;width:500px;text-align:center")
+		div.selectbox.pull-right(id="daterange" style="text-align:center;margin:0px auto;")
+			i.fa.fa-calendar &nbsp;
+			span(id="enter_date") #{moment(from).format('dddd, Do of MMMM YYYY')} - #{moment(to).format('dddd, Do of MMMM YYYY')}
+			b.caret
+	br
 	br
 
 	div.row(style="margin: auto;max-width:1000px")
@@ -126,6 +114,7 @@ script.
 	var _from="#{from}";
 	var _to="#{to}";
 	var _customer="#{filter.customer}";
+	
 	/*$(function () {
 		$('#start').datetimepicker({keepOpen:false,format:"ddd, DD MMM YYYY, HH:mm:ss"});
 		$('#stop').datetimepicker({keepOpen:false,format:"ddd, DD MMM YYYY, HH:mm:ss"});
@@ -151,7 +140,7 @@ script.
 		$('#daterange').on('apply.daterangepicker', function(ev, picker) {
 			_from = picker.startDate.format('YYYY-MM-DD');
 			_to = picker.endDate.format('YYYY-MM-DD');
-			window.location.href = "/dashboard/firereport?from="+_from+"&to="+_to+"&customer="+_customer;
+			window.location.href = "/dashboard/opsreport/"+_customer+"?from="+_from+"&to="+_to;
 		});	
 
 		$('#filter').on('change', function() {
@@ -161,9 +150,9 @@ script.
 			else 
 				_customer="customer="+this.value;
 			if (_from && _to)
-				window.location.href = "/dashboard/firereport?from="+_from+"&to="+_to+"&"+_customer
+				window.location.href = "/dashboard/opsreport/"+_customer+"?from="+_from+"&to="+_to+"&"+_customer
 			else
-				window.location.href = "/dashboard/firereport?"+_customer;
+				window.location.href = "/dashboard/opsreport/"+_customer;
 		});
 			
 	
