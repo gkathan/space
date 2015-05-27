@@ -42,7 +42,10 @@ block content
 			tbody
 				each o in outcomes
 					tr
-						td(style="text-align:left;vertical-align:middle") #{o.L2Targets}
+						td(style="text-align:left;vertical-align:middle") 
+							each t in o.L2Targets
+								a(href='/targets/target2outcomes/#{t}') #{t}
+								|&nbsp;
 						td(style="vertical-align:top;text-align:left;font-size:11px;vertical-align:middle") #{o.title} 
 						td(style="vertical-align:top;text-align:left;font-size:11px;vertical-align:middle") #{o.description} 
 						td(style="vertical-align:top;text-align:left;font-size:11px;vertical-align:middle") #{o.successCriteria} 

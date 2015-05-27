@@ -7,7 +7,7 @@ mixin renderEmployee(employee,nameSize,imageSize)
 				td(rowspan="2")
 					img.img-circle(src='/images/employees/squared/#{employee["Employee Number"]}_square.png' height="#{imageSize}px") 
 				td(style="padding-left:5px;font-size:#{nameSize}px")
-					|#{employee["First Name"]} #{employee["Last Name"]}
+					a(href='/targets/employeeoutcomes/#{employee["Employee Number"]}') #{employee["First Name"]} #{employee["Last Name"]}
 			tr
 				td(style="padding-left:5px")
 					span(style="font-size:10px;font-weight:normal;") #{employee["Organization"]}
@@ -22,7 +22,7 @@ block content
 			h3.panel-title(style="font-size:24px;font-weight:bold") L2 TARGET &rarr; EMPLOYEES &rarr; OUTCOMES 
 			br
 			i.glyphicon.glyphicon-stats &nbsp;
-			a(href="/targets/employee2target?pickL2=#{target.id}&showEmployeeTree=organization") broccoli &nbsp;|
+			a(href="/targets/employee2target?pickL2#{target.id}&showEmployeeTree=organization") broccoli &nbsp;|
 		.panel-body
 		
 		div(style="text-align:center")
