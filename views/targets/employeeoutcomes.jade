@@ -29,6 +29,22 @@ block content
 					td(style="text-align:right") Manager: 
 					td(style="text-align:left;font-weight:bold;padding-left:10px") 
 						a(href='/targets/employeeoutcomes/#{employee["Supervisor Employee Number"]}') #{employee["Supervisor Full Name"]}
+				if employee.unit
+					tr
+						td(style="text-align:right") Unit: 
+						td(style="text-align:left;font-weight:normal;font-style:italic;padding-left:10px") #{employee.unit}
+				if employee.area
+					tr
+						td(style="text-align:right") Area: 
+						td(style="text-align:left;font-weight:normal;font-style:italic;padding-left:10px") #{employee.area}
+				if employee.team
+					tr
+						td(style="text-align:right") Team: 
+						td(style="text-align:left;font-weight:normal;font-style:italic;padding-left:10px") #{employee.team}
+				if employee.role
+					tr
+						td(style="text-align:right") Role: 
+						td(style="text-align:left;font-weight:normal;font-style:italic;padding-left:10px") #{employee.role}
 			
 		
 		br
@@ -50,3 +66,4 @@ block content
 						td(style="vertical-align:top;text-align:left;font-size:11px;vertical-align:middle") #{o.title} 
 						td(style="vertical-align:top;text-align:left;font-size:11px;vertical-align:middle") #{o.description} 
 						td(style="vertical-align:top;text-align:left;font-size:11px;vertical-align:middle") #{o.successCriteria} 
+						

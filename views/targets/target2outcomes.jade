@@ -21,12 +21,12 @@ block content
 		.panel-heading
 			h3.panel-title(style="font-size:24px;font-weight:bold") L2 TARGET &rarr; EMPLOYEES &rarr; OUTCOMES 
 			br
-			i.glyphicon.glyphicon-stats &nbsp;
-			a(href="/targets/employee2target?pickL2#{target.id}&showEmployeeTree=organization") &rarr; broccoli chart &nbsp;
+		
+			a(href="/targets/employee2target?pickL2=#{target.id}&showEmployeeTree=#{showEmployeeTree}") &rarr; broccoli chart | clustered by #{showEmployeeTree}&nbsp;
+				i.glyphicon.glyphicon-stats &nbsp;
 		.panel-body
 		
 		div(style="text-align:center")
-
 			
 			table.table.table-responsive(style="margin:0 auto;max-width:500px")
 						
@@ -73,13 +73,15 @@ block content
 				tr(style="padding-top:20px")
 					td(style="text-align:right;font-size:10px") Statstics:
 					td(style="text-align:left;padding-left:10px;font-size:12px;font-weight:bold") 
-						|#{statistics.numberOfEmployees} Employee(s), with #{statistics.numberOfOutcomes} Outcome(s)
+						|#{statistics.numberOfEmployees} Employee(s), with #{statistics.numberOfOutcomes} Outcome(s) 
+						//in #{statistics.numberOfLocations} Units(s)
 
 		br
 		hr
-		table.table.table-striped.table-hover.table-condensed.table-responsive
+		table.table.table-striped.table-hover.table-condensed.table-responsive(id="outcomes")
 			thead
 				tr
+					th(style="width:100px") Unit
 					th(style="width:200px") Employee 
 					th(style="width:200px") Outcome Title
 					th(style="width:250px") Outcome Description
@@ -88,12 +90,15 @@ block content
 				each e in employees 
 					each o in e.outcomes
 						tr
+							td(style="text-align:left;vertical-align:middle;font-size:11px") #{o.unit}
 							td(style="text-align:left;vertical-align:middle;font-size:12px;font-weight:bold") 
 								+renderEmployee(e.employee,12,30)
+						
 							td(style="text-align:left;vertical-align:middle;font-size:11px") #{o.title}
 							td(style="text-align:left;vertical-align:middle;font-size:10px") #{o.description}
 							td(style="text-align:left;vertical-align:middle;font-size:10px") #{o.successCriteria}
 
+		script $("#outcomes").tablesorter();
 		br
 		hr
 		br

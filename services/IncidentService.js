@@ -35,7 +35,7 @@ function _findRevenueImpactMapping(callback) {
 	});
 }
 
-
+/*
 function _findFiltered(filter,callback) {
 	var items =  db.collection(_incidentsCollection);
 	logger.debug("filter: "+JSON.stringify(filter));
@@ -49,6 +49,21 @@ function _findFiltered(filter,callback) {
 			return;
 	});
 }
+*/
+function _findFiltered(filter,callback) {
+	logger.debug("filter: "+JSON.stringify(filter));
+
+	_findAll(filter, function (err, docs){
+			if (err){
+				logger.error("error: "+err.message);
+			}
+			logger.debug("docs: "+docs)
+			callback(err,docs);
+			return;
+	});
+}
+
+
 
 /**
  *
@@ -73,10 +88,10 @@ function _findOld(filter,callback) {
 /**
  * test find method which gets incidents transparently for caller from old and new snow repo
  */
-function _findAll(callback) {
+function _findAll(filter,callback) {
 	var items =  db.collection(_incidentsCollection);
 
-	items.find({}).sort({openedAt:-1}, function (err, incidents){
+	items.find(filter).sort({openedAt:-1}, function (err, incidents){
 		var olditems =  db.collection('oldsnowincidents');
 		if (err){
 			callback(err);
@@ -84,7 +99,7 @@ function _findAll(callback) {
 		}
 		logger.debug(".....findAll....incidents: "+incidents.length);
 		//callback(err,incidents);
-		olditems.find({}).sort({openedAt:-1}, function (err, oldincidents){
+		olditems.find(filter).sort({openedAt:-1}, function (err, oldincidents){
 			if (err) callback(err);
 			logger.debug(".....findAll....oldincidents: "+oldincidents.length);
 			var _all = _.union(incidents,oldincidents);

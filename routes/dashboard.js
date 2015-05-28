@@ -123,8 +123,14 @@ router.get('/opsreport/:customer', function(req, res) {
 		var _customer;
 		var _filter = {customer:_customer};;
 
+		// 0 ... do NOT exclude "No Labels"
+		// 1 ... do exclude "No Labels"
+		// 2 ... just show "No Labels"
+		var _excludeNOLABEL = 0;
+
 		if (req.query.from)	 _from = req.query.from;//"2015-01-01";
 		if (req.query.to) _to = req.query.to;//"2015-01-10";
+		if (req.query.excludeNOLABEL) _excludeNOLABEL = req.query.excludeNOLABEL;
 
 
 		var labelService = require('../services/LabelService');
@@ -135,7 +141,7 @@ router.get('/opsreport/:customer', function(req, res) {
 
 				inc.findFiltered(_incfilter,function(err,snowIncidents){
 					logger.debug("++++++++++++++++++++++++++ all snow incidents.length: "+snowIncidents.length);
-					labelService.filterIncidents(snowIncidents,_customer,function(err,filteredIncidents){
+					labelService.filterIncidents(snowIncidents,_customer,_excludeNOLABEL,function(err,filteredIncidents){
 						logger.debug("++++++++++++++++++++++++++ filtered snow incidents.length: "+filteredIncidents.length);
 						res.locals.av = avDataOverall;
 						res.locals.labelService = labelService;
@@ -146,6 +152,7 @@ router.get('/opsreport/:customer', function(req, res) {
 						res.locals.moment = moment;
 						res.locals.from = _from;
 						res.locals.to = _to;
+						res.locals.excludeNOLABEL = _excludeNOLABEL;
 						res.locals.filter = _filter;
 						res.locals.accounting=accounting;
 						logger.debug("*****customer: "+_customer);

@@ -1,15 +1,15 @@
 	var data,root;
 
 	//default
-	var width=2000;
-	var height=1500;
+	var width=3000;
+	var height=3000;
 
 	var _charge=-50;
 	var _distance=50;
 
 	if(_pickL2){
 		width = 1000
-		height = 500;
+		height = 1000;
 		_charge = -80;
 		_distance = 120;
 	}
@@ -46,8 +46,8 @@
 
 					d3.select(this).append("text").text(function(d){return d.name+" "+d.id}).style("font-size","6px").style("font-weight",_weight).style("font-family","arial").attr("dy",_h+8).style("text-anchor","middle");
 
-					var _imageSource="/images/employees/squared/";
-					var _imageExtension ="_square.png";
+					var _imageSource="/images/employees/circle/";
+					var _imageExtension ="_square.png_circle.png";
 
 					d3.select(this).append("svg:image").attr("xlink:href", function(d){return _imageSource+d.id+_imageExtension;}).attr("imageID",d.id).attr("x", _x).attr("y", _y).attr("width", _w).attr("height", _h);
 				}
@@ -79,7 +79,7 @@
 						_dy =30;
 				 	}
 					else if (d.group) {
-						_text = d.name+" - "+d.group;
+						_text = d.name+" - "+d.target;
 						_fontSize=18;
 						_weight="bold";
 					}

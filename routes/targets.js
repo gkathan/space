@@ -46,7 +46,6 @@ router.get('/employee2target', function(req, res, next) {
 	var orgService = require('../services/OrganizationService');
 
 	targetService.getL2ById(config.context,pickL2,function(err,L2Target){
-
 		var _first = L2Target.sponsor.split(" ")[0];
 		var _last = _.rest(L2Target.sponsor.split(" ")).join(" ");
 		logger.debug("L2Target.sponsor: "+L2Target.sponsor);
@@ -86,31 +85,43 @@ router.get('/target2outcomes/:L2TargetId', function(req, res, next) {
 	var targetService = require('../services/TargetService');
 	targetService.getL2ById(config.context,L2TargetId,function(err,L2Target){
 
-		var _first = L2Target.sponsor.split(" ")[0];
-		var _last = _.rest(L2Target.sponsor.split(" ")).join(" ");
-		logger.debug("L2Target.sponsor: "+L2Target.sponsor);
-		logger.debug("first: "+_first+ "last: "+_last);
+		if (L2Target){
+			var _first = L2Target.sponsor.split(" ")[0];
+			var _last = _.rest(L2Target.sponsor.split(" ")).join(" ");
+			logger.debug("L2Target.sponsor: "+L2Target.sponsor);
+			logger.debug("first: "+_first+ "last: "+_last);
 
-		orgService.findEmployeeByFirstLastName(_first, _last,function(err,sponsor){
-			logger.debug("***** sponsor: "+sponsor);
-			res.locals.target = L2Target;
-			orgService.getTarget2EmployeeMappingByL2Target(L2TargetId,function(err,employees){
+			orgService.findEmployeeByFirstLastName(_first, _last,function(err,sponsor){
+				logger.debug("***** sponsor: "+sponsor);
+				res.locals.target = L2Target;
+				orgService.getTarget2EmployeeMappingByL2Target(L2TargetId,function(err,employees){
 
-					// some statistics
-					var _empCount=0;
-					var _outCount=0;
-					for (var e in employees){
-						if (employees[e].outcomes.length>0){
-							_empCount++;
-							_outCount+=employees[e].outcomes.length;
+						// some statistics
+						var _empCount=0;
+						var _outCount=0;
+						var _e = [];
+						for (var e in employees){
+							if (employees[e].outcomes.length>0){
+								_empCount++;
+								_outCount+=employees[e].outcomes.length;
+								_e.push(employees[e]);
+							}
 						}
-					}
-					res.locals.statistics = {"numberOfEmployees":_empCount,"numberOfOutcomes":_outCount};
-					res.locals.sponsor = sponsor;
-					res.locals.employees = employees;
-					res.render('targets/target2outcomes');
+						//default
+						res.locals.showEmployeeTree="location";
+
+						res.locals.statistics = {"numberOfEmployees":_e.length,"numberOfOutcomes":_outCount,"numberOfLocations":_.uniq(_.pluck(_e,"unit")).length};
+						res.locals.sponsor = sponsor;
+						res.locals.employees = employees;
+						res.render('targets/target2outcomes');
+				})
 			})
-		})
+		}
+		else{
+			res.locals.message="sorry ....  => "+ L2TargetId+ " is not a supported L2Target ID ";
+			res.render('error');
+			//res.send("[s p a c e] says: sorry .... but something is fishy => "+ L2TargetId+ " is not a supported L2Target ID ");
+		}
 	})
 });
 
@@ -120,14 +131,24 @@ router.get('/employeeoutcomes/:employeeId', function(req, res, next) {
 	logger.debug("--------- employeeId: "+employeeId);
 	var orgService = require('../services/OrganizationService');
 	orgService.findEmployeeById(employeeId,function(err,employee){
-		res.locals.employee=employee;
+
 		orgService.findOutcomesForEmployee(employeeId,function(err,outcomes){
 			if (outcomes){
 				res.locals.outcomes=outcomes;
+
+				// and extract the additional team / area infos for the employee - just take the first ...
+				employee.unit = outcomes[0].unit;
+				employee.area = outcomes[0].area;
+				employee.team = outcomes[0].team;
+				employee.role = outcomes[0].role;
+
+				res.locals.employee=employee;
+
 				res.render('targets/employeeoutcomes');
 			}
 			else{
 				res.locals.outcomes=[];
+				res.locals.employee=employee;
 				res.render('targets/employeeoutcomes');
 			}
 		})

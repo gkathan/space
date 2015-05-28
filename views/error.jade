@@ -1,6 +1,17 @@
-extends layout
+include kanban_menu
+
 
 block content
-  h1= message
-  h2= error.status
-  pre #{error.stack}
+	div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;background-color:white;;max-width:700px;text-align: center;margin: 10px auto;")
+		.panel-heading
+			h3.panel-title(style="font-size:24px;font-weight:bold;color:red") 
+				i.glyphicon.glyphicon-flash 
+				|SOMETHING FISHY HAPPENED....
+			
+		.panel-body
+			p(style="color:red")
+				|[s p a c e] says:
+				span(style="font-weight:bold")&nbsp;#{message}
+			if error
+				h2= error.status
+				pre #{error.stack}

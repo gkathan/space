@@ -28,22 +28,22 @@ script(src='/javascripts/components/nvd3/build/nv.d3.min.js')
 
 style.
 	#chart svg {
-	  height: 400px;
+		height: 400px;
 		width:980px;
 	}
 	#chart2 svg {
-	  height: 400px;
+		height: 400px;
 		width:980px;
 	}
 	#chartP8 svg {
-	  height: 400px;
+		height: 400px;
 		width:1000px;
 	}
 	#chartP1 svg {
-	  height: 400px;
+		height: 400px;
 		width:1000px;
 	}
-
+	
 
 
 block content
@@ -51,15 +51,34 @@ block content
 		img(src="/images/customers/#{filter.customer}.png" height="50px")
 	h3(style="text-align:center;font-weight:bold") OPSREPORT
 	
-		
-	div(style="margin:0px auto;width:500px;text-align:center")
-		div.selectbox.pull-right(id="daterange" style="text-align:center;margin:0px auto;")
+	
+	div(style="margin:0px auto;width:500px;text-align:left")
+		span(style="font-weight:bold;font-size:12px") Date Range Filter:	
+		br
+		br
+		div.selectbox.pull-left(id="daterange")
 			i.fa.fa-calendar &nbsp;
-			span(id="enter_date") #{moment(from).format('dddd, Do of MMMM YYYY')} - #{moment(to).format('dddd, Do of MMMM YYYY')}
+			span(id="enter_date" style=";font-size:12px") #{moment(from).format('dddd, Do of MMMM YYYY')} - #{moment(to).format('dddd, Do of MMMM YYYY')}
 			b.caret
+		br
+		br
+		div(style="text-align:left;font-size:12px")
+			span(style="font-weight:bold") Incident Filter: (experimental)
+			.radio.radio-default
+				label
+					input(type='radio', name='excludeNOLABEL', value='0')
+					|	#{session.USER} + "No Label"
+			.radio.radio-default
+				label
+					input( type='radio', name='excludeNOLABEL', value='1')
+					|	#{session.USER} only
+			.radio.radio-default
+				label
+					input(type='radio', name='excludeNOLABEL', value='2')
+					|	"No Label" only
 	br
 	br
-
+	
 	div.row(style="margin: auto;max-width:1000px")
 		div.panel.panel-default
 			div.panel-heading 
@@ -70,22 +89,15 @@ block content
 			div.panel-body
 				+renderAVServicesList("SERVICES - ALL",av)
 				hr
-				+renderAVServicesList("SERVICES - EXTERNAL ***)",avExternal)
+				+renderAVServicesList("SERVICES - EXTERNAL ****)",avExternal)
 				+renderDisclaimer
 	div.row(style="margin: auto;max-width:1000px")
 		script(src='/javascripts/dashboards/nvd3_incidents_multi.js')
-		+renderIncidentList("snow reported P1 incidents",snowIncidents)
-		+chartIncident("Incidents Trend - P1","chartP1")
-		+chartIncident("Incidents Trend - P8","chartP8")
-		div.panel.panel-default
-			div.panel-heading 
-				span(style="color:black;font-size:24px;font-weight:bold") SOC reported Outages
-				br
-				+renderFromTo(from,to)
-			div.panel-body
-				+renderSOCIncidentList("unplanned",av.incidents.unplanned)
-				hr
-				+renderSOCIncidentList("planned",av.incidents.planned)
+		+renderIncidentList("snow reported P1 incidents",snowIncidents,excludeNOLABEL)
+		+chartIncident("Incidents Trend - Opened P1","chartP1")
+		+chartIncident("Incidents Trend - Opened P8","chartP8")
+		
+		
 	script(src='/javascripts/dashboards/nvd3_availability.js')
 	div.row(style="margin: auto;max-width:1000px")
 		div.panel.panel-default
@@ -105,15 +117,18 @@ block content
 				div(id="chart2" style="text-align:center")
 					svg
 	
+include ../includes/material
+
 
 script.
-	// make serverside parameter accessible  to clientside JS
+	// make serverside parameter accessible	to clientside JS
 	//var av=!{JSON.stringify(av)};
 	//var avExternal=!{JSON.stringify(avExternal)};
 	
 	var _from="#{from}";
 	var _to="#{to}";
 	var _customer="#{filter.customer}";
+	var _excludeNOLABEL = "#{excludeNOLABEL}";
 	
 	/*$(function () {
 		$('#start').datetimepicker({keepOpen:false,format:"ddd, DD MMM YYYY, HH:mm:ss"});
@@ -134,26 +149,32 @@ script.
 						 'Last Month': [moment().subtract('month', 1).startOf('month'), moment().subtract('month', 1).endOf('month')],
 						 'Last Week': [moment().subtract('week', 1).startOf('week'), moment().subtract('week', 1).endOf('week')],
 						 'YTD': [moment().startOf('year'), moment()]
-		  }
+			}
 		});
 		
 		$('#daterange').on('apply.daterangepicker', function(ev, picker) {
 			_from = picker.startDate.format('YYYY-MM-DD');
 			_to = picker.endDate.format('YYYY-MM-DD');
-			window.location.href = "/dashboard/opsreport/"+_customer+"?from="+_from+"&to="+_to;
+			window.location.href = "/dashboard/opsreport/"+_customer+"?from="+_from+"&to="+_to+"&excludeNOLABEL="+_excludeNOLABEL;
 		});	
 
 		$('#filter').on('change', function() {
 			console.log("select change event: "+this.value);
-			if (this.value=="* ALL *")
-				_customer="";
-			else 
-				_customer="customer="+this.value;
+			
 			if (_from && _to)
-				window.location.href = "/dashboard/opsreport/"+_customer+"?from="+_from+"&to="+_to+"&"+_customer
+				window.location.href = "/dashboard/opsreport/"+_customer+"?from="+_from+"&to="+_to+"&excludeNOLABEL="+_excludeNOLABEL;
 			else
 				window.location.href = "/dashboard/opsreport/"+_customer;
 		});
-			
+		
+		
+		console.log("************** excludeNOLBAEL: "+_excludeNOLABEL);
+		$('input:radio[name="excludeNOLABEL"][value='+_excludeNOLABEL+']').prop('checked', true);
+				
+		$("input[name='excludeNOLABEL']").on('change', function() {
+			var _excludeNOLABEL = $("input[name='excludeNOLABEL']:checked").val();
+			console.log("!!!!!!!!!!!!!!!!!!!!"+_excludeNOLABEL);
+			window.location.href = "/dashboard/opsreport/"+_customer+"?from="+_from+"&to="+_to+"&excludeNOLABEL="+_excludeNOLABEL;
+		});
 	
 	});

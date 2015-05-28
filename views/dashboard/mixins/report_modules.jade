@@ -12,7 +12,7 @@ mixin renderAVCoreDefinition(coreDef)
 				td(style="width:70px;font-size:11px")
 					|from: #{t.start}
 				td(style="width:70px;font-size:11px")
-					|to:  #{t.stop}
+					|to:	#{t.stop}
 
 mixin renderDisclaimer
 	hr
@@ -153,7 +153,7 @@ mixin renderAVServicesList(title,av)
 	
 
 mixin renderSOCIncidentList(title,incidents)
-	h3(style="font-size:20px;font-weight:bold") #{title}
+	h3(style="font-size:20px;font-weight:bold") #{incidents.length} #{title}
 	table.table-striped.table-hover.table-condensed(style="max-width:1000px")
 		thead
 			tr(style="line-height:16px;font-weight:bold")
@@ -214,16 +214,27 @@ mixin renderFromTo(from,to)
 				|to: 
 			td(style="font-size:12px;font-weight:bold")
 				|#{to}
-
-mixin renderIncidentList(title,incidents)
+				
+mixin renderExcludeNOLABELFilter(filter)
+	br
+	span(style="font-size:12px")
+		if filter== 0
+			|#{customer} + "No Labels"
+		else if filter == 1
+			|#{customer} only
+		else if filter == 2
+			|"No Labels" only
+	br
+			
+mixin renderIncidentList(title,incidents,excludeNOLABEL)
 	div.panel.panel-default
 		div.panel-heading 
-			span(style="color:black;font-size:24px;font-weight:bold") #{title}
+			span(style="color:black;font-size:24px;font-weight:bold") #{incidents.length} #{title}
+			+renderExcludeNOLABELFilter(excludeNOLABEL)
 			br
 			+renderFromTo(from,to)
-			
 		div.panel-body
-			table.table-striped.table-hover.table-condensed(style="max-width:1000px")
+			table.table-striped.table-hover.table-condensed(id="snow_incidents" style="max-width:1000px")
 				thead
 					tr(style="line-height:20px;font-weight:bold")
 						th(style="width:100px;text-align:center;border-bottom:1px solid black")
@@ -251,7 +262,7 @@ mixin renderIncidentList(title,incidents)
 					- var _sumTTR=0;
 					each inc in incidents
 						- _sum++;	
-						- _sumTTR+=moment.duration(inc.timeToResolve);
+						- _sumTTR+=moment.duration(moment(inc.resolvedAt).diff(moment(inc.openedAt)));
 						tr(style="line-height:16px;font-size:12px")
 							td(style="text-align:right;font-size:10px")
 								|#{moment(inc.openedAt).format("YYYY-MM-DD")}
@@ -260,7 +271,7 @@ mixin renderIncidentList(title,incidents)
 							td(style="text-align:right;background:#efefef;font-weight:bold;font-size:12px")
 								if inc.revenueImpact
 									|#{formatMoney(inc.revenueImpact)}
-									- _rev+=inc.revenueImpact;
+									- _rev+=parseFloat(inc.revenueImpact);
 								else
 									|n/a
 							td(style="text-align:right;font-size:10px")
@@ -271,40 +282,46 @@ mixin renderIncidentList(title,incidents)
 							td(style="text-align:left;font-size:10px")
 								|#{inc.businessService}
 							td(style="text-align:right")
-								|#{(formatAVTime(inc.timeToResolve))}
+								|#{formatAVTime(moment(inc.resolvedAt).diff(moment(inc.openedAt)))}
 							td(style="text-align:left;font-size:10px")
 									|#{inc.label}
 							td(style="text-align:left;font-size:10px")
 								if inc.problemId
 									|#{inc.problemId}
-					//sum row
-					tr(style="line-height:32px;font-size:12px")
-						td(colspan="2" style="text-align:right;border-top:1px solid black;border-bottom:1px solid black;")
-							b(style="font-size:24px") #{_sum} 
-							|Incidents
-						td(style="text-align:right;background:#efefef;font-weight:bold;font-size:18px;border-top:1px solid black;border-bottom:1px solid black")
-							if _rev
-								|#{formatMoney(_rev)}
-							else
-								|n/a
-						td(colspan="2" style="text-align:rightt;border-top:1px solid black;border-bottom:1px solid black;")
-							|Total Revenue Impact	
-						td(colspan="2" style="text-align:right;border-top:1px solid black;border-bottom:1px solid black")
-							b(style="font-size:18px;margin-top:15px") #{(formatAVTime(_sumTTR))}
-						td(colspan="2" style="text-align:left;border-top:1px solid black;border-bottom:1px solid black")
-							|Total Time to Resolve
-					//average row
-					tr(style="line-height:32px;font-size:12px")
-						td(colspan="2" style="text-align:right;border-top:1px solid black;border-bottom:2px solid black;")
-							
-						td(style="text-align:right;background:#efefef;font-weight:bold;font-size:18px;border-top:1px solid black;border-bottom:2px solid black")
-							if _rev
-								|#{formatMoney(_rev/_sum)}
-							else
-								|n/a
-						td(colspan="2" style="text-align:rightt;border-top:1px solid black;border-bottom:2px solid black;")
-							|Average Revenue Impact	
-						td(colspan="2" style="text-align:right;border-top:1px solid black;border-bottom:2px solid black")
-							b(style="font-size:18px;margin-top:15px") #{(formatAVTime(_sumTTR/_sum))}
-						td(colspan="2" style="text-align:left;border-top:1px solid black;border-bottom:2px solid black")
-							|Average Time to Resolve
+				
+			table.table-condensed(style="max-width:1000px")
+				//sum row
+				tr(style="line-height:32px;font-size:12px")
+					td(colspan="2" style="text-align:right;border-top:1px solid black;border-bottom:1px solid black;width:150px")
+						b(style="font-size:24px") #{_sum} 
+						|Incidents
+					td(style="text-align:right;background:#efefef;font-weight:bold;font-size:14px;border-top:1px solid black;border-bottom:1px solid black;width:100px")
+						if _rev
+							|#{formatMoney(_rev)}
+						else
+							|n/a
+					td(colspan="2" style="text-align:rightt;border-top:1px solid black;border-bottom:1px solid black;width:280px")
+						|Total Revenue Impact	
+					td(colspan="2" style="text-align:right;border-top:1px solid black;border-bottom:1px solid black;width:200px")
+						b(style="font-size:14px;margin-top:15px") #{(formatAVTime(_sumTTR))}
+					td(colspan="2" style="text-align:left;border-top:1px solid black;border-bottom:1px solid black;width:260px")
+						|Total Time to Resolve
+				//average row
+				tr(style="line-height:32px;font-size:12px")
+					td(colspan="2" style="text-align:right;border-top:1px solid black;border-bottom:2px solid black;")
+						
+					td(style="text-align:right;background:#efefef;font-weight:bold;font-size:14px;border-top:1px solid black;border-bottom:2px solid black")
+						if _rev
+							|#{formatMoney(_rev/_sum)}
+						else
+							|n/a
+					td(colspan="2" style="text-align:rightt;border-top:1px solid black;border-bottom:2px solid black;")
+						|Average Revenue Impact	
+					td(colspan="2" style="text-align:right;border-top:1px solid black;border-bottom:2px solid black")
+						b(style="font-size:14px;margin-top:15px") #{(formatAVTime(_sumTTR/_sum))}
+					td(colspan="2" style="text-align:left;border-top:1px solid black;border-bottom:2px solid black")
+						|Average Time to Resolve
+				
+				
+				script $("#snow_incidents").tablesorter();
+	

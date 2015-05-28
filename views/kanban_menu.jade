@@ -59,14 +59,14 @@ block content
 					
 				
 									
-					if session.AUTH && session.CONTEXT=="bpty.customer.bwin"
+					if session.AUTH && (session.CONTEXT=="bpty.customer.bwin" || session.CONTEXT=="bpty.customer.premium")
 						ul.nav.navbar-nav
 							li.dropdown(id="fat-menu")
 								a.dropdown-toggle(id="import" href="#" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false") reports
 									span.caret
 								ul.dropdown-menu(role="menu" aria-labelledby="reports")
 									li(role="presentation")
-										a(role="menuitem" tabindex="-1" href="/dashboard/opsreport/bwin") opsreport	
+										a(role="menuitem" tabindex="-1" href='/dashboard/opsreport/#{_.last(session.CONTEXT.split("."))}') opsreport	
 						
 						ul.nav.navbar-nav
 							li.dropdown(id="fat-menu")
@@ -77,7 +77,7 @@ block content
 											a(role="menuitem" tabindex="-1" href="/targets/overview") targets overview
 					
 
-					if session.AUTH=="exec" || session.AUTH=="admin"
+					if session.AUTH=="exec" || session.AUTH=="admin" || session.AUTH=="studios"
 						ul.nav.navbar-nav
 							li.dropdown(id="fat-menu")
 								a.dropdown-toggle(id="targets" href="#" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false") environment
@@ -123,6 +123,7 @@ block content
 										a(role="menuitem" tabindex="-1" href="/organization/partition/targets") targets partition
 
 						
+					if session.AUTH=="admin" 
 						ul.nav.navbar-nav
 							li.dropdown(id="fat-menu")
 								a.dropdown-toggle(id="admin" href="#" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false") boards
@@ -153,7 +154,7 @@ block content
 									li(role="presentation")
 										a(role="menuitem" tabindex="-1" href="/organization/circlecontain/productcatalog") product & service catalog (stg)
 
-					if session.AUTH=="exec" || session.AUTH=="admin"
+					if session.AUTH=="exec" || session.AUTH=="admin" 
 						ul.nav.navbar-nav
 							li.dropdown(id="fat-menu")
 								a.dropdown-toggle(id="org" href="#" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false") organization
@@ -184,6 +185,20 @@ block content
 										a(role="menuitem" tabindex="-1" href="/organization/facebook") facebook
 									li(role="presentation")
 										a(role="menuitem" tabindex="-1" href="/organization/simple") simple
+					if session.AUTH=="exec" || session.AUTH=="admin" || session.AUTH=="studios"
+						ul.nav.navbar-nav
+							li.dropdown(id="fat-menu")
+								a.dropdown-toggle(id="import" href="#" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false") reports
+									span.caret
+								ul.dropdown-menu(role="menu" aria-labelledby="reports")
+									li(role="presentation")
+										a(role="menuitem" tabindex="-1" href="/upload/firereport") upload firereport pdf
+									li(role="presentation")
+										a(role="menuitem" tabindex="-1" href="/firereports") firerport list
+									li(role="presentation")
+										a(role="menuitem" tabindex="-1" href="/dashboard/firereport") firerport online prototype
+									//li(role="presentation")
+										//a(role="menuitem" tabindex="-1" href="/dashboard/opsreport/bwin") opsreport - bwin 
 
 
 					if session.AUTH=="admin"
@@ -201,20 +216,6 @@ block content
 										a(role="menuitem" tabindex="-1" href="/upload/xlsx/target2employee") target2employee
 									li(role="presentation")
 										a(role="menuitem" tabindex="-1" href="/upload/xlsx/plain") plain **you should know what you do !
-						ul.nav.navbar-nav
-							li.dropdown(id="fat-menu")
-								a.dropdown-toggle(id="import" href="#" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false") reports
-									span.caret
-
-								ul.dropdown-menu(role="menu" aria-labelledby="reports")
-									li(role="presentation")
-										a(role="menuitem" tabindex="-1" href="/upload/firereport") upload firereport pdf
-									li(role="presentation")
-										a(role="menuitem" tabindex="-1" href="/firereports") firerport list
-									li(role="presentation")
-										a(role="menuitem" tabindex="-1" href="/dashboard/firereport") firerport online prototype
-									//li(role="presentation")
-										//a(role="menuitem" tabindex="-1" href="/dashboard/opsreport/bwin") opsreport - bwin 
 
 						ul.nav.navbar-nav
 							li.dropdown(id="fat-menu")

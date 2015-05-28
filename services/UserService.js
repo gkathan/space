@@ -22,7 +22,9 @@ var users = [
     { id: 1, username: secret.space_admin_user, password: secret.space_admin_pass, role: 'admin', context:'bpty.studios' },
     { id: 2, username: secret.space_exec_user, password: secret.space_exec_pass, role: 'exec', context:'bpty.studios' },
     { id: 3, username: secret.space_bpty_user, password: secret.space_bpty_pass, role: 'bpty', context:'bpty.studios' },
-    { id: 4, username: secret.space_bwin_user, password: secret.space_bwin_pass, role: 'customer', context:'bpty.customer.bwin'}
+    { id: 4, username: secret.space_bwin_user, password: secret.space_bwin_pass, role: 'customer', context:'bpty.customer.bwin'},
+    { id: 5, username: secret.space_studios_user, password: secret.space_studios_pass, role: 'studios', context:'bpty.studios'},
+    { id: 6, username: secret.space_premium_user, password: secret.space_premium_pass, role: 'customer', context:'bpty.customer.premium'}
 ];
 
 

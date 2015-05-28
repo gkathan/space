@@ -83,7 +83,7 @@ describe('IncidentService', function(){
     it('returns ALL incdients from both oldsnow and newsnow', function(done){
       this.timeout(10000);
 			var incidentService = require('../services/IncidentService');
-			incidentService.findAll(function(err,result){
+			incidentService.findAll({},function(err,result){
 					if (err) logger.error("error: "+err);
 					logger.debug("result: "+result.length);
 

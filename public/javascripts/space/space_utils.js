@@ -26,8 +26,6 @@ function getUrlVars()
 
 
 // ********************* ajax helpers **********************************
-
-
 /**
 * helper class for ajax calls
 *  verb: "POST", "DELETE",...
@@ -45,7 +43,7 @@ function ajaxCall(verb,action,itemList,_type,afterHandlerCallback){
 
 
 		var _json = JSON.stringify(itemList);
-		
+
 
 		console.log("JSON.stringify tha shit..."+_json);
 

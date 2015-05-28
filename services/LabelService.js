@@ -29,14 +29,33 @@ function _excludeIncidentForCustomer(incident,customer,callback){
 	})
 }
 
-function _checkExclusion(incident,filterLabels){
+/**
+* param incident: guess ;-)
+* param filterLabels: the labels we filter against
+* param excludeNoLabels: flag which indicates whether "No Labels" value in incident.label field shall be excluded or not
+// 0 ... do NOT exclude "No Labels"
+// 1 ... do exclude "No Labels"
+// 2 ... just show "No Labels"
+**/
+function _checkExclusion(incident,filterLabels,excludeNOLABELS){
 		var _labels = incident.label.split(", ");
-		if (incident.label==="No Label") return false;
 
-		else if (!_labels || _labels.length==0 || filterLabels.length==0) return false;
-		else if (_.intersection(filterLabels,_labels).length>0) return false;
+		if (excludeNOLABELS==0){
+			if (incident.label==="No Label") return false;
+			else if (!_labels || _labels.length==0 || filterLabels.length==0) return false;
+			else if (_.intersection(filterLabels,_labels).length>0) return false;
+			return true;
+		}
+		else if (excludeNOLABELS==1){
+			if (!_labels || _labels.length==0 || filterLabels.length==0) return false;
+			else if (_.intersection(filterLabels,_labels).length>0) return false;
+			return true;
+		}
+		else{
+			if (incident.label==="No Label") return false;
 
-		return true;
+			return true;
+	}
 }
 
 /**
@@ -55,7 +74,7 @@ function _findLabel2Customer(filter,callback) {
 }
 
 
-function _filterIncidents(incidents,customer,callback){
+function _filterIncidents(incidents,customer,excludeNOLABELS,callback){
 	var async = require('async');
 	var filteredIncidents =[];
 
@@ -64,7 +83,7 @@ function _filterIncidents(incidents,customer,callback){
 			for (var i in incidents){
 				var _inc = incidents[i];
 				logger.debug("++ checking incident: "+_inc.id);
-				if (!_checkExclusion(_inc,filterLabels)) filteredIncidents.push(_inc);
+				if (!_checkExclusion(_inc,filterLabels,excludeNOLABELS)) filteredIncidents.push(_inc);
 			}
 			logger.debug("------------------------ number of incidents: "+incidents.length);
 			callback(null,filteredIncidents);

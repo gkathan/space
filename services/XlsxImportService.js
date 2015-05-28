@@ -312,7 +312,20 @@ function _handleTarget2Employee(json,date,fillblanks,callback){
 			var _context = json[i]["Context"];
 
 
-			var _item = {context:_context,employeeId:_employeeId ,employeeName:_employeeName, targets:_targets,outcomeTitle: json[i]["OutcomeTitle"],outcomeDescription:json[i]["OutcomeDescription"] , successCriteria:json[i]["SuccessCriteria"]}
+			var _item = {
+				context:_context,
+				employeeId:_employeeId ,
+				employeeName:_employeeName,
+				targets:_targets,
+				outcomeTitle: json[i]["OutcomeTitle"],
+				outcomeDescription:json[i]["OutcomeDescription"],
+				successCriteria:json[i]["SuccessCriteria"],
+				unit:json[i]["Unit"],
+				area:json[i]["Area"],
+				team:json[i]["Team"],
+				role:json[i]["Role"]
+			};
+
 			_mapping.push(_item);
 		}
 
@@ -353,11 +366,28 @@ function _handlePlain(json,date,fillblanks,callback){
 	}
 	// check if we find some dates and lets convert them into real date types
 	for (var j in json){
+		//var _index = _.indexOf(_.keys(json[j]),"openedAt");
+
+		var _dateFieldNames=["date","openedAt","resolvedAt","createdAt","closedAt","slaResolutionDate"];
+
+		for (var f in _dateFieldNames){
+			var _index = _.indexOf(_.keys(json[j]),_dateFieldNames[f]);
+			if (_index>=0){
+				json[j][_dateFieldNames[f]]=new Date(json[j][_dateFieldNames[f]]);
+			}
+		}
+
+/*
 		var _index = _.indexOf(_.keys(json[j]),"date");
 		if (_index>=0){
-
 			json[j].date=new Date(json[j].date);
 		}
+
+		var _index = _.indexOf(_.keys(json[j]),"openedAt");
+		if (_index>=0){
+			json[j].openedAt=new Date(json[j].openedAt);
+		}
+*/
 	}
 
 

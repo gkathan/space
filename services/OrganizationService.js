@@ -143,7 +143,7 @@ function _getTarget2EmployeeMappingByL2Target(L2TargetId,callback) {
 
 						if (_target.targets.indexOf(L2TargetId)>-1) {
 							//logger.debug("*** _target: MATCH !!!!"+_target.targets);
-							_e.outcomes.push({id:_target.id,title:_target.outcomeTitle,description:_target.outcomeDescription,successCriteria:_target.successCriteria});
+							_e.outcomes.push({id:_target.id,title:_target.outcomeTitle,description:_target.outcomeDescription,successCriteria:_target.successCriteria,unit:_target.unit,area:_target.area,team:_target.team,role:_target.role});
 						}
 					}
 					_employees.push(_e);
@@ -165,7 +165,7 @@ function _findOutcomesForEmployee(employeeId,callback) {
 				logger.debug("_targets.children: "+_targets.children.length);
 				for (var t in _targets.children){
 					var _target = _targets.children[t];
-					_outcomes.push({L2Targets:_target.targets,title:_target.outcomeTitle,description:_target.outcomeDescription,successCriteria:_target.successCriteria});
+					_outcomes.push({L2Targets:_target.targets,title:_target.outcomeTitle,description:_target.outcomeDescription,successCriteria:_target.successCriteria,unit:_target.unit,area:_target.area,team:_target.team,role:_target.role});
 				}
 				callback(err,_outcomes);
 				return;

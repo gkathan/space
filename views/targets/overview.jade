@@ -276,11 +276,13 @@ div.modal.fade(id="targetDetail" tabindex="-1" role="dialog" aria-labelledby="ta
 // ------------------------------ main view -------------------------------
 div.container-fluid(style="max-width:1600px")
 	div.row
-		div(style=";color:white;background-color:#{color_PARENT};text-align:center;font-size:16px;font-weight:normal;margin-left:10px;margin-right:10px;line-height:32px;") 
-			span(style="line-height:28px;font-size:16px;font-weight:normal")
-				a(href="/targets/rollup" style="line-height:28px;font-size:16px;font-weight:normal;color:white") #{_.first(context.split("."))} group
-		div(style="margin-top:10px;margin-bottom:10px")
-			img(src="/images/space_triangle_grey_up.png" style="vertical-align:middle;display:block;margin: auto auto" height="10px" width="80px" )
+		
+		if session.AUTH=="admin" || session.AUTH=="exec"
+			div(style=";color:white;background-color:#{color_PARENT};text-align:center;font-size:16px;font-weight:normal;margin-left:10px;margin-right:10px;line-height:32px;") 
+				span(style="line-height:28px;font-size:16px;font-weight:normal")
+					a(href="/targets/rollup" style="line-height:28px;font-size:16px;font-weight:normal;color:white") #{_.first(context.split("."))} group
+			div(style="margin-top:10px;margin-bottom:10px")
+				img(src="/images/space_triangle_grey_up.png" style="vertical-align:middle;display:block;margin: auto auto" height="10px" width="80px" )
 
 		div(style="margin-top:10px;margin-bottom:10px")
 			img(src="/images/#{context}_logo.png" style="vertical-align:middle;display:block;margin: auto auto" height="40px"  )
@@ -400,7 +402,7 @@ script.
 		$(".modal-body #targetSponsor").text(_sponsor);
 		
 		$(".modal-body #targetContributorTree").html("&rarr; show outcome2employee 'broccoli'");
-		$(".modal-body #targetContributorTree").attr("href","/targets/employee2target?pickL2="+_id+"&showEmployeeTree=organization");
+		$(".modal-body #targetContributorTree").attr("href","/targets/employee2target?pickL2="+_id+"&showEmployeeTree=location");
 		
 		$(".modal-body #targetContributorList").html("&rarr; show target2employee list");
 		$(".modal-body #targetContributorList").attr("href","/targets/target2outcomes/"+_id);

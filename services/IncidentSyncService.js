@@ -77,9 +77,9 @@ function _sync(url,type,callback){
 
 		// lets first get what we have had
 		incService.find(function(err,baseline){
-			incService.findRevenueImpactMapping(function(err,impactMapping){
-				_incidentsOLD = baseline;
+			_incidentsOLD = baseline;
 
+			incService.findRevenueImpactMapping(function(err,impactMapping){
 				var _compareIncidents=[];
 				var _compareIncidentsBaseline=[];
 
