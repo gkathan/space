@@ -2,36 +2,37 @@ include ../kanban_menu
 
 block content
 
-	div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;background-color:white;;width:1400px;text-align: center;margin: 10px auto;")
+	div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;background-color:white;;max-width:1400px;text-align: center;margin: 10px auto;")
 		.panel-heading
-			h3.panel-title(style="font-size:24px;font-weight:bold") OUTCOMES
+			h3.panel-title(style="font-size:24px;font-weight:bold") EMPLOYEE OUTCOMES
 		.panel-body
 		
 		div(style="text-align:center")
-			table(style="margin:0 auto")
+			table.table.table-responsive(style="margin:0 auto;max-width:500px")
 				tr
 					td
 					td(style="text-align:left;font-weight:bold;padding-left:10px")
 						img.img-circle(src='/images/employees/squared/#{employee["Employee Number"]}_square.png' height="100px")
 				tr
-					td(style="text-align:right") name:
+					td(style="text-align:right") Name:
 					td(style="text-align:left;font-weight:bold;padding-left:10px") #{employee["Full Name"]}
 				tr
-					td(style="text-align:right") job:
+					td(style="text-align:right") Position:
 					td(style="text-align:left;font-weight:bold;padding-left:10px") #{employee["Corporate Job Title"]}
 				tr
-					td(style="text-align:right") location: 
+					td(style="text-align:right") Location: 
 					td(style="text-align:left;font-weight:bold;padding-left:10px") #{employee["Location"]}
 				tr
-					td(style="text-align:right") cost center: 
+					td(style="text-align:right") Cost center: 
 					td(style="text-align:left;font-weight:bold;padding-left:10px") #{employee["Cost Centre"]}
 				tr
-					td(style="text-align:right") boss: 
+					td(style="text-align:right") Manager: 
 					td(style="text-align:left;font-weight:bold;padding-left:10px") 
 						a(href='/targets/employeeoutcomes/#{employee["Supervisor Employee Number"]}') #{employee["Supervisor Full Name"]}
 			
 		
 		br
+		hr
 		table.table.table-striped.table-hover.table-condensed
 			thead
 				tr

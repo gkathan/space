@@ -95,6 +95,17 @@ router.get('/target2outcomes/:L2TargetId', function(req, res, next) {
 			logger.debug("***** sponsor: "+sponsor);
 			res.locals.target = L2Target;
 			orgService.getTarget2EmployeeMappingByL2Target(L2TargetId,function(err,employees){
+
+					// some statistics
+					var _empCount=0;
+					var _outCount=0;
+					for (var e in employees){
+						if (employees[e].outcomes.length>0){
+							_empCount++;
+							_outCount+=employees[e].outcomes.length;
+						}
+					}
+					res.locals.statistics = {"numberOfEmployees":_empCount,"numberOfOutcomes":_outCount};
 					res.locals.sponsor = sponsor;
 					res.locals.employees = employees;
 					res.render('targets/target2outcomes');
