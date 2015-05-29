@@ -55,7 +55,11 @@ router.get('/availability', function(req, res) {
 
 router.get('/incidents', function(req, res) {
 		var _period = req.query.period;
+		//"openedAt", "resolvedAt", "closedAt"
+
+
 		res.locals.period = _period;
+		
 		res.locals.moment = moment;
 		res.render('dashboard/incidents', { title: 's p a c e - incidents dashboard' });
 });
@@ -73,6 +77,9 @@ router.get('/firereport', function(req, res) {
 		var _to = moment().format("YYYY-MM-DD");
 		var _customer;
 		var _filter;
+		//"openedAt", "resolvedAt", "closedAt"
+		var _dateField = req.query.dateField;
+		res.locals.dateField = _dateField;
 
 		if (req.query.from)	 _from = req.query.from;//"2015-01-01";
 		if (req.query.to) _to = req.query.to;//"2015-01-10";

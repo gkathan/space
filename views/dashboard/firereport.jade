@@ -35,15 +35,18 @@ style.
 	  height: 400px;
 		width:980px;
 	}
-	#chartP8 svg {
+	#chartP08 svg {
 	  height: 400px;
 		width:1000px;
 	}
-	#chartP1 svg {
+	#chartP01 svg {
 	  height: 400px;
 		width:1000px;
 	}
-
+	#chartP16 svg {
+	  height: 400px;
+		width:1000px;
+	}
 
 
 block content
@@ -86,9 +89,10 @@ block content
 				+renderDisclaimer
 	div.row(style="margin: auto;max-width:1000px")
 		script(src='/javascripts/dashboards/nvd3_incidents_multi.js')
-		+renderIncidentList("snow reported P1 incidents",snowIncidents)
-		+chartIncident("Incidents Trend - Opened P1","chartP1")
-		+chartIncident("Incidents Trend - Opened P8","chartP8")
+		+chartIncident("Incidents Trend","P01","openedAt","chartP01")
+		+chartIncident("Incidents Trend","P08","openedAt","chartP08")
+		+chartIncident("Incidents Trend","P16","openedAt","chartP16")
+		+renderIncidentList("snow reported P01 incidents",snowIncidents)
 		div.panel.panel-default
 			div.panel-heading 
 				span(style="color:black;font-size:24px;font-weight:bold") SOC reported Outages

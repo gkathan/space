@@ -14,35 +14,28 @@
     "build" : "---should be dynamically assigned",
 
 	"logger": {
-			"dev":{
-				"console":{
-					"colorize":true,
-					"prettyPrint":true,
-					"showLevel":true,
-					"timestamp":true,
-					"level":"debug"
-				},
-			    "file":{
-					"filename": "logs/space.log" ,
-					"prettyPrint":true,
-					"showLevel":true,
-					"level":"info"
-				},
-					"LogstashUDP": {
-      		"port": 9999,
-      		"appName": "space",
-					"level":"debug",
-      		"host": "127.0.0.1"
-				}
+		"dev":{
+			"console":{
+				"colorize":true,
+				"prettyPrint":true,
+				"showLevel":true,
+				"timestamp":true,
+				"level":"debug"
 			},
-			"production":{
-			    "file":{
-					"filename": "logs/space.log" ,
-					"prettyPrint":true,
-					"showLevel":true,
-					"level":"info"
-				}
+		    "DailyRotateFile":{
+				"filename": "logs/space.log" ,
+				"prettyPrint":true,
+				"showLevel":true,
+				"level":"info",
+				"colorize":true
+			},
+				"LogstashUDP": {
+    		"port": 9999,
+    		"appName": "space",
+				"level":"debug",
+    		"host": "127.0.0.1"
 			}
+		}
 	},
 
 	"gulp":{

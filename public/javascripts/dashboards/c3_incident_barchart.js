@@ -9,16 +9,16 @@ console.log("baseline period: "+_baselinePeriod);
 
 
 // do a ajax call for target data period
-$.get( "/api/space/rest/incidenttracker/"+_baselinePeriod, function( dataBaseline ) {
+$.get( "/api/space/rest/incidenttracker/openedAt/"+_baselinePeriod, function( dataBaseline ) {
   //and for baseline data period
   var _baselineMetrics = _calculateMetrics(dataBaseline);
-  console.log("baseline P1 sum: "+_baselineMetrics.sumP1);
-  console.log("baseline P8 sum: "+_baselineMetrics.sumP8);
+  console.log("baseline P01 sum: "+_baselineMetrics.sumP01);
+  console.log("baseline P08 sum: "+_baselineMetrics.sumP08);
 
-  var _baselineString = "baseline: "+_baselinePeriod+" P1:"+_baselineMetrics.sumP1+" P8:"+_baselineMetrics.sumP8;
+  var _baselineString = "baseline: "+_baselinePeriod+" P01:"+_baselineMetrics.sumP01+" P08:"+_baselineMetrics.sumP08;
   $('#baseline').text(_baselineString);
   var _target = 0.25;
-  var _targetString = "target: "+_period+" P1:"+(_baselineMetrics.sumP1*(1-_target))+" P8:"+(_baselineMetrics.sumP8*(1-_target));
+  var _targetString = "target: "+_period+" P01:"+(_baselineMetrics.sumP01*(1-_target))+" P08:"+(_baselineMetrics.sumP08*(1-_target));
   $('#target').text(_targetString);
 
 
@@ -26,8 +26,8 @@ $.get( "/api/space/rest/incidenttracker/"+_baselinePeriod, function( dataBaselin
 
     var _metrics = _calculateMetrics(data);
 
-    console.log("P1 sum: "+_metrics.sumP1);
-    console.log("P8 sum: "+_metrics.sumP8);
+    console.log("P01 sum: "+_metrics.sumP01);
+    console.log(" sum: "+_metrics.sum);
 
     console.log("weekly aggregation: "+JSON.stringify(_metrics.weeks));
     console.log("daily aggregation: "+JSON.stringify(_metrics.days));
@@ -42,7 +42,7 @@ $.get( "/api/space/rest/incidenttracker/"+_baselinePeriod, function( dataBaselin
         data: {
             json: _metrics.weeks,
             keys: {
-                value: ['P1','P8']
+                value: ['P01','']
             },
             type: 'bar'
         },
@@ -98,36 +98,36 @@ function _calculateMetrics(data){
   var w =0;
   var d =0;
 
-  var _p1_week=0;
-  var _p8_week=0;
+  var _P01_week=0;
+  var _P08_week=0;
 
-  var _p1_day=0;
-  var _p8_day=0;
+  var _P01_day=0;
+  var _P08_day=0;
 
-  var _p1_sum =0;
-  var _p8_sum =0;
+  var _P01_sum =0;
+  var _P08_sum =0;
 
 
   for (var i in data){
-    data[i].P1 = parseInt(data[i].P1);
-    data[i].P8 = parseInt(data[i].P8);
-    _p1_week+=data[i].P1;
-    _p8_week+=data[i].P8;
+    data[i].P01 = parseInt(data[i].P01);
+    data[i].P08 = parseInt(data[i].P08);
+    _P01_week+=data[i].P01;
+    _P08_week+=data[i].P08;
 
-    _p1_day+=data[i].P1;
-    _p8_day+=data[i].P8;
+    _P01_day+=data[i].P01;
+    _P08_day+=data[i].P08;
 
-    _p1_sum+=data[i].P1;
-    _p8_sum+=data[i].P8;
+    _P01_sum+=data[i].P01;
+    _P08_sum+=data[i].P08;
 
-    days[i] = {P1:_p1_day,P8:_p8_day};
+    days[i] = {P01:_P01_day,P08:_P08_day};
 
 
     if (i % 7 ==0){
       console.log("mod 7 ==0 i:"+i);
-      weeks[w] = {P1:_p1_week,P8:_p8_week};
-      _p1_week=0;
-      _p8_week=0;
+      weeks[w] = {P01:_P01_week,P08:_P08_week};
+      _P01_week=0;
+      _P08_week=0;
       w++;
     }
   }
@@ -136,8 +136,8 @@ function _calculateMetrics(data){
   _metrics.weeks = weeks;
   _metrics.days = days;
 
-  _metrics.sumP1 = _p1_sum;
-  _metrics.sumP8 = _p8_sum;
+  _metrics.sumP01 = _P01_sum;
+  _metrics.sumP08 = _P08_sum;
 
   return _metrics;
 }

@@ -14,19 +14,14 @@
 
   "logger": {
 		"production":{
-		    "file":{
-				"filename": "logs/space.log" ,
-				"prettyPrint":true,
-				"showLevel":true,
-				"level":"info"
-			},
-    "LogstashUDP": {
-      	"port": 9999,
-      	"appName": "space",
-      	"host": "127.0.0.1",
-        "level":"debug"
-  		}
-		}
+	    "DailyRotateFile":{
+      "filename": "logs/spacelog" ,
+      "prettyPrint":true,
+      "showLevel":true,
+      "colorize":true,
+      "level":"info"
+			}
+    }
 	},
 
     "v1" : {

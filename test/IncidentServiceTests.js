@@ -121,9 +121,58 @@ describe('IncidentService', function(){
 
 					done();
 			})
-
 		});
   });
+
+
+//=> WILL FLUSH AND REBUILD THE TRACKERS!!!
+
+/*
+	describe('#rebuild DailyTracker()', function(){
+    it('should create a daily tracker statistic for a given list of incidents', function(done){
+			this.timeout(30000);
+      var incidentService = require('../services/IncidentService');
+			incidentService.rebuildTracker("openedAt",function(err,result){
+				logger.debug(result);
+				done();
+			})
+		});
+  });
+
+	describe('#rebuild DailyTracker()', function(){
+    it('should create a daily tracker statistic for a given list of incidents', function(done){
+			this.timeout(30000);
+      var incidentService = require('../services/IncidentService');
+			incidentService.rebuildTracker("closedAt",function(err,result){
+				logger.debug(result);
+				done();
+			})
+		});
+  });
+
+	describe('#rebuild DailyTracker()', function(){
+    it('should create a daily tracker statistic for a given list of incidents', function(done){
+			this.timeout(30000);
+      var incidentService = require('../services/IncidentService');
+			incidentService.rebuildTracker("resolvedAt",function(err,result){
+				logger.debug(result);
+				done();
+			})
+		});
+  });
+
+
+
+describe('#increment DailyTracker()', function(){
+	it('should increment daily tracker with a given incident', function(done){
+
+		var incidentService = require('../services/IncidentService');
+		incidentService.incrementTracker("openedAt",new Date(),"P08 - Critical");
+			logger.debug("incremented");
+			done();
+		})
+	});
+*/
 
 
 })

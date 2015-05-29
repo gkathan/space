@@ -133,12 +133,39 @@ function _sync(url,type,callback){
 								logger.error("err: "+err.message);
 						}
 						else{
+							//drops and inserts actual full incidents snapshot => TODO refactor to only work with "moving" (active) incident data, no need to delete all closed stuff => too expensive ;-)
 							incService.flush(_incidentsNEW	 , function(err , success){
 								if (err){
 									logger.error('incidents.insert failed: '+err.message);
 								}
 								else if(success){
 									logger.info("[success] sync incidents....length: "+_incidentsNEW.length);
+
+									// update the IncidentTracker
+									//1) NEW: incident will increment the "incídenttracker_openedAt" daily value for the according priority
+									if (_incidentsDIFF.NEW.length>0){
+
+										for (var i in _incidentsDIFF.NEW){
+											var _openedAt = _incidentsDIFF.NEW[i].openedAt;
+											var _priority = _incidentsDIFF.NEW[i].priority;
+											incService.incrementTracker("openedAt",_openedAt,_priority);
+										}
+									}
+
+
+									//2) CHANGED: we have to check whether the state has changed (and accordingly the either "resolvedAt" or "closedAt") collections
+
+									// TODO
+
+
+									//3) final stuff
+
+									var _message=_incidentsNEW.length+" incidents synced";
+									app.io.emit('syncUpdate', {status:"[SUCCESS]",from:_syncName,timestamp:_timestamp,info:_incidentsNEW.length+" incidents synced",type:type});
+									_syncStatus.saveLastSync(_syncName,_timestamp,_message,_statusSUCCESS,type);
+									callback(null,"OK");
+
+									/*
 									// get oldsnow data and merge it
 									var incidenttrackeroldsnow =  db.collection('incidenttrackeroldsnow');
 									incidenttrackeroldsnow.find({}, function(err , oldtrackerdata){
@@ -146,7 +173,7 @@ function _sync(url,type,callback){
 											logger.debug("***** [yep] we got the old tracker data: length= "+oldtrackerdata.length);
 											var _tracker = _calculateDailyTracker(_incidentsNEW,config.context);
 											// and  handle incident tracker
-											incService.flushTracker(oldtrackerdata.concat(_tracker)	 , function(err , success){
+											incService.flushTracker(oldtrackerdata.concat(_tracker),"opened", function(err , success){
 													if (err){
 														var _message=err.message;
 														logger.error("[incidenttracker insert failed....]"+err.message);
@@ -163,6 +190,9 @@ function _sync(url,type,callback){
 											});
 										} //end if (oldtrackerdata)
 									}); //incidenttrackeroldsnow.find()
+								*/
+
+
 								} //else if (success) end
 							}) //incidents.insert()
 
@@ -177,7 +207,7 @@ function _sync(url,type,callback){
 					});
         }
 				else{
-					logger.debug("----------------------------------------------- IncidentSyncService: <no change - nothing to do>")
+					logger.debug("---------------------- IncidentSyncService says: <no change - nothing to do>")
 				}
 			})
 		})
@@ -202,11 +232,11 @@ function _emitNEWIncidentMessage(incident){
 	logger.debug("_newincident: "+JSON.stringify(_newincident));
 	if (_.startsWith(_newincident.priority,"P01")){
 		_type="error";
-		_prio = "P1";
+		_prio = "P01";
 	}
 	else if(_.startsWith(_newincident.priority,"P08")){
 		_type="warning";
-		_prio = "P8";
+		_prio = "P08";
 	}
 	else if(_.startsWith(_newincident.priority,"P16")){
 		_type="info";
@@ -398,6 +428,7 @@ function _getData(url,priority,date,callback){
 * calculates the daily number of incidents types
 * and updates the incidentracker collection
 */
+/*
 function _calculateDailyTracker(data,context){
 	var _dailytracker = [];
 	for (var i in data){
@@ -420,3 +451,4 @@ function _calculateDailyTracker(data,context){
 	}
 	return _dailytracker;
 }
+*/

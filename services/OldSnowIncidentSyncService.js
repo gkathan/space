@@ -178,11 +178,11 @@ function _emitNEWIncidentMessage(incident){
 	logger.debug("_newincident: "+JSON.stringify(_newincident));
 	if (_.startsWith(_newincident.priority,"P01")){
 		_type="error";
-		_prio = "P1";
+		_prio = "P01";
 	}
 	else if(_.startsWith(_newincident.priority,"P08")){
 		_type="warning";
-		_prio = "P8";
+		_prio = "P08";
 	}
 	else if(_.startsWith(_newincident.priority,"P16")){
 		_type="info";
@@ -374,6 +374,7 @@ function _getData(url,priority,date,callback){
 * calculates the daily number of incidents types
 * and updates the incidentracker collection
 */
+/*
 function _calculateDailyTracker(data,context){
 	var _dailytracker = [];
 	for (var i in data){
@@ -396,3 +397,4 @@ function _calculateDailyTracker(data,context){
 	}
 	return _dailytracker;
 }
+*/

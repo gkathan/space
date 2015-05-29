@@ -3,6 +3,7 @@ var charts=[];
 
 var _period;
 var _aggregate;
+var _dateField;//="openedAt";
 
 function _getYear(period){
   console.log("**** getYear() called: period: "+period);
@@ -31,7 +32,8 @@ function _alterPeriodByYear(period,yearDelta){
 
 
 
-function init(chartId){
+function init(chartId,dateField){
+  _dateField = dateField;
   nv.addGraph(function() {
     var incidents;
     var chart;
@@ -45,8 +47,12 @@ function init(chartId){
     }
     if (!_aggregate) _aggregate="monthly";
     var _colors={};
-    _colors["P1"]=["#174D75","#E6EFF3"];
-    _colors["P8"]=["#00b8e4","#EAF7FF"];
+    // #ED1C24	#EF333A	#F14A50	#F36166	#F5787C	#F78F92	#F9A6A8	#FBBDBE	#FDD4D4	#FFEBEA	#FFFFFF
+    _colors["P01"]=["#ED1C24","#FDD4D4"];
+    // #F7931D	#F89E34	#F9A94B	#FAB462	#FBBF79	#FCCA90	#FDD5A7	#FEE0BE	#FFEBD5	#FFF6EC	#FFFFFF
+    _colors["P08"]=["#F7931D","#FFEBD5"];
+    // #38A4DC	#4CADE0	#60B6E4	#74BFE8	#88C8EC	#9CD1F0	#B0DAF4	#C4E3F8	#D8ECFC	#ECF5FF	#FFFFFF
+    _colors["P16"]=["#38A4DC","#D8ECFC"];
     console.log("prio: "+_prio+" colors: "+_colors[_prio]);
     console.log("period: "+_period);
     chart = nv.models.multiBarChart()
@@ -74,7 +80,7 @@ function init(chartId){
     return chart;
   });
 
-  // clickhandler for 
+  // clickhandler for
 	$('a.dropdown').click( function(event) {
 		var _prio =event.target.id.split("_")[0].split("chart")[1];
 		var _chart=event.target.id.split("_")[0];
@@ -130,8 +136,9 @@ function _prepareData(incidents,incidentsPrev,prio,period){
 }
 
 function redraw(chartId,period,aggregate,prio) {
-  var _url = "/api/space/rest/incidenttracker/"+period;
-  var _urlPrev = "/api/space/rest/incidenttracker/"+_alterPeriodByYear(period,-1);
+  var _url = "/api/space/rest/incidenttracker/"+_dateField+"/"+period;
+  var _urlPrev = "/api/space/rest/incidenttracker/"+_dateField+"/"+_alterPeriodByYear(period,-1);
+  console.log("---------------------- _url = "+_url);
 
   if (aggregate){
     _url+="?aggregate="+aggregate;

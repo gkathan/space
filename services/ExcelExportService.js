@@ -298,8 +298,10 @@ function excelIncidenttracker(req, res , next){
 		{caption:'_id',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'context',type:'string',width:12,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'date',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
-		{caption:'P1',type:'string',width:5,captionStyleIndex:2,beforeCellWrite:_formatCell},
-		{caption:'P8',type:'string',width:8,captionStyleIndex:2,beforeCellWrite:_formatCell}
+		{caption:'P01',type:'string',width:5,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'P08',type:'string',width:8,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'P16',type:'string',width:8,captionStyleIndex:2,beforeCellWrite:_formatCell},
+
 	];
     _generateAndSendExcel("incidenttracker",conf,req,res,next);
 }

@@ -24,6 +24,27 @@ var _incidentsCollection="incidents";
 var _incidentsDeltaCollection="incidentsdelta";
 var _incidentTrackerCollection="incidenttracker";
 
+
+exports.find = _find;
+exports.findFiltered = _findFiltered;
+exports.findAll = _findAll;
+exports.findOld = _findOld;
+exports.flush = _flush;
+exports.rebuildTracker = _rebuildTracker;
+exports.incrementTracker = _incrementTracker;
+
+exports.flushTracker = _flushTracker;
+exports.saveDelta = _saveDelta;
+exports.mapPriority = _mapPriority;
+exports.mapState = _mapState;
+exports.weeklyTracker = _aggregateWeekly;
+exports.monthlyTracker = _aggregateMonthly;
+exports.findTrackerByDate = _findIncidenttrackerByDate;
+exports.getOverdueGroupedByAssignmentGroup = _getOverdueGroupedByAssignmentGroup;
+exports.findRevenueImpactMapping = _findRevenueImpactMapping;
+exports.calculateDailyTracker = _calculateDailyTracker;
+
+
 /**
  *
  */
@@ -131,8 +152,8 @@ function _flush(data,callback){
 /**
 * drops and saves
 */
-function _flushTracker(data,callback){
-	var items =  db.collection(_incidentTrackerCollection);
+function _flushTracker(data,trackerType,callback){
+	var items =  db.collection(_incidentTrackerCollection+"_"+trackerType);
 	items.drop();
 	items.insert(data, function(err , success){
 		if (err){
@@ -145,6 +166,50 @@ function _flushTracker(data,callback){
 		}
 	})
 }
+
+/**
+* drops and rebuilds the according IncidentTracker collection
+* iterates over all Incidents
+* quite expensive call - so do that only when you really need it !!
+*/
+function _rebuildTracker(trackerType,callback){
+	var _context = "bpty.studios";
+	_findAll({},function(err,incidents){
+		var dailyTracker = _calculateDailyTracker(incidents,trackerType,_context,function(err,tracker){
+			logger.debug("done tracking..."+JSON.stringify(tracker));
+			_flushTracker(tracker,trackerType,function(err,result){
+				logger.debug("flushed tracker ");
+				callback(null,"[rebuildTracker] for type: "+trackerType+" says: OK ");
+			})
+		});
+	})
+}
+
+
+function _incrementTracker(trackerType,openedAt,priority){
+	var _day = moment(openedAt).format("YYYY-MM-DD");
+	_day = new Date(_day);
+
+	var _p01Increment = 0;
+	var _p08Increment = 0;
+	var _p16Increment = 0;
+
+	if (_.startsWith(priority,"P01")) _p01Increment=1;
+	else if (_.startsWith(priority,"P08")) _p08Increment=1;
+	else if (_.startsWith(priority,"P16")) _p16Increment=1;
+
+	var items =  db.collection(_incidentTrackerCollection+"_"+trackerType);
+	items.findAndModify({query:{date: _day},update:{$inc:{P01:_p01Increment,P08:_p08Increment,P16:_p16Increment}},upsert:true},function(err,success){
+		if (err){
+			logger.error("IncidentService._incrementTracker("+trackerType+","+moment(openedAt).format('YYYY-MM-DD')+","+priority+" ) says: ERROR: "+err.message);
+		}
+		else {
+			logger.debug("++++++++++++++++++++++ IncidentService._incrementTracker("+trackerType+","+moment(openedAt).format('YYYY-MM-DD')+","+priority+" ) says: increment by 1 = OK :-)");
+		}
+	});
+
+}
+
 
 /**
 * insertsdelta
@@ -164,7 +229,7 @@ function _saveDelta(data,callback){
 }
 
 /**
- * param prioritylist: ["P1","P8","P40"]
+ * param prioritylist: ["P01","P08","P40"]
  *
  */
 exports.findGroupedByPriority = function (prioritylist){
@@ -174,29 +239,14 @@ exports.findGroupedByPriority = function (prioritylist){
 	return moment.duration(minutes,'minutes').format("hh:mm.ss");;
 }
 
-exports.find = _find;
-exports.findFiltered = _findFiltered;
-exports.findAll = _findAll;
-exports.findOld = _findOld;
-exports.flush = _flush;
-exports.flushTracker = _flushTracker;
 
-exports.saveDelta = _saveDelta;
-
-
-exports.mapPriority = _mapPriority;
-exports.mapState = _mapState;
-exports.weeklyTracker = _aggregateWeekly;
-exports.monthlyTracker = _aggregateMonthly;
-exports.findTrackerByDate = _findIncidenttrackerByDate;
-exports.getOverdueGroupedByAssignmentGroup = _getOverdueGroupedByAssignmentGroup;
-exports.findRevenueImpactMapping = _findRevenueImpactMapping;
-
-
-function _findIncidenttrackerByDate(aggregate,period,callback){
+/**
+* param type: "openedAt", "resolvedAt" or "closedAt" are currently supported
+*/
+function _findIncidenttrackerByDate(aggregate,type,period,callback){
   if (!aggregate) aggregate="weekly";
 
-	var collection = "incidenttracker";
+	var collection = "incidenttracker"+"_"+type;
 	var _date = period;
 
 	var _quarter = _parseQuarter(_date);
@@ -257,7 +307,7 @@ function _findIncidenttrackerByDate(aggregate,period,callback){
 
  var _query = {date : { $gte : _from,$lte : _to}};
 
-    db.collection(collection).find( _query, function(err , success){
+    db.collection(collection).find( _query).sort({"date":1}, function(err , success){
         logger.debug('Response success '+success);
         logger.debug('Response error '+err);
         if(success){
@@ -390,6 +440,45 @@ function _parseWeek(week){
 
 
 
+/**
+* param data list of incident objects
+* calculates the daily number of incidents types
+* and updates the incidentracker collection
+* param incidents: list of incident objects
+* param dateField: sets which date field we should look at (e.g. "openedAt" to track new incidnets, "resolvedAt" track resolved incidents)
+*/
+function _calculateDailyTracker(incidents,dateField,context,callback){
+	var _dailytracker = [];
+	for (var i in incidents){
+		//"openedAt" "resolvedAt" "closedAt"
+		if (incidents[i][dateField]){
+			//logger.debug("inc: "+incidents[i].id);
+			var _day = moment(incidents[i][dateField]).format("YYYY-MM-DD");
+			_day = new Date(_day);
+
+			if (!_.findWhere(_dailytracker,{"date":_day})) {
+				_dailytracker.push({"date":_day,"P01":0,"P08":0,"P16":0,"context":context});
+			}
+
+			if (incidents[i].priority=="P01 - Critical"){
+				_.findWhere(_dailytracker,{"date":_day}).P01++;
+			}
+			else if (incidents[i].priority=="P08 - High"){
+				_.findWhere(_dailytracker,{"date":_day}).P08++;
+			}
+			else if (incidents[i].priority=="P16 - Moderate"){
+				_.findWhere(_dailytracker,{"date":_day}).P16++;
+			}
+		}
+		else{
+			throw new Error(dateField+" is not an attribute of incidents..");
+		}
+	}
+	callback(null,_dailytracker);
+}
+
+
+
 /** generic aggregator incidenttracker data
 * param period: defines whether we arte looking at "yearly",  "quarterly", "monthly", or "weekly"
 * param time: "week", "month", "quarter" "year"
@@ -403,8 +492,9 @@ function _aggregateByTime(data,period,time){
 	//weeks,months,....
   var items =[];
 
-	var _p1_aggregate=0;
-  var _p8_aggregate=0;
+	var _p01_aggregate=0;
+  var _p08_aggregate=0;
+	var _p16_aggregate=0;
 
   for (var i in data){
 		var _time;
@@ -436,17 +526,20 @@ function _aggregateByTime(data,period,time){
 
 
   	if (!_.findWhere(items,{"date":_timeName})){
-			_p1_aggregate=0;
-      _p8_aggregate=0;
-			items.push({P1:_p1_aggregate,P8:_p8_aggregate,date:_timeName});
+			_p01_aggregate=0;
+      _p08_aggregate=0;
+			_p16_aggregate=0;
+			items.push({P01:_p01_aggregate,P08:_p08_aggregate,P16:_p16_aggregate,date:_timeName});
 			logger.debug("* "+time+" added: "+_time);
 		}
 
-		_p1_aggregate+=parseInt(data[i].P1);
-    _p8_aggregate+=parseInt(data[i].P8);
+		_p01_aggregate+=parseInt(data[i].P01);
+    _p08_aggregate+=parseInt(data[i].P08);
+		_p16_aggregate+=parseInt(data[i].P16);
 
-		_.findWhere(items,{"date":_timeName}).P1=_p1_aggregate;
-		_.findWhere(items,{"date":_timeName}).P8=_p8_aggregate;
+		_.findWhere(items,{"date":_timeName}).P01=_p01_aggregate;
+		_.findWhere(items,{"date":_timeName}).P08=_p08_aggregate;
+		_.findWhere(items,{"date":_timeName}).P16=_p16_aggregate;
   }
 	return items;
 }

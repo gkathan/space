@@ -7,6 +7,7 @@ script(src="/javascripts/components/moment/min/moment.min.js")
 -	function mapHealth2Color(health){
 -		// there is no amber css color ;-)
 -		if (health=="Amber") return "gold";
+-		if (health=="Green") return "limegreen";
 -		if (!health) return "lightgrey"
 -		// red and green are ok
 -		return health;
@@ -88,12 +89,13 @@ block content
 						span(style="font-size:11px;font-weight:normal;color:black;text-align:center") <b>GATE DECISIONS</b>:
 						br
 						br
-						table.table(style="max-width:800px")
+						table.table(style="max-width:600px")
 							// state changes
 							thead
 								tr
 									th(style="width:50px;font-size:10px;vertical-align:top") Epic ID
 									th(style="max-width:100px;font-size:10px;vertical-align:top") Epic Name
+									th(style="max-width:60px;font-size:10px;vertical-align:top") Decision
 									th(style="max-width:150px;font-size:10px;vertical-align:top") Comment
 									
 							tbody
@@ -107,16 +109,22 @@ block content
 											a(href="http://v1.bwinparty.corp/V1-Production/Epic.mvc/Summary?oidToken=Epic%3A"+_pb.id target="_new" )
 												| <span style="font-size:9px"><b>#{_pb.name}</b>  
 										td(style="font-size:10px;vertical-align:top")
-											if (!_pb.Comment)
-												|  -- no decision --   
-											else
+											if _pb.PB==1
+												span(style="color:limegreen;font-weight:bold") APPROVED  
+											else if _pb.PB==0
+												span(style="color:red;font-weight:bold") REJECTED   	
+										td(style="font-size:10px;vertical-align:top")
+											if _.findWhere(_date.stateChangeBucket,{"EpicRef":_pb.EpicRef}) && (_.findWhere(_date.stateChangeBucket,{"EpicRef":_pb.EpicRef}).oldState != _.findWhere(_date.stateChangeBucket,{"EpicRef":_pb.EpicRef}).Status) 
+												span(style="font-style:italic") #{_.findWhere(_date.stateChangeBucket,{"EpicRef":_pb.EpicRef}).oldState}&nbsp; 
+												span.glyphicon.glyphicon-arrow-right 
+												span(style="font-style:italic") &nbsp;#{_.findWhere(_date.stateChangeBucket,{"EpicRef":_pb.EpicRef}).Status}
+											else if _.findWhere(_date.stateChangeBucket,{"EpicRef":_pb.EpicRef})
+												span(style="font-style:italic") Remains in #{_.findWhere(_date.stateChangeBucket,{"EpicRef":_pb.EpicRef}).oldState}&nbsp; 
+											if (_pb.Comment)
+												br
 												|  #{_pb.Comment}
-												if _.findWhere(_date.stateChangeBucket,{"EpicRef":_pb.EpicRef}) 
-													br
-													span(style="font-style:italic") #{_.findWhere(_date.stateChangeBucket,{"EpicRef":_pb.EpicRef}).oldState}&nbsp; 
-													span.glyphicon.glyphicon-arrow-right 
-													span(style="font-style:italic") &nbsp;#{_.findWhere(_date.stateChangeBucket,{"EpicRef":_pb.EpicRef}).Status}
-													
+												
+												
 												
 
 					
