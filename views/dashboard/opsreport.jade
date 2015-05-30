@@ -47,7 +47,7 @@ style.
 		height: 400px;
 		width:1000px;
 	}
-	#chartP1Resolved svg {
+	#chartP120 svg {
 		height: 400px;
 		width:1000px;
 	}
@@ -101,10 +101,9 @@ block content
 		script(src='/javascripts/dashboards/nvd3_incidents_multi.js')
 		+chartIncident("Incidents Trend","P01","openedAt","chartP01")
 		//+chartIncident("Incidents Trend","P1","resolvedAt","chartP1Resolved")
-		
-		
 		+chartIncident("Incidents Trend","P08","openedAt","chartP08")
 		+chartIncident("Incidents Trend","P16","openedAt","chartP16")
+		+chartIncident("Incidents Trend","P120","openedAt","chartP120")
 		+renderIncidentList("snow reported P01 incidents",snowIncidents,excludeNOLABEL)
 		
 	script(src='/javascripts/dashboards/nvd3_availability.js')

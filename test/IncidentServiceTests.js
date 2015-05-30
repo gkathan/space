@@ -111,7 +111,7 @@ describe('IncidentService', function(){
 
 		});
   });
-
+/*
 	describe('#findOld()', function(){
     it('returns incidents from old snow', function(done){
 			this.timeout(10000);
@@ -160,7 +160,7 @@ describe('IncidentService', function(){
 			})
 		});
   });
-
+*/
 
 
 describe('#increment DailyTracker()', function(){
@@ -172,7 +172,55 @@ describe('#increment DailyTracker()', function(){
 			done();
 		})
 	});
-*/
+
+
+
+describe('#calculate DailyTracker()', function(){
+	it('should calculate daily tracker with a given incident list', function(done){
+
+		var incidentService = require('../services/IncidentService');
+		var _list =[];
+		var _inc1 = {
+	    "description" : "this is a test incident",
+	    "id" : "INC100001",
+			"priority" : "P01 - Critical",
+	    "openedAt" : new Date("2015-05-02 15:03:00"),
+	    "resolvedAt" : new Date("2015-05-02 15:13:00"),
+			"assignmentGroup" : "EnterpriseTools"
+		};
+		var _inc2 = {
+	    "description" : "this is a test incident",
+	    "id" : "INC100002",
+			"priority" : "P01 - Critical",
+	    "openedAt" : new Date("2015-05-05 12:03:00"),
+	    "resolvedAt" : new Date("2015-05-05 15:13:00"),
+			"assignmentGroup" : "LeanOps"
+		};
+
+		var _inc3 = {
+	    "description" : "this is a test incident",
+	    "id" : "INC100003",
+			"priority" : "P08 - High",
+	    "openedAt" : new Date("2015-05-08 12:03:00"),
+	    "resolvedAt" : new Date("2015-05-08 15:13:00"),
+			"assignmentGroup" : "Others"
+		};
+
+		_list.push(_inc1);
+		_list.push(_inc2);
+		_list.push(_inc3);
+
+		//_calculateDailyTracker(incidents,dateField,context,callback)
+		var _context="bpty.studios";
+		incidentService.calculateDailyTracker(_list,"openedAt",_context,function(err,success){
+
+			logger.debug(success);
+			assert.equal(1, _.findWhere(success,{date:new Date("2015-05-08")}).P08.total);
+			assert.equal(0, _.findWhere(success,{date:new Date("2015-05-08")}).P01.total);
+			done();
+		})
+	});
+});
 
 
 })

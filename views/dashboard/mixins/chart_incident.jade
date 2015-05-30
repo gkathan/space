@@ -71,8 +71,7 @@ mixin chartIncident(title,prio,dateField,chart)
 				div(id="#{chart}" style="text-align:center")
 					svg
 	script.
-		init("#{chart}","#{dateField}");
-
+		init("#{prio}","#{dateField}","#{chart}");
 
 
 script.

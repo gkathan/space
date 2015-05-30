@@ -32,13 +32,13 @@ function _alterPeriodByYear(period,yearDelta){
 
 
 
-function init(chartId,dateField){
+function init(prio,dateField,chartId){
   _dateField = dateField;
   nv.addGraph(function() {
     var incidents;
     var chart;
     var _chartId = chartId;//"chartP1";
-    var _prio = chartId.split("chart")[1];
+    var _prio = prio;//chartId.split("chart")[1];
     _period =getUrlVars().period;
     if (!_period) _period=moment().year().toString();
     _aggregate =getUrlVars().aggregate;
@@ -53,6 +53,7 @@ function init(chartId,dateField){
     _colors["P08"]=["#F7931D","#FFEBD5"];
     // #38A4DC	#4CADE0	#60B6E4	#74BFE8	#88C8EC	#9CD1F0	#B0DAF4	#C4E3F8	#D8ECFC	#ECF5FF	#FFFFFF
     _colors["P16"]=["#38A4DC","#D8ECFC"];
+    _colors["P120"]=["#aaaaaa","#efefef"];
     console.log("prio: "+_prio+" colors: "+_colors[_prio]);
     console.log("period: "+_period);
     chart = nv.models.multiBarChart()
@@ -103,6 +104,9 @@ function init(chartId,dateField){
 * prepares data to be consumable by NVd3
 */
 function _prepareData(incidents,incidentsPrev,prio,period){
+  console.log("----------------- _prepareData: prio="+prio);
+  console.log("----------------- _prepareData: incidents[0]="+JSON.stringify(incidents[0]));
+
   var _P=[];
   var _PBase=[];
   var _PSum=0;
@@ -117,21 +121,22 @@ function _prepareData(incidents,incidentsPrev,prio,period){
   var _yearPrev = _getYear(_alterPeriodByYear(period,-1));
 
   for (var day in incidents){
-    console.log("date: "+incidents[day].date+" "+prio+": "+incidents[day][prio]);
-    _P.push({"date":incidents[day].date,"y":parseInt(incidents[day][prio])});
-    _PSum+=parseInt(incidents[day][prio]);
+    console.log("date: "+incidents[day].date+" "+prio+": "+incidents[day][prio].total);
+    _P.push({"date":incidents[day].date,"y":parseInt(incidents[day][prio].total)});
+    _PSum+=parseInt(incidents[day][prio].total);
   }
   console.log(prio+"Sum = "+_PSum+" "+prio+"BaseSum = "+_PBaseSum);
 
   for (var day in incidentsPrev){
-    console.log("date: "+incidentsPrev[day].date+" "+prio+": "+incidentsPrev[day][prio]);
+    console.log("date: "+incidentsPrev[day].date+" "+prio+": "+incidentsPrev[day][prio].total);
     //date of previous year must be "normalized" to this year ....
-    _PPrev.push({"date":_alterPeriodByYear(incidentsPrev[day].date,1),"y":parseInt(incidentsPrev[day][prio])});
+    _PPrev.push({"date":_alterPeriodByYear(incidentsPrev[day].date,1),"y":parseInt(incidentsPrev[day][prio].total)});
     _PSumPrev+=parseInt(incidentsPrev[day][prio]);
   }
   console.log(prio+"Sum = "+_PSumPrev+" "+prio+"BaseSum = "+_PBaseSumPrev);
 
   var incData = [{key:_year,values:_P},{key:_yearPrev,values:_PPrev}]
+
   return incData
 }
 

@@ -56,21 +56,6 @@ function _findRevenueImpactMapping(callback) {
 	});
 }
 
-/*
-function _findFiltered(filter,callback) {
-	var items =  db.collection(_incidentsCollection);
-	logger.debug("filter: "+JSON.stringify(filter));
-
-	items.find(filter).sort({openedAt:-1}, function (err, docs){
-			if (err){
-				logger.error("error: "+err.message);
-			}
-			logger.debug("docs: "+docs)
-			callback(err,docs);
-			return;
-	});
-}
-*/
 function _findFiltered(filter,callback) {
 	logger.debug("filter: "+JSON.stringify(filter));
 
@@ -83,8 +68,6 @@ function _findFiltered(filter,callback) {
 			return;
 	});
 }
-
-
 
 /**
  *
@@ -125,8 +108,6 @@ function _findAll(filter,callback) {
 			logger.debug(".....findAll....oldincidents: "+oldincidents.length);
 			var _all = _.union(incidents,oldincidents);
 			callback(err,_all);
-			//callback(err,incidents);
-			//return;
 		});
 	});
 }
@@ -178,8 +159,12 @@ function _rebuildTracker(trackerType,callback){
 		var dailyTracker = _calculateDailyTracker(incidents,trackerType,_context,function(err,tracker){
 			logger.debug("done tracking..."+JSON.stringify(tracker));
 			_flushTracker(tracker,trackerType,function(err,result){
+				if (err){
+					logger.error("something bad happened: "+err.message);
+					callback(err);
+				}
 				logger.debug("flushed tracker ");
-				callback(null,"[rebuildTracker] for type: "+trackerType+" says: OK ");
+				callback(null,"[rebuildTracker] for type: "+trackerType+" says: OK: ");
 			})
 		});
 	})
@@ -193,13 +178,15 @@ function _incrementTracker(trackerType,openedAt,priority){
 	var _p01Increment = 0;
 	var _p08Increment = 0;
 	var _p16Increment = 0;
+	var _p120Increment = 0;
 
-	if (_.startsWith(priority,"P01")) _p01Increment=1;
+	if (_.startsWith(priority,"P01") || _.startsWith(priority,"P04")) _p01Increment=1;
 	else if (_.startsWith(priority,"P08")) _p08Increment=1;
 	else if (_.startsWith(priority,"P16")) _p16Increment=1;
+	else if (_.startsWith(priority,"P40") || _.startsWith(priority,"P120")) _p120Increment=1;
 
 	var items =  db.collection(_incidentTrackerCollection+"_"+trackerType);
-	items.findAndModify({query:{date: _day},update:{$inc:{P01:_p01Increment,P08:_p08Increment,P16:_p16Increment}},upsert:true},function(err,success){
+	items.findAndModify({query:{date: _day},update:{$inc:{'P01.total':_p01Increment,'P08.total':_p08Increment,'P16.total':_p16Increment,'P120.total':_p120Increment}},upsert:true},function(err,success){
 		if (err){
 			logger.error("IncidentService._incrementTracker("+trackerType+","+moment(openedAt).format('YYYY-MM-DD')+","+priority+" ) says: ERROR: "+err.message);
 		}
@@ -207,7 +194,6 @@ function _incrementTracker(trackerType,openedAt,priority){
 			logger.debug("++++++++++++++++++++++ IncidentService._incrementTracker("+trackerType+","+moment(openedAt).format('YYYY-MM-DD')+","+priority+" ) says: increment by 1 = OK :-)");
 		}
 	});
-
 }
 
 
@@ -245,10 +231,8 @@ exports.findGroupedByPriority = function (prioritylist){
 */
 function _findIncidenttrackerByDate(aggregate,type,period,callback){
   if (!aggregate) aggregate="weekly";
-
 	var collection = "incidenttracker"+"_"+type;
 	var _date = period;
-
 	var _quarter = _parseQuarter(_date);
 	var _half = _parseHalf(_date);
 	var _month = _parseMonth(_date);
@@ -299,47 +283,37 @@ function _findIncidenttrackerByDate(aggregate,type,period,callback){
 	else {
 		logger.error("no way - no valid date specified");
 	}
-
 	logger.debug("findbyDate: value: "+_date);
 	logger.debug("collection: "+collection);
+ 	var _query = {date : { $gte : _from,$lte : _to}};
 
-
-
- var _query = {date : { $gte : _from,$lte : _to}};
-
-    db.collection(collection).find( _query).sort({"date":1}, function(err , success){
-        logger.debug('Response success '+success);
-        logger.debug('Response error '+err);
-        if(success){
-
-						if (aggregate=="weekly"){
-							success = _aggregateWeekly(success);
-						}
-						else if (aggregate=="monthly"){
-							success = _aggregateMonthly(success);
-						}
-						else if (aggregate=="quarterly"){
-							success = _aggregateQuarterly(success);
-						}
-						else if (aggregate=="halfyearly"){
-							success = _aggregateHalfyearly(success);
-						}
-
-						else if (aggregate=="yearly"){
-							success = _aggregateYearly(success);
-						}
-
-						// daily is default raw data - we have nothing todo
-						//res.send(success);
-            //return;
-						logger.debug("************* callback success");
-						callback(null,success);
-        }
-        else{
-					logger.warn("************* callback error: "+err.message);
-					callback(err,null);
-				}
-    })
+  db.collection(collection).find( _query).sort({"date":1}, function(err , success){
+    logger.debug('Response success '+success);
+    logger.debug('Response error '+err);
+    if(success){
+			if (aggregate=="weekly"){
+				success = _aggregateWeekly(success);
+			}
+			else if (aggregate=="monthly"){
+				success = _aggregateMonthly(success);
+			}
+			else if (aggregate=="quarterly"){
+				success = _aggregateQuarterly(success);
+			}
+			else if (aggregate=="halfyearly"){
+				success = _aggregateHalfyearly(success);
+			}
+			else if (aggregate=="yearly"){
+				success = _aggregateYearly(success);
+			}
+			logger.debug("************* callback success");
+			callback(null,success);
+    }
+    else{
+			logger.warn("************* callback error: "+err.message);
+			callback(err,null);
+		}
+	})
 }
 /**
 * active ==true
@@ -349,9 +323,7 @@ function _findIncidenttrackerByDate(aggregate,type,period,callback){
 */
 function _getOverdueGroupedByAssignmentGroup(callback){
 	_find(function(incidents){
-
 		var result = _.nst.nest(incidents,("assignmentGroup"))
-
 		callback(result);
 	});
 }
@@ -375,7 +347,6 @@ function _mapCode(_code,_collection,_resolve){
 	if (_lookup)
 		return _lookup[_resolve];
 	else return false;
-
 }
 
 
@@ -395,11 +366,9 @@ function _parsePeriod(period,type){
 	else if (type=="halfyear") _typeFormat="Q";
 
 	var splitted = period.split('-');
-
 	var _number = _.rest(splitted[0]);
 	var _numberStart = _number;
 	var _numberEnd = _number;
-
 	// handling for halfyear - moment has no halfyaer implemented
 	// so we take Q1+Q2 for H1
 	// and Q3+Q4 for H2
@@ -409,12 +378,9 @@ function _parsePeriod(period,type){
 		type="quarter";
 		logger.debug("*******HALFYEAR");
 	}
-
 	var _year = splitted[1];
-
 	var _start = moment(_numberStart+"-"+_year,_typeFormat+"-YYYY").startOf(type).format('YYYY-MM-DD');;
 	var _end = moment(_numberEnd+"-"+_year,_typeFormat+"-YYYY").endOf(type).format('YYYY-MM-DD');;
-
 	logger.debug("p start: "+_start);
 	logger.debug("p end: "+_end);
 	return [_start,_end];
@@ -437,9 +403,6 @@ function _parseWeek(week){
 	return _parsePeriod(week,"week");
 }
 
-
-
-
 /**
 * param data list of incident objects
 * calculates the daily number of incidents types
@@ -456,18 +419,48 @@ function _calculateDailyTracker(incidents,dateField,context,callback){
 			var _day = moment(incidents[i][dateField]).format("YYYY-MM-DD");
 			_day = new Date(_day);
 
-			if (!_.findWhere(_dailytracker,{"date":_day})) {
-				_dailytracker.push({"date":_day,"P01":0,"P08":0,"P16":0,"context":context});
-			}
+			var _priority=incidents[i].priority;
+			//deburr cleans special characters
+			var _assignmentGroup=_.deburr(incidents[i].assignmentGroup).split(".").join("_");
+			var _businessService=_.deburr(incidents[i].businessService).split(".").join("_");
+			var _label=_.deburr(incidents[i].label).split(".").join("_");
 
-			if (incidents[i].priority=="P01 - Critical"){
-				_.findWhere(_dailytracker,{"date":_day}).P01++;
+
+			if (!_.findWhere(_dailytracker,{"date":_day})) {
+				_dailytracker.push(
+					{
+						"date":_day,
+						"P01":{total:0,assignmentGroup:{},businessService:{},label:{}},
+						"P08":{total:0,assignmentGroup:{},businessService:{},label:{}},
+						"P16":{total:0,assignmentGroup:{},businessService:{},label:{}},
+						"P120":{total:0,assignmentGroup:{},businessService:{},label:{}},
+						"context":context
+					});
 			}
-			else if (incidents[i].priority=="P08 - High"){
-				_.findWhere(_dailytracker,{"date":_day}).P08++;
+			if (_.startsWith(_priority,"P01") || _.startsWith(_priority,"P04")){
+				_.findWhere(_dailytracker,{"date":_day}).P01.total++;
+				// now look for split of assignmentGroup field
+				_handleAssignementGroup(_dailytracker,_day,"P01",_assignmentGroup);
+				_handleBusinessService(_dailytracker,_day,"P01",_businessService);
+				_handleLabel(_dailytracker,_day,"P01",_label);
 			}
-			else if (incidents[i].priority=="P16 - Moderate"){
-				_.findWhere(_dailytracker,{"date":_day}).P16++;
+			else if (_.startsWith(_priority,"P08")){
+				_.findWhere(_dailytracker,{"date":_day}).P08.total++;
+				_handleAssignementGroup(_dailytracker,_day,"P08",_assignmentGroup);
+				_handleBusinessService(_dailytracker,_day,"P08",_businessService);
+				_handleLabel(_dailytracker,_day,"P08",_label);
+			}
+			else if (_.startsWith(_priority,"P16")){
+				_.findWhere(_dailytracker,{"date":_day}).P16.total++;
+				_handleAssignementGroup(_dailytracker,_day,"P16",_assignmentGroup);
+				_handleBusinessService(_dailytracker,_day,"P16",_businessService);
+				_handleLabel(_dailytracker,_day,"P16",_label);
+			}
+			else if (_.startsWith(_priority,"P40") || _.startsWith(_priority,"P120")){
+				_.findWhere(_dailytracker,{"date":_day}).P120.total++;
+				_handleAssignementGroup(_dailytracker,_day,"P120",_assignmentGroup);
+				_handleBusinessService(_dailytracker,_day,"P120",_businessService);
+				_handleLabel(_dailytracker,_day,"P120",_label);
 			}
 		}
 		else{
@@ -477,7 +470,26 @@ function _calculateDailyTracker(incidents,dateField,context,callback){
 	callback(null,_dailytracker);
 }
 
+function _handleAssignementGroup(dailytracker,day,priority,assignmentGroup){
+	if (!_.findWhere(dailytracker,{"date":day})[priority].assignmentGroup[assignmentGroup]){
+		_.findWhere(dailytracker,{"date":day})[priority].assignmentGroup[assignmentGroup]=0;
+	}
+	_.findWhere(dailytracker,{"date":day})[priority].assignmentGroup[assignmentGroup]++;
+}
 
+function _handleBusinessService(dailytracker,day,priority,businessService){
+	if (!_.findWhere(dailytracker,{"date":day})[priority].businessService[businessService]){
+		_.findWhere(dailytracker,{"date":day})[priority].businessService[businessService]=0;
+	}
+	_.findWhere(dailytracker,{"date":day})[priority].businessService[businessService]++;
+}
+
+function _handleLabel(dailytracker,day,priority,label){
+	if (!_.findWhere(dailytracker,{"date":day})[priority].label[label]){
+		_.findWhere(dailytracker,{"date":day})[priority].label[label]=0;
+	}
+	_.findWhere(dailytracker,{"date":day})[priority].label[label]++;
+}
 
 /** generic aggregator incidenttracker data
 * param period: defines whether we arte looking at "yearly",  "quarterly", "monthly", or "weekly"
@@ -488,13 +500,12 @@ function _aggregateByTime(data,period,time){
 	if (period=="daily"){
 		return false;
 	}
-
 	//weeks,months,....
   var items =[];
-
 	var _p01_aggregate=0;
   var _p08_aggregate=0;
 	var _p16_aggregate=0;
+	var _p120_aggregate=0;
 
   for (var i in data){
 		var _time;
@@ -507,12 +518,10 @@ function _aggregateByTime(data,period,time){
 		else if (time=="month"){
 			_time = moment(data[i].date).month();
 			_timeName = moment(data[i].date).format("MMMM")+"-"+moment(data[i].date).format("YYYY");
-
 		}
 		else if (time=="quarter"){
 			_time = moment(data[i].date).quarter();
 			_timeName = "Q"+moment(data[i].date).format("Q")+"-"+moment(data[i].date).format("YYYY");
-
 		}
 		else if (time=="halfyear"){
 			_time = moment(data[i].date).quarter();
@@ -523,23 +532,23 @@ function _aggregateByTime(data,period,time){
 			_time = moment(data[i].date).year();
 			_timeName = moment(data[i].date).format("YYYY");
 		}
-
-
   	if (!_.findWhere(items,{"date":_timeName})){
 			_p01_aggregate=0;
       _p08_aggregate=0;
 			_p16_aggregate=0;
-			items.push({P01:_p01_aggregate,P08:_p08_aggregate,P16:_p16_aggregate,date:_timeName});
+			_p120_aggregate=0;
+			items.push({P01:{total:_p01_aggregate},P08:{total:_p08_aggregate},P16:{total:_p16_aggregate},P120:{total:_p120_aggregate},date:_timeName});
 			logger.debug("* "+time+" added: "+_time);
 		}
+		_p01_aggregate+=parseInt(data[i].P01.total);
+    _p08_aggregate+=parseInt(data[i].P08.total);
+		_p16_aggregate+=parseInt(data[i].P16.total);
+		_p120_aggregate+=parseInt(data[i].P120.total);
 
-		_p01_aggregate+=parseInt(data[i].P01);
-    _p08_aggregate+=parseInt(data[i].P08);
-		_p16_aggregate+=parseInt(data[i].P16);
-
-		_.findWhere(items,{"date":_timeName}).P01=_p01_aggregate;
-		_.findWhere(items,{"date":_timeName}).P08=_p08_aggregate;
-		_.findWhere(items,{"date":_timeName}).P16=_p16_aggregate;
+		_.findWhere(items,{"date":_timeName}).P01.total=_p01_aggregate;
+		_.findWhere(items,{"date":_timeName}).P08.total=_p08_aggregate;
+		_.findWhere(items,{"date":_timeName}).P16.total=_p16_aggregate;
+		_.findWhere(items,{"date":_timeName}).P120.total=_p120_aggregate;
   }
 	return items;
 }
