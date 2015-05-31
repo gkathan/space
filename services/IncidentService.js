@@ -32,7 +32,7 @@ exports.findOld = _findOld;
 exports.flush = _flush;
 exports.rebuildTracker = _rebuildTracker;
 exports.incrementTracker = _incrementTracker;
-
+exports.rebuildCumulativeTrackerData = _rebuildCumulativeTrackerData;
 exports.flushTracker = _flushTracker;
 exports.saveDelta = _saveDelta;
 exports.mapPriority = _mapPriority;
@@ -133,8 +133,8 @@ function _flush(data,callback){
 /**
 * drops and saves
 */
-function _flushTracker(data,trackerType,callback){
-	var items =  db.collection(_incidentTrackerCollection+"_"+trackerType);
+function _flushTracker(data,callback){
+	var items =  db.collection(_incidentTrackerCollection);
 	items.drop();
 	items.insert(data, function(err , success){
 		if (err){
@@ -153,23 +153,102 @@ function _flushTracker(data,trackerType,callback){
 * iterates over all Incidents
 * quite expensive call - so do that only when you really need it !!
 */
-function _rebuildTracker(trackerType,callback){
+function _rebuildTracker(trackerTypes,callback){
 	var _context = "bpty.studios";
 	_findAll({},function(err,incidents){
-		var dailyTracker = _calculateDailyTracker(incidents,trackerType,_context,function(err,tracker){
+		var dailyTracker = _calculateDailyTracker(incidents,trackerTypes,_context,function(err,tracker){
 			logger.debug("done tracking..."+JSON.stringify(tracker));
-			_flushTracker(tracker,trackerType,function(err,result){
+			_flushTracker(tracker,function(err,result){
 				if (err){
 					logger.error("something bad happened: "+err.message);
 					callback(err);
 				}
 				logger.debug("flushed tracker ");
-				callback(null,"[rebuildTracker] for type: "+trackerType+" says: OK: ");
+				callback(null,"[rebuildTracker] for types: "+trackerTypes+" says: OK: ");
 			})
 		});
 	})
 }
 
+/**
+* calculates the daily cumulative difference between "open" and both "resolved" and "closed"
+* needed for burndown charts
+*/
+function _rebuildCumulativeTrackerData(callback){
+	var _context = "bpty.studios";
+	// get all trackerdata
+	var opened =  db.collection(_incidentTrackerCollection+"_openedAt");
+	var resolved =  db.collection(_incidentTrackerCollection+"_resolvedAt");
+	var closed =  db.collection(_incidentTrackerCollection+"_closedAt");
+
+	opened.find().sort({date:1},function(err,dailyopened){
+		resolved.find().sort({date:1},function(err,dailyresolved){
+			closed.find().sort({date:1},function(err,dailyclosed){
+
+				var P01OpenedSum=0;
+				var P08OpenedSum=0;
+				var P16OpenedSum=0;
+				var P120OpenedSum=0;
+
+				P01OpenedSum =_calculateCumulative(dailyopened,"P01");
+				P08OpenedSum =_calculateCumulative(dailyopened,"P08");
+				P16OpenedSum =_calculateCumulative(dailyopened,"P16");
+				P120OpenedSum =_calculateCumulative(dailyopened,"P120");
+
+				var P01ResolvedSum=0;
+				var P08ResolvedSum=0;
+				var P16ResolvedSum=0;
+				var P120ResolvedSum=0;
+
+				P01ResolvedSum =_calculateCumulative(dailyresolved,"P01");
+				P08ResolvedSum =_calculateCumulative(dailyresolved,"P08");
+				P16ResolvedSum =_calculateCumulative(dailyresolved,"P16");
+				P120ResolvedSum =_calculateCumulative(dailyresolved,"P120");
+
+				var P01ClosedSum=0;
+				var P08ClosedSum=0;
+				var P16ClosedSum=0;
+				var P120ClosedSum=0;
+
+				P01ClosedSum =_calculateCumulative(dailyclosed,"P01");
+				P08ClosedSum =_calculateCumulative(dailyclosed,"P08");
+				P16ClosedSum =_calculateCumulative(dailyclosed,"P16");
+				P120ClosedSum =_calculateCumulative(dailyclosed,"P120");
+
+				opened.drop();
+				opened.insert(dailyopened);
+				resolved.drop();
+				resolved.insert(dailyopened);
+				closed.drop();
+				closed.insert(dailyopened);
+
+				callback(null,{
+					opened:{P01Sum:P01OpenedSum,P08Sum:P08OpenedSum,P16Sum:P16OpenedSum,P120Sum:P120OpenedSum},
+					resolved:{P01Sum:P01ResolvedSum,P08Sum:P08ResolvedSum,P16Sum:P16ResolvedSum,P120Sum:P120ResolvedSum},
+					closed:{P01Sum:P01ClosedSum,P08Sum:P08ClosedSum,P16Sum:P16ClosedSum,P120Sum:P120ClosedSum},
+					openedminusresolved:{P01Diff:P01OpenedSum-P01ResolvedSum,P08Diff:P08OpenedSum-P08ResolvedSum,P16Diff:P16OpenedSum-P16ResolvedSum,P120Diff:P120OpenedSum-P120ResolvedSum},
+					openedminusclosed:{P01Diff:P01OpenedSum-P01ClosedSum,P08Diff:P08OpenedSum-P08ClosedSum,P16Diff:P16OpenedSum-P16ClosedSum,P120Diff:P120OpenedSum-P120ClosedSum}
+
+				});
+
+
+
+			})
+		})
+	})
+}
+
+function _calculateCumulative(data,priority){
+	var PSum=0;
+	for (var o in data){
+		PSum+=data[o][priority].total;
+		var _prevDay = 0;
+		if (data[o-1]) _prevDay = parseInt(data[o-1][priority].cum);
+		data[o][priority].cum=parseInt(data[o][priority].total)+_prevDay;
+	}
+	return PSum;
+
+}
 
 function _incrementTracker(trackerType,openedAt,priority){
 	var _day = moment(openedAt).format("YYYY-MM-DD");
@@ -229,9 +308,9 @@ exports.findGroupedByPriority = function (prioritylist){
 /**
 * param type: "openedAt", "resolvedAt" or "closedAt" are currently supported
 */
-function _findIncidenttrackerByDate(aggregate,type,period,callback){
+function _findIncidenttrackerByDate(aggregate,period,callback){
   if (!aggregate) aggregate="weekly";
-	var collection = "incidenttracker"+"_"+type;
+	var collection = "incidenttracker";
 	var _date = period;
 	var _quarter = _parseQuarter(_date);
 	var _half = _parseHalf(_date);
@@ -292,19 +371,22 @@ function _findIncidenttrackerByDate(aggregate,type,period,callback){
     logger.debug('Response error '+err);
     if(success){
 			if (aggregate=="weekly"){
-				success = _aggregateWeekly(success);
+				success = _aggregateWeekly(success,period);
 			}
 			else if (aggregate=="monthly"){
-				success = _aggregateMonthly(success);
+				success = _aggregateMonthly(success,period);
 			}
 			else if (aggregate=="quarterly"){
-				success = _aggregateQuarterly(success);
+				success = _aggregateQuarterly(success,period);
 			}
 			else if (aggregate=="halfyearly"){
-				success = _aggregateHalfyearly(success);
+				success = _aggregateHalfyearly(success,period);
 			}
 			else if (aggregate=="yearly"){
-				success = _aggregateYearly(success);
+				success = _aggregateYearly(success,period);
+			}
+			else if (aggregate=="daily"){
+				success = _aggregateDaily(success,period);
 			}
 			logger.debug("************* callback success");
 			callback(null,success);
@@ -408,87 +490,102 @@ function _parseWeek(week){
 * calculates the daily number of incidents types
 * and updates the incidentracker collection
 * param incidents: list of incident objects
-* param dateField: sets which date field we should look at (e.g. "openedAt" to track new incidnets, "resolvedAt" track resolved incidents)
+* param dateFields: sets which date field we should look at (e.g. "openedAt" to track new incidnets, "resolvedAt" track resolved incidents)
 */
-function _calculateDailyTracker(incidents,dateField,context,callback){
+function _calculateDailyTracker(incidents,dateFields,context,callback){
 	var _dailytracker = [];
 	for (var i in incidents){
 		//"openedAt" "resolvedAt" "closedAt"
-		if (incidents[i][dateField]){
-			//logger.debug("inc: "+incidents[i].id);
-			var _day = moment(incidents[i][dateField]).format("YYYY-MM-DD");
-			_day = new Date(_day);
+		for (var d in dateFields){
+			var dateField = dateFields[d];
+			//logger.debug("* datefield: "+dateField);
+			if (incidents[i][dateField]){
 
-			var _priority=incidents[i].priority;
-			//deburr cleans special characters
-			var _assignmentGroup=_.deburr(incidents[i].assignmentGroup).split(".").join("_");
-			var _businessService=_.deburr(incidents[i].businessService).split(".").join("_");
-			var _label=_.deburr(incidents[i].label).split(".").join("_");
+				var _day = moment(incidents[i][dateField]).format("YYYY-MM-DD");
+				_day = new Date(_day);
+				//logger.debug("** inc: "+incidents[i].id);
+				var _priority=incidents[i].priority;
+				//deburr cleans special characters
+				var _assignmentGroup=_.deburr(incidents[i].assignmentGroup).split(".").join("_");
+				var _businessService=_.deburr(incidents[i].businessService).split(".").join("_");
+				var _label=_.deburr(incidents[i].label).split(".").join("_");
 
 
-			if (!_.findWhere(_dailytracker,{"date":_day})) {
-				_dailytracker.push(
-					{
-						"date":_day,
+				if (!_.findWhere(_dailytracker,{"date":_day})) {
+					_dailytracker.push({"date":_day,"context":context});
+				}
+
+				var _dayTracker = _.findWhere(_dailytracker,{"date":_day});
+
+				if (!_dayTracker[dateField]){
+					_dayTracker[dateField]={
 						"P01":{total:0,assignmentGroup:{},businessService:{},label:{}},
 						"P08":{total:0,assignmentGroup:{},businessService:{},label:{}},
 						"P16":{total:0,assignmentGroup:{},businessService:{},label:{}},
-						"P120":{total:0,assignmentGroup:{},businessService:{},label:{}},
-						"context":context
-					});
+						"P120":{total:0,assignmentGroup:{},businessService:{},label:{}}
+					};
+				}
+
+				//logger.debug("*** dailytracker: "+JSON.stringify(_dailytracker));
+
+
+				if (_.startsWith(_priority,"P01") || _.startsWith(_priority,"P04")){
+					_.findWhere(_dailytracker,{"date":_day})[dateField].P01.total++;
+					//logger.debug("---- P01 incremented "+_.findWhere(_dailytracker,{"date":_day})[dateField].P01.total+ "inc: "+incidents[i].id);
+
+					// now look for split of assignmentGroup field
+					_handleAssignementGroup(_dailytracker,_day,dateField,"P01",_assignmentGroup);
+					_handleBusinessService(_dailytracker,_day,dateField,"P01",_businessService);
+					_handleLabel(_dailytracker,_day,dateField,"P01",_label);
+				}
+				else if (_.startsWith(_priority,"P08")){
+					_.findWhere(_dailytracker,{"date":_day})[dateField].P08.total++;
+					_handleAssignementGroup(_dailytracker,_day,dateField,"P08",_assignmentGroup);
+					_handleBusinessService(_dailytracker,_day,dateField,"P08",_businessService);
+					_handleLabel(_dailytracker,_day,dateField,"P08",_label);
+				}
+				else if (_.startsWith(_priority,"P16")){
+					_.findWhere(_dailytracker,{"date":_day})[dateField].P16.total++;
+					_handleAssignementGroup(_dailytracker,_day,dateField,"P16",_assignmentGroup);
+					_handleBusinessService(_dailytracker,_day,dateField,"P16",_businessService);
+					_handleLabel(_dailytracker,_day,dateField,"P16",_label);
+				}
+				else if (_.startsWith(_priority,"P40") || _.startsWith(_priority,"P120")){
+					_.findWhere(_dailytracker,{"date":_day})[dateField].P120.total++;
+					//logger.debug("---- P120 incremented "+_.findWhere(_dailytracker,{"date":_day})[dateField].P120.total+ "inc: "+incidents[i].id);
+
+					_handleAssignementGroup(_dailytracker,_day,dateField,"P120",_assignmentGroup);
+					_handleBusinessService(_dailytracker,_day,dateField,"P120",_businessService);
+					_handleLabel(_dailytracker,_day,dateField,"P120",_label);
+				}
 			}
-			if (_.startsWith(_priority,"P01") || _.startsWith(_priority,"P04")){
-				_.findWhere(_dailytracker,{"date":_day}).P01.total++;
-				// now look for split of assignmentGroup field
-				_handleAssignementGroup(_dailytracker,_day,"P01",_assignmentGroup);
-				_handleBusinessService(_dailytracker,_day,"P01",_businessService);
-				_handleLabel(_dailytracker,_day,"P01",_label);
+			else{
+				throw new Error(dateField+" is not an attribute of incidents..");
 			}
-			else if (_.startsWith(_priority,"P08")){
-				_.findWhere(_dailytracker,{"date":_day}).P08.total++;
-				_handleAssignementGroup(_dailytracker,_day,"P08",_assignmentGroup);
-				_handleBusinessService(_dailytracker,_day,"P08",_businessService);
-				_handleLabel(_dailytracker,_day,"P08",_label);
-			}
-			else if (_.startsWith(_priority,"P16")){
-				_.findWhere(_dailytracker,{"date":_day}).P16.total++;
-				_handleAssignementGroup(_dailytracker,_day,"P16",_assignmentGroup);
-				_handleBusinessService(_dailytracker,_day,"P16",_businessService);
-				_handleLabel(_dailytracker,_day,"P16",_label);
-			}
-			else if (_.startsWith(_priority,"P40") || _.startsWith(_priority,"P120")){
-				_.findWhere(_dailytracker,{"date":_day}).P120.total++;
-				_handleAssignementGroup(_dailytracker,_day,"P120",_assignmentGroup);
-				_handleBusinessService(_dailytracker,_day,"P120",_businessService);
-				_handleLabel(_dailytracker,_day,"P120",_label);
-			}
-		}
-		else{
-			throw new Error(dateField+" is not an attribute of incidents..");
-		}
-	}
+		}//end for dateFIelds
+	}//end for incidents
 	callback(null,_dailytracker);
 }
 
-function _handleAssignementGroup(dailytracker,day,priority,assignmentGroup){
-	if (!_.findWhere(dailytracker,{"date":day})[priority].assignmentGroup[assignmentGroup]){
-		_.findWhere(dailytracker,{"date":day})[priority].assignmentGroup[assignmentGroup]=0;
+function _handleAssignementGroup(dailytracker,day,dateField,priority,assignmentGroup){
+	if (!_.findWhere(dailytracker,{"date":day})[dateField][priority].assignmentGroup[assignmentGroup]){
+		_.findWhere(dailytracker,{"date":day})[dateField][priority].assignmentGroup[assignmentGroup]=0;
 	}
-	_.findWhere(dailytracker,{"date":day})[priority].assignmentGroup[assignmentGroup]++;
+	_.findWhere(dailytracker,{"date":day})[dateField][priority].assignmentGroup[assignmentGroup]++;
 }
 
-function _handleBusinessService(dailytracker,day,priority,businessService){
-	if (!_.findWhere(dailytracker,{"date":day})[priority].businessService[businessService]){
-		_.findWhere(dailytracker,{"date":day})[priority].businessService[businessService]=0;
+function _handleBusinessService(dailytracker,day,dateField,priority,businessService){
+	if (!_.findWhere(dailytracker,{"date":day})[dateField][priority].businessService[businessService]){
+		_.findWhere(dailytracker,{"date":day})[dateField][priority].businessService[businessService]=0;
 	}
-	_.findWhere(dailytracker,{"date":day})[priority].businessService[businessService]++;
+	_.findWhere(dailytracker,{"date":day})[dateField][priority].businessService[businessService]++;
 }
 
-function _handleLabel(dailytracker,day,priority,label){
-	if (!_.findWhere(dailytracker,{"date":day})[priority].label[label]){
-		_.findWhere(dailytracker,{"date":day})[priority].label[label]=0;
+function _handleLabel(dailytracker,day,dateField,priority,label){
+	if (!_.findWhere(dailytracker,{"date":day})[dateField][priority].label[label]){
+		_.findWhere(dailytracker,{"date":day})[dateField][priority].label[label]=0;
 	}
-	_.findWhere(dailytracker,{"date":day})[priority].label[label]++;
+	_.findWhere(dailytracker,{"date":day})[dateField][priority].label[label]++;
 }
 
 /** generic aggregator incidenttracker data
@@ -496,12 +593,16 @@ function _handleLabel(dailytracker,day,priority,label){
 * param time: "week", "month", "quarter" "year"
 */
 function _aggregateByTime(data,period,time){
-	// looking at week granularity does not make sense in monthly aggregation
-	if (period=="daily"){
-		return false;
-	}
+
+	/* we need to consider now the different types which exist in data
+	data.openedAt
+	data.resolvedAt
+	data.closedAt
+	*/
 	//weeks,months,....
-  var items =[];
+
+
+	var items =[];
 	var _p01_aggregate=0;
   var _p08_aggregate=0;
 	var _p16_aggregate=0;
@@ -532,25 +633,77 @@ function _aggregateByTime(data,period,time){
 			_time = moment(data[i].date).year();
 			_timeName = moment(data[i].date).format("YYYY");
 		}
+  	else if (time=="day"){
+			_time = moment(data[i].date).day();
+			_timeName = moment(data[i].date).format("YYYY-MM-DD");
+		}
   	if (!_.findWhere(items,{"date":_timeName})){
 			_p01_aggregate=0;
       _p08_aggregate=0;
 			_p16_aggregate=0;
 			_p120_aggregate=0;
-			items.push({P01:{total:_p01_aggregate},P08:{total:_p08_aggregate},P16:{total:_p16_aggregate},P120:{total:_p120_aggregate},date:_timeName});
+
+
+			items.push({date:_timeName,
+				"openedAt":{P01:{total:_p01_aggregate},P08:{total:_p08_aggregate},P16:{total:_p16_aggregate},P120:{total:_p120_aggregate}},
+				"resolvedAt":{P01:{total:_p01_aggregate},P08:{total:_p08_aggregate},P16:{total:_p16_aggregate},P120:{total:_p120_aggregate}},
+				"closedAt":{P01:{total:_p01_aggregate},P08:{total:_p08_aggregate},P16:{total:_p16_aggregate},P120:{total:_p120_aggregate}}
+			});
+
+			/*
+			items.push({"openedAt":{P01:{total:_p01_aggregate},P08:{total:_p08_aggregate},P16:{total:_p16_aggregate},P120:{total:_p120_aggregate},date:_timeName}});
+			items.push({"resolvedAt":{P01:{total:_p01_aggregate},P08:{total:_p08_aggregate},P16:{total:_p16_aggregate},P120:{total:_p120_aggregate},date:_timeName}});
+			items.push({"closedAt":{P01:{total:_p01_aggregate},P08:{total:_p08_aggregate},P16:{total:_p16_aggregate},P120:{total:_p120_aggregate},date:_timeName}});
+			*/
+
 			logger.debug("* "+time+" added: "+_time);
 		}
-		_p01_aggregate+=parseInt(data[i].P01.total);
-    _p08_aggregate+=parseInt(data[i].P08.total);
-		_p16_aggregate+=parseInt(data[i].P16.total);
-		_p120_aggregate+=parseInt(data[i].P120.total);
+		_p01_aggregate+=parseInt(data[i]["openedAt"].P01.total);
+    _p08_aggregate+=parseInt(data[i]["openedAt"].P08.total);
+		_p16_aggregate+=parseInt(data[i]["openedAt"].P16.total);
+		_p120_aggregate+=parseInt(data[i]["openedAt"].P120.total);
 
-		_.findWhere(items,{"date":_timeName}).P01.total=_p01_aggregate;
-		_.findWhere(items,{"date":_timeName}).P08.total=_p08_aggregate;
-		_.findWhere(items,{"date":_timeName}).P16.total=_p16_aggregate;
-		_.findWhere(items,{"date":_timeName}).P120.total=_p120_aggregate;
+		_.findWhere(items,{"date":_timeName})["openedAt"].P01.total=_p01_aggregate;
+		_.findWhere(items,{"date":_timeName})["openedAt"].P08.total=_p08_aggregate;
+		_.findWhere(items,{"date":_timeName})["openedAt"].P16.total=_p16_aggregate;
+		_.findWhere(items,{"date":_timeName})["openedAt"].P120.total=_p120_aggregate;
+
+
+		_p01_aggregate+=parseInt(data[i]["resolvedAt"].P01.total);
+    _p08_aggregate+=parseInt(data[i]["resolvedAt"].P08.total);
+		_p16_aggregate+=parseInt(data[i]["resolvedAt"].P16.total);
+		_p120_aggregate+=parseInt(data[i]["resolvedAt"].P120.total);
+
+		_.findWhere(items,{"date":_timeName})["resolvedAt"].P01.total=_p01_aggregate;
+		_.findWhere(items,{"date":_timeName})["resolvedAt"].P08.total=_p08_aggregate;
+		_.findWhere(items,{"date":_timeName})["resolvedAt"].P16.total=_p16_aggregate;
+		_.findWhere(items,{"date":_timeName})["resolvedAt"].P120.total=_p120_aggregate;
+
+
+	if (data[i]["closedAt"]){
+			 logger.debug("xx:"+data[i]["closedAt"].P01);
+
+			_p01_aggregate+=parseInt(data[i]["closedAt"].P01.total);
+	    _p08_aggregate+=parseInt(data[i]["closedAt"].P08.total);
+			_p16_aggregate+=parseInt(data[i]["closedAt"].P16.total);
+			_p120_aggregate+=parseInt(data[i]["closedAt"].P120.total);
+
+
+			_.findWhere(items,{"date":_timeName})["closedAt"].P01.total=_p01_aggregate;
+			_.findWhere(items,{"date":_timeName})["closedAt"].P08.total=_p08_aggregate;
+			_.findWhere(items,{"date":_timeName})["closedAt"].P16.total=_p16_aggregate;
+			_.findWhere(items,{"date":_timeName})["closedAt"].P120.total=_p120_aggregate;
+		}
+
+
   }
-	return items;
+	return {period:period,aggregate:time,tracker:items};
+}
+
+
+
+function _aggregateDaily(data,period){
+		return _aggregateByTime(data,period,"day");
 }
 
 

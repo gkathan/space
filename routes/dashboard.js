@@ -59,7 +59,7 @@ router.get('/incidents', function(req, res) {
 
 
 		res.locals.period = _period;
-		
+
 		res.locals.moment = moment;
 		res.render('dashboard/incidents', { title: 's p a c e - incidents dashboard' });
 });
@@ -139,7 +139,6 @@ router.get('/opsreport/:customer', function(req, res) {
 		if (req.query.to) _to = req.query.to;//"2015-01-10";
 		if (req.query.excludeNOLABEL) _excludeNOLABEL = req.query.excludeNOLABEL;
 
-
 		var labelService = require('../services/LabelService');
 
 		avc.calculateOverall(_from,_to,_filter,function(avDataOverall){
@@ -164,7 +163,7 @@ router.get('/opsreport/:customer', function(req, res) {
 						res.locals.accounting=accounting;
 						logger.debug("*****customer: "+_customer);
 
-						res.render('dashboard/opsreport', { title: 's p a c e - firereport' });
+						res.render('dashboard/opsreport', { title: 's p a c e - '+_customer+' opsreport' });
 					})
 				});
 			});

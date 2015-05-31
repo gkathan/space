@@ -6,7 +6,7 @@ var _aggregate;
 var _dateField;//="openedAt";
 
 function _getYear(period){
-  console.log("**** getYear() called: period: "+period);
+  //console.log("**** getYear() called: period: "+period);
   var _split = period.split("-");
   var _year;
   if (_split.length==2){
@@ -71,20 +71,26 @@ function init(prio,dateField,chartId){
     $("#period_"+_chartId).text(_period);
     $("#aggregate_"+_chartId).text(_aggregate);
     var _reduceXTicks = false;
-    if (_aggregate=="daily") _reduceXTicks = true;
+    //if (_aggregate=="daily" || _aggregate=="weekly") _reduceXTicks = true;
+    _reduceXTicks = true;
     chart.reduceXTicks(_reduceXTicks).staggerLabels(true);
     chart.yAxis
         .tickFormat(d3.format(',d'));
-    redraw(_chartId,_period,_aggregate,_prio);
+    redraw(_chartId,_period,_aggregate,_prio,dateField);
 
+    //function pointer
     charts[chartId]=chart;
     return chart;
   });
 
+
+
   // clickhandler for
-	$('a.dropdown').click( function(event) {
-		var _prio =event.target.id.split("_")[0].split("chart")[1];
-		var _chart=event.target.id.split("_")[0];
+	$('a.dropdown.incidentstrend').click( function(event) {
+
+    var _prio =event.target.id.split("_")[0].split("chart")[1].split("-")[0];
+
+    var _chart=event.target.id.split("_")[0];
 		if (_.startsWith(event.target.id.split("_")[1],"aggregate")){
 			_aggregate =event.target.id.split("_")[1].split("-")[1];
 		}
@@ -92,9 +98,10 @@ function init(prio,dateField,chartId){
 		{
 			_period = event.target.id.split("_")[1];
 		}
+    console.log("######################### chart: "+_chart);
 		$("#period_"+_chart).text(_period);
 		$("#aggregate_"+_chart).text(_aggregate);
-		redraw(_chart,_period,_aggregate,_prio);
+		redraw(_chart,_period,_aggregate,_prio,_dateField);
 	});
 
 
@@ -103,10 +110,13 @@ function init(prio,dateField,chartId){
 /**
 * prepares data to be consumable by NVd3
 */
-function _prepareData(incidents,incidentsPrev,prio,period){
-  console.log("----------------- _prepareData: prio="+prio);
+function _prepareData(incidents,incidentsPrev,prio,period,dateField){
+  /*
+  console.log("----------------- _prepareData: prio= "+prio);
+  console.log("----------------- _prepareData: period= "+period);
+  console.log("----------------- _prepareData: dateField= "+dateField);
   console.log("----------------- _prepareData: incidents[0]="+JSON.stringify(incidents[0]));
-
+*/
   var _P=[];
   var _PBase=[];
   var _PSum=0;
@@ -121,44 +131,53 @@ function _prepareData(incidents,incidentsPrev,prio,period){
   var _yearPrev = _getYear(_alterPeriodByYear(period,-1));
 
   for (var day in incidents){
-    console.log("date: "+incidents[day].date+" "+prio+": "+incidents[day][prio].total);
-    _P.push({"date":incidents[day].date,"y":parseInt(incidents[day][prio].total)});
-    _PSum+=parseInt(incidents[day][prio].total);
+      /*
+      console.log(JSON.stringify(incidents[day]));
+      console.log("++ dateField: "+dateField);
+      console.log("++ prio: "+prio);
+      console.log("date: "+incidents[day].date+" "+prio+": "+incidents[day][dateField][prio].total);
+      */
+      _P.push({"date":incidents[day].date,"y":parseInt(incidents[day][dateField][prio].total)});
+      _PSum+=parseInt(incidents[day][dateField][prio].total);
   }
-  console.log(prio+"Sum = "+_PSum+" "+prio+"BaseSum = "+_PBaseSum);
+  //console.log(prio+"Sum = "+_PSum+" "+prio+"BaseSum = "+_PBaseSum);
 
   for (var day in incidentsPrev){
-    console.log("date: "+incidentsPrev[day].date+" "+prio+": "+incidentsPrev[day][prio].total);
-    //date of previous year must be "normalized" to this year ....
-    _PPrev.push({"date":_alterPeriodByYear(incidentsPrev[day].date,1),"y":parseInt(incidentsPrev[day][prio].total)});
-    _PSumPrev+=parseInt(incidentsPrev[day][prio]);
+      //console.log("date: "+incidentsPrev[day].date+" "+prio+": "+incidentsPrev[day][dateField][prio].total);
+      //date of previous year must be "normalized" to this year ....
+      _PPrev.push({"date":_alterPeriodByYear(incidentsPrev[day].date,1),"y":parseInt(incidentsPrev[day][dateField][prio].total)});
+      _PSumPrev+=parseInt(incidentsPrev[day][dateField][prio]);
+
   }
-  console.log(prio+"Sum = "+_PSumPrev+" "+prio+"BaseSum = "+_PBaseSumPrev);
+  //console.log(prio+"Sum = "+_PSumPrev+" "+prio+"BaseSum = "+_PBaseSumPrev);
 
   var incData = [{key:_year,values:_P},{key:_yearPrev,values:_PPrev}]
 
   return incData
 }
 
-function redraw(chartId,period,aggregate,prio) {
-  var _url = "/api/space/rest/incidenttracker/"+_dateField+"/"+period;
-  var _urlPrev = "/api/space/rest/incidenttracker/"+_dateField+"/"+_alterPeriodByYear(period,-1);
-  console.log("---------------------- _url = "+_url);
+function redraw(chartId,period,aggregate,prio,dateField) {
+  var _url = "/api/space/rest/incidenttracker/"+period;
+  var _urlPrev = "/api/space/rest/incidenttracker/"+_alterPeriodByYear(period,-1);
+
 
   if (aggregate){
     _url+="?aggregate="+aggregate;
     _urlPrev+="?aggregate="+aggregate;
   }
+  console.log("_url: "+_url);
 
   d3.json(_url, function(data) {
     d3.json(_urlPrev, function(dataPrev) {
-
       d3.select('#'+chartId+' svg')
-        .datum(_prepareData(data,dataPrev,prio,period))
+        .datum(_prepareData(data.tracker,dataPrev.tracker,prio,period,dateField))
         .transition().duration(500)
         .call(charts[chartId]);
 
+
       nv.utils.windowResize(charts[chartId].update);
+
+
     });
   });
 }

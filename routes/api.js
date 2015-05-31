@@ -58,8 +58,8 @@ var PATH = {
 						REST_SOCINCIDENT2REVENUEIMPACT : BASE+'/space/rest/socincident2revenueimpact',
 						REST_SOCSERVICES : BASE+'/space/rest/soc_services',
 
-						REST_INCIDENTTRACKER : BASE+'/space/rest/incidenttracker/type/',
-						REST_INCIDENTTRACKER_DATE : BASE+'/space/rest/incidenttracker/:type/:date',
+						REST_INCIDENTTRACKER : BASE+'/space/rest/incidenttracker/',
+						REST_INCIDENTTRACKER_DATE : BASE+'/space/rest/incidenttracker/:date',
 						REST_PROBLEMS : BASE+'/space/rest/problems',
 
 						REST_V1EPICS : BASE+'/space/rest/v1epics',
@@ -365,15 +365,15 @@ function findById(req, res , next){
 function findIncidenttrackerByDate(req, res , next){
 	var path = req.path.split("/");
 	var _date = req.params.date;//_.last(path);
-	var _type = req.params.type;//_.last(_.initial(path));
+	//var _type = req.params.type;//_.last(_.initial(path));
 	var _aggregate = req.query.aggregate;
 	//default grouping
 	if (!_aggregate){
 		_aggregate="weekly";
 	}
 
-	logger.debug("********************* findIncidenttrackerByDate(): _aggregate= "+_aggregate+" _type = "+_type+" _date = "+_date);
-	incidentService.findTrackerByDate(_aggregate,_type,_date,function(err,data){
+	logger.debug("********************* findIncidenttrackerByDate(): _aggregate= "+_aggregate+" _date = "+_date);
+	incidentService.findTrackerByDate(_aggregate,_date,function(err,data){
 			if (err){
 				logger.warn("[error] incidentService.findTrackerByDate says: "+err.message);
 			}

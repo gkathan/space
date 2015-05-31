@@ -16,23 +16,23 @@ style.
 	  height: 400px;
 		width:980px;
 	}
-	#chartP08 svg {
+	#chartP08-openedAt svg {
 	  height: 400px;
 		width:980px;
 	}
-	#chartP01 svg {
+	#chartP01-openedAt svg {
 	  height: 400px;
 		width:980px;
 	}
-	#chartP16 svg {
+	#chartP16-openedAt svg {
 		height: 400px;
 		width:980px;
 	}
 	
 block content
 	//+graph("test","chartTest")
-	+chartIncident("Incidents Trend","P01","openedAt","chartP01")
-	+chartIncident("Incidents Trend","P08","openedAt","chartP08")
-	+chartIncident("Incidents Trend","P16","openedAt","chartP16")
+	+chartIncident("Incidents Trend","P01","openedAt")
+	+chartIncident("Incidents Trend","P08","openedAt")
+	+chartIncident("Incidents Trend","P16","openedAt")
 
 include ../includes/material			

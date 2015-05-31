@@ -78,7 +78,7 @@ describe('IncidentService', function(){
 
 
 
-
+/*
   describe('#findAll()', function(){
     it('returns ALL incdients from both oldsnow and newsnow', function(done){
       this.timeout(10000);
@@ -92,7 +92,7 @@ describe('IncidentService', function(){
 
 		});
   });
-
+*/
 
 	describe('#findrevenueImpactMapping()', function(){
     it('returns ALL incdients2revenue impact', function(done){
@@ -221,6 +221,22 @@ describe('#calculate DailyTracker()', function(){
 		})
 	});
 });
+
+
+describe('#rebuild cumulative DailyTracker()', function(){
+	it('should rebuild cumulative daily tracker with a given incident', function(done){
+			this.timeout(30000);
+
+		var incidentService = require('../services/IncidentService');
+		incidentService.rebuildCumulativeTrackerData(function(err,result){
+			logger.debug("rebuild cumulative: "+JSON.stringify(result));
+			done();
+
+		});
+	})
+});
+
+
 
 
 })

@@ -35,15 +35,15 @@ style.
 	  height: 400px;
 		width:980px;
 	}
-	#chartP08 svg {
+	#chartP08-openedAt svg {
 	  height: 400px;
 		width:1000px;
 	}
-	#chartP01 svg {
+	#chartP01-openedAt svg {
 	  height: 400px;
 		width:1000px;
 	}
-	#chartP16 svg {
+	#chartP16-openedAt svg {
 	  height: 400px;
 		width:1000px;
 	}
@@ -89,9 +89,9 @@ block content
 				+renderDisclaimer
 	div.row(style="margin: auto;max-width:1000px")
 		script(src='/javascripts/dashboards/nvd3_incidents_multi.js')
-		+chartIncident("Incidents Trend","P01","openedAt","chartP01")
-		+chartIncident("Incidents Trend","P08","openedAt","chartP08")
-		+chartIncident("Incidents Trend","P16","openedAt","chartP16")
+		+chartIncident("Incidents Trend","P01","openedAt")
+		+chartIncident("Incidents Trend","P08","openedAt")
+		+chartIncident("Incidents Trend","P16","openedAt")
 		+renderIncidentList("snow reported P01 incidents",snowIncidents)
 		div.panel.panel-default
 			div.panel-heading 
