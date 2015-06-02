@@ -40,8 +40,6 @@ exports.init = function(callback){
 exports.sync = _sync;
 
 function _sync(url,type,callback){
-	logger.debug("**** _syncIncident, url: "+url);
-
 	var _syncStatus = require('./SyncService');
 	var _timestamp = new Date();
 	var _statusERROR = "[ERROR]";
@@ -60,15 +58,17 @@ function _sync(url,type,callback){
 			P01 – Critical	1
 			P08 – High	2
 			P16 - Moderate	3
-			P40 – Low	4
+			P40/120 – Low	4
 		*/
-	url+="priority<="+config.sync[_syncName].includePriority;
+	// only get ACTIVE incidents => the others do not change anymore ;-)
+	url+="priority<="+config.sync[_syncName].includePriority+"^active=true";
+
 	client.get(url, function(data, response,done){
 		// parsed response body as js object
 		logger.debug("...data:"+data);
 		logger.debug("...response:"+response.records);
 		logger.debug("arguments.callee.name: "+arguments.callee.name);
-		logger.debug("[_syncIncident]...get data..: _url:"+url);
+		logger.debug("[_syncIncident]...client.get data..: _url:"+url);
 
 		var incService = require('./IncidentService');
 
@@ -76,8 +76,9 @@ function _sync(url,type,callback){
     var _incidentsOLD;
 
 		// lets first get what we have had
-		incService.find(function(err,baseline){
+		incService.findFiltered({active:"true"},function(err,baseline){
 			_incidentsOLD = baseline;
+			logger.debug("---------------------- incService.findFiltered({active:true} baseline ")
 
 			incService.findRevenueImpactMapping(function(err,impactMapping){
 				var _compareIncidents=[];
@@ -124,8 +125,6 @@ function _sync(url,type,callback){
         for (var d in _incidentsDELTASysIds){
           _incidentsDELTA_NEW.push(_.findWhere(_incidentsNEW,{"sysId":_incidentsDELTASysIds[d]}))
         }
-        logger.debug("--------------------------------------------------- incidentsOLD: length="+_incidentsOLD.length);
-        logger.debug("--------------------------------------------------- incidentsNEW: length="+_incidentsNEW.length);
         if (_incidentsDELTA_NEW.length>0 || _incidentsDELTA_CHANGED.length>0){
           var _incidentsDIFF={"createDate":new Date(),"NEW":_incidentsDELTA_NEW,"CHANGED":_incidentsDELTA_CHANGED}
           incService.saveDelta(_incidentsDIFF,function(err,result){
@@ -134,67 +133,66 @@ function _sync(url,type,callback){
 						}
 						else{
 							//drops and inserts actual full incidents snapshot => TODO refactor to only work with "moving" (active) incident data, no need to delete all closed stuff => too expensive ;-)
-							incService.flush(_incidentsNEW	 , function(err , success){
-								if (err){
-									logger.error('incidents.insert failed: '+err.message);
-								}
-								else if(success){
-									logger.info("[success] sync incidents....length: "+_incidentsNEW.length);
+							logger.info("[going to sync incidents]....length: "+_incidentsNEW.length);
+
+							//incService.flush(_incidentsNEW,function(err,success){
+
+
 
 									// update the IncidentTracker
 									//1) NEW: incident will increment the "incídenttracker_openedAt" daily value for the according priority
-									if (_incidentsDIFF.NEW.length>0){
 
-										//for (var i in _incidentsDIFF.NEW){
-										//	var _openedAt = _incidentsDIFF.NEW[i].openedAt;
-										//	var _priority = _incidentsDIFF.NEW[i].priority;
-											incService.incrementTracker(_incidentsDIFF.NEW);
-										}
+									if (_incidentsDIFF.NEW.length>0){
+										// insert the NEW incidents !
+										incService.insert(_incidentsDIFF.NEW,function(err,success){
+											if (err){
+												logger.error('incidents.update failed: '+err.message);
+											}
+											else if(success){
+												logger.info("[success] incService.insert : "+_incidentsDIFF.NEW +" incidents inserted");
+												incService.incrementTracker(_incidentsDIFF.NEW,function(err,result){
+													if (err) logger.error("[IncidentSyncService] NEW Incident - incService.incrementTracker FAILED: "+err-message);
+													else logger.info("[IncidentSyncService] NEW Incident - incService.incrementTracker SUCCESS: "+JSON.stringify(result));
+												});
+											} //else if (success) end
+										}) //incidents.insert()
+									}
+									else {
+										logger.debug("[NO NEW INCIDENT] _incidentsDIFF.NEW.length==0");
 									}
 
+									if (_incidentsDIFF.CHANGED.length>0){
+										logger.debug("[CHANGED INCIDENT] _incidentsDIFF.CHANGED.length = "+_incidentsDIFF.CHANGED.length);
+										var _updateIncidents = [];
+										for (var i in _incidentsDIFF.CHANGED){
+											var _pointer = _incidentsDIFF.CHANGED[i];
+											_updateIncidents.push(_.findWhere(_incidentsNEW,{"id":_pointer.id}));
+										}
+										incService.update(_updateIncidents);
+									}
+									/*
+										2) CHANGED: we have to check whether the state has changed (and accordingly the either "resolvedAt" or "closedAt") collections
+										   + in CHANGED we have an array of incident pointers
+											 + so we need to first grab all changed incidents from the baseline and pack them into the CHANGED array for the update of incidents
 
-									//2) CHANGED: we have to check whether the state has changed (and accordingly the either "resolvedAt" or "closedAt") collections
 
-									// TODO
+										"CHANGED" : [
+							        		{
+							            "id" : "INC123721",
+							            "sysId" : "0080c2380f8c8a4052fb0eece1050e8e",
+							            "diff" : {
 
+
+									*/
 
 									//3) final stuff
 
 									var _message=_incidentsNEW.length+" incidents synced";
-									app.io.emit('syncUpdate', {status:"[SUCCESS]",from:_syncName,timestamp:_timestamp,info:_incidentsNEW.length+" incidents synced",type:type});
+									app.io.emit('syncUpdate', {status:"[SUCCESS]",from:_syncName,timestamp:_timestamp,info:_incidentsNEW.length+" incidents (avtive==true) synced",type:type});
 									_syncStatus.saveLastSync(_syncName,_timestamp,_message,_statusSUCCESS,type);
 									callback(null,"OK");
 
-									/*
-									// get oldsnow data and merge it
-									var incidenttrackeroldsnow =  db.collection('incidenttrackeroldsnow');
-									incidenttrackeroldsnow.find({}, function(err , oldtrackerdata){
-										if (oldtrackerdata){
-											logger.debug("***** [yep] we got the old tracker data: length= "+oldtrackerdata.length);
-											var _tracker = _calculateDailyTracker(_incidentsNEW,config.context);
-											// and  handle incident tracker
-											incService.flushTracker(oldtrackerdata.concat(_tracker),"opened", function(err , success){
-													if (err){
-														var _message=err.message;
-														logger.error("[incidenttracker insert failed....]"+err.message);
-														_syncStatus.saveLastSync(_syncName,_timestamp,_message,_statusERROR,type);
-														callback(err);
-													}
-													else{
-														var _message=_incidentsNEW.length+" incidents synced";
-														logger.info("[success] sync incidenttracker....length: "+_tracker.length);
-														app.io.emit('syncUpdate', {status:"[SUCCESS]",from:_syncName,timestamp:_timestamp,info:_incidentsNEW.length+" incidents synced",type:type});
-														_syncStatus.saveLastSync(_syncName,_timestamp,_message,_statusSUCCESS,type);
-														callback(null,"OK");
-													}
-											});
-										} //end if (oldtrackerdata)
-									}); //incidenttrackeroldsnow.find()
-								*/
 
-
-								} //else if (success) end
-							}) //incidents.insert()
 
 
 							if (config.emit.snow_incidents_new =="on" && _incidentsDIFF.NEW.length>0){

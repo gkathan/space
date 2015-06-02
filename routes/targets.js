@@ -95,25 +95,24 @@ router.get('/target2outcomes/:L2TargetId', function(req, res, next) {
 				logger.debug("***** sponsor: "+sponsor);
 				res.locals.target = L2Target;
 				orgService.getTarget2EmployeeMappingByL2Target(L2TargetId,function(err,employees){
-
-						// some statistics
-						var _empCount=0;
-						var _outCount=0;
-						var _e = [];
-						for (var e in employees){
-							if (employees[e].outcomes.length>0){
-								_empCount++;
-								_outCount+=employees[e].outcomes.length;
-								_e.push(employees[e]);
-							}
+					// some statistics
+					var _empCount=0;
+					var _outCount=0;
+					var _e = [];
+					for (var e in employees){
+						if (employees[e].outcomes.length>0){
+							_empCount++;
+							_outCount+=employees[e].outcomes.length;
+							_e.push(employees[e]);
 						}
-						//default
-						res.locals.showEmployeeTree="location";
+					}
+					//default
+					res.locals.showEmployeeTree="location";
 
-						res.locals.statistics = {"numberOfEmployees":_e.length,"numberOfOutcomes":_outCount,"numberOfLocations":_.uniq(_.pluck(_e,"unit")).length};
-						res.locals.sponsor = sponsor;
-						res.locals.employees = employees;
-						res.render('targets/target2outcomes');
+					res.locals.statistics = {"numberOfEmployees":_e.length,"numberOfOutcomes":_outCount,"numberOfLocations":_.uniq(_.pluck(_e,"unit")).length};
+					res.locals.sponsor = sponsor;
+					res.locals.employees = employees;
+					res.render('targets/target2outcomes');
 				})
 			})
 		}
@@ -131,10 +130,16 @@ router.get('/employeeoutcomes/:employeeId', function(req, res, next) {
 	logger.debug("--------- employeeId: "+employeeId);
 	var orgService = require('../services/OrganizationService');
 	orgService.findEmployeeById(employeeId,function(err,employee){
-
 		orgService.findOutcomesForEmployee(employeeId,function(err,outcomes){
 			if (outcomes){
+				// UKR employees currently not in PI ;-)
+				if (!employee){
+					 var employee = {"Employee Number":employeeId,"Full Name":employeeId+" - "+outcomes[0].employeeName};
+
+				}
+
 				res.locals.outcomes=outcomes;
+
 
 				// and extract the additional team / area infos for the employee - just take the first ...
 				employee.unit = outcomes[0].unit;

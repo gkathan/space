@@ -136,7 +136,11 @@ function _getTarget2EmployeeMappingByL2Target(L2TargetId,callback) {
 				for (var i in docs.children){
 					var _employee = docs.children[i];
 					//logger.debug("*** _employee: "+JSON.stringify(_employee));
-					var _e ={employee:_.findWhere(allEmployees,{"Employee Number":_employee.name}),outcomes:[]};
+
+					var _emp = _.findWhere(allEmployees,{"Employee Number":_employee.name});
+					if (!_emp) _emp = _employee;
+
+					var _e ={employee:_emp,outcomes:[]};
 					// targets - outcomes
 					for (var o in _employee.children){
 						var _target = _employee.children[o];
@@ -165,7 +169,7 @@ function _findOutcomesForEmployee(employeeId,callback) {
 				logger.debug("_targets.children: "+_targets.children.length);
 				for (var t in _targets.children){
 					var _target = _targets.children[t];
-					_outcomes.push({L2Targets:_target.targets,title:_target.outcomeTitle,description:_target.outcomeDescription,successCriteria:_target.successCriteria,unit:_target.unit,area:_target.area,team:_target.team,role:_target.role});
+					_outcomes.push({L2Targets:_target.targets,title:_target.outcomeTitle,description:_target.outcomeDescription,successCriteria:_target.successCriteria,unit:_target.unit,area:_target.area,team:_target.team,role:_target.role,employeeName:_target.employeeName});
 				}
 				callback(err,_outcomes);
 				return;

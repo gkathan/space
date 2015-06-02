@@ -30,6 +30,8 @@ exports.findFiltered = _findFiltered;
 exports.findAll = _findAll;
 exports.findOld = _findOld;
 exports.flush = _flush;
+exports.insert = _insert;
+exports.update = _update;
 exports.rebuildTracker = _rebuildTracker;
 exports.incrementTracker = _incrementTracker;
 exports.rebuildCumulativeTrackerData = _rebuildCumulativeTrackerData;
@@ -44,6 +46,45 @@ exports.getOverdueGroupedByAssignmentGroup = _getOverdueGroupedByAssignmentGroup
 exports.findRevenueImpactMapping = _findRevenueImpactMapping;
 exports.calculateDailyTracker = _calculateDailyTracker;
 
+exports.flushAll = _flushAll;
+
+
+/** loads all incidents from snow endpoint
+* drops incidents collection
+* and saves the newly fetched
+*/
+function _flushAll(callback){
+	var _url = config.sync["incidents"].url;
+	var _type = "manual";
+	var _secret = require("../config/secret.json");
+	var options_auth={user:_secret.snowUser,password:_secret.snowPassword};
+	logger.debug("snowUser: "+_secret.snowUser);
+	var Client = require('node-rest-client').Client;
+	client = new Client(options_auth);
+	// direct way
+
+		/*
+			Priority:
+			Display Value	Actual Value
+			P01 – Critical	1
+			P08 – High	2
+			P16 - Moderate	3
+			P40/120 – Low	4
+		*/
+	// only get ACTIVE incidents => the others do not change anymore ;-)
+	_url+="priority<="+config.sync["incidents"].includePriority;
+	logger.debug("**** node rest client: "+_url);
+
+	client.get(_url, function(data, response,done){
+		logger.debug("-------------------------- in fetching....");
+		_flush(data.records,function(err,result){
+			if (err) logger.error("error: "+err.message);
+			else logger.info("ok: "+result);
+			callback(err,result);
+		});
+
+	});
+}
 
 /**
  *
@@ -63,7 +104,7 @@ function _findFiltered(filter,callback) {
 			if (err){
 				logger.error("error: "+err.message);
 			}
-			logger.debug("docs: "+docs)
+			//logger.debug("docs: "+docs)
 			callback(err,docs);
 			return;
 	});
@@ -131,6 +172,32 @@ function _flush(data,callback){
 }
 
 /**
+* saves
+*/
+function _insert(data,callback){
+	var items =  db.collection(_incidentsCollection);
+	logger.debug("-------- about to insert: "+data.length+" collections");
+	items.insert(data, function(err,success){
+		if (err){
+			callback(err);
+			return;
+		}
+		else{
+			callback(null,success);
+			return;
+		}
+	});
+}
+
+function _update(data,callback){
+	var items =  db.collection(_incidentsCollection);
+	logger.debug("-------- about to update: "+data.length+" collections");
+	logger.debug(JSON.stringify(data));
+	items.update({},data, {multi:true})
+
+}
+
+/**
 * drops and saves
 */
 function _flushTracker(data,callback){
@@ -171,6 +238,15 @@ function _rebuildTracker(trackerTypes,callback){
 }
 
 
+function _initDailyTrackerItem(){
+	return {
+		"P01":{total:0,assignmentGroup:{},businessService:{},label:{}},
+		"P08":{total:0,assignmentGroup:{},businessService:{},label:{}},
+		"P16":{total:0,assignmentGroup:{},businessService:{},label:{}},
+		"P120":{total:0,assignmentGroup:{},businessService:{},label:{}}
+	};
+}
+
 /**
 * param data list of incident objects
 * calculates the daily number of incidents types
@@ -202,14 +278,19 @@ function _calculateDailyTracker(incidents,dateFields,context,callback){
 
 				var _dayTracker = _.findWhere(_dailytracker,{"date":_day});
 
-				if (!_dayTracker[dateField]){
-					_dayTracker[dateField]={
+				if (!_dayTracker[dateField])
+				{
+					_dayTracker[dateField]=_initDailyTrackerItem();
+					/*
+					{
 						"P01":{total:0,assignmentGroup:{},businessService:{},label:{}},
 						"P08":{total:0,assignmentGroup:{},businessService:{},label:{}},
 						"P16":{total:0,assignmentGroup:{},businessService:{},label:{}},
 						"P120":{total:0,assignmentGroup:{},businessService:{},label:{}}
 					};
+					*/
 				}
+
 				if (_.startsWith(_priority,"P01") || _.startsWith(_priority,"P04")){
 					_.findWhere(_dailytracker,{"date":_day})[dateField].P01.total++;
 					_handleAssignementGroup(_dailytracker,_day,dateField,"P01",_assignmentGroup);
@@ -369,11 +450,6 @@ function _saveDailyTracker(tracker,dateFields,callback){
 		var _tracker = tracker[i];
 		logger.debug("------------ _saveDailyTracker: "+_tracker.date);
 
-		//logger.debug("------------ _saveDailyTracker: save = "+JSON.stringify(_tracker));
-
-
-
-
 		var items =  db.collection(_incidentTrackerCollection);
 		// read tracker for that day
 		items.findOne({date:_tracker.date},function(err,result){
@@ -383,30 +459,39 @@ function _saveDailyTracker(tracker,dateFields,callback){
 			for (var d in dateFields){
 				//e.g. "openedAt"
 				var _t =dateFields[d];
+				/*
 				logger.debug("----------- _t: "+_t);
 				logger.debug("----------- result[_t]: "+JSON.stringify(result[_t]));
 				logger.debug("----------- result[_t].P01: "+result[_t]["P01"].total);
 				logger.debug("----------- tracker[_t]: "+_tracker[_t]);
 				logger.debug("----------- tracker[_t].P01: "+_tracker[_t]["P01"].total);
+				*/
 
 				// get all keys for _tracker[_t]
-
 				for (var k in _.keys(_tracker[_t])){
 					var _prio = _.keys(_tracker[_t])[k];
 					// and per prio we look into the sub areas
 					for (var i in _.keys(_tracker[_t][_prio])){
 						var _att = _.keys(_tracker[_t][_prio])[i];
 						var _count = _tracker[_t][_prio][_att];
+						//check whether we have a number (total field)
 						if (parseInt(_count)){
 							logger.debug("++++ key: "+_att +" value: "+_tracker[_t][_prio][_att]);
-
 							// increment according key in existing tracker
 							var _increment = _tracker[_t][_prio][_att];
-							if (result[_t][_prio][_att]){
-								result[_t][_prio][_att]+=_increment;
+
+
+							if (result[_t]){
+								if (result[_t][_prio][_att]){
+									result[_t][_prio][_att]+=_increment;
+								}
+								else{
+									result[_t][_prio][_att]=_increment;
+								}
 							}
 							else{
-								result[_t][_prio][_att]=_increment;
+								logger.info("no result[_t] for _t = "+_t+" ... so lets create an initiatl one...");
+								result[_t]=_initDailyTrackerItem();
 							}
 
 						}
@@ -415,35 +500,47 @@ function _saveDailyTracker(tracker,dateFields,callback){
 							for (var i in _.keys(_tracker[_t][_prio][_att])){
 								var _sub = _.keys(_tracker[_t][_prio][_att])[i]
 								logger.debug("++++++ key: "+_sub+ " - value: "+_tracker[_t][_prio][_att][_sub]);
-
 								// increment according key in existing tracker
 								var _increment = _tracker[_t][_prio][_att][_sub];
-								if (result[_t][_prio][_att][_sub]){
-									result[_t][_prio][_att][_sub]+=_increment;
+								// if this field exists - increment with calculated value
+
+								if (result[_t]){
+									if (result[_t][_prio][_att][_sub]){
+										result[_t][_prio][_att][_sub]+=_increment;
+									}
+									// if this field not yet exists, just create and add the number
+									else{
+										result[_t][_prio][_att][_sub]=_increment;
+									}
 								}
 								else{
-									result[_t][_prio][_att][_sub]=_increment;
+									// no result[_t] yet => so lets create it
+								logger.info("no result[_t] for _t = "+_t+" ... so lets create an initiatl one...");
+									result[_t]=_initDailyTrackerItem();
 								}
-
 
 
 							}
 						}
-
-
 					}
 				}
-
-
-			//	result[_t]["P01"].total+=_tracker[_t]["P01"].total;
-
-
 			}
 
 			// and save
-
 			//items.save(result);
+			logger.debug("------------------------------------------------");
+			logger.debug("------------------------------------------------");
+
+			logger.debug("--- going to save: "+JSON.stringify(result));
+			items.save(result,function(err,result){
+				if (err) logger.error("save failed: +err.message");
+				else logger.debug("save OK");
+
+			});
+
+
 			callback(null,result);
+
 
 
 		})
@@ -743,51 +840,43 @@ function _aggregateByTime(data,period,time){
 			_p16_aggregate=0;
 			_p120_aggregate=0;
 
-
 			items.push({date:_timeName,
 				"openedAt":{P01:{total:_p01_aggregate},P08:{total:_p08_aggregate},P16:{total:_p16_aggregate},P120:{total:_p120_aggregate}},
 				"resolvedAt":{P01:{total:_p01_aggregate},P08:{total:_p08_aggregate},P16:{total:_p16_aggregate},P120:{total:_p120_aggregate}},
 				"closedAt":{P01:{total:_p01_aggregate},P08:{total:_p08_aggregate},P16:{total:_p16_aggregate},P120:{total:_p120_aggregate}}
 			});
 
-			/*
-			items.push({"openedAt":{P01:{total:_p01_aggregate},P08:{total:_p08_aggregate},P16:{total:_p16_aggregate},P120:{total:_p120_aggregate},date:_timeName}});
-			items.push({"resolvedAt":{P01:{total:_p01_aggregate},P08:{total:_p08_aggregate},P16:{total:_p16_aggregate},P120:{total:_p120_aggregate},date:_timeName}});
-			items.push({"closedAt":{P01:{total:_p01_aggregate},P08:{total:_p08_aggregate},P16:{total:_p16_aggregate},P120:{total:_p120_aggregate},date:_timeName}});
-			*/
-
-			logger.debug("* "+time+" added: "+_time);
 		}
-		_p01_aggregate+=parseInt(data[i]["openedAt"].P01.total);
-    _p08_aggregate+=parseInt(data[i]["openedAt"].P08.total);
-		_p16_aggregate+=parseInt(data[i]["openedAt"].P16.total);
-		_p120_aggregate+=parseInt(data[i]["openedAt"].P120.total);
 
-		_.findWhere(items,{"date":_timeName})["openedAt"].P01.total=_p01_aggregate;
-		_.findWhere(items,{"date":_timeName})["openedAt"].P08.total=_p08_aggregate;
-		_.findWhere(items,{"date":_timeName})["openedAt"].P16.total=_p16_aggregate;
-		_.findWhere(items,{"date":_timeName})["openedAt"].P120.total=_p120_aggregate;
+		if (data[i]["openedAt"]){
+			_p01_aggregate+=parseInt(data[i]["openedAt"].P01.total);
+	    _p08_aggregate+=parseInt(data[i]["openedAt"].P08.total);
+			_p16_aggregate+=parseInt(data[i]["openedAt"].P16.total);
+			_p120_aggregate+=parseInt(data[i]["openedAt"].P120.total);
 
+			_.findWhere(items,{"date":_timeName})["openedAt"].P01.total=_p01_aggregate;
+			_.findWhere(items,{"date":_timeName})["openedAt"].P08.total=_p08_aggregate;
+			_.findWhere(items,{"date":_timeName})["openedAt"].P16.total=_p16_aggregate;
+			_.findWhere(items,{"date":_timeName})["openedAt"].P120.total=_p120_aggregate;
+		}
 
-		_p01_aggregate+=parseInt(data[i]["resolvedAt"].P01.total);
-    _p08_aggregate+=parseInt(data[i]["resolvedAt"].P08.total);
-		_p16_aggregate+=parseInt(data[i]["resolvedAt"].P16.total);
-		_p120_aggregate+=parseInt(data[i]["resolvedAt"].P120.total);
+		if (data[i]["resolvedAt"]){
+			_p01_aggregate+=parseInt(data[i]["resolvedAt"].P01.total);
+	    _p08_aggregate+=parseInt(data[i]["resolvedAt"].P08.total);
+			_p16_aggregate+=parseInt(data[i]["resolvedAt"].P16.total);
+			_p120_aggregate+=parseInt(data[i]["resolvedAt"].P120.total);
 
-		_.findWhere(items,{"date":_timeName})["resolvedAt"].P01.total=_p01_aggregate;
-		_.findWhere(items,{"date":_timeName})["resolvedAt"].P08.total=_p08_aggregate;
-		_.findWhere(items,{"date":_timeName})["resolvedAt"].P16.total=_p16_aggregate;
-		_.findWhere(items,{"date":_timeName})["resolvedAt"].P120.total=_p120_aggregate;
+			_.findWhere(items,{"date":_timeName})["resolvedAt"].P01.total=_p01_aggregate;
+			_.findWhere(items,{"date":_timeName})["resolvedAt"].P08.total=_p08_aggregate;
+			_.findWhere(items,{"date":_timeName})["resolvedAt"].P16.total=_p16_aggregate;
+			_.findWhere(items,{"date":_timeName})["resolvedAt"].P120.total=_p120_aggregate;
+		}
 
-
-	if (data[i]["closedAt"]){
-			 logger.debug("xx:"+data[i]["closedAt"].P01);
-
+		if (data[i]["closedAt"]){
 			_p01_aggregate+=parseInt(data[i]["closedAt"].P01.total);
 	    _p08_aggregate+=parseInt(data[i]["closedAt"].P08.total);
 			_p16_aggregate+=parseInt(data[i]["closedAt"].P16.total);
 			_p120_aggregate+=parseInt(data[i]["closedAt"].P120.total);
-
 
 			_.findWhere(items,{"date":_timeName})["closedAt"].P01.total=_p01_aggregate;
 			_.findWhere(items,{"date":_timeName})["closedAt"].P08.total=_p08_aggregate;

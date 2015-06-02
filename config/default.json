@@ -26,8 +26,8 @@
 				"filename": "logs/space.log" ,
 				"prettyPrint":true,
 				"showLevel":true,
-				"level":"info",
-				"colorize":true
+				"level":"debug",
+				"colorize":false
 			},
 				"LogstashUDP": {
     		"port": 9999,

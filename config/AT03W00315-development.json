@@ -24,13 +24,13 @@
 
 		"soc_outages" : {
 			"mode": "on",
-			"intervalMinutes" :1,
+			"intervalMinutes" :10,
 			"url" : "http://avreport.bwinparty.corp/API/AvReportingService.svc/GetIncidentsDatapoints/?from=2014-01-01"
 		},
 
 		"soc_services" : {
 			"mode": "on",
-			"intervalMinutes" :1,
+			"intervalMinutes" :240,
 			"url" : "http://avreport.bwinparty.corp/API/AvReportingService.svc/GetServicesDatapoints"
 		},
 
