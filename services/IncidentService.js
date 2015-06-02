@@ -47,11 +47,13 @@ exports.findRevenueImpactMapping = _findRevenueImpactMapping;
 exports.calculateDailyTracker = _calculateDailyTracker;
 
 exports.flushAll = _flushAll;
+exports.filterRelevantData = _filterRelevantData;
 
 
 /** loads all incidents from snow endpoint
 * drops incidents collection
 * and saves the newly fetched
+* should only be called when really needed !!!!
 */
 function _flushAll(callback){
 	var _url = config.sync["incidents"].url;
@@ -61,28 +63,30 @@ function _flushAll(callback){
 	logger.debug("snowUser: "+_secret.snowUser);
 	var Client = require('node-rest-client').Client;
 	client = new Client(options_auth);
-	// direct way
-
-		/*
-			Priority:
-			Display Value	Actual Value
-			P01 – Critical	1
-			P08 – High	2
-			P16 - Moderate	3
-			P40/120 – Low	4
-		*/
-	// only get ACTIVE incidents => the others do not change anymore ;-)
+	// get all
 	_url+="priority<="+config.sync["incidents"].includePriority;
 	logger.debug("**** node rest client: "+_url);
+	var _incidentsNEW=[];
 
 	client.get(_url, function(data, response,done){
 		logger.debug("-------------------------- in fetching....");
-		_flush(data.records,function(err,result){
-			if (err) logger.error("error: "+err.message);
-			else logger.info("ok: "+result);
-			callback(err,result);
-		});
 
+		_findRevenueImpactMapping(function(err,impactMapping){
+			for (var i in data.records){
+				var _incident = _filterRelevantData(data.records[i]);
+				var _impact = _.findWhere(impactMapping,{"incident":data.records[i].number});
+				if (_impact){
+					 _incident.revenueImpact = parseInt(_impact.impact);
+				}
+				_incidentsNEW.push(_incident);
+			}
+
+			_flush(_incidentsNEW,function(err,result){
+				if (err) logger.error("error: "+err.message);
+				else logger.info("ok: "+result);
+				callback(err,result);
+			});
+		})
 	});
 }
 
@@ -914,4 +918,96 @@ function _aggregateHalfyearly(data,period){
 
 function _aggregateYearly(data,period){
 		return _aggregateByTime(data,period,"year");
+}
+
+
+
+/**
+* filters out the relevant attributes of the 87 fields from snow ;-)
+*/
+function _filterRelevantData(data){
+
+	var _incident={};
+	_incident.location = data.location;
+	_incident.context="bpty";
+	_incident.impact = data.impact;
+	_incident.urgency = data.urgency;
+	_incident.description = data.description;
+
+	if (data.priority){
+		_incident.priority = data.priority;
+	}
+	else{
+		if (_.startsWith(data.number,"CHG")) _incident.priority="CH";
+		else if (_.startsWith(data.number,"Maintenance")) _incident.priority="MA";
+	}
+
+
+	_incident.closedAt = new moment(data.closed_at,"DD-MM-YYYY HH:mm:ss").toDate();
+	_incident.resolvedAt = new moment(data.resolved_at,"DD-MM-YYYY HH:mm:ss").toDate();
+	_incident.id = data.number;
+	_incident.sysId = data.sys_id;
+	_incident.label = data.u_label;
+	_incident.businessService = data.u_business_service;
+	if(data.u_sla_resolution_due_date) _incident.slaResolutionDate = new moment(data.u_sla_resolution_due_date,"DD-MM-YYYY HH:mm:ss").toDate();
+	_incident.category = data.category;
+	_incident.labelType = data.u_label_type;
+	_incident.active = data.active;
+	_incident.closeCode = data.u_close_code;
+	_incident.assignmentGroup = data.assignment_group;
+	_incident.environment = data.u_environment;
+	_incident.state = data.state;
+	_incident.openedAt = new moment(data.opened_at,"DD-MM-YYYY HH:mm:ss").toDate();
+	_incident.shortDescription = data.short_description;
+	_incident.notify = data.notify;
+	_incident.problemId = data.problem_id;
+	_incident.severity = data.severity;
+	_incident.isMajorIncident = data.u_major_incident;
+	_incident.createdBy = data.sys_created_by;
+	_incident.contactType = data.contact_type;
+	_incident.timeWorked = data.time_worked;
+	_incident.syncDate = new Date();
+	_incident.slaBreach = "";
+	_incident.slaBreachTime = "";
+	_incident.subCategory = data.subcategory;
+
+	// an do some enriching.....
+	if (data.state=="Resolved" || data.state=="Closed"){
+		var _open = _incident.openedAt;
+		var _resolved = _incident.resolvedAt;
+		_incident.timeToResolve = _getTimeStringForTimeRange(_open,_resolved);
+
+		if (_incident.slaResolutionDate && _resolved > _incident.slaResolutionDate){
+			_incident.slaBreach = true;
+			//logger.debug("################################## SLAB BREACH by  "+_time);
+			_incident.slaBreachTime = _getTimeStringForTimeRange(_incident.slaResolutionDate,_resolved);
+		}
+		else if (_incident.slaResolutionDate && _resolved <= _incident.slaResolutionDate){
+			_incident.slaBreach = false;
+		}
+	}
+
+	if (data.state=="Closed"){
+		var _open = _incident.openedAt;
+		var _closed = _incident.closedAt;
+		_incident.timeToClose = _getTimeStringForTimeRange(_open,_closed);
+
+		/*if (_incident.slaResolutionDate && _closed > _incident.slaResolutionDate){
+			_incident.slaBreach = true;
+			//logger.debug("################################## SLAB BREACH by  "+_time);
+			_incident.slaBreachTime = _getTimeStringForTimeRange(_incident.slaResolutionDate,_closed);
+		}
+		else if (_incident.slaResolutionDate && _closed <= _incident.slaResolutionDate){
+			_incident.slaBreach = false;
+		}
+		*/
+	}
+	return _incident;
+}
+
+function _getTimeStringForTimeRange(start,stop){
+	var ms = moment(stop,"DD/MM/YYYY HH:mm:ss").diff(moment(start,"DD/MM/YYYY HH:mm:ss"));
+	var d = moment.duration(ms);
+	var _time = Math.floor(d.asHours()) + moment.utc(ms).format(":mm:ss");
+	return _time;
 }

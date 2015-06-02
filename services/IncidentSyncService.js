@@ -85,14 +85,14 @@ function _sync(url,type,callback){
 				var _compareIncidentsBaseline=[];
 
 				for (var i in data.records){
-					var _incident = _filterRelevantData(data.records[i]);
+					var _incident = incService.filterRelevantData(data.records[i]);
 					_incidentsNEW.push(_incident);
-					_compareIncidents.push(_filterRelevantDataForDiff(_incident));
+					_compareIncidents.push(incService.filterRelevantDataForDiff(_incident));
 				}
 
         var _diff;
 				for (var o in _incidentsOLD){
-					_compareIncidentsBaseline.push(_filterRelevantDataForDiff(_incidentsOLD[o]));
+					_compareIncidentsBaseline.push(incService.filterRelevantDataForDiff(_incidentsOLD[o]));
 				}
 
         var _incidentsDELTA_CHANGED =[];
@@ -309,88 +309,7 @@ function _filterRelevantDataForDiff(incident){
 }
 
 
-/**
-* filters out the relevant attributes of the 87 fields from snow ;-)
-*/
-function _filterRelevantData(data){
 
-	var _incident={};
-	_incident.location = data.location;
-	_incident.context="bpty";
-	_incident.impact = data.impact;
-	_incident.urgency = data.urgency;
-	_incident.description = data.description;
-
-	if (data.priority){
-		_incident.priority = data.priority;
-	}
-	else{
-		if (_.startsWith(data.number,"CHG")) _incident.priority="CH";
-		else if (_.startsWith(data.number,"Maintenance")) _incident.priority="MA";
-	}
-
-
-	_incident.closedAt = new moment(data.closed_at,"DD-MM-YYYY HH:mm:ss").toDate();
-	_incident.resolvedAt = new moment(data.resolved_at,"DD-MM-YYYY HH:mm:ss").toDate();
-	_incident.id = data.number;
-	_incident.sysId = data.sys_id;
-	_incident.label = data.u_label;
-	_incident.businessService = data.u_business_service;
-	if(data.u_sla_resolution_due_date) _incident.slaResolutionDate = new moment(data.u_sla_resolution_due_date,"DD-MM-YYYY HH:mm:ss").toDate();
-	_incident.category = data.category;
-	_incident.labelType = data.u_label_type;
-	_incident.active = data.active;
-	_incident.closeCode = data.u_close_code;
-	_incident.assignmentGroup = data.assignment_group;
-	_incident.environment = data.u_environment;
-	_incident.state = data.state;
-	_incident.openedAt = new moment(data.opened_at,"DD-MM-YYYY HH:mm:ss").toDate();
-	_incident.shortDescription = data.short_description;
-	_incident.notify = data.notify;
-	_incident.problemId = data.problem_id;
-	_incident.severity = data.severity;
-	_incident.isMajorIncident = data.u_major_incident;
-	_incident.createdBy = data.sys_created_by;
-	_incident.contactType = data.contact_type;
-	_incident.timeWorked = data.time_worked;
-	_incident.syncDate = new Date();
-	_incident.slaBreach = "";
-	_incident.slaBreachTime = "";
-	_incident.subCategory = data.subcategory;
-
-	// an do some enriching.....
-	if (data.state=="Resolved" || data.state=="Closed"){
-		var _open = _incident.openedAt;
-		var _resolved = _incident.resolvedAt;
-		_incident.timeToResolve = _getTimeStringForTimeRange(_open,_resolved);
-
-		if (_incident.slaResolutionDate && _resolved > _incident.slaResolutionDate){
-			_incident.slaBreach = true;
-			//logger.debug("################################## SLAB BREACH by  "+_time);
-			_incident.slaBreachTime = _getTimeStringForTimeRange(_incident.slaResolutionDate,_resolved);
-		}
-		else if (_incident.slaResolutionDate && _resolved <= _incident.slaResolutionDate){
-			_incident.slaBreach = false;
-		}
-	}
-
-	if (data.state=="Closed"){
-		var _open = _incident.openedAt;
-		var _closed = _incident.closedAt;
-		_incident.timeToClose = _getTimeStringForTimeRange(_open,_closed);
-
-		/*if (_incident.slaResolutionDate && _closed > _incident.slaResolutionDate){
-			_incident.slaBreach = true;
-			//logger.debug("################################## SLAB BREACH by  "+_time);
-			_incident.slaBreachTime = _getTimeStringForTimeRange(_incident.slaResolutionDate,_closed);
-		}
-		else if (_incident.slaResolutionDate && _closed <= _incident.slaResolutionDate){
-			_incident.slaBreach = false;
-		}
-		*/
-	}
-	return _incident;
-}
 
 function _getTimeStringForTimeRange(start,stop){
 	var ms = moment(stop,"DD/MM/YYYY HH:mm:ss").diff(moment(start,"DD/MM/YYYY HH:mm:ss"));
