@@ -87,12 +87,12 @@ function _sync(url,type,callback){
 				for (var i in data.records){
 					var _incident = incService.filterRelevantData(data.records[i]);
 					_incidentsNEW.push(_incident);
-					_compareIncidents.push(incService.filterRelevantDataForDiff(_incident));
+					_compareIncidents.push(_filterRelevantDataForDiff(_incident));
 				}
 
         var _diff;
 				for (var o in _incidentsOLD){
-					_compareIncidentsBaseline.push(incService.filterRelevantDataForDiff(_incidentsOLD[o]));
+					_compareIncidentsBaseline.push(_filterRelevantDataForDiff(_incidentsOLD[o]));
 				}
 
         var _incidentsDELTA_CHANGED =[];

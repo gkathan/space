@@ -1005,6 +1005,8 @@ function _filterRelevantData(data){
 	return _incident;
 }
 
+// duplicated from SyncService !!!
+
 function _getTimeStringForTimeRange(start,stop){
 	var ms = moment(stop,"DD/MM/YYYY HH:mm:ss").diff(moment(start,"DD/MM/YYYY HH:mm:ss"));
 	var d = moment.duration(ms);
