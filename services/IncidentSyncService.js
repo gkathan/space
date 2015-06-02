@@ -145,10 +145,10 @@ function _sync(url,type,callback){
 									//1) NEW: incident will increment the "incídenttracker_openedAt" daily value for the according priority
 									if (_incidentsDIFF.NEW.length>0){
 
-										for (var i in _incidentsDIFF.NEW){
-											var _openedAt = _incidentsDIFF.NEW[i].openedAt;
-											var _priority = _incidentsDIFF.NEW[i].priority;
-											incService.incrementTracker("openedAt",_openedAt,_priority);
+										//for (var i in _incidentsDIFF.NEW){
+										//	var _openedAt = _incidentsDIFF.NEW[i].openedAt;
+										//	var _priority = _incidentsDIFF.NEW[i].priority;
+											incService.incrementTracker(_incidentsDIFF.NEW);
 										}
 									}
 

@@ -170,6 +170,104 @@ function _rebuildTracker(trackerTypes,callback){
 	})
 }
 
+
+/**
+* param data list of incident objects
+* calculates the daily number of incidents types
+* and updates the incidentracker collection
+* param incidents: list of incident objects
+* param dateFields: array of types, sets which date field we should look at (e.g. "openedAt" to track new incidnets, "resolvedAt" track resolved incidents)
+*/
+function _calculateDailyTracker(incidents,dateFields,context,callback){
+	var _dailytracker = [];
+	//logger.debug("********* processing datefield: "+dateField);
+	for (var i in incidents){
+		//"openedAt" "resolvedAt" "closedAt"
+		for (var d in dateFields){
+			var dateField = dateFields[d];
+
+			if (incidents[i][dateField]){
+				var _day = moment(incidents[i][dateField]).format("YYYY-MM-DD");
+				_day = new Date(_day);
+				//logger.debug("** inc: "+incidents[i].id);
+				var _priority=incidents[i].priority;
+				//deburr cleans special characters
+				var _assignmentGroup=_.deburr(incidents[i].assignmentGroup).split(".").join("_");
+				var _businessService=_.deburr(incidents[i].businessService).split(".").join("_");
+				var _labels=_.deburr(incidents[i].label).replace(", ",",").split(".").join("_").split(",");
+
+				if (!_.findWhere(_dailytracker,{"date":_day})) {
+					_dailytracker.push({"date":_day,"context":context});
+				}
+
+				var _dayTracker = _.findWhere(_dailytracker,{"date":_day});
+
+				if (!_dayTracker[dateField]){
+					_dayTracker[dateField]={
+						"P01":{total:0,assignmentGroup:{},businessService:{},label:{}},
+						"P08":{total:0,assignmentGroup:{},businessService:{},label:{}},
+						"P16":{total:0,assignmentGroup:{},businessService:{},label:{}},
+						"P120":{total:0,assignmentGroup:{},businessService:{},label:{}}
+					};
+				}
+				if (_.startsWith(_priority,"P01") || _.startsWith(_priority,"P04")){
+					_.findWhere(_dailytracker,{"date":_day})[dateField].P01.total++;
+					_handleAssignementGroup(_dailytracker,_day,dateField,"P01",_assignmentGroup);
+					_handleBusinessService(_dailytracker,_day,dateField,"P01",_businessService);
+					_handleLabel(_dailytracker,_day,dateField,"P01",_labels);
+				}
+				else if (_.startsWith(_priority,"P08")){
+					_.findWhere(_dailytracker,{"date":_day})[dateField].P08.total++;
+					_handleAssignementGroup(_dailytracker,_day,dateField,"P08",_assignmentGroup);
+					_handleBusinessService(_dailytracker,_day,dateField,"P08",_businessService);
+					_handleLabel(_dailytracker,_day,dateField,"P08",_labels);
+				}
+				else if (_.startsWith(_priority,"P16")){
+					_.findWhere(_dailytracker,{"date":_day})[dateField].P16.total++;
+					_handleAssignementGroup(_dailytracker,_day,dateField,"P16",_assignmentGroup);
+					_handleBusinessService(_dailytracker,_day,dateField,"P16",_businessService);
+					_handleLabel(_dailytracker,_day,dateField,"P16",_labels);
+				}
+				else if (_.startsWith(_priority,"P40") || _.startsWith(_priority,"P120")){
+					_.findWhere(_dailytracker,{"date":_day})[dateField].P120.total++;
+					_handleAssignementGroup(_dailytracker,_day,dateField,"P120",_assignmentGroup);
+					_handleBusinessService(_dailytracker,_day,dateField,"P120",_businessService);
+					_handleLabel(_dailytracker,_day,dateField,"P120",_labels);
+				}
+			}
+			else{
+				throw new Error(dateField+" is not an attribute of incidents..");
+			}
+		}//end for dateFIelds
+	}//end for incidents
+	callback(null,_dailytracker);
+}
+
+function _handleAssignementGroup(dailytracker,day,dateField,priority,assignmentGroup){
+	if (!_.findWhere(dailytracker,{"date":day})[dateField][priority].assignmentGroup[assignmentGroup]){
+		_.findWhere(dailytracker,{"date":day})[dateField][priority].assignmentGroup[assignmentGroup]=0;
+	}
+	_.findWhere(dailytracker,{"date":day})[dateField][priority].assignmentGroup[assignmentGroup]++;
+}
+
+function _handleBusinessService(dailytracker,day,dateField,priority,businessService){
+	if (!_.findWhere(dailytracker,{"date":day})[dateField][priority].businessService[businessService]){
+		_.findWhere(dailytracker,{"date":day})[dateField][priority].businessService[businessService]=0;
+	}
+	_.findWhere(dailytracker,{"date":day})[dateField][priority].businessService[businessService]++;
+}
+
+function _handleLabel(dailytracker,day,dateField,priority,labels){
+	for (var i in labels){
+		var label=labels[i];
+		if (!_.findWhere(dailytracker,{"date":day})[dateField][priority].label[label]){
+			_.findWhere(dailytracker,{"date":day})[dateField][priority].label[label]=0;
+		}
+		_.findWhere(dailytracker,{"date":day})[dateField][priority].label[label]++;
+	}
+}
+
+
 /**
 * calculates the daily cumulative difference between "open" and both "resolved" and "closed"
 * needed for burndown charts
@@ -228,11 +326,7 @@ function _rebuildCumulativeTrackerData(callback){
 					closed:{P01Sum:P01ClosedSum,P08Sum:P08ClosedSum,P16Sum:P16ClosedSum,P120Sum:P120ClosedSum},
 					openedminusresolved:{P01Diff:P01OpenedSum-P01ResolvedSum,P08Diff:P08OpenedSum-P08ResolvedSum,P16Diff:P16OpenedSum-P16ResolvedSum,P120Diff:P120OpenedSum-P120ResolvedSum},
 					openedminusclosed:{P01Diff:P01OpenedSum-P01ClosedSum,P08Diff:P08OpenedSum-P08ClosedSum,P16Diff:P16OpenedSum-P16ClosedSum,P120Diff:P120OpenedSum-P120ClosedSum}
-
 				});
-
-
-
 			})
 		})
 	})
@@ -249,8 +343,115 @@ function _calculateCumulative(data,priority){
 	return PSum;
 
 }
+/**
+* updates the incidentTracker
+* first calculates daily tracker for given incidents list
+* and then merges with already stored
+* param incidents: list of NEW incidents
+*/
+function _incrementTracker(incidents,callback){
+	var dateFields = ["openedAt","resolvedAt","closedAt"];
+	var context = "bpty.studios";
+	_calculateDailyTracker(incidents,dateFields,context,function(err,tracker){
+		//TODO merge with existing day if exists
+		_saveDailyTracker(tracker,dateFields,function(err,result){
+			if (result) callback(null,result);
+			else callback(err);
 
-function _incrementTracker(trackerType,openedAt,priority){
+		})
+
+	})
+}
+
+function _saveDailyTracker(tracker,dateFields,callback){
+	//iterate over days
+	for (i in tracker){
+		var _tracker = tracker[i];
+		logger.debug("------------ _saveDailyTracker: "+_tracker.date);
+
+		//logger.debug("------------ _saveDailyTracker: save = "+JSON.stringify(_tracker));
+
+
+
+
+		var items =  db.collection(_incidentTrackerCollection);
+		// read tracker for that day
+		items.findOne({date:_tracker.date},function(err,result){
+			//logger.debug("*************** existing tracker for that day: "+JSON.stringify(result));
+
+			// merge
+			for (var d in dateFields){
+				//e.g. "openedAt"
+				var _t =dateFields[d];
+				logger.debug("----------- _t: "+_t);
+				logger.debug("----------- result[_t]: "+JSON.stringify(result[_t]));
+				logger.debug("----------- result[_t].P01: "+result[_t]["P01"].total);
+				logger.debug("----------- tracker[_t]: "+_tracker[_t]);
+				logger.debug("----------- tracker[_t].P01: "+_tracker[_t]["P01"].total);
+
+				// get all keys for _tracker[_t]
+
+				for (var k in _.keys(_tracker[_t])){
+					var _prio = _.keys(_tracker[_t])[k];
+					// and per prio we look into the sub areas
+					for (var i in _.keys(_tracker[_t][_prio])){
+						var _att = _.keys(_tracker[_t][_prio])[i];
+						var _count = _tracker[_t][_prio][_att];
+						if (parseInt(_count)){
+							logger.debug("++++ key: "+_att +" value: "+_tracker[_t][_prio][_att]);
+
+							// increment according key in existing tracker
+							var _increment = _tracker[_t][_prio][_att];
+							if (result[_t][_prio][_att]){
+								result[_t][_prio][_att]+=_increment;
+							}
+							else{
+								result[_t][_prio][_att]=_increment;
+							}
+
+						}
+						else{
+							logger.debug("_we need to go a bit deeper for: "+_att);
+							for (var i in _.keys(_tracker[_t][_prio][_att])){
+								var _sub = _.keys(_tracker[_t][_prio][_att])[i]
+								logger.debug("++++++ key: "+_sub+ " - value: "+_tracker[_t][_prio][_att][_sub]);
+
+								// increment according key in existing tracker
+								var _increment = _tracker[_t][_prio][_att][_sub];
+								if (result[_t][_prio][_att][_sub]){
+									result[_t][_prio][_att][_sub]+=_increment;
+								}
+								else{
+									result[_t][_prio][_att][_sub]=_increment;
+								}
+
+
+
+							}
+						}
+
+
+					}
+				}
+
+
+			//	result[_t]["P01"].total+=_tracker[_t]["P01"].total;
+
+
+			}
+
+			// and save
+
+			//items.save(result);
+			callback(null,result);
+
+
+		})
+
+	}
+
+}
+	/*
 	var _day = moment(openedAt).format("YYYY-MM-DD");
 	_day = new Date(_day);
 
@@ -264,6 +465,7 @@ function _incrementTracker(trackerType,openedAt,priority){
 	else if (_.startsWith(priority,"P16")) _p16Increment=1;
 	else if (_.startsWith(priority,"P40") || _.startsWith(priority,"P120")) _p120Increment=1;
 
+
 	var items =  db.collection(_incidentTrackerCollection+"_"+trackerType);
 	items.findAndModify({query:{date: _day},update:{$inc:{'P01.total':_p01Increment,'P08.total':_p08Increment,'P16.total':_p16Increment,'P120.total':_p120Increment}},upsert:true},function(err,success){
 		if (err){
@@ -273,7 +475,8 @@ function _incrementTracker(trackerType,openedAt,priority){
 			logger.debug("++++++++++++++++++++++ IncidentService._incrementTracker("+trackerType+","+moment(openedAt).format('YYYY-MM-DD')+","+priority+" ) says: increment by 1 = OK :-)");
 		}
 	});
-}
+*/
+
 
 
 /**
@@ -483,109 +686,6 @@ function _parseMonth(month){
 
 function _parseWeek(week){
 	return _parsePeriod(week,"week");
-}
-
-/**
-* param data list of incident objects
-* calculates the daily number of incidents types
-* and updates the incidentracker collection
-* param incidents: list of incident objects
-* param dateFields: sets which date field we should look at (e.g. "openedAt" to track new incidnets, "resolvedAt" track resolved incidents)
-*/
-function _calculateDailyTracker(incidents,dateFields,context,callback){
-	var _dailytracker = [];
-	for (var i in incidents){
-		//"openedAt" "resolvedAt" "closedAt"
-		for (var d in dateFields){
-			var dateField = dateFields[d];
-			//logger.debug("* datefield: "+dateField);
-			if (incidents[i][dateField]){
-
-				var _day = moment(incidents[i][dateField]).format("YYYY-MM-DD");
-				_day = new Date(_day);
-				//logger.debug("** inc: "+incidents[i].id);
-				var _priority=incidents[i].priority;
-				//deburr cleans special characters
-				var _assignmentGroup=_.deburr(incidents[i].assignmentGroup).split(".").join("_");
-				var _businessService=_.deburr(incidents[i].businessService).split(".").join("_");
-				var _label=_.deburr(incidents[i].label).split(".").join("_");
-
-
-				if (!_.findWhere(_dailytracker,{"date":_day})) {
-					_dailytracker.push({"date":_day,"context":context});
-				}
-
-				var _dayTracker = _.findWhere(_dailytracker,{"date":_day});
-
-				if (!_dayTracker[dateField]){
-					_dayTracker[dateField]={
-						"P01":{total:0,assignmentGroup:{},businessService:{},label:{}},
-						"P08":{total:0,assignmentGroup:{},businessService:{},label:{}},
-						"P16":{total:0,assignmentGroup:{},businessService:{},label:{}},
-						"P120":{total:0,assignmentGroup:{},businessService:{},label:{}}
-					};
-				}
-
-				//logger.debug("*** dailytracker: "+JSON.stringify(_dailytracker));
-
-
-				if (_.startsWith(_priority,"P01") || _.startsWith(_priority,"P04")){
-					_.findWhere(_dailytracker,{"date":_day})[dateField].P01.total++;
-					//logger.debug("---- P01 incremented "+_.findWhere(_dailytracker,{"date":_day})[dateField].P01.total+ "inc: "+incidents[i].id);
-
-					// now look for split of assignmentGroup field
-					_handleAssignementGroup(_dailytracker,_day,dateField,"P01",_assignmentGroup);
-					_handleBusinessService(_dailytracker,_day,dateField,"P01",_businessService);
-					_handleLabel(_dailytracker,_day,dateField,"P01",_label);
-				}
-				else if (_.startsWith(_priority,"P08")){
-					_.findWhere(_dailytracker,{"date":_day})[dateField].P08.total++;
-					_handleAssignementGroup(_dailytracker,_day,dateField,"P08",_assignmentGroup);
-					_handleBusinessService(_dailytracker,_day,dateField,"P08",_businessService);
-					_handleLabel(_dailytracker,_day,dateField,"P08",_label);
-				}
-				else if (_.startsWith(_priority,"P16")){
-					_.findWhere(_dailytracker,{"date":_day})[dateField].P16.total++;
-					_handleAssignementGroup(_dailytracker,_day,dateField,"P16",_assignmentGroup);
-					_handleBusinessService(_dailytracker,_day,dateField,"P16",_businessService);
-					_handleLabel(_dailytracker,_day,dateField,"P16",_label);
-				}
-				else if (_.startsWith(_priority,"P40") || _.startsWith(_priority,"P120")){
-					_.findWhere(_dailytracker,{"date":_day})[dateField].P120.total++;
-					//logger.debug("---- P120 incremented "+_.findWhere(_dailytracker,{"date":_day})[dateField].P120.total+ "inc: "+incidents[i].id);
-
-					_handleAssignementGroup(_dailytracker,_day,dateField,"P120",_assignmentGroup);
-					_handleBusinessService(_dailytracker,_day,dateField,"P120",_businessService);
-					_handleLabel(_dailytracker,_day,dateField,"P120",_label);
-				}
-			}
-			else{
-				throw new Error(dateField+" is not an attribute of incidents..");
-			}
-		}//end for dateFIelds
-	}//end for incidents
-	callback(null,_dailytracker);
-}
-
-function _handleAssignementGroup(dailytracker,day,dateField,priority,assignmentGroup){
-	if (!_.findWhere(dailytracker,{"date":day})[dateField][priority].assignmentGroup[assignmentGroup]){
-		_.findWhere(dailytracker,{"date":day})[dateField][priority].assignmentGroup[assignmentGroup]=0;
-	}
-	_.findWhere(dailytracker,{"date":day})[dateField][priority].assignmentGroup[assignmentGroup]++;
-}
-
-function _handleBusinessService(dailytracker,day,dateField,priority,businessService){
-	if (!_.findWhere(dailytracker,{"date":day})[dateField][priority].businessService[businessService]){
-		_.findWhere(dailytracker,{"date":day})[dateField][priority].businessService[businessService]=0;
-	}
-	_.findWhere(dailytracker,{"date":day})[dateField][priority].businessService[businessService]++;
-}
-
-function _handleLabel(dailytracker,day,dateField,priority,label){
-	if (!_.findWhere(dailytracker,{"date":day})[dateField][priority].label[label]){
-		_.findWhere(dailytracker,{"date":day})[dateField][priority].label[label]=0;
-	}
-	_.findWhere(dailytracker,{"date":day})[dateField][priority].label[label]++;
 }
 
 /** generic aggregator incidenttracker data

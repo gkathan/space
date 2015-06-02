@@ -163,16 +163,6 @@ describe('IncidentService', function(){
 */
 
 
-describe('#increment DailyTracker()', function(){
-	it('should increment daily tracker with a given incident', function(done){
-
-		var incidentService = require('../services/IncidentService');
-		incidentService.incrementTracker("openedAt",new Date(),"P08 - Critical");
-			logger.debug("incremented");
-			done();
-		})
-	});
-
 
 
 describe('#calculate DailyTracker()', function(){
@@ -186,15 +176,21 @@ describe('#calculate DailyTracker()', function(){
 			"priority" : "P01 - Critical",
 	    "openedAt" : new Date("2015-05-02 15:03:00"),
 	    "resolvedAt" : new Date("2015-05-02 15:13:00"),
-			"assignmentGroup" : "EnterpriseTools"
+			"closedAt" : new Date("2015-05-02 15:17:00"),
+			"assignmentGroup" : "EnterpriseTools",
+			"businessService" : "Business Service A",
+			"label" : "label1.com,label2.us"
 		};
 		var _inc2 = {
 	    "description" : "this is a test incident",
 	    "id" : "INC100002",
 			"priority" : "P01 - Critical",
-	    "openedAt" : new Date("2015-05-05 12:03:00"),
-	    "resolvedAt" : new Date("2015-05-05 15:13:00"),
-			"assignmentGroup" : "LeanOps"
+	    "openedAt" : new Date("2015-05-02 12:03:00"),
+	    "resolvedAt" : new Date("2015-05-02 15:13:00"),
+			"closedAt" : new Date("2015-05-02 15:17:00"),
+			"assignmentGroup" : "LeanOps",
+			"businessService" : "Business Service A",
+			"label" : "label2.us, label3.it"
 		};
 
 		var _inc3 = {
@@ -203,7 +199,11 @@ describe('#calculate DailyTracker()', function(){
 			"priority" : "P08 - High",
 	    "openedAt" : new Date("2015-05-08 12:03:00"),
 	    "resolvedAt" : new Date("2015-05-08 15:13:00"),
-			"assignmentGroup" : "Others"
+			"closedAt" : new Date("2015-05-08 15:17:00"),
+			"assignmentGroup" : "Others",
+			"businessService" : "BusinessService_C",
+			"label" : "label5.es"
+
 		};
 
 		_list.push(_inc1);
@@ -212,11 +212,15 @@ describe('#calculate DailyTracker()', function(){
 
 		//_calculateDailyTracker(incidents,dateField,context,callback)
 		var _context="bpty.studios";
-		incidentService.calculateDailyTracker(_list,"openedAt",_context,function(err,success){
+		incidentService.calculateDailyTracker(_list,["openedAt","resolvedAt","closedAt"],_context,function(err,success){
+			//logger.debug(success);
+			logger.debug(JSON.stringify(success));
+			assert.equal(2, _.findWhere(success,{date:new Date("2015-05-02")})["openedAt"].P01.total);
+			assert.equal(1, _.findWhere(success,{date:new Date("2015-05-08")})["openedAt"].P08.total);
+			assert.equal(0, _.findWhere(success,{date:new Date("2015-05-08")})["openedAt"].P01.total);
+			assert.equal(2, _.findWhere(success,{date:new Date("2015-05-02")})["openedAt"].P01.businessService["Business Service A"]);
+			assert.equal(2, _.findWhere(success,{date:new Date("2015-05-02")})["openedAt"].P01.label["label2_us"]);
 
-			logger.debug(success);
-			assert.equal(1, _.findWhere(success,{date:new Date("2015-05-08")}).P08.total);
-			assert.equal(0, _.findWhere(success,{date:new Date("2015-05-08")}).P01.total);
 			done();
 		})
 	});
@@ -234,6 +238,45 @@ describe('#rebuild cumulative DailyTracker()', function(){
 
 		});
 	})
+});
+
+
+describe('#increment DailyTracker()', function(){
+	it('should increment daily tracker with a given incident', function(done){
+
+		var _inc1 = {
+	    "description" : "this is a test incident",
+	    "id" : "INC100001",
+			"priority" : "P01 - Critical",
+	    "openedAt" : new Date("2015-05-02 15:03:00"),
+	    "resolvedAt" : new Date("2015-05-02 15:13:00"),
+			"closedAt" : new Date("2015-05-02 15:17:00"),
+			"assignmentGroup" : "EnterpriseTools",
+			"businessService" : "Business Service A",
+			"label" : "label1, label2"
+		};
+		var _inc2 = {
+	    "description" : "this is a test incident",
+	    "id" : "INC100002",
+			"priority" : "P01 - Critical",
+	    "openedAt" : new Date("2015-05-02 12:03:00"),
+	    "resolvedAt" : new Date("2015-05-02 15:13:00"),
+			"closedAt" : new Date("2015-05-02 15:17:00"),
+			"assignmentGroup" : "LeanOps",
+			"businessService" : "Business Service A",
+			"label" : "label2, label3"
+		};
+		var _list=[];
+		_list.push(_inc1);
+		_list.push(_inc2);
+
+		var incidentService = require('../services/IncidentService');
+		incidentService.incrementTracker(_list,function(err,result){
+			logger.debug("incremented: "+JSON.stringify(result));
+			done();
+
+		});
+	});
 });
 
 

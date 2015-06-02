@@ -1,6 +1,6 @@
 var incidentService = require('./services/IncidentService');
 incidentService.rebuildTracker(["openedAt","resolvedAt","closedAt"],function(err,success){
-  console.log("++ "+success);
+  console.log("++ OK done");
 });
 
 /*
