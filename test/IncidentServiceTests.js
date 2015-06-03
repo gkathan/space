@@ -168,7 +168,7 @@ describe('IncidentService', function(){
 describe('#calculate DailyTracker()', function(){
 	it('should calculate daily tracker with a given incident list', function(done){
 
-		var incidentService = require('../services/IncidentService');
+		var incidentTrackerService = require('../services/IncidentTrackerService');
 		var _list =[];
 		var _inc1 = {
 	    "description" : "this is a test incident",
@@ -212,7 +212,7 @@ describe('#calculate DailyTracker()', function(){
 
 		//_calculateDailyTracker(incidents,dateField,context,callback)
 		var _context="bpty.studios";
-		incidentService.calculateDailyTracker(_list,["openedAt","resolvedAt","closedAt"],_context,function(err,success){
+		incidentTrackerService.calculateDailyTracker(_list,["openedAt","resolvedAt","closedAt"],_context,function(err,success){
 			//logger.debug(success);
 			logger.debug(JSON.stringify(success));
 			assert.equal(2, _.findWhere(success,{date:new Date("2015-05-02")})["openedAt"].P01.total);
@@ -231,8 +231,8 @@ describe('#rebuild cumulative DailyTracker()', function(){
 	it('should rebuild cumulative daily tracker with a given incident', function(done){
 			this.timeout(30000);
 
-		var incidentService = require('../services/IncidentService');
-		incidentService.rebuildCumulativeTrackerData(function(err,result){
+		var incidentTrackerService = require('../services/IncidentTrackerService');
+		incidentTrackerService.rebuildCumulativeTrackerData(function(err,result){
 			logger.debug("rebuild cumulative: "+JSON.stringify(result));
 			done();
 
@@ -270,8 +270,8 @@ describe('#increment DailyTracker()', function(){
 		_list.push(_inc1);
 		_list.push(_inc2);
 
-		var incidentService = require('../services/IncidentService');
-		incidentService.incrementTracker(_list,function(err,result){
+		var incidentTrackerService = require('../services/IncidentTrackerService');
+		incidentTrackerService.incrementTracker(_list,function(err,result){
 			logger.debug("incremented: "+JSON.stringify(result));
 			done();
 
@@ -279,6 +279,17 @@ describe('#increment DailyTracker()', function(){
 	});
 });
 
+
+describe('#init DailyTracker()', function(){
+	it('should initialize a daily tracker for a given date', function(done){
+		var incidentTrackerService = require('../services/IncidentTrackerService');
+		var _tracker = incidentTrackerService.initDailyTrackerForDay(new Date("2015-06-03"),["openedAt","closedAt","resolvedAt"]);
+		logger.debug("tracker: "+JSON.stringify(_tracker));
+		assert.equal(0,_tracker.openedAt.P01.total);
+		done();
+
+		});
+	});
 
 
 

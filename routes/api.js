@@ -371,11 +371,11 @@ function findIncidenttrackerByDate(req, res , next){
 	if (!_aggregate){
 		_aggregate="weekly";
 	}
-
-	logger.debug("********************* findIncidenttrackerByDate(): _aggregate= "+_aggregate+" _date = "+_date);
-	incidentService.findTrackerByDate(_aggregate,_date,function(err,data){
+	var incidentTrackerService = require('../services/IncidentTrackerService');
+		logger.debug("********************* findIncidenttrackerByDate(): _aggregate= "+_aggregate+" _date = "+_date);
+	incidentTrackerService.findTrackerByDate(_aggregate,_date,function(err,data){
 			if (err){
-				logger.warn("[error] incidentService.findTrackerByDate says: "+err.message);
+				logger.warn("[error] incidentTrackerService.findTrackerByDate says: "+err.message);
 			}
 			else {
 				res.send(data);

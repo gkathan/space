@@ -71,6 +71,7 @@ function _sync(url,type,callback){
 		logger.debug("[_syncIncident]...client.get data..: _url:"+url);
 
 		var incService = require('./IncidentService');
+		var incTrackerService = require('./IncidentTrackerService');
 
     var _incidentsNEW=[];
     var _incidentsOLD;
@@ -78,12 +79,13 @@ function _sync(url,type,callback){
 		// lets first get what we have had
 		incService.findFiltered({active:"true"},function(err,baseline){
 			_incidentsOLD = baseline;
-			logger.debug("---------------------- incService.findFiltered({active:true} baseline ")
+			logger.debug("---------------------- incService.findFiltered({active:true} baseline: "+baseline.length+" incidents")
 
 			incService.findRevenueImpactMapping(function(err,impactMapping){
 				var _compareIncidents=[];
 				var _compareIncidentsBaseline=[];
 
+				//walks over the newly fetched snow raw data and filters (maps) the relevant space format
 				for (var i in data.records){
 					var _incident = incService.filterRelevantData(data.records[i]);
 					_incidentsNEW.push(_incident);
@@ -91,6 +93,7 @@ function _sync(url,type,callback){
 				}
 
         var _diff;
+
 				for (var o in _incidentsOLD){
 					_compareIncidentsBaseline.push(_filterRelevantDataForDiff(_incidentsOLD[o]));
 				}
@@ -114,14 +117,16 @@ function _sync(url,type,callback){
             }
           }
         }
-
         var _incidentsNEWSysIds = _.pluck(_incidentsNEW,'sysId');
         var _incidentsOLDSysIds = _.pluck(_incidentsOLD,'sysId');
         var _incidentsDELTASysIds = _.difference(_incidentsNEWSysIds,_incidentsOLDSysIds);
+
         logger.debug("OLD *************** "+_incidentsOLDSysIds.length);
         logger.debug("NEW *************** "+_incidentsNEWSysIds.length);
         logger.debug("DELTA *************** delta size: "+_incidentsDELTASysIds.length);
+
         var _incidentsDELTA_NEW =[];
+
         for (var d in _incidentsDELTASysIds){
           _incidentsDELTA_NEW.push(_.findWhere(_incidentsNEW,{"sysId":_incidentsDELTASysIds[d]}))
         }
@@ -134,73 +139,71 @@ function _sync(url,type,callback){
 						else{
 							//drops and inserts actual full incidents snapshot => TODO refactor to only work with "moving" (active) incident data, no need to delete all closed stuff => too expensive ;-)
 							logger.info("[going to sync incidents]....length: "+_incidentsNEW.length);
+							// update the IncidentTracker
+							//1) NEW: incident will increment the "incídenttracker_openedAt" daily value for the according priority
+							if (_incidentsDIFF.NEW.length>0){
+								// insert the NEW incidents !
+								incService.insert(_incidentsDIFF.NEW,function(err,success){
+									if (err){
+										logger.error('incidents.insert failed: '+err.message);
+									}
+									else if(success){
+										logger.info("[success] incService.insert : "+_incidentsDIFF.NEW +" NEW incidents inserted");
+										incTrackerService.incrementTracker(_incidentsDIFF.NEW,function(err,result){
+											if (err) logger.error("[IncidentSyncService] NEW Incident - incTrackerService.incrementTracker FAILED: "+err-message);
+											else {
+												logger.info("[IncidentSyncService] NEW Incident - incTrackerService.incrementTracker SUCCESS: "+JSON.stringify(result));
 
-							//incService.flush(_incidentsNEW,function(err,success){
-
-
-
-									// update the IncidentTracker
-									//1) NEW: incident will increment the "incídenttracker_openedAt" daily value for the according priority
-
-									if (_incidentsDIFF.NEW.length>0){
-										// insert the NEW incidents !
-										incService.insert(_incidentsDIFF.NEW,function(err,success){
-											if (err){
-												logger.error('incidents.update failed: '+err.message);
+												if (config.emit.snow_incidents_new =="on"){
+													_emitNEWIncidentMessage(_incidentsDIFF.NEW[0]);
+												}
 											}
-											else if(success){
-												logger.info("[success] incService.insert : "+_incidentsDIFF.NEW +" incidents inserted");
-												incService.incrementTracker(_incidentsDIFF.NEW,function(err,result){
-													if (err) logger.error("[IncidentSyncService] NEW Incident - incService.incrementTracker FAILED: "+err-message);
-													else logger.info("[IncidentSyncService] NEW Incident - incService.incrementTracker SUCCESS: "+JSON.stringify(result));
-												});
-											} //else if (success) end
-										}) //incidents.insert()
-									}
-									else {
-										logger.debug("[NO NEW INCIDENT] _incidentsDIFF.NEW.length==0");
-									}
 
-									if (_incidentsDIFF.CHANGED.length>0){
-										logger.debug("[CHANGED INCIDENT] _incidentsDIFF.CHANGED.length = "+_incidentsDIFF.CHANGED.length);
-										var _updateIncidents = [];
-										for (var i in _incidentsDIFF.CHANGED){
-											var _pointer = _incidentsDIFF.CHANGED[i];
-											_updateIncidents.push(_.findWhere(_incidentsNEW,{"id":_pointer.id}));
-										}
-										incService.update(_updateIncidents);
-									}
-									/*
-										2) CHANGED: we have to check whether the state has changed (and accordingly the either "resolvedAt" or "closedAt") collections
-										   + in CHANGED we have an array of incident pointers
-											 + so we need to first grab all changed incidents from the baseline and pack them into the CHANGED array for the update of incidents
-
-
-										"CHANGED" : [
-							        		{
-							            "id" : "INC123721",
-							            "sysId" : "0080c2380f8c8a4052fb0eece1050e8e",
-							            "diff" : {
-
-
-									*/
-
-									//3) final stuff
-
-									var _message=_incidentsNEW.length+" incidents synced";
-									app.io.emit('syncUpdate', {status:"[SUCCESS]",from:_syncName,timestamp:_timestamp,info:_incidentsNEW.length+" incidents (avtive==true) synced",type:type});
-									_syncStatus.saveLastSync(_syncName,_timestamp,_message,_statusSUCCESS,type);
-									callback(null,"OK");
-
-
-
-
-							if (config.emit.snow_incidents_new =="on" && _incidentsDIFF.NEW.length>0){
-								_emitNEWIncidentMessage(_incidentsDIFF.NEW[0]);
+										});
+									} //else if (success) end
+								}) //incidents.insert()
 							}
-							if (config.emit.snow_incidents_changes =="on" && _incidentsDIFF.CHANGED.length>0){
-								_emitCHANGEIncidentMessage(_incidentsDIFF.CHANGED[0]);
+							else {
+								logger.debug("[NO NEW INCIDENT] _incidentsDIFF.NEW.length==0");
 							}
+
+							if (_incidentsDIFF.CHANGED.length>0){
+								logger.debug("[CHANGED INCIDENT] _incidentsDIFF.CHANGED.length = "+_incidentsDIFF.CHANGED.length);
+								var _updateIncidents = [];
+								for (var i in _incidentsDIFF.CHANGED){
+									var _pointer = _incidentsDIFF.CHANGED[i];
+									var _inc = _.findWhere(_incidentsNEW,{"id":_pointer.id}));
+									_inc._id = _.findWhere(_incidentsOLD,{"id":_pointer.id}))._id;
+									// we also need an mongo _id to to a proper update....
+									_updateIncidents.push(_inc);
+
+								}
+								incService.update(_updateIncidents);
+
+								if (config.emit.snow_incidents_changes =="on"){
+									_emitCHANGEIncidentMessage(_incidentsDIFF.CHANGED[0]);
+								}
+
+							}
+							/*
+							2) CHANGED: we have to check whether the state has changed (and accordingly the either "resolvedAt" or "closedAt") collections
+							  + in CHANGED we have an array of incident pointers
+							 + so we need to first grab all changed incidents from the baseline and pack them into the CHANGED array for the update of incidents
+
+								"CHANGED" : [
+					        		{
+					            "id" : "INC123721",
+					            "sysId" : "0080c2380f8c8a4052fb0eece1050e8e",
+					            "diff" : {
+							*/
+
+							//3) final stuff
+							var _message=_incidentsNEW.length+" incidents synced";
+							app.io.emit('syncUpdate', {status:"[SUCCESS]",from:_syncName,timestamp:_timestamp,info:_incidentsNEW.length+" incidents (avtive==true) synced",type:type});
+							_syncStatus.saveLastSync(_syncName,_timestamp,_message,_statusSUCCESS,type);
+
+							callback(null,"OK");
+
 						}
 					});
         }
