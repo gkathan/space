@@ -180,11 +180,13 @@ function _insert(data,callback){
 	});
 }
 
-function _update(data,callback){
+function _update(data){
 	var items =  db.collection(_incidentsCollection);
-	logger.debug("-------- about to update: "+data.length+" collections");
-	logger.debug(JSON.stringify(data));
-	items.update({},data, {multi:true})
+	logger.debug("-------- about to save: "+data.length+" collections");
+	//logger.debug(JSON.stringify(data));
+	for (var i in data){
+			items.save(data[i]);
+	}
 
 }
 
@@ -273,13 +275,15 @@ function _filterRelevantData(data){
 		if (_.startsWith(data.number,"CHG")) _incident.priority="CH";
 		else if (_.startsWith(data.number,"Maintenance")) _incident.priority="MA";
 	}
-	_incident.closedAt = new moment(data.closed_at,"DD-MM-YYYY HH:mm:ss").toDate();
-	_incident.resolvedAt = new moment(data.resolved_at,"DD-MM-YYYY HH:mm:ss").toDate();
+
+	if (data._closed_at) _incident.closedAt = new moment(data.closed_at,"DD-MM-YYYY HH:mm:ss").toDate();
+	if (data.resolved_at) _incident.resolvedAt = new moment(data.resolved_at,"DD-MM-YYYY HH:mm:ss").toDate();
+	if(data.u_sla_resolution_due_date) _incident.slaResolutionDate = new moment(data.u_sla_resolution_due_date,"DD-MM-YYYY HH:mm:ss").toDate();
+
 	_incident.id = data.number;
 	_incident.sysId = data.sys_id;
 	_incident.label = data.u_label;
 	_incident.businessService = data.u_business_service;
-	if(data.u_sla_resolution_due_date) _incident.slaResolutionDate = new moment(data.u_sla_resolution_due_date,"DD-MM-YYYY HH:mm:ss").toDate();
 	_incident.category = data.category;
 	_incident.labelType = data.u_label_type;
 	_incident.active = data.active;

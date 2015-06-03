@@ -161,7 +161,7 @@ function _calculateDailyTracker(incidents,dateFields,context,callback){
 				}
 			}
 			else{
-				throw new Error(dateField+" is not an attribute of incidents..");
+				logger.info(dateField+" is not an attribute of incidents..");
 			}
 		}//end for dateFIelds
 	}//end for incidents

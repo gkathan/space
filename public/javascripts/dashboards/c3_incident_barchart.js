@@ -1,15 +1,19 @@
 var incidents;//={unplannedYTD:99.61,targetYTD:99.75};
-var _period = "Q1-2015";
+var _period = "Q2-2015";
 
 var _baselineYear = parseInt(_.last(_period.split("-")))-1;
 var _baselinePeriod =_.first(_period.split("-"))+"-"+_baselineYear;
 
-console.log("period: "+_period);
+console.log("------------------------------- c3_incident_barchart period: "+_period);
 console.log("baseline period: "+_baselinePeriod);
 
+var _url = "/api/space/rest/incidenttracker/"+_period+"?aggregate=daily";
+var _urlBaseline = "/api/space/rest/incidenttracker/"+_baselinePeriod+"?aggregate=daily";
+
+console.log("---------------- url: "+_url);
 
 // do a ajax call for target data period
-$.get( "/api/space/rest/incidenttracker/openedAt/"+_baselinePeriod, function( dataBaseline ) {
+$.get( _url, function( dataBaseline ) {
   //and for baseline data period
   var _baselineMetrics = _calculateMetrics(dataBaseline);
   console.log("baseline P01 sum: "+_baselineMetrics.sumP01);
@@ -22,7 +26,7 @@ $.get( "/api/space/rest/incidenttracker/openedAt/"+_baselinePeriod, function( da
   $('#target').text(_targetString);
 
 
-  $.get( "/api/space/rest/incidenttracker/"+_period, function( data ) {
+  $.get( _urlBaseline, function( data ) {
 
     var _metrics = _calculateMetrics(data);
 
@@ -95,6 +99,11 @@ function _calculateMetrics(data){
   var weeks =[];
   var days =[];
 
+  data=data.tracker;
+  var dateField="openedAt";
+
+  console.log("data: "+JSON.stringify(data));
+
   var w =0;
   var d =0;
 
@@ -109,16 +118,20 @@ function _calculateMetrics(data){
 
 
   for (var i in data){
-    data[i].P01 = parseInt(data[i].P01);
-    data[i].P08 = parseInt(data[i].P08);
-    _P01_week+=data[i].P01;
-    _P08_week+=data[i].P08;
+    console.log("+++++ "+  JSON.stringify(data[i]));
 
-    _P01_day+=data[i].P01;
-    _P08_day+=data[i].P08;
+    data[i][dateField].P01.total = parseInt(data[i][dateField].P01.total);
+    data[i][dateField].P08.total = parseInt(data[i][dateField].P08.total);
+    _P01_week+=data[i][dateField].P01.total;
+    _P08_week+=data[i][dateField].P08.total;
 
-    _P01_sum+=data[i].P01;
-    _P08_sum+=data[i].P08;
+
+
+    _P01_day+=data[i][dateField].P01.total;
+    _P08_day+=data[i][dateField].P08.total;
+
+    _P01_sum+=data[i][dateField].P01.total;
+    _P08_sum+=data[i][dateField].P08.total;
 
     days[i] = {P01:_P01_day,P08:_P08_day};
 

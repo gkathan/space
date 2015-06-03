@@ -96,6 +96,7 @@
 		"snow_incidents_new": "on",
 		"snow_incidents_new_exclude_businessservices":"Workplace",
 		"snow_incidents_changes": "on",
+		"snow_incidents_changes_exclude_businessservices":"Workplace",
 		"space_messages" : "on"
 	},
 

@@ -27,7 +27,8 @@
         "IncidentPriority":IncidentPriorityFormatter,
         "IncidentPriorityIcon":IncidentPriorityIconFormatter,
         "ResolutionTime":ResolutionTimeFormatter,
-        "EurAmount":EurAmountFormatter
+        "EurAmount":EurAmountFormatter,
+        "DateTime":DateTimeFormatter
       }
     }
   });
@@ -153,13 +154,14 @@
 function IncidentPriorityFormatter(row, cell, value, columnDef, dataContext) {
   var _style;
   if (value){
-    if (value == "P01 - Critical") _style="font-weight:bold;color:black";
-    if (value=="P08 - High") _style="font-weight:normal;color:black";
-    if (value=="P16 - Moderate") _style="font-weight:normal;color:grey";
-    if (value=="P40 - Low") _style="font-weight:normal;color:lightgrey";
-  }
+    if (_.startsWith(row.priority,"P01")) _style="font-weight:bold;color:black";
+    if (_.startsWith(row.priority,"P08")) _style="font-weight:normal;color:black";
+    if (_.startsWith(row.priority,"P16")) _style="font-weight:normal;color:grey";
+    if (_.startsWith(row.priority,"P40") || _.startsWith(row.priority,"P120")) _style="font-weight:normal;color:lightgrey";
 
-  return "<span style='"+_style+"'>"+value+"</span>";
+  }
+  if (!value) value="";
+  return '<span style="'+_style+'">'+value+'</span>';
 }
 
 function IncidentPriorityIconFormatter(row, cell, value, columnDef, dataContext) {
@@ -179,9 +181,11 @@ function IncidentPriorityIconFormatter(row, cell, value, columnDef, dataContext)
   else return "";
 }
 
+  function DateTimeFormatter(row, cell, value, columnDef, dataContext) {
+    return (moment(value).format("YYYY-MM-DD HH:mm:ss"))
+  }
 
   function ResolutionTimeFormatter(row, cell, value, columnDef, dataContext) {
-
     	//var ms = moment(_resolved,"DD/MM/YYYY HH:mm:ss").diff(moment(_open,"DD/MM/YYYY HH:mm:ss"));
   		var d = moment.duration(value);
   		var _time;
@@ -192,13 +196,10 @@ function IncidentPriorityIconFormatter(row, cell, value, columnDef, dataContext)
       else{
         _time = d.format("h:mm:ss", { trim: false });
       }
-
-    return _time;
+    return "<span style='text-align:right'>"+_time+"</span>";
   }
 
   function EurAmountFormatter(row, cell, value, columnDef, dataContext) {
-
-
     if (value) return "<div style='text-align:right'><div style='display:inline-block'>"+accounting.formatMoney(value, "€", 2, ".", ",")+",-</div></div>";
   }
 

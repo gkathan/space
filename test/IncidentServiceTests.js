@@ -291,6 +291,19 @@ describe('#init DailyTracker()', function(){
 		});
 	});
 
-
+describe('#find single incident', function(){
+	it('should return a incident', function(done){
+		var incService = require('../services/IncidentService');
+		incService.findFiltered({active:"true"},function(err,baseline){
+			var inc = _.findWhere(baseline,{"id":"INC125980"});
+			logger.debug("------------------------------"+JSON.stringify(inc));
+			logger.debug("------------------------------"+inc.id);
+			logger.debug("------------------------------"+inc._id);
+			logger.debug("------------------------------"+inc.location);
+			assert.equal("INC125980",inc.id);
+			done();
+		});
+	});
+	});
 
 })

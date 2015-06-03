@@ -50,8 +50,6 @@ function _sync(url,type,callback){
 	logger.debug("snowUser: "+_secret.snowUser);
 	var Client = require('node-rest-client').Client;
 	client = new Client(options_auth);
-	// direct way
-	logger.debug("**** node rest client: "+client);
 		/*
 			Priority:
 			Display Value	Actual Value
@@ -78,7 +76,7 @@ function _sync(url,type,callback){
 
 		// lets first get what we have had
 		incService.findFiltered({active:"true"},function(err,baseline){
-			_incidentsOLD = baseline;
+			_incidentsOLD = _.clone(baseline,true);
 			logger.debug("---------------------- incService.findFiltered({active:true} baseline: "+baseline.length+" incidents")
 
 			incService.findRevenueImpactMapping(function(err,impactMapping){
@@ -137,8 +135,8 @@ function _sync(url,type,callback){
 								logger.error("err: "+err.message);
 						}
 						else{
-							//drops and inserts actual full incidents snapshot => TODO refactor to only work with "moving" (active) incident data, no need to delete all closed stuff => too expensive ;-)
-							logger.info("[going to sync incidents]....length: "+_incidentsNEW.length);
+							logger.info("[SUCCESS]....saved incident DELTAS  NEW: "+_incidentsDELTA_NEW.length+ " - CHANGED: "+_incidentsDELTA_CHANGED.length);
+							logger.debug("[going to sync incidents]....length: "+_incidentsNEW.length);
 							// update the IncidentTracker
 							//1) NEW: incident will increment the "incídenttracker_openedAt" daily value for the according priority
 							if (_incidentsDIFF.NEW.length>0){
@@ -155,7 +153,9 @@ function _sync(url,type,callback){
 												logger.info("[IncidentSyncService] NEW Incident - incTrackerService.incrementTracker SUCCESS: "+JSON.stringify(result));
 
 												if (config.emit.snow_incidents_new =="on"){
-													_emitNEWIncidentMessage(_incidentsDIFF.NEW[0]);
+													for (var i in _incidentsDIFF.NEW){
+														_emitNEWIncidentMessage(_incidentsDIFF.NEW[i]);
+													}
 												}
 											}
 
@@ -172,17 +172,42 @@ function _sync(url,type,callback){
 								var _updateIncidents = [];
 								for (var i in _incidentsDIFF.CHANGED){
 									var _pointer = _incidentsDIFF.CHANGED[i];
-									var _inc = _.findWhere(_incidentsNEW,{"id":_pointer.id}));
-									_inc._id = _.findWhere(_incidentsOLD,{"id":_pointer.id}))._id;
+									var _inc = _.findWhere(_incidentsNEW,{"id":_pointer.id});
+									var _diff = _incidentsDIFF.CHANGED[i];
+
+									var _oldinc = _.findWhere(baseline,{"id":_pointer.id});
+									_inc._id = _oldinc._id;
+
+									//_inc._id =
+									logger.debug("---------------------------------------------------------------------------------------------------------------------------------");
+									logger.debug("---------------------------------------------------------------------------------------------------------------------------------");
+									logger.debug("   ---  _pointer.id: "+_pointer.id);
+									logger.debug("   ---  _inc from incidentsNEW: : "+_inc.id+" sysId: "+_inc.sysId);
+									logger.debug("   ---  _oldinc from incidentsOLD: : "+_oldinc.id+" sysId: "+_oldinc.sysId+ " _id: "+_oldinc._id);
+									logger.debug("   ---  _oldinc: "+JSON.stringify(_oldinc));
+									logger.debug("   ---  enriched incident with _id: "+_inc._id);
+									logger.debug("---------------------------------------------------------------------------------------------------------------------------------");
+									logger.debug("---------------------------------------------------------------------------------------------------------------------------------");
+
 									// we also need an mongo _id to to a proper update....
 									_updateIncidents.push(_inc);
 
+									if (config.emit.snow_incidents_changes =="on"){
+										_emitCHANGEIncidentMessage(_diff,_inc);
+
+									}
 								}
 								incService.update(_updateIncidents);
+								// => with this list I can easily create the tracker ??
+								incTrackerService.incrementTracker(_updateIncidents,function(err,result){
+									if (err) logger.error("[IncidentSyncService] CHANGED Incident - incTrackerService.incrementTracker FAILED: "+err-message);
+									else {
+										logger.info("[IncidentSyncService] CHANGED Incident - incTrackerService.incrementTracker SUCCESS: "+JSON.stringify(result));
+									}
+								});
 
-								if (config.emit.snow_incidents_changes =="on"){
-									_emitCHANGEIncidentMessage(_incidentsDIFF.CHANGED[0]);
-								}
+
+
 
 							}
 							/*
@@ -198,8 +223,8 @@ function _sync(url,type,callback){
 							*/
 
 							//3) final stuff
-							var _message=_incidentsNEW.length+" incidents synced";
-							app.io.emit('syncUpdate', {status:"[SUCCESS]",from:_syncName,timestamp:_timestamp,info:_incidentsNEW.length+" incidents (avtive==true) synced",type:type});
+							var _message=_incidentsNEW.length+" incidents (active==true) synced - NEW: "+_incidentsDIFF.NEW.length +" | CHANGED: "+_incidentsDIFF.NEW.length;
+							app.io.emit('syncUpdate', {status:"[SUCCESS]",from:_syncName,timestamp:_timestamp,info:_message,type:type});
 							_syncStatus.saveLastSync(_syncName,_timestamp,_message,_statusSUCCESS,type);
 
 							callback(null,"OK");
@@ -229,31 +254,11 @@ function _emitNEWIncidentMessage(incident){
 
 	var _message={};
 	var _type;
-	var _prio;
-	logger.debug("_newincident: "+JSON.stringify(_newincident));
-	if (_.startsWith(_newincident.priority,"P01")){
-		_type="error";
-		_prio = "P01";
-	}
-	else if(_.startsWith(_newincident.priority,"P08")){
-		_type="warning";
-		_prio = "P08";
-	}
-	else if(_.startsWith(_newincident.priority,"P16")){
-		_type="info";
-		_prio = "P16";
-	}
-	else if(_.startsWith(_newincident.priority,"P40")){
-		_type="info";
-		_prio = "P40";
-	}
-	else if(_.startsWith(_newincident.priority,"P120")){
-		_type="info";
-		_prio = "P120";
-	}
+	var _prio = _getPrio(incident);
+
 	_message.title=_newincident.businessService;
-	_message.body = "+ "+_newincident.label+"\n"+_newincident.shortDescription;;
-	_message.type = _type;
+	_message.body = "+ "+_newincident.label+"\n"+_newincident.shortDescription;
+	//_message.type = _type;
 	_message.desktop={
 		desktop:true,
 		icon:"/images/incidents/"+_prio+".png"
@@ -268,37 +273,78 @@ function _emitNEWIncidentMessage(incident){
 }
 
 
-function _emitCHANGEIncidentMessage(change){
+/**
+						{
+						"id" : "INC125959",
+            "sysId" : "c96321ab0fdc4a403e89fe6362050e13",
+            "diff" : {
+                "slaResolutionDate" : [
+                    ISODate("2015-06-04T06:59:44.000Z"),
+                    ISODate("2015-06-04T07:30:35.000Z")
+                ],
+                "state" : [
+                    "Resolved",
+                    "In progress"
+                ],
+                "slaBreach" : [
+                    false,
+                    ""
+                ],
+*/
+function _emitCHANGEIncidentMessage(change,incident){
 
 	var _message={};
 	var _type;
-	var _prio;
+	var _prio=_getPrio(incident);
+	// only notify changes of those fields
+	var _fields = ["state","assignmentGroup","priority"];
 
-	_message.title=change.id+" CHANGED";
+	//_message.title="-- "+change.id+" CHANGED --";
+	_message.title=incident.businessService;
 
-	var _body ="";
+	var _body = "+ "+incident.label+"\n"+incident.shortDescription+"\n";
+	var _send = false;
 	for (var i in _.keys(change.diff)){
 		var _key = _.keys(change.diff)[i];
-		console.log("_key: "+_key);
-		_body+="\n"+_key+" : "+change.diff[_key][0]+" -> "+change.diff[_key][1];
+		//console.log("_key: "+_key);
+		if (_fields.indexOf(_key)>-1){
+			_body+=_key+"\n+ "+change.diff[_key][0]+" -> "+change.diff[_key][1]+"\n";
+			_send = true;
+		}
 	}
 
 
 	_message.body = _body
-	_message.type = _type;
+	//_message.type = _type;
 	_message.desktop={
 		desktop:true,
-		icon:"/images/incidents/"+_prio+".png"
+		icon:"/images/incidents/"+_prio+"_changed.png"
 	};
 	logger.debug("========================== message: "+JSON.stringify(_message));
 	// filter out stuff
-	/*
-	var _exclude = config.emit.snow_incidents_new_exclude_businessservices;
-	if (!_.startsWith(_newincident.businessService,_exclude)){
+
+	var _exclude = config.emit.snow_incidents_changes_exclude_businessservices;
+	if (!_.startsWith(incident.businessService,_exclude) && _send == true){
 		logger.debug("========================== going to emit websocket message ===================================");
 		app.io.emit('message', {msg:_message});
 	}
-	*/
+
+}
+
+function _getPrio(incident){
+	if (_.startsWith(incident.priority,"P01")){
+		_prio = "P01";
+	}
+	else if(_.startsWith(incident.priority,"P08")){
+		_prio = "P08";
+	}
+	else if(_.startsWith(incident.priority,"P16")){
+		_prio = "P16";
+	}
+	else if(_.startsWith(incident.priority,"P40") || _.startsWith(incident.priority,"P120")){
+		_prio = "P120";
+	}
+	return _prio;
 }
 
 /**
