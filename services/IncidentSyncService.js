@@ -140,76 +140,16 @@ function _sync(url,type,callback){
 							// update the IncidentTracker
 							//1) NEW: incident will increment the "incídenttracker_openedAt" daily value for the according priority
 							if (_incidentsDIFF.NEW.length>0){
-								// insert the NEW incidents !
-								incService.insert(_incidentsDIFF.NEW,function(err,success){
-									if (err){
-										logger.error('incidents.insert failed: '+err.message);
-									}
-									else if(success){
-										logger.info("[success] incService.insert : "+_incidentsDIFF.NEW +" NEW incidents inserted");
-										incTrackerService.incrementTracker(_incidentsDIFF.NEW,function(err,result){
-											if (err) logger.error("[IncidentSyncService] NEW Incident - incTrackerService.incrementTracker FAILED: "+err-message);
-											else {
-												logger.info("[IncidentSyncService] NEW Incident - incTrackerService.incrementTracker SUCCESS: "+JSON.stringify(result));
-
-												if (config.emit.snow_incidents_new =="on"){
-													for (var i in _incidentsDIFF.NEW){
-														_emitNEWIncidentMessage(_incidentsDIFF.NEW[i]);
-													}
-												}
-											}
-
-										});
-									} //else if (success) end
-								}) //incidents.insert()
+								_handleIncidentsNEW(_incidentsDIFF.NEW);
 							}
 							else {
 								logger.debug("[NO NEW INCIDENT] _incidentsDIFF.NEW.length==0");
 							}
 
 							if (_incidentsDIFF.CHANGED.length>0){
-								logger.debug("[CHANGED INCIDENT] _incidentsDIFF.CHANGED.length = "+_incidentsDIFF.CHANGED.length);
-								var _updateIncidents = [];
-								for (var i in _incidentsDIFF.CHANGED){
-									var _pointer = _incidentsDIFF.CHANGED[i];
-									var _inc = _.findWhere(_incidentsNEW,{"id":_pointer.id});
-									var _diff = _incidentsDIFF.CHANGED[i];
-
-									var _oldinc = _.findWhere(baseline,{"id":_pointer.id});
-									_inc._id = _oldinc._id;
-
-									//_inc._id =
-									logger.debug("---------------------------------------------------------------------------------------------------------------------------------");
-									logger.debug("---------------------------------------------------------------------------------------------------------------------------------");
-									logger.debug("   ---  _pointer.id: "+_pointer.id);
-									logger.debug("   ---  _inc from incidentsNEW: : "+_inc.id+" sysId: "+_inc.sysId);
-									logger.debug("   ---  _oldinc from incidentsOLD: : "+_oldinc.id+" sysId: "+_oldinc.sysId+ " _id: "+_oldinc._id);
-									logger.debug("   ---  _oldinc: "+JSON.stringify(_oldinc));
-									logger.debug("   ---  enriched incident with _id: "+_inc._id);
-									logger.debug("---------------------------------------------------------------------------------------------------------------------------------");
-									logger.debug("---------------------------------------------------------------------------------------------------------------------------------");
-
-									// we also need an mongo _id to to a proper update....
-									_updateIncidents.push(_inc);
-
-									if (config.emit.snow_incidents_changes =="on"){
-										_emitCHANGEIncidentMessage(_diff,_inc);
-
-									}
-								}
-								incService.update(_updateIncidents);
-								// => with this list I can easily create the tracker ??
-								incTrackerService.incrementTracker(_updateIncidents,function(err,result){
-									if (err) logger.error("[IncidentSyncService] CHANGED Incident - incTrackerService.incrementTracker FAILED: "+err-message);
-									else {
-										logger.info("[IncidentSyncService] CHANGED Incident - incTrackerService.incrementTracker SUCCESS: "+JSON.stringify(result));
-									}
-								});
-
-
-
-
+								_handleIncidentsCHANGED(_incidentsDIFF.CHANGED,baseline,_incidentsNEW);
 							}
+
 							/*
 							2) CHANGED: we have to check whether the state has changed (and accordingly the either "resolvedAt" or "closedAt") collections
 							  + in CHANGED we have an array of incident pointers
@@ -221,7 +161,6 @@ function _sync(url,type,callback){
 					            "sysId" : "0080c2380f8c8a4052fb0eece1050e8e",
 					            "diff" : {
 							*/
-
 							//3) final stuff
 							var _message=_incidentsNEW.length+" incidents (active==true) synced - NEW: "+_incidentsDIFF.NEW.length +" | CHANGED: "+_incidentsDIFF.NEW.length;
 							app.io.emit('syncUpdate', {status:"[SUCCESS]",from:_syncName,timestamp:_timestamp,info:_message,type:type});
@@ -247,6 +186,71 @@ function _sync(url,type,callback){
   });
 }
 
+
+function _handleIncidentsNEW(incidents){
+	// insert the NEW incidents !
+	incService.insert(incidents,function(err,success){
+		if (err){
+			logger.error('incidents.insert failed: '+err.message);
+		}
+		else if(success){
+			logger.info("[success] incService.insert : "+incidents.length +" NEW incidents inserted");
+			incTrackerService.incrementTracker(incidents,function(err,result){
+				if (err) logger.error("[IncidentSyncService] NEW Incident - incTrackerService.incrementTracker FAILED: "+err.message);
+				else {
+					logger.info("[IncidentSyncService] NEW Incident - incTrackerService.incrementTracker SUCCESS: "+JSON.stringify(result));
+					if (config.emit.snow_incidents_new =="on"){
+						for (var i in incidents){
+							_emitNEWIncidentMessage(incidents[i]);
+						}
+					}
+				}
+			});
+		} //else if (success) end
+	}) //incidents.insert()
+}
+
+function _handleIncidentsCHANGED(changes,baseline,_incidentsNEW){
+	logger.debug("[CHANGED INCIDENT] _incidentsDIFF.CHANGED.length = "+changes.length);
+	var _updateIncidents = [];
+	for (var i in changes){
+		var _pointer = changes[i];
+		var _inc = _.findWhere(_incidentsNEW,{"id":_pointer.id});
+		var _diff = changes[i];
+
+		// TODO: add the reverese delta handling to identify CLOSED items !
+
+		var _oldinc = _.findWhere(baseline,{"id":_pointer.id});
+		_inc._id = _oldinc._id;
+
+		//_inc._id =
+		logger.debug("---------------------------------------------------------------------------------------------------------------------------------");
+		logger.debug("---------------------------------------------------------------------------------------------------------------------------------");
+		logger.debug("   ---  _pointer.id: "+_pointer.id);
+		logger.debug("   ---  _inc from incidentsNEW: : "+_inc.id+" sysId: "+_inc.sysId);
+		logger.debug("   ---  _oldinc from incidentsOLD: : "+_oldinc.id+" sysId: "+_oldinc.sysId+ " _id: "+_oldinc._id);
+		logger.debug("   ---  _oldinc: "+JSON.stringify(_oldinc));
+		logger.debug("   ---  enriched incident with _id: "+_inc._id);
+		logger.debug("---------------------------------------------------------------------------------------------------------------------------------");
+		logger.debug("---------------------------------------------------------------------------------------------------------------------------------");
+
+		// we also need an mongo _id to to a proper update....
+		_updateIncidents.push(_inc);
+
+		if (config.emit.snow_incidents_changes =="on"){
+			_emitCHANGEIncidentMessage(_diff,_inc);
+
+		}
+	}
+	incService.update(_updateIncidents);
+	// => with this list I can easily create the tracker ??
+	incTrackerService.incrementTracker(_updateIncidents,function(err,result){
+		if (err) logger.error("[IncidentSyncService] CHANGED Incident - incTrackerService.incrementTracker FAILED: "+err-message);
+		else {
+			logger.info("[IncidentSyncService] CHANGED Incident - incTrackerService.incrementTracker SUCCESS: "+JSON.stringify(result));
+		}
+	});
+}
 
 
 function _emitNEWIncidentMessage(incident){
@@ -387,34 +391,3 @@ function _getData(url,priority,date,callback){
 			callback(data);
 		})
 }
-
-
-/**
-* param data list of incident objects
-* calculates the daily number of incidents types
-* and updates the incidentracker collection
-*/
-/*
-function _calculateDailyTracker(data,context){
-	var _dailytracker = [];
-	for (var i in data){
-		//openedAt date is what we look at
-		var _day = moment(data[i].openedAt).format("YYYY-MM-DD");
-		_day = new Date(_day);
-
-		if (!_.findWhere(_dailytracker,{"date":_day})) {
-			_dailytracker.push({"date":_day,"P1":0,"P8":0,"context":context});
-		}
-
-		if (data[i].priority=="P01 - Critical"){
-			_.findWhere(_dailytracker,{"date":_day}).P1++;
-		}
-		else if (data[i].priority=="P08 - High"){
-			_.findWhere(_dailytracker,{"date":_day}).P8++;
-		}
-
-
-	}
-	return _dailytracker;
-}
-*/
