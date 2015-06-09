@@ -116,7 +116,7 @@
 			"mode": "off",
 			"intervalMinutes" :1 	,
 			"includePriority" : 2,
-			"url" : "https://bwinparty.service-now.com/incident_list.do?JSONv2&sysparm_action=getRecords&sysparm_query="
+			"url" : "https://bwinparty.service-now.com/incident_list.do?JSONv2&sysparm_action=getRecords"
 		},
 
 

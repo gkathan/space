@@ -271,7 +271,7 @@ describe('#increment DailyTracker()', function(){
 		_list.push(_inc2);
 
 		var incidentTrackerService = require('../services/IncidentTrackerService');
-		incidentTrackerService.incrementTracker(_list,function(err,result){
+		incidentTrackerService.incrementTracker(_list,["openedAt","resolvedAt","closedAt"],function(err,result){
 			logger.debug("incremented: "+JSON.stringify(result));
 			done();
 

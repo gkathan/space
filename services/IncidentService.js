@@ -51,7 +51,7 @@ function _flushAll(callback){
 	var Client = require('node-rest-client').Client;
 	client = new Client(options_auth);
 	// get all
-	_url+="priority<="+config.sync["incidents"].includePriority;
+	_url+="&sysparm_query=priority<="+config.sync["incidents"].includePriority;
 	logger.debug("**** node rest client: "+_url);
 	var _incidentsNEW=[];
 

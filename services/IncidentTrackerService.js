@@ -161,7 +161,7 @@ function _calculateDailyTracker(incidents,dateFields,context,callback){
 				}
 			}
 			else{
-				logger.info(dateField+" is not an attribute of incidents..");
+				logger.info("[IncidentTrackerService._calculateDailyTracker()] says: "+dateField+" is not yet set.. so we can skip ");
 			}
 		}//end for dateFIelds
 	}//end for incidents
@@ -274,8 +274,8 @@ function _calculateCumulative(data,priority){
 * and then merges with already stored
 * param incidents: list of NEW incidents
 */
-function _incrementTracker(incidents,callback){
-	var dateFields = ["openedAt","resolvedAt","closedAt"];
+function _incrementTracker(incidents,dateFields,callback){
+	//var dateFields = ["openedAt","resolvedAt","closedAt"];
 	var context = "bpty.studios";
 	_calculateDailyTracker(incidents,dateFields,context,function(err,tracker){
 		//TODO merge with existing day if exists

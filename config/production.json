@@ -51,7 +51,7 @@
   			"mode": "on",
   			"intervalMinutes" :1 	,
         "includePriority" : 4,
-  			"url" : "https://bwinparty.service-now.com/incident_list.do?JSONv2&sysparm_action=getRecords&sysparm_query="
+  			"url" : "https://bwinparty.service-now.com/incident_list.do?JSONv2&sysparm_action=getRecords"
   		},
       "soc_outages" : {
   			"mode": "on",
@@ -79,7 +79,6 @@
   				"metricPath" : "Business%20Transaction%20Performance%7CBusiness%20Transactions%7CPosApi/v3%7CAuthenticationService.Login%7CAverage%20Response%20Time%20%28ms%29"
   			}
   		}
-
   	},
 
 
