@@ -5,25 +5,22 @@ var config = require('config');
 var schedule = require('node-schedule');
 var _ = require('lodash');
 var moment = require('moment');
-
+var jsondiffpatch=require('jsondiffpatch');
 var app=require('../app');
-
 var mongojs = require("mongojs");
 var DB="space";
 var connection_string = '127.0.0.1:27017/'+DB;
 var db = mongojs(connection_string, [DB]);
-
-var jsondiffpatch=require('jsondiffpatch');
 // logger
 var winston = require('winston');
 var logger = winston.loggers.get('space_log');
 
 var _syncName = "incidents";
-
 var incService = require('./IncidentService');
 var incTrackerService = require('./IncidentTrackerService');
 
-var app=require('../app');
+var _secret = require("../config/secret.json");
+var Client = require('node-rest-client').Client;
 
 exports.init = function(callback){
 	var rule = new schedule.RecurrenceRule();
@@ -40,7 +37,7 @@ exports.init = function(callback){
 	}
 }
 
-exports.sync = _sync;
+<exports.sync = _sync;
 
 function _sync(url,type,callback){
 	var _syncStatus = require('./SyncService');
@@ -48,39 +45,26 @@ function _sync(url,type,callback){
 	var _statusERROR = "[ERROR]";
 	var _statusSUCCESS = "[SUCCESS]";
 
-	var _secret = require("../config/secret.json");
-	var options_auth={user:_secret.snowUser,password:_secret.snowPassword};
-	logger.debug("snowUser: "+_secret.snowUser);
-	var Client = require('node-rest-client').Client;
-	client = new Client(options_auth);
-	// only get ACTIVE incidents => the others do not change anymore ;-)
 	url+="&sysparm_query=priority<="+config.sync[_syncName].includePriority+"^active=true";
-
 	logger.debug("...snow API call url: "+url);
-
-	client.get(url, function(data, response,done){
+	_getSnowData(url,function(err,data){
 		// parsed response body as js object
 		logger.debug("[_syncIncident]...client.get data..: _url:"+url);
-
     var _incidentsNEW=[];
     var _incidentsOLD;
 		// lets first get what we have had
 		incService.findFiltered({active:"true"},function(err,baseline){
 			_incidentsOLD = _.clone(baseline,true);
 			logger.debug("---------------------- incService.findFiltered({active:true} baseline: "+baseline.length+" incidents")
-
 			incService.findRevenueImpactMapping(function(err,impactMapping){
-				//walks over the newly fetched snow raw data and filters (maps) the relevant space format
-				// and enriches with revenue impact data
-
 				var _diff;
 				var _omitForDiff = ["_id","syncDate"];
 
 			  var _incidentsNEWSysIds = _.pluck(data.records,'sys_id');
         var _incidentsOLDSysIds = _.pluck(_incidentsOLD,'sysId');
 				var _incidentsDELTASysIds;
-
 				_incidentsDELTASysIds = _.difference(_incidentsOLDSysIds,_incidentsNEWSysIds);
+
 				if (_incidentsDELTASysIds.length>0){
 					logger.debug("************************  THERE ARE INCIDENTS WHICH NEEDS TO BE C L O S E D   ***********************************");
 	        logger.debug("OLD *************** "+_incidentsOLDSysIds.length);
@@ -91,7 +75,6 @@ function _sync(url,type,callback){
 					incidentsNEWSysIds = _.pluck(_incidentsNEW,'sysId');
 					logger.debug("--------------------------------- AFTER CLOSE HANDLING: "+incidentsNEWSysIds.length+" incidents in incidentsNEWSysIds");
 				}
-
 				var _incidentsDELTA_CHANGED = [];
 
 				for (var i in data.records){
@@ -172,7 +155,6 @@ function _sync(url,type,callback){
   });
 }
 
-
 /** in case that an incidnet is closed - we have to derive this from the inverse delta
 * accessing incdeints by sysID = https://bwinparty.service-now.com/ess/incident_list.do?JSONv2&sysparm_action=getRecords&sysparm_sys_id=23cc7cb90f2bbd0052fb0eece1050e44
 */
@@ -184,8 +166,12 @@ function _handleClosedIncidents(deltaIds,incidentsBaseline,incidentsNew){
 			logger.debug("* "+_inc.id+" "+_inc.state);
 			logger.debug("* lets CLOSE it...");
 			_inc.state = "Closed";
-			// or fetch it via API call
-			incidentsNew.push(_inc);
+
+			var _url =config.sync[_syncName].url+"&sysparm_sys_id="+_inc.sysId
+			_getSnowData(_url,function(err,data){
+				// or fetch it via API call
+				incidentsNew.push(_inc);
+			})
 		}
 	}
 }
@@ -226,13 +212,8 @@ function _handleIncidentsCHANGED(changes,baseline,_incidentsNEW){
 		var _pointer = changes[i];
 		var _inc = _.findWhere(_incidentsNEW,{"id":_pointer.id});
 		var _diff = changes[i];
-
-		// TODO: add the reverese delta handling to identify CLOSED items !
-
 		var _oldinc = _.findWhere(baseline,{"id":_pointer.id});
 		_inc._id = _oldinc._id;
-
-		//_inc._id =
 		logger.debug("---------------------------------------------------------------------------------------------------------------------------------");
 		logger.debug("---------------------------------------------------------------------------------------------------------------------------------");
 		logger.debug("   ---  _pointer.id: "+_pointer.id);
@@ -242,13 +223,11 @@ function _handleIncidentsCHANGED(changes,baseline,_incidentsNEW){
 		logger.debug("   ---  enriched incident with _id: "+_inc._id);
 		logger.debug("---------------------------------------------------------------------------------------------------------------------------------");
 		logger.debug("---------------------------------------------------------------------------------------------------------------------------------");
-
 		// we also need an mongo _id to to a proper update....
 		_updateIncidents.push(_inc);
 
 		if (config.emit.snow_incidents_changes =="on"){
 			_emitCHANGEIncidentMessage(_diff,_inc);
-
 		}
 	}
 	incService.update(_updateIncidents);
@@ -266,18 +245,13 @@ function _handleIncidentsCHANGED(changes,baseline,_incidentsNEW){
 
 function _emitNEWIncidentMessage(incident){
 	var _newincident = incident;
-
 	var _message={};
 	var _type;
 	var _prio = _getPrio(incident);
-
 	_message.title=_newincident.businessService;
 	_message.body = "+ "+_newincident.label+"\n"+_newincident.shortDescription;
 	//_message.type = _type;
-	_message.desktop={
-		desktop:true,
-		icon:"/images/incidents/"+_prio+".png"
-	};
+	_message.desktop={desktop:true,icon:"/images/incidents/"+_prio+".png"};
 	logger.debug("========================== message: "+JSON.stringify(_message));
 	// filter out stuff
 	var _exclude = config.emit.snow_incidents_new_exclude_businessservices;
@@ -288,35 +262,13 @@ function _emitNEWIncidentMessage(incident){
 }
 
 
-/**
-						{
-						"id" : "INC125959",
-            "sysId" : "c96321ab0fdc4a403e89fe6362050e13",
-            "diff" : {
-                "slaResolutionDate" : [
-                    ISODate("2015-06-04T06:59:44.000Z"),
-                    ISODate("2015-06-04T07:30:35.000Z")
-                ],
-                "state" : [
-                    "Resolved",
-                    "In progress"
-                ],
-                "slaBreach" : [
-                    false,
-                    ""
-                ],
-*/
 function _emitCHANGEIncidentMessage(change,incident){
-
 	var _message={};
 	var _type;
 	var _prio=_getPrio(incident);
 	// only notify changes of those fields
 	var _fields = ["state","assignmentGroup","priority"];
-
-	//_message.title="-- "+change.id+" CHANGED --";
 	_message.title=incident.businessService;
-
 	var _body = "+ "+incident.id+"\n";
 	var _send = false;
 	for (var i in _.keys(change.diff)){
@@ -327,23 +279,16 @@ function _emitCHANGEIncidentMessage(change,incident){
 			_send = true;
 		}
 	}
-
-
 	_message.body = _body
 	//_message.type = _type;
-	_message.desktop={
-		desktop:true,
-		icon:"/images/incidents/"+_prio+"_changed.png"
-	};
+	_message.desktop={desktop:true,icon:"/images/incidents/"+_prio+"_changed.png"};
 	logger.debug("========================== message: "+JSON.stringify(_message));
 	// filter out stuff
-
 	var _exclude = config.emit.snow_incidents_changes_exclude_businessservices;
 	if (!_.startsWith(incident.businessService,_exclude) && _send == true){
 		logger.debug("========================== going to emit websocket message ===================================");
 		app.io.emit('message', {msg:_message});
 	}
-
 }
 
 function _getPrio(incident){
@@ -362,10 +307,6 @@ function _getPrio(incident){
 	return _prio;
 }
 
-
-
-
-
 function _getTimeStringForTimeRange(start,stop){
 	var ms = moment(stop,"DD/MM/YYYY HH:mm:ss").diff(moment(start,"DD/MM/YYYY HH:mm:ss"));
 	var d = moment.duration(ms);
@@ -374,22 +315,11 @@ function _getTimeStringForTimeRange(start,stop){
 }
 
 
-function _getData(url,priority,date,callback){
-		var Client = require('node-rest-client').Client;
-		client = new Client();
-		// direct way
-
-		url+="priority<="+priority+"^opened_at>"+date;
-
-		logger.debug("*** client.get data : url = "+url);
-
-
-		client.get(url, function(data, response,callback){
-			// parsed response body as js object
-			logger.debug("...data:"+data);
-			logger.debug("...response:"+response.records);
-
-			logger.debug("...get data..: _url:"+url);
-			callback(data);
-		})
+function _getSnowData(url,callback){
+	var client = require('node-rest-client').Client;
+	client = new Client({user:_secret.snowUser,password:_secret.snowPassword});
+	logger.debug("*** [_getSnowData] client.get data : url = "+url);
+	client.get(url, function(data, response,done){
+		callback(null,data);
+	})
 }
