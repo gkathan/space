@@ -90,7 +90,10 @@ function init(prio,dateField,chartId){
 
     var _prio =event.target.id.split("_")[0].split("chart")[1].split("-")[0];
 
+
     var _chart=event.target.id.split("_")[0];
+    var _dateField = _chart.split("-")[1];
+
 		if (_.startsWith(event.target.id.split("_")[1],"aggregate")){
 			_aggregate =event.target.id.split("_")[1].split("-")[1];
 		}
@@ -98,7 +101,10 @@ function init(prio,dateField,chartId){
 		{
 			_period = event.target.id.split("_")[1];
 		}
+    console.log("######################### ____id: "+event.target.id);
     console.log("######################### chart: "+_chart);
+    console.log("######################### _dateField: "+_dateField);
+
 		$("#period_"+_chart).text(_period);
 		$("#aggregate_"+_chart).text(_aggregate);
 		redraw(_chart,_period,_aggregate,_prio,_dateField);

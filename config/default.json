@@ -79,7 +79,7 @@
 	},
 
 	"import":{
-		"plainTypes" : ["productportfolio","productcatalog","targets","incidents","labels","customers","competitors","roadmaps","availability","v1teams","scrumteams","incidenttracker","content","incidenttrackeroldsnow","socservices","soclabel2customer","oldsnowincidents","socincident2revenueimpact","label2customer"]
+		"plainTypes" : ["productportfolio","productcatalog","targets","incidents","labels","customers","competitors","roadmaps","availability","v1teams","scrumteams","incidenttracker","content","incidenttrackeroldsnow","socservices","soclabel2customer","oldsnowincidents","socincident2revenueimpact","label2customer","datacenters"]
 	},
 
   "context" : "bpty.studios",
