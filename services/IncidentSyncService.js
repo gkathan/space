@@ -61,16 +61,14 @@ function _sync(url,type,callback){
   			var _incidentsNEWSysIds = _.pluck(data.records,'sys_id');
         var _incidentsOLDSysIds = _.pluck(_incidentsOLD,'sysId');
 				var _incidentsDELTASysIds;
-
 				// first we check whether we have more Incdients stored than in the NEW snow snapshot
 				_incidentsDELTASysIds = _.difference(_incidentsOLDSysIds,_incidentsNEWSysIds);
-
-
-				if (_incidentsDELTASysIds.length>0)	logger.debug("************************  THERE ARE "+_incidentsDELTASysIds.length+" INCIDENTS WHICH NEEDS TO BE C L O S E D   ***********************************");
-
+				if (_incidentsDELTASysIds.length>0){
+					logger.debug("************************  THERE ARE "+_incidentsDELTASysIds.length+" INCIDENTS WHICH NEEDS TO BE C L O S E D   ***********************************");
+				}
 				_handleClosedIncidents(_incidentsDELTASysIds,type,function(err,closedIncidents){
-					// so now we have the to be closed again in the NEW list
 					incidentsNEWSysIds = _.pluck(closedIncidents,'sysId');
+					// so now we have the to be closed again in the NEW list
 					_incidentsNEW = _incidentsNEW.concat(closedIncidents);
 					logger.debug("--------------------------------- AFTER CLOSE HANDLING: "+incidentsNEWSysIds.length+" incidents in incidentsNEWSysIds");
 					logger.debug("--------------------------------- AFTER CLOSE HANDLING: "+closedIncidents.length+" incidents in closedIncidents");
@@ -78,12 +76,13 @@ function _sync(url,type,callback){
 	        logger.debug("NEW *************** "+_incidentsNEWSysIds.length);
 	        logger.debug("DELTA *************** delta size: "+_incidentsDELTASysIds.length);
 
-					_calculateDiff(data,impactMapping,_incidentsNEW,_incidentsOLD,_incidentsDELTA_CHANGED);
+					_mapAndEnrichIncidents(data,impactMapping,_incidentsNEW);
+
+					_calculateDiff(_incidentsNEW,_incidentsOLD,_incidentsDELTA_CHANGED);
 
 					//redo
 					_incidentsNEWSysIds = _.pluck(_incidentsNEW,'sysId');
 					_incidentsDELTASysIds = _.difference(_incidentsNEWSysIds,_incidentsOLDSysIds);
-
 					logger.debug("OLD *************** "+_incidentsOLDSysIds.length);
 	        logger.debug("NEW *************** "+_incidentsNEWSysIds.length);
 	        logger.debug("CHANGES *********** "+_incidentsDELTA_CHANGED.length);
@@ -126,27 +125,18 @@ function _sync(url,type,callback){
 					else{
 						logger.debug("---------------------- IncidentSyncService says: no NEW or CHANGED incidents - NOTHING TO DO  ------------------------------------")
 					}
-
-
 				});
-				//}
-
-
-
-
 			})
 		})
 	})
 }
 
-
-
-function _calculateDiff(data,impactMapping,_incidentsNEW,_incidentsOLD,_incidentsDELTA_CHANGED){
-	var _diff;
-	var _omitForDiff = ["_id","syncDate"];
-
-	logger.debug("[calculateDiff] START ... _incidentsNEW.length = "+_incidentsNEW.length);
-
+/**
+* takes the raw data we got from the API call
+* maps it against space format
+* and enriches by revenue impact
+*/
+function _mapAndEnrichIncidents(data,impactMapping,_incidentsNEW){
 	for (var i in data.records){
 		var _incident = incService.filterRelevantData(data.records[i]);
 		//enrich/join with revenue impact
@@ -156,17 +146,18 @@ function _calculateDiff(data,impactMapping,_incidentsNEW,_incidentsOLD,_incident
 		}
 		_incidentsNEW.push(_incident);
 	}
+}
 
-	// OK now we have a FULL incidentsNEW list
 
+function _calculateDiff(_incidentsNEW,_incidentsOLD,_incidentsDELTA_CHANGED){
+	var _diff;
+	var _omitForDiff = ["_id","syncDate"];
+	logger.debug("[calculateDiff] START ... _incidentsNEW.length = "+_incidentsNEW.length);
 	for (var i in _incidentsNEW){
 		var _incident = _incidentsNEW[i];
-
 		var _old = _.findWhere(_incidentsOLD,{"sysId":_incident.sysId});
 		var _changed={};
 		if (_old){
-			//_diff=jsondiffpatch.diff(_filterRelevantDataForDiff(_old),_filterRelevantDataForDiff(_incidentsNEW[n]));
-			//logger.debug(".... found _old to check diff "+_old.id);
 			_diff=jsondiffpatch.diff(_.omit(_old,_omitForDiff),_.omit(_incident,_omitForDiff));
 			if (_diff){
 				var _change ={"id":_old.id,"sysId":_old.sysId,"diff":_diff}
@@ -209,8 +200,10 @@ function _handleClosedIncidents(deltaIds,type,callback){
 	}
 }
 
+/**
+ insert the NEW incidents !
+*/
 function _handleIncidentsNEW(incidents){
-	// insert the NEW incidents !
 	incService.insert(incidents,function(err,success){
 		if (err){
 			logger.error('incidents.insert failed: '+err.message);
