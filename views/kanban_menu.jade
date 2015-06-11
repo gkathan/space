@@ -44,10 +44,6 @@ block content
 						li.active
 							a(href='/logout') logout
 
-						
-						
-
-
 					ul.nav.navbar-nav
 						li.dropdown(id="fat-menu")
 							a.dropdown-toggle(id="org" href="#" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false") initiatives & portfolio
@@ -59,7 +55,7 @@ block content
 					
 				
 									
-					if session.AUTH && (session.CONTEXT=="bpty.customer.bwin" || session.CONTEXT=="bpty.customer.premium")
+					if session.AUTH && (session.CONTEXT=="bpty.customer.bwin" || session.CONTEXT=="bpty.customer.premium" || session.CONTEXT=="bpty.customer.games" || session.CONTEXT=="bpty.customer.party US" || session.CONTEXT=="bpty.customer.pmu")
 						ul.nav.navbar-nav
 							li.dropdown(id="fat-menu")
 								a.dropdown-toggle(id="import" href="#" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false") reports

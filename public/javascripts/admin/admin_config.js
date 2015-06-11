@@ -140,7 +140,7 @@ function getSOCIncident2RevenueImpactConfig(){
 	var _config ={};
 	_config.mode="editable";
 	_config.fields = _inc2revimpact;
-	  _config.addRow="enabled";
+	_config.addRow="enabled";
 	return _config;
 }
 
@@ -302,8 +302,8 @@ function getSOCOutagesConfig(){
 		{ id: "snowId", name: "snowId",  field: "snowId",width:150,  formatter:Slick.Formatters.SnowIncidentURL,editor: Slick.Editors.Number , cssClass: "cell-standard"},
     { id: "incidentID", name: "incidentID",  field: "incidentID",width:100, editor: Slick.Editors.Number , cssClass: "cell-standard"},
 		{ id: "priority", name: "prio",  field: "priority",width:25, formatter:Slick.Formatters.IncidentPriorityIcon, cssClass: "cell-standard"},
-		{ id: "start", name: "start",  field: "start",width:150,formatter: Slick.Formatters.SimpleDate, editor: Slick.Editors.Number ,sortable:true, cssClass: "cell-standard"},
-		{ id: "stop", name: "stop",  field: "stop",width:150,formatter: Slick.Formatters.SimpleDate, editor: Slick.Editors.Number ,sortable:true, cssClass: "cell-standard"},
+		{ id: "start", name: "start",  field: "start",width:150,formatter: Slick.Formatters.DateTime, editor: Slick.Editors.Number ,sortable:true, cssClass: "cell-standard"},
+		{ id: "stop", name: "stop",  field: "stop",width:150,formatter: Slick.Formatters.DateTime, editor: Slick.Editors.Number ,sortable:true, cssClass: "cell-standard"},
     { id: "degradation", name: "deg", field: "degradation", editor: Slick.Editors.Number ,width:40, cssClass: "cell-standard"},
     { id: "revenueImpact", name: "revenueImpact", field: "revenueImpact", formatter:Slick.Formatters.EurAmount ,width:100, cssClass: "cell-standard"},
 		{ id: "description", name: "description", field: "description",sortable:true,width:300, editor: Slick.Editors.Text,cssClass: "cell-standard" },

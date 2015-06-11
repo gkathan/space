@@ -60,8 +60,8 @@ mixin renderEpic(epic)
 							| [CD] 
 							
 				td(style="max-width:15px;vertical-align:middle;text-align:center")
-					if epic.oldState
-						span.glyphicon.glyphicon-star(style="font-size:12px;color:black; ") 
+					if epic.oldState && epic.PB
+						span.glyphicon.glyphicon-star(style="font-size:12px;color:fuchsia; ") 
 						span(style="opacity:0") x
 						//span(style="color:orange; font-size:10px") #{epic.oldState}
 				
@@ -131,7 +131,7 @@ block content
 				div.panel-body
 					each status in _date.pItems
 						// no NEW items for now
-						if status[0].Status != "New"
+						if status[0].Status != "New" && status[0].Status != "Done" 
 							div.col-sm-2.col-md-3.col-lg5
 								div.panel(style="background-color:white;width:330px;text-align: left")
 									//status header

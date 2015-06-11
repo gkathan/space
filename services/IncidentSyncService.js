@@ -48,6 +48,10 @@ function _sync(url,type,callback){
 	url+="&sysparm_query=priority<="+config.sync[_syncName].includePriority+"^active=true";
 	logger.debug("...snow API call url: "+url);
 	_getSnowData(url,type,function(err,data){
+		if (err){
+			logger.error("_getSnowData failed: "+err);
+			callback(err);
+		}
 		// parsed response body as js object
 		logger.debug("[_syncIncident]...client.get data..: _url:"+url);
     var _incidentsNEW=[];

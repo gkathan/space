@@ -539,10 +539,10 @@ function _aggregateByTime(data,period,time){
 	*/
 	//weeks,months,....
 	var items =[];
-	var _p01_aggregate=0;
-  var _p08_aggregate=0;
-	var _p16_aggregate=0;
-	var _p120_aggregate=0;
+	var _p01_aggregate={"openedAt":0,"resolvedAt":0,"closedAt":0};
+  var _p08_aggregate={"openedAt":0,"resolvedAt":0,"closedAt":0};
+	var _p16_aggregate={"openedAt":0,"resolvedAt":0,"closedAt":0};
+	var _p120_aggregate={"openedAt":0,"resolvedAt":0,"closedAt":0};
 
   for (var i in data){
 		var _time;
@@ -573,53 +573,58 @@ function _aggregateByTime(data,period,time){
 			_time = moment(data[i].date).day();
 			_timeName = moment(data[i].date).format("YYYY-MM-DD");
 		}
-  	if (!_.findWhere(items,{"date":_timeName})){
-			_p01_aggregate=0;
-      _p08_aggregate=0;
-			_p16_aggregate=0;
-			_p120_aggregate=0;
+
+		if (!_.findWhere(items,{"date":_timeName})){
+			_p01_aggregate={"openedAt":0,"resolvedAt":0,"closedAt":0};
+      _p08_aggregate={"openedAt":0,"resolvedAt":0,"closedAt":0};
+			_p16_aggregate={"openedAt":0,"resolvedAt":0,"closedAt":0};
+			_p120_aggregate={"openedAt":0,"resolvedAt":0,"closedAt":0};
 
 			items.push({date:_timeName,
-				"openedAt":{P01:{total:_p01_aggregate},P08:{total:_p08_aggregate},P16:{total:_p16_aggregate},P120:{total:_p120_aggregate}},
-				"resolvedAt":{P01:{total:_p01_aggregate},P08:{total:_p08_aggregate},P16:{total:_p16_aggregate},P120:{total:_p120_aggregate}},
-				"closedAt":{P01:{total:_p01_aggregate},P08:{total:_p08_aggregate},P16:{total:_p16_aggregate},P120:{total:_p120_aggregate}}
+				"openedAt":{P01:{total:_p01_aggregate.openedAt},P08:{total:_p08_aggregate.openedAt},P16:{total:_p16_aggregate.openedAt},P120:{total:_p120_aggregate.openedAt}},
+				"resolvedAt":{P01:{total:_p01_aggregate.resolvedAt},P08:{total:_p08_aggregate.resolvedAt},P16:{total:_p16_aggregate.resolvedAt},P120:{total:_p120_aggregate.resolvedAt}},
+				"closedAt":{P01:{total:_p01_aggregate.closedAt},P08:{total:_p08_aggregate.closedAt},P16:{total:_p16_aggregate.closedAt},P120:{total:_p120_aggregate.closedAt}}
 			});
 		}
 
 		if (data[i]["openedAt"]){
-			_p01_aggregate+=parseInt(data[i]["openedAt"].P01.total);
-	    _p08_aggregate+=parseInt(data[i]["openedAt"].P08.total);
-			_p16_aggregate+=parseInt(data[i]["openedAt"].P16.total);
-			_p120_aggregate+=parseInt(data[i]["openedAt"].P120.total);
+			_p01_aggregate.openedAt+=parseInt(data[i]["openedAt"].P01.total);
+	    _p08_aggregate.openedAt+=parseInt(data[i]["openedAt"].P08.total);
+			_p16_aggregate.openedAt+=parseInt(data[i]["openedAt"].P16.total);
+			_p120_aggregate.openedAt+=parseInt(data[i]["openedAt"].P120.total);
 
-			_.findWhere(items,{"date":_timeName})["openedAt"].P01.total=_p01_aggregate;
-			_.findWhere(items,{"date":_timeName})["openedAt"].P08.total=_p08_aggregate;
-			_.findWhere(items,{"date":_timeName})["openedAt"].P16.total=_p16_aggregate;
-			_.findWhere(items,{"date":_timeName})["openedAt"].P120.total=_p120_aggregate;
+			_.findWhere(items,{"date":_timeName})["openedAt"].P01.total=_p01_aggregate.openedAt;
+			_.findWhere(items,{"date":_timeName})["openedAt"].P08.total=_p08_aggregate.openedAt;
+			_.findWhere(items,{"date":_timeName})["openedAt"].P16.total=_p16_aggregate.openedAt;
+			_.findWhere(items,{"date":_timeName})["openedAt"].P120.total=_p120_aggregate.openedAt;
 		}
+
+
 
 		if (data[i]["resolvedAt"]){
-			_p01_aggregate+=parseInt(data[i]["resolvedAt"].P01.total);
-	    _p08_aggregate+=parseInt(data[i]["resolvedAt"].P08.total);
-			_p16_aggregate+=parseInt(data[i]["resolvedAt"].P16.total);
-			_p120_aggregate+=parseInt(data[i]["resolvedAt"].P120.total);
+			_p01_aggregate.resolvedAt+=parseInt(data[i]["resolvedAt"].P01.total);
+	    _p08_aggregate.resolvedAt+=parseInt(data[i]["resolvedAt"].P08.total);
+			_p16_aggregate.resolvedAt+=parseInt(data[i]["resolvedAt"].P16.total);
+			_p120_aggregate.resolvedAt+=parseInt(data[i]["resolvedAt"].P120.total);
 
-			_.findWhere(items,{"date":_timeName})["resolvedAt"].P01.total=_p01_aggregate;
-			_.findWhere(items,{"date":_timeName})["resolvedAt"].P08.total=_p08_aggregate;
-			_.findWhere(items,{"date":_timeName})["resolvedAt"].P16.total=_p16_aggregate;
-			_.findWhere(items,{"date":_timeName})["resolvedAt"].P120.total=_p120_aggregate;
+			_.findWhere(items,{"date":_timeName})["resolvedAt"].P01.total=_p01_aggregate.resolvedAt;
+			_.findWhere(items,{"date":_timeName})["resolvedAt"].P08.total=_p08_aggregate.resolvedAt;
+			_.findWhere(items,{"date":_timeName})["resolvedAt"].P16.total=_p16_aggregate.resolvedAt;
+			_.findWhere(items,{"date":_timeName})["resolvedAt"].P120.total=_p120_aggregate.resolvedAt;
 		}
 
-		if (data[i]["closedAt"]){
-			_p01_aggregate+=parseInt(data[i]["closedAt"].P01.total);
-	    _p08_aggregate+=parseInt(data[i]["closedAt"].P08.total);
-			_p16_aggregate+=parseInt(data[i]["closedAt"].P16.total);
-			_p120_aggregate+=parseInt(data[i]["closedAt"].P120.total);
 
-			_.findWhere(items,{"date":_timeName})["closedAt"].P01.total=_p01_aggregate;
-			_.findWhere(items,{"date":_timeName})["closedAt"].P08.total=_p08_aggregate;
-			_.findWhere(items,{"date":_timeName})["closedAt"].P16.total=_p16_aggregate;
-			_.findWhere(items,{"date":_timeName})["closedAt"].P120.total=_p120_aggregate;
+
+		if (data[i]["closedAt"]){
+			_p01_aggregate.closedAt+=parseInt(data[i]["closedAt"].P01.total);
+	    _p08_aggregate.closedAt+=parseInt(data[i]["closedAt"].P08.total);
+			_p16_aggregate.closedAt+=parseInt(data[i]["closedAt"].P16.total);
+			_p120_aggregate.closedAt+=parseInt(data[i]["closedAt"].P120.total);
+
+			_.findWhere(items,{"date":_timeName})["closedAt"].P01.total=_p01_aggregate.closedAt;
+			_.findWhere(items,{"date":_timeName})["closedAt"].P08.total=_p08_aggregate.closedAt;
+			_.findWhere(items,{"date":_timeName})["closedAt"].P16.total=_p16_aggregate.closedAt;
+			_.findWhere(items,{"date":_timeName})["closedAt"].P120.total=_p120_aggregate.closedAt;
 		}
   }
 	return {period:period,aggregate:time,tracker:items};

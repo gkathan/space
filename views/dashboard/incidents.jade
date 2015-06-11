@@ -16,16 +16,8 @@ style.
 	  height: 400px;
 		width:980px;
 	}
-	#chartP08-openedAt svg {
-	  height: 400px;
-		width:980px;
-	}
 	#chartP01-openedAt svg {
 	  height: 400px;
-		width:980px;
-	}
-	#chartP16-openedAt svg {
-		height: 400px;
 		width:980px;
 	}
 	#chartP01-resolvedAt svg {
@@ -33,6 +25,31 @@ style.
 		width:980px;
 	}
 	#chartP01-closedAt svg {
+		height: 400px;
+		width:980px;
+	}
+
+
+	#chartP08-openedAt svg {
+	  height: 400px;
+		width:980px;
+	}
+	
+	#chartP08-resolvedAt svg {
+	  height: 400px;
+		width:980px;
+	}
+
+	#chartP08-closedAt svg {
+	  height: 400px;
+		width:980px;
+	}
+	
+	#chartP16-openedAt svg {
+		height: 400px;
+		width:980px;
+	}
+	#chartP16-closedAt svg {
 		height: 400px;
 		width:980px;
 	}
@@ -46,6 +63,9 @@ block content
 	+chartIncident("Incidents Trend","P01","resolvedAt")
 	+chartIncident("Incidents Trend","P01","closedAt")
 	+chartIncident("Incidents Trend","P08","openedAt")
+	+chartIncident("Incidents Trend","P08","resolvedAt")
+	+chartIncident("Incidents Trend","P08","closedAt")
+	+chartIncident("Incidents Trend","P16","openedAt")
 	+chartIncident("Incidents Trend","P16","closedAt")
 	
 	+chartIncident("Incidents Trend","P120","openedAt")

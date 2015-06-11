@@ -182,7 +182,7 @@ function IncidentPriorityIconFormatter(row, cell, value, columnDef, dataContext)
 }
 
   function DateTimeFormatter(row, cell, value, columnDef, dataContext) {
-    return (moment(value).format("YYYY-MM-DD HH:mm:ss"))
+    if (value) return (moment(value).format("YYYY-MM-DD HH:mm:ss"))
   }
 
   function ResolutionTimeFormatter(row, cell, value, columnDef, dataContext) {

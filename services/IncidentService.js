@@ -276,9 +276,9 @@ function _filterRelevantData(data){
 		else if (_.startsWith(data.number,"Maintenance")) _incident.priority="MA";
 	}
 
-	if (data._closed_at) _incident.closedAt = new moment(data.closed_at,"DD-MM-YYYY HH:mm:ss").toDate();
-	if (data.resolved_at) _incident.resolvedAt = new moment(data.resolved_at,"DD-MM-YYYY HH:mm:ss").toDate();
-	if(data.u_sla_resolution_due_date) _incident.slaResolutionDate = new moment(data.u_sla_resolution_due_date,"DD-MM-YYYY HH:mm:ss").toDate();
+	if (data.closed_at !="") _incident.closedAt = new moment(data.closed_at,"DD-MM-YYYY HH:mm:ss").toDate();
+	if (data.resolved_at !="") _incident.resolvedAt = new moment(data.resolved_at,"DD-MM-YYYY HH:mm:ss").toDate();
+	if (data.u_sla_resolution_due_date !="") _incident.slaResolutionDate = new moment(data.u_sla_resolution_due_date,"DD-MM-YYYY HH:mm:ss").toDate();
 
 	_incident.id = data.number;
 	_incident.sysId = data.sys_id;
