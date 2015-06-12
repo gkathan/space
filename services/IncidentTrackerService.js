@@ -101,6 +101,12 @@ function _initDailyTrackerItem(){
 function _calculateDailyTracker(incidents,dateFields,context,callback){
 	var _dailytracker = [];
 	//logger.debug("********* processing datefield: "+dateField);
+
+	var cumP01={openedAt:0,resolvedAt:0,closedAt:0};
+	var cumP08={openedAt:0,resolvedAt:0,closedAt:0};
+	var cumP16={openedAt:0,resolvedAt:0,closedAt:0};
+	var cumP120={openedAt:0,resolvedAt:0,closedAt:0};
+
 	for (var i in incidents){
 		//"openedAt" "resolvedAt" "closedAt"
 		for (var d in dateFields){
@@ -108,7 +114,10 @@ function _calculateDailyTracker(incidents,dateFields,context,callback){
 
 			if (incidents[i][dateField]){
 				var _day = moment(incidents[i][dateField]).format("YYYY-MM-DD");
+
 				_day = new Date(_day);
+				//var _dayBefore =  new Date(moment(_day).substract(1, 'days').format("YYYY-MM-DD"));
+
 				//logger.debug("** inc: "+incidents[i].id);
 				var _priority=incidents[i].priority;
 				//deburr cleans special characters
@@ -122,39 +131,47 @@ function _calculateDailyTracker(incidents,dateFields,context,callback){
 
 				var _dayTracker = _.findWhere(_dailytracker,{"date":_day});
 
-				if (!_dayTracker[dateField])
-				{
+
+				if (!_dayTracker[dateField]){
 					_dayTracker[dateField]=_initDailyTrackerItem();
-					/*
-					{
-						"P01":{total:0,assignmentGroup:{},businessService:{},label:{}},
-						"P08":{total:0,assignmentGroup:{},businessService:{},label:{}},
-						"P16":{total:0,assignmentGroup:{},businessService:{},label:{}},
-						"P120":{total:0,assignmentGroup:{},businessService:{},label:{}}
-					};
-					*/
 				}
 
 				if (_.startsWith(_priority,"P01") || _.startsWith(_priority,"P04")){
 					_.findWhere(_dailytracker,{"date":_day})[dateField].P01.total++;
+
+					cumP01[dateField]++;
+					_.findWhere(_dailytracker,{"date":_day})[dateField].P01.cumulative=cumP01[dateField];
+
 					_handleAssignementGroup(_dailytracker,_day,dateField,"P01",_assignmentGroup);
 					_handleBusinessService(_dailytracker,_day,dateField,"P01",_businessService);
 					_handleLabel(_dailytracker,_day,dateField,"P01",_labels);
 				}
 				else if (_.startsWith(_priority,"P08")){
 					_.findWhere(_dailytracker,{"date":_day})[dateField].P08.total++;
+
+					cumP08[dateField]++;
+					_.findWhere(_dailytracker,{"date":_day})[dateField].P08.cumulative=cumP08[dateField];
+
 					_handleAssignementGroup(_dailytracker,_day,dateField,"P08",_assignmentGroup);
 					_handleBusinessService(_dailytracker,_day,dateField,"P08",_businessService);
 					_handleLabel(_dailytracker,_day,dateField,"P08",_labels);
 				}
 				else if (_.startsWith(_priority,"P16")){
 					_.findWhere(_dailytracker,{"date":_day})[dateField].P16.total++;
+
+					cumP16[dateField]++;
+					_.findWhere(_dailytracker,{"date":_day})[dateField].P16.cumulative=cumP16[dateField];
+
 					_handleAssignementGroup(_dailytracker,_day,dateField,"P16",_assignmentGroup);
 					_handleBusinessService(_dailytracker,_day,dateField,"P16",_businessService);
 					_handleLabel(_dailytracker,_day,dateField,"P16",_labels);
 				}
 				else if (_.startsWith(_priority,"P40") || _.startsWith(_priority,"P120")){
 					_.findWhere(_dailytracker,{"date":_day})[dateField].P120.total++;
+
+					cumP120[dateField]++;
+					_.findWhere(_dailytracker,{"date":_day})[dateField].P120.cumulative=cumP120[dateField];
+
 					_handleAssignementGroup(_dailytracker,_day,dateField,"P120",_assignmentGroup);
 					_handleBusinessService(_dailytracker,_day,dateField,"P120",_businessService);
 					_handleLabel(_dailytracker,_day,dateField,"P120",_labels);
@@ -200,60 +217,54 @@ function _handleLabel(dailytracker,day,dateField,priority,labels){
 function _rebuildCumulativeTrackerData(callback){
 	var _context = "bpty.studios";
 	// get all trackerdata
-	var opened =  db.collection(_incidentTrackerCollection+"_openedAt");
-	var resolved =  db.collection(_incidentTrackerCollection+"_resolvedAt");
-	var closed =  db.collection(_incidentTrackerCollection+"_closedAt");
+	var tracker =  db.collection(_incidentTrackerCollection);
 
-	opened.find().sort({date:1},function(err,dailyopened){
-		resolved.find().sort({date:1},function(err,dailyresolved){
-			closed.find().sort({date:1},function(err,dailyclosed){
+	tracker.find().sort({date:1},function(err,daily){
 
-				var P01OpenedSum=0;
-				var P08OpenedSum=0;
-				var P16OpenedSum=0;
-				var P120OpenedSum=0;
+		var P01OpenedSum=0;
+		var P08OpenedSum=0;
+		var P16OpenedSum=0;
+		var P120OpenedSum=0;
 
-				P01OpenedSum =_calculateCumulative(dailyopened,"P01");
-				P08OpenedSum =_calculateCumulative(dailyopened,"P08");
-				P16OpenedSum =_calculateCumulative(dailyopened,"P16");
-				P120OpenedSum =_calculateCumulative(dailyopened,"P120");
+		P01OpenedSum =_calculateCumulative(dailyopened,"P01");
+		P08OpenedSum =_calculateCumulative(dailyopened,"P08");
+		P16OpenedSum =_calculateCumulative(dailyopened,"P16");
+		P120OpenedSum =_calculateCumulative(dailyopened,"P120");
 
-				var P01ResolvedSum=0;
-				var P08ResolvedSum=0;
-				var P16ResolvedSum=0;
-				var P120ResolvedSum=0;
+		var P01ResolvedSum=0;
+		var P08ResolvedSum=0;
+		var P16ResolvedSum=0;
+		var P120ResolvedSum=0;
 
-				P01ResolvedSum =_calculateCumulative(dailyresolved,"P01");
-				P08ResolvedSum =_calculateCumulative(dailyresolved,"P08");
-				P16ResolvedSum =_calculateCumulative(dailyresolved,"P16");
-				P120ResolvedSum =_calculateCumulative(dailyresolved,"P120");
+		P01ResolvedSum =_calculateCumulative(dailyresolved,"P01");
+		P08ResolvedSum =_calculateCumulative(dailyresolved,"P08");
+		P16ResolvedSum =_calculateCumulative(dailyresolved,"P16");
+		P120ResolvedSum =_calculateCumulative(dailyresolved,"P120");
 
-				var P01ClosedSum=0;
-				var P08ClosedSum=0;
-				var P16ClosedSum=0;
-				var P120ClosedSum=0;
+		var P01ClosedSum=0;
+		var P08ClosedSum=0;
+		var P16ClosedSum=0;
+		var P120ClosedSum=0;
 
-				P01ClosedSum =_calculateCumulative(dailyclosed,"P01");
-				P08ClosedSum =_calculateCumulative(dailyclosed,"P08");
-				P16ClosedSum =_calculateCumulative(dailyclosed,"P16");
-				P120ClosedSum =_calculateCumulative(dailyclosed,"P120");
+		P01ClosedSum =_calculateCumulative(dailyclosed,"P01");
+		P08ClosedSum =_calculateCumulative(dailyclosed,"P08");
+		P16ClosedSum =_calculateCumulative(dailyclosed,"P16");
+		P120ClosedSum =_calculateCumulative(dailyclosed,"P120");
 
-				opened.drop();
-				opened.insert(dailyopened);
-				resolved.drop();
-				resolved.insert(dailyopened);
-				closed.drop();
-				closed.insert(dailyopened);
+		opened.drop();
+		opened.insert(dailyopened);
+		resolved.drop();
+		resolved.insert(dailyopened);
+		closed.drop();
+		closed.insert(dailyopened);
 
-				callback(null,{
-					opened:{P01Sum:P01OpenedSum,P08Sum:P08OpenedSum,P16Sum:P16OpenedSum,P120Sum:P120OpenedSum},
-					resolved:{P01Sum:P01ResolvedSum,P08Sum:P08ResolvedSum,P16Sum:P16ResolvedSum,P120Sum:P120ResolvedSum},
-					closed:{P01Sum:P01ClosedSum,P08Sum:P08ClosedSum,P16Sum:P16ClosedSum,P120Sum:P120ClosedSum},
-					openedminusresolved:{P01Diff:P01OpenedSum-P01ResolvedSum,P08Diff:P08OpenedSum-P08ResolvedSum,P16Diff:P16OpenedSum-P16ResolvedSum,P120Diff:P120OpenedSum-P120ResolvedSum},
-					openedminusclosed:{P01Diff:P01OpenedSum-P01ClosedSum,P08Diff:P08OpenedSum-P08ClosedSum,P16Diff:P16OpenedSum-P16ClosedSum,P120Diff:P120OpenedSum-P120ClosedSum}
-				});
-			})
-		})
+		callback(null,{
+			opened:{P01Sum:P01OpenedSum,P08Sum:P08OpenedSum,P16Sum:P16OpenedSum,P120Sum:P120OpenedSum},
+			resolved:{P01Sum:P01ResolvedSum,P08Sum:P08ResolvedSum,P16Sum:P16ResolvedSum,P120Sum:P120ResolvedSum},
+			closed:{P01Sum:P01ClosedSum,P08Sum:P08ClosedSum,P16Sum:P16ClosedSum,P120Sum:P120ClosedSum},
+			openedminusresolved:{P01Diff:P01OpenedSum-P01ResolvedSum,P08Diff:P08OpenedSum-P08ResolvedSum,P16Diff:P16OpenedSum-P16ResolvedSum,P120Diff:P120OpenedSum-P120ResolvedSum},
+			openedminusclosed:{P01Diff:P01OpenedSum-P01ClosedSum,P08Diff:P08OpenedSum-P08ClosedSum,P16Diff:P16OpenedSum-P16ClosedSum,P120Diff:P120OpenedSum-P120ClosedSum}
+		});
 	})
 }
 

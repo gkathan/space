@@ -205,10 +205,21 @@ describe('#calculate DailyTracker()', function(){
 			"label" : "label5.es"
 
 		};
+	var _inc4 = {
+		"description" : "this is a test incident",
+		"id" : "INC100004",
+		"priority" : "P01 - High",
+		"openedAt" : new Date("2015-05-08 11:03:00"),
+		"assignmentGroup" : "Others",
+		"businessService" : "BusinessService_C",
+		"label" : "label5.es"
+
+	};
 
 		_list.push(_inc1);
 		_list.push(_inc2);
 		_list.push(_inc3);
+		_list.push(_inc4);
 
 		//_calculateDailyTracker(incidents,dateField,context,callback)
 		var _context="bpty.studios";
@@ -216,8 +227,10 @@ describe('#calculate DailyTracker()', function(){
 			//logger.debug(success);
 			logger.debug(JSON.stringify(success));
 			assert.equal(2, _.findWhere(success,{date:new Date("2015-05-02")})["openedAt"].P01.total);
+			assert.equal(2, _.findWhere(success,{date:new Date("2015-05-02")})["openedAt"].P01.cumulative);
 			assert.equal(1, _.findWhere(success,{date:new Date("2015-05-08")})["openedAt"].P08.total);
-			assert.equal(0, _.findWhere(success,{date:new Date("2015-05-08")})["openedAt"].P01.total);
+			assert.equal(1, _.findWhere(success,{date:new Date("2015-05-08")})["openedAt"].P01.total);
+			assert.equal(3, _.findWhere(success,{date:new Date("2015-05-08")})["openedAt"].P01.cumulative);
 			assert.equal(2, _.findWhere(success,{date:new Date("2015-05-02")})["openedAt"].P01.businessService["Business Service A"]);
 			assert.equal(2, _.findWhere(success,{date:new Date("2015-05-02")})["openedAt"].P01.label["label2_us"]);
 
@@ -226,7 +239,7 @@ describe('#calculate DailyTracker()', function(){
 	});
 });
 
-
+/*
 describe('#rebuild cumulative DailyTracker()', function(){
 	it('should rebuild cumulative daily tracker with a given incident', function(done){
 			this.timeout(30000);
@@ -239,7 +252,7 @@ describe('#rebuild cumulative DailyTracker()', function(){
 		});
 	})
 });
-
+*/
 
 describe('#increment DailyTracker()', function(){
 	it('should increment daily tracker with a given incident', function(done){
@@ -290,7 +303,7 @@ describe('#init DailyTracker()', function(){
 
 		});
 	});
-
+/*
 describe('#find single incident', function(){
 	it('should return a incident', function(done){
 		var incService = require('../services/IncidentService');
@@ -305,5 +318,5 @@ describe('#find single incident', function(){
 		});
 	});
 	});
-
+*/
 })
