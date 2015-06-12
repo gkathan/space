@@ -40,7 +40,7 @@ mixin chartIncident(title,prio,dateField)
 							li
 								a.dropdown.incidentstrend(id="#{chart}_h1-2014") H2-2014
 							li
-								a.dropdown.incidentstrend(id="#{chart}_q1-2015") H1-2015
+								a.dropdown.incidentstrend(id="#{chart}_h1-2015") H1-2015
 				.btn-group
 					a.btn.btn-default(href='javascript:void(0)') Year
 					a.btn.btn-default.dropdown-toggle(href='bootstrap-elements.html', data-target='#', data-toggle='dropdown')
@@ -69,6 +69,13 @@ mixin chartIncident(title,prio,dateField)
 							li
 								a.dropdown.incidentstrend(id="#{chart}_aggregate-yearly") yearly
 
+				div(style="font-size:28px;text-align:right")
+					span(style="font-size:18px;text-align:right") total:&nbsp;
+					span(id="#{chart}_sum" style="font-size:28px;text-align:right;font-weight:bold")
+				div(style="font-size:28px;text-align:right")
+					span(style="font-size:18px;text-align:right") prev:&nbsp;
+					span(id="#{chart}_sumPrev" style="font-size:28px;text-align:right;font-weight:bold")					
+					
 				div(id="#{chart}" style="text-align:center")
 					svg
 	script.

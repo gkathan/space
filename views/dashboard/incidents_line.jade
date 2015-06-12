@@ -1,0 +1,65 @@
+include ../kanban_menu
+include mixins/chart_incident
+// Load d3.js and c3.js
+script(src='/javascripts/components/c3/c3.min.js')
+// Load nv3d
+script(src='/javascripts/components/nvd3/build/nv.d3.min.js')
+script(src='/javascripts/dashboards/nvd3_incidents_line_cumulative.js')
+
+
+style.
+	#chartTest svg {
+	  height: 400px;
+		width:980px;
+	}
+	#chart2 svg {
+	  height: 400px;
+		width:980px;
+	}
+	#chartP01-openedAt svg {
+	  height: 400px;
+		width:980px;
+	}
+	#chartP01-resolvedAt svg {
+		height: 400px;
+		width:980px;
+	}
+	#chartP01-closedAt svg {
+		height: 400px;
+		width:980px;
+	}
+
+
+	#chartP08-openedAt svg {
+	  height: 400px;
+		width:980px;
+	}
+	
+	#chartP08-resolvedAt svg {
+	  height: 400px;
+		width:980px;
+	}
+
+	#chartP08-closedAt svg {
+	  height: 400px;
+		width:980px;
+	}
+	
+	#chartP16-openedAt svg {
+		height: 400px;
+		width:980px;
+	}
+	#chartP16-closedAt svg {
+		height: 400px;
+		width:980px;
+	}
+		#chartP120-openedAt svg {
+			height: 400px;
+			width:980px;
+		}
+block content
+	//+graph("test","chartTest")
+	+chartIncident("Incidents Trend Line Cumulative","P01","openedAt")
+
+
+include ../includes/material			

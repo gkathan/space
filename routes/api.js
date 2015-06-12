@@ -378,8 +378,10 @@ function findIncidenttrackerByDate(req, res , next){
 				logger.warn("[error] incidentTrackerService.findTrackerByDate says: "+err.message);
 			}
 			else {
-				res.send(data);
-				return;
+				incidentTrackerService.buildStatistics(data.tracker,function(err,result){
+					res.send(result);
+					return;
+				})
 			}
 	});
 }

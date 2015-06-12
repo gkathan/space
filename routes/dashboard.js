@@ -55,14 +55,19 @@ router.get('/availability', function(req, res) {
 
 router.get('/incidents', function(req, res) {
 		var _period = req.query.period;
-		//"openedAt", "resolvedAt", "closedAt"
-
-
 		res.locals.period = _period;
-
 		res.locals.moment = moment;
 		res.render('dashboard/incidents', { title: 's p a c e - incidents dashboard' });
 });
+
+router.get('/incidents_line', function(req, res) {
+		var _period = req.query.period;
+		res.locals.period = _period;
+		res.locals.moment = moment;
+		res.render('dashboard/incidents_line', { title: 's p a c e - incidents linedashboard' });
+});
+
+
 
 router.get('/qos', function(req, res) {
 		res.render('dashboard/qos', { title: 's p a c e - QoS dashboard' });

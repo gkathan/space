@@ -56,15 +56,17 @@ function init(prio,dateField,chartId){
     _colors["P120"]=["#aaaaaa","#efefef"];
     console.log("prio: "+_prio+" colors: "+_colors[_prio]);
     console.log("period: "+_period);
-    chart = nv.models.multiBarChart()
+    chart = nv.models.cumulativeLineChart()
+      .useInteractiveGuideline(true)
       .x(function(d) { return d.date })
       .y(function(d) { return d.y })
-      .staggerLabels(true)
+      .color(d3.scale.category10().range())
+      //.average(function(d) { return d.mean/100; })
       .tooltips(true)
       .showLegend(true)
       .color(_colors[_prio])
-      .groupSpacing(0.2)
-      .rotateLabels(45)
+
+
       .showControls(false)
     ;
     if (_period=="") _period ="All";
@@ -72,8 +74,6 @@ function init(prio,dateField,chartId){
     $("#aggregate_"+_chartId).text(_aggregate);
     var _reduceXTicks = false;
     //if (_aggregate=="daily" || _aggregate=="weekly") _reduceXTicks = true;
-    _reduceXTicks = true;
-    chart.reduceXTicks(_reduceXTicks).staggerLabels(true);
     chart.yAxis
         .tickFormat(d3.format(',d'));
     redraw(_chartId,_period,_aggregate,_prio,dateField);

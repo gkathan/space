@@ -216,10 +216,22 @@ describe('#calculate DailyTracker()', function(){
 
 	};
 
+var _inc5 = {
+	"description" : "this is a test incident",
+	"id" : "INC100005",
+	"priority" : "P01 - High",
+	"openedAt" : new Date("2015-05-07 17:03:00"),
+	"assignmentGroup" : "Others",
+	"businessService" : "BusinessService_C",
+	"label" : "label5.es"
+
+};
+
 		_list.push(_inc1);
 		_list.push(_inc2);
 		_list.push(_inc3);
 		_list.push(_inc4);
+		_list.push(_inc5);
 
 		//_calculateDailyTracker(incidents,dateField,context,callback)
 		var _context="bpty.studios";
@@ -227,32 +239,24 @@ describe('#calculate DailyTracker()', function(){
 			//logger.debug(success);
 			logger.debug(JSON.stringify(success));
 			assert.equal(2, _.findWhere(success,{date:new Date("2015-05-02")})["openedAt"].P01.total);
-			assert.equal(2, _.findWhere(success,{date:new Date("2015-05-02")})["openedAt"].P01.cumulative);
 			assert.equal(1, _.findWhere(success,{date:new Date("2015-05-08")})["openedAt"].P08.total);
 			assert.equal(1, _.findWhere(success,{date:new Date("2015-05-08")})["openedAt"].P01.total);
-			assert.equal(3, _.findWhere(success,{date:new Date("2015-05-08")})["openedAt"].P01.cumulative);
 			assert.equal(2, _.findWhere(success,{date:new Date("2015-05-02")})["openedAt"].P01.businessService["Business Service A"]);
 			assert.equal(2, _.findWhere(success,{date:new Date("2015-05-02")})["openedAt"].P01.label["label2_us"]);
+			//done();
 
-			done();
+
+			incidentTrackerService.buildStatistics(success,function(err,result){
+					assert.equal(3, _.findWhere(result.tracker,{date:new Date("2015-05-08")})["openedAt"].P01.cumulative);
+					assert.equal(2, _.findWhere(result.tracker,{date:new Date("2015-05-08")})["closedAt"].P01.cumulative);
+					assert.equal(4, result.statistics.sum.P01.openedAt);
+					done();
+			})
 		})
 	});
 });
 
-/*
-describe('#rebuild cumulative DailyTracker()', function(){
-	it('should rebuild cumulative daily tracker with a given incident', function(done){
-			this.timeout(30000);
 
-		var incidentTrackerService = require('../services/IncidentTrackerService');
-		incidentTrackerService.rebuildCumulativeTrackerData(function(err,result){
-			logger.debug("rebuild cumulative: "+JSON.stringify(result));
-			done();
-
-		});
-	})
-});
-*/
 
 describe('#increment DailyTracker()', function(){
 	it('should increment daily tracker with a given incident', function(done){
@@ -319,4 +323,7 @@ describe('#find single incident', function(){
 	});
 	});
 */
+
+
+
 })

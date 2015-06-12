@@ -20,14 +20,14 @@ var _incidentTrackerCollection="incidenttracker";
 
 exports.rebuildTracker = _rebuildTracker;
 exports.incrementTracker = _incrementTracker;
-exports.rebuildCumulativeTrackerData = _rebuildCumulativeTrackerData;
+
 exports.flushTracker = _flushTracker;
 exports.weeklyTracker = _aggregateWeekly;
 exports.monthlyTracker = _aggregateMonthly;
 exports.findTrackerByDate = _findIncidenttrackerByDate;
 exports.calculateDailyTracker = _calculateDailyTracker;
 exports.initDailyTrackerForDay = _initDailyTrackerForDay
-
+exports.buildStatistics = _buildStatistics;
 /**
 * drops and saves
 */
@@ -45,6 +45,66 @@ function _flushTracker(data,callback){
 		}
 	})
 }
+
+
+/**
+* iterates over a given tracker
+* and enriches by some more data
+*/
+function _buildStatistics(tracker,callback){
+	var dateFields = ["openedAt","resolvedAt","closedAt"];
+
+	var cumP01={"openedAt":0,"resolvedAt":0,"closedAt":0,"active":0,"notResolved":0};
+	var cumP08={"openedAt":0,"resolvedAt":0,"closedAt":0,"active":0,"notResolved":0};
+	var cumP16={"openedAt":0,"resolvedAt":0,"closedAt":0,"active":0,"notResolved":0};
+	var cumP120={"openedAt":0,"resolvedAt":0,"closedAt":0,"active":0,"notResolved":0};
+
+	for (var i in tracker){
+			var _day = tracker[i];
+
+			for (var d in dateFields){
+				var dateField = dateFields[d];
+				if (_day[dateField]){
+					cumP01[dateField]+=_day[dateField].P01.total;
+					cumP08[dateField]+=_day[dateField].P08.total;
+					cumP16[dateField]+=_day[dateField].P16.total;
+					cumP120[dateField]+=_day[dateField].P120.total;
+					//logger.debug("_________________________P01 total for day: "+_day.date+" dateField: "+dateField+" = "+_day[dateField].P01.total);
+					//logger.debug("_________________________P08 total for day: "+_day.date+" dateField: "+dateField+" = "+_day[dateField].P08.total);
+					_day[dateField].P01.cumulative= cumP01[dateField];
+					_day[dateField].P08.cumulative= cumP08[dateField];
+					_day[dateField].P16.cumulative= cumP16[dateField];
+					_day[dateField].P120.cumulative= cumP120[dateField];
+				}
+			}
+
+
+			// is liek a burnrate => can be negative if i close more than i open ....
+			var activeP01=_day.openedAt.P01.total-_day.closedAt.P01.total;
+			var activeP08=_day.openedAt.P08.total-_day.closedAt.P08.total;
+			var activeP16=_day.openedAt.P16.total-_day.closedAt.P16.total;
+			var activeP120=_day.openedAt.P120.total-_day.closedAt.P120.total;
+
+			if (!_day["active"]) _day["active"]={P01:0,P08:0,P16:0,P120:0};
+			_day["active"].P01=activeP01;
+			_day["active"].P08=activeP08;
+			_day["active"].P16=activeP16;
+			_day["active"].P120=activeP120;
+
+
+
+			cumP01.notResolved+=_day.openedAt.P01.total-_day.resolvedAt.P01.total;
+			cumP08.notResolved+=_day.openedAt.P08.total-_day.resolvedAt.P08.total;
+			cumP16.notResolved+=_day.openedAt.P16.total-_day.resolvedAt.P16.total;
+			cumP120.notResolved+=_day.openedAt.P120.total-_day.resolvedAt.P120.total;
+
+	}
+		var statistics = {sum:{P01:cumP01,P08:cumP08,P16:cumP16,P120:cumP120}};
+	var result = {tracker:tracker,statistics:statistics};
+
+	callback(null,result);
+}
+
 
 /**
 * drops and rebuilds the according IncidentTracker collection
@@ -102,11 +162,6 @@ function _calculateDailyTracker(incidents,dateFields,context,callback){
 	var _dailytracker = [];
 	//logger.debug("********* processing datefield: "+dateField);
 
-	var cumP01={openedAt:0,resolvedAt:0,closedAt:0};
-	var cumP08={openedAt:0,resolvedAt:0,closedAt:0};
-	var cumP16={openedAt:0,resolvedAt:0,closedAt:0};
-	var cumP120={openedAt:0,resolvedAt:0,closedAt:0};
-
 	for (var i in incidents){
 		//"openedAt" "resolvedAt" "closedAt"
 		for (var d in dateFields){
@@ -138,40 +193,24 @@ function _calculateDailyTracker(incidents,dateFields,context,callback){
 
 				if (_.startsWith(_priority,"P01") || _.startsWith(_priority,"P04")){
 					_.findWhere(_dailytracker,{"date":_day})[dateField].P01.total++;
-
-					cumP01[dateField]++;
-					_.findWhere(_dailytracker,{"date":_day})[dateField].P01.cumulative=cumP01[dateField];
-
 					_handleAssignementGroup(_dailytracker,_day,dateField,"P01",_assignmentGroup);
 					_handleBusinessService(_dailytracker,_day,dateField,"P01",_businessService);
 					_handleLabel(_dailytracker,_day,dateField,"P01",_labels);
 				}
 				else if (_.startsWith(_priority,"P08")){
 					_.findWhere(_dailytracker,{"date":_day})[dateField].P08.total++;
-
-					cumP08[dateField]++;
-					_.findWhere(_dailytracker,{"date":_day})[dateField].P08.cumulative=cumP08[dateField];
-
 					_handleAssignementGroup(_dailytracker,_day,dateField,"P08",_assignmentGroup);
 					_handleBusinessService(_dailytracker,_day,dateField,"P08",_businessService);
 					_handleLabel(_dailytracker,_day,dateField,"P08",_labels);
 				}
 				else if (_.startsWith(_priority,"P16")){
 					_.findWhere(_dailytracker,{"date":_day})[dateField].P16.total++;
-
-					cumP16[dateField]++;
-					_.findWhere(_dailytracker,{"date":_day})[dateField].P16.cumulative=cumP16[dateField];
-
 					_handleAssignementGroup(_dailytracker,_day,dateField,"P16",_assignmentGroup);
 					_handleBusinessService(_dailytracker,_day,dateField,"P16",_businessService);
 					_handleLabel(_dailytracker,_day,dateField,"P16",_labels);
 				}
 				else if (_.startsWith(_priority,"P40") || _.startsWith(_priority,"P120")){
 					_.findWhere(_dailytracker,{"date":_day})[dateField].P120.total++;
-
-					cumP120[dateField]++;
-					_.findWhere(_dailytracker,{"date":_day})[dateField].P120.cumulative=cumP120[dateField];
-
 					_handleAssignementGroup(_dailytracker,_day,dateField,"P120",_assignmentGroup);
 					_handleBusinessService(_dailytracker,_day,dateField,"P120",_businessService);
 					_handleLabel(_dailytracker,_day,dateField,"P120",_labels);
@@ -210,75 +249,6 @@ function _handleLabel(dailytracker,day,dateField,priority,labels){
 }
 
 
-/**
-* calculates the daily cumulative difference between "open" and both "resolved" and "closed"
-* needed for burndown charts
-*/
-function _rebuildCumulativeTrackerData(callback){
-	var _context = "bpty.studios";
-	// get all trackerdata
-	var tracker =  db.collection(_incidentTrackerCollection);
-
-	tracker.find().sort({date:1},function(err,daily){
-
-		var P01OpenedSum=0;
-		var P08OpenedSum=0;
-		var P16OpenedSum=0;
-		var P120OpenedSum=0;
-
-		P01OpenedSum =_calculateCumulative(dailyopened,"P01");
-		P08OpenedSum =_calculateCumulative(dailyopened,"P08");
-		P16OpenedSum =_calculateCumulative(dailyopened,"P16");
-		P120OpenedSum =_calculateCumulative(dailyopened,"P120");
-
-		var P01ResolvedSum=0;
-		var P08ResolvedSum=0;
-		var P16ResolvedSum=0;
-		var P120ResolvedSum=0;
-
-		P01ResolvedSum =_calculateCumulative(dailyresolved,"P01");
-		P08ResolvedSum =_calculateCumulative(dailyresolved,"P08");
-		P16ResolvedSum =_calculateCumulative(dailyresolved,"P16");
-		P120ResolvedSum =_calculateCumulative(dailyresolved,"P120");
-
-		var P01ClosedSum=0;
-		var P08ClosedSum=0;
-		var P16ClosedSum=0;
-		var P120ClosedSum=0;
-
-		P01ClosedSum =_calculateCumulative(dailyclosed,"P01");
-		P08ClosedSum =_calculateCumulative(dailyclosed,"P08");
-		P16ClosedSum =_calculateCumulative(dailyclosed,"P16");
-		P120ClosedSum =_calculateCumulative(dailyclosed,"P120");
-
-		opened.drop();
-		opened.insert(dailyopened);
-		resolved.drop();
-		resolved.insert(dailyopened);
-		closed.drop();
-		closed.insert(dailyopened);
-
-		callback(null,{
-			opened:{P01Sum:P01OpenedSum,P08Sum:P08OpenedSum,P16Sum:P16OpenedSum,P120Sum:P120OpenedSum},
-			resolved:{P01Sum:P01ResolvedSum,P08Sum:P08ResolvedSum,P16Sum:P16ResolvedSum,P120Sum:P120ResolvedSum},
-			closed:{P01Sum:P01ClosedSum,P08Sum:P08ClosedSum,P16Sum:P16ClosedSum,P120Sum:P120ClosedSum},
-			openedminusresolved:{P01Diff:P01OpenedSum-P01ResolvedSum,P08Diff:P08OpenedSum-P08ResolvedSum,P16Diff:P16OpenedSum-P16ResolvedSum,P120Diff:P120OpenedSum-P120ResolvedSum},
-			openedminusclosed:{P01Diff:P01OpenedSum-P01ClosedSum,P08Diff:P08OpenedSum-P08ClosedSum,P16Diff:P16OpenedSum-P16ClosedSum,P120Diff:P120OpenedSum-P120ClosedSum}
-		});
-	})
-}
-
-function _calculateCumulative(data,priority){
-	var PSum=0;
-	for (var o in data){
-		PSum+=data[o][priority].total;
-		var _prevDay = 0;
-		if (data[o-1]) _prevDay = parseInt(data[o-1][priority].cum);
-		data[o][priority].cum=parseInt(data[o][priority].total)+_prevDay;
-	}
-	return PSum;
-
-}
 /**
 * updates the incidentTracker
 * first calculates daily tracker for given incidents list
@@ -348,7 +318,6 @@ function _saveDailyTracker(tracker,dateFields,callback){
 							}
 							else{
 								logger.info("no result[_t] for _t = "+_t+" ... so lets create an initiatl one...");
-
 								result[_t]=_initDailyTrackerItem();
 							}
 						}
