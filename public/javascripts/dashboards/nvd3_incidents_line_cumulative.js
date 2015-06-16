@@ -58,11 +58,11 @@ function init(prio,dateField,chartId){
     console.log("period: "+_period);
     chart = nv.models.cumulativeLineChart()
       .useInteractiveGuideline(true)
-      .x(function(d) { return d.date })
-      .y(function(d) { return d.y })
-      .average(function(d) { return d.mean; })
-//        .x(function(d) { return d[0] })
-//        .y(function(d) { return d[1]/100 })
+//      .x(function(d) { return d.date })
+//      .y(function(d) { return d.y })
+//      .average(function(d) { return d.mean; })
+        .x(function(d) { return d[0] })
+        .y(function(d) { return d[1]/100 })
       .color(d3.scale.category10().range())
       //.average(function(d) { return d.mean/100; })
       .tooltips(true)
@@ -152,8 +152,9 @@ function _prepareData(incidents,incidentsPrev,prio,period,dateField){
       console.log(JSON.stringify(incidents[day]));
       console.log("++ dateField: "+dateField);
       console.log("++ prio: "+prio);
-      console.log("date: "+incidents[day].date+" "+prio+": "+incidents[day][dateField][prio].total);
-      */
+        */
+      //console.log("date: "+incidents[day].date+" "+prio+": "+incidents[day][dateField][prio].total);
+
       //_P.push({"date":incidents[day].date,"y":parseInt(incidents[day][dateField][prio].total)});
       _P.push({"date":day,"y":parseInt(incidents[day][dateField][prio].total)});
       _PSum+=parseInt(incidents[day][dateField][prio].total);
@@ -175,6 +176,8 @@ function _prepareData(incidents,incidentsPrev,prio,period,dateField){
 
   var incData = [{key:_year,values:_P,mean:_mean},{key:_yearPrev,values:_PPrev,mean:_meanPrev}]
 
+
+  console.log("incData: "+JSON.stringify(incData));
   return incData
 }
 
@@ -193,8 +196,8 @@ function redraw(chartId,period,aggregate,prio,dateField) {
   d3.json(_url, function(data) {
     d3.json(_urlPrev, function(dataPrev) {
       d3.select('#'+chartId+' svg')
-        .datum(_prepareData(data.tracker,dataPrev.tracker,prio,period,dateField))
-        //.datum(cumulativeTestData())
+        //.datum(_prepareData(data.tracker,dataPrev.tracker,prio,period,dateField))
+        .datum(cumulativeTestData())
         .transition().duration(500)
         .call(charts[chartId]);
 
