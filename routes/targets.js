@@ -202,7 +202,7 @@ function _handleTargetOverview(req,res,next,view){
 				res.locals.vision=_target.vision;
 				res.locals.start=moment(_target.start).format();
 				res.locals.end=moment(_target.end).format();
-				res.locals.period = "targets :: "+new moment(_target.start).format('MMMM').toLowerCase()+" - "+new moment(_target.end).format('MMMM').toLowerCase()+" "+new moment(_target.start).format('YYYY');
+				res.locals.period = new moment(_target.end).format('YYYY').toLowerCase();
 			}
 			var _colors = _.findWhere(config.entities,{'name':_context}).skin.colors;
 			logger.debug("colors: "+_colors.secondary);

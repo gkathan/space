@@ -29,32 +29,23 @@ block content
 				else
 					a.navbar-brand(href='/dashboard')
 						img(src="/images/space_long_white.png" height="30px")
-
 			.collapse.navbar-collapse
 				ul.nav.navbar-nav
-
 					if !session.AUTH
 						li
 							a(href='/login') login
-
 						li
-							a(role="menuitem" tabindex="-1" href="/firereports") fire reports
-
+							a(role="menuitem" tabindex="-1" href="/firereports") IT service reports
 					if session.AUTH
 						li.active
 							a(href='/logout') logout
-
 					ul.nav.navbar-nav
-						li.dropdown(id="fat-menu")
-							a.dropdown-toggle(id="org" href="#" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false") initiatives & portfolio
-								span.caret
-							ul.dropdown-menu(role="menu" aria-labelledby="portfolio")
-								li(role="presentation")
-									a(role="menuitem" tabindex="-1" href="/portfolio") [portfolio meeting] list
-
+						li
+							a(href="/portfolio") [portfolio meeting]
 					
-				
-									
+						if !session.AUTH
+							li
+								a( href="/targets/overview") targets overview
 					if session.AUTH && (session.CONTEXT=="bpty.customer.bwin" || session.CONTEXT=="bpty.customer.premium" || session.CONTEXT=="bpty.customer.games" || session.CONTEXT=="bpty.customer.party US" || session.CONTEXT=="bpty.customer.pmu")
 						ul.nav.navbar-nav
 							li.dropdown(id="fat-menu")
@@ -63,7 +54,6 @@ block content
 								ul.dropdown-menu(role="menu" aria-labelledby="reports")
 									li(role="presentation")
 										a(role="menuitem" tabindex="-1" href='/dashboard/opsreport/#{_.last(session.CONTEXT.split("."))}') opsreport	
-						
 						ul.nav.navbar-nav
 							li.dropdown(id="fat-menu")
 								a.dropdown-toggle(id="import" href="#" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false") targets
@@ -71,8 +61,6 @@ block content
 								ul.dropdown-menu(role="menu" aria-labelledby="targets")
 									li(role="presentation")
 											a(role="menuitem" tabindex="-1" href="/targets/overview") targets overview
-					
-
 					if session.AUTH=="exec" || session.AUTH=="admin" || session.AUTH=="studios"
 						ul.nav.navbar-nav
 							li.dropdown(id="fat-menu")
@@ -91,9 +79,6 @@ block content
 										a(href='/playbooks') playbooks
 									li
 										a(href='/incidentmatrix') incident matrix
-
-
-						
 						ul.nav.navbar-nav
 							li.dropdown(id="fat-menu")
 								a.dropdown-toggle(id="targets" href="#" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false") targets
@@ -117,55 +102,44 @@ block content
 										a(role="menuitem" tabindex="-1" href="/organization/circlecontain/targets") targets circle contain map
 									li(role="presentation")
 										a(role="menuitem" tabindex="-1" href="/organization/partition/targets") targets partition
-
-						
 					if session.AUTH=="admin" 
 						ul.nav.navbar-nav
 							li.dropdown(id="fat-menu")
 								a.dropdown-toggle(id="admin" href="#" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false") boards
 									span.caret
-
 								ul.dropdown-menu(role="menu" aria-labelledby="admin")
 									li(role="presentation")
 										a(role="menuitem" tabindex="-1" href="/roadmaps") roadmap boards
 									li(role="presentation")
 										a(role="menuitem" tabindex="-1" href="/dashboard/corpIT") corpIT dashboard
-
 									li(role="presentation")
 										a(role="menuitem" tabindex="-1" href="/boards") kanban boards
-
 									li(role="presentation")
 										a(role="menuitem" tabindex="-1" href="/dashboard") dash boards
 									li(role="presentation")
 										a(role="menuitem" tabindex="-1" href="/whiteboards") white boards
-
 						ul.nav.navbar-nav
 							li.dropdown(id="fat-menu")
 								a.dropdown-toggle(id="admin" href="#" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false") products & services
 									span.caret
-
 								ul.dropdown-menu(role="menu" aria-labelledby="admin")
 									li(role="presentation")
 										a(role="menuitem" tabindex="-1" href="/organization/circlecontain/productportfolio") product portfolio (pka)
 									li(role="presentation")
 										a(role="menuitem" tabindex="-1" href="/organization/circlecontain/productcatalog") product & service catalog (stg)
-
 					if session.AUTH=="exec" || session.AUTH=="admin" 
 						ul.nav.navbar-nav
 							li.dropdown(id="fat-menu")
 								a.dropdown-toggle(id="org" href="#" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false") organization
 									span.caret
-
 								ul.dropdown-menu(role="menu" aria-labelledby="org")
 									li(role="presentation")
 										a(role="menuitem" tabindex="-1" href="/organization/tree") tree
-
 									each _date in organizationhistoryDates
 										li(role="presentation")
 											a(role="menuitem" tabindex="-1" href="/organization/history/tree/#{_date.oDate}") tree [#{_date.oDate}]
 									li(role="presentation")
 										a(role="menuitem" tabindex="-1" href="/organization/radial") radial
-								
 									li(role="presentation")
 										a(role="menuitem" tabindex="-1" href="/organization/circlecontain") circle contain
 									each _date in organizationhistoryDates
@@ -193,16 +167,11 @@ block content
 										a(role="menuitem" tabindex="-1" href="/firereports") firerport list
 									li(role="presentation")
 										a(role="menuitem" tabindex="-1" href="/dashboard/firereport") firerport online prototype
-									//li(role="presentation")
-										//a(role="menuitem" tabindex="-1" href="/dashboard/opsreport/bwin") opsreport - bwin 
-
-
 					if session.AUTH=="admin"
 						ul.nav.navbar-nav
 							li.dropdown(id="fat-menu")
 								a.dropdown-toggle(id="import" href="#" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false") xlsx import
 									span.caret
-
 								ul.dropdown-menu(role="menu" aria-labelledby="import")
 									li(role="presentation")
 										a(role="menuitem" tabindex="-1" href="/upload/xlsx/portfolio") portfolio gate
@@ -212,12 +181,10 @@ block content
 										a(role="menuitem" tabindex="-1" href="/upload/xlsx/target2employee") target2employee
 									li(role="presentation")
 										a(role="menuitem" tabindex="-1" href="/upload/xlsx/plain") plain **you should know what you do !
-
 						ul.nav.navbar-nav
 							li.dropdown(id="fat-menu")
 								a.dropdown-toggle(id="admin" href="#" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false") admin
 									span.caret
-
 								ul.dropdown-menu(role="menu" aria-labelledby="admin")
 									li(role="presentation")
 										a(role="menuitem" tabindex="-1" href="/admin?type=initiatives") initiatives
@@ -255,7 +222,6 @@ block content
 										a(role="menuitem" tabindex="-1" href="/admin?type=content") content
 									li(role="presentation")
 										a(role="menuitem" tabindex="-1" href="/admin?type=incidenttracker") incident tracker
-
 									li(role="presentation")
 										a(role="menuitem" tabindex="-1" href="/admin?type=incidents&setfilter=priority^P01") snow.incidents (P1 filtered)
 									li(role="presentation")
@@ -278,8 +244,6 @@ block content
 										a(role="menuitem" tabindex="-1" href="/admin/config") admin | config
 									li(role="presentation")
 										a(role="menuitem" tabindex="-1" href="/admin/changelog") admin | changelog
-
-										
 
 	include includes/material
 

@@ -77,11 +77,11 @@ mixin renderEpic(epic)
 
 block content
 	div.container-fluid
-		span(style="color:#999999;font-size:8px") #{pgates.length} [portfolio board] snapshots online | last v1.epics sync #{v1LastUpdate}
+		span(style="color:#999999;font-size:8px") #{pgates.length} [portfolio meeting] snapshots online | last v1.epics sync #{v1LastUpdate}
 		each _date in pgates
 			div.panel(style="max-width:1400px")
 				div.panel-heading(style="font-size:16px; color:black") 
-					| PORTFOLIO BOARD SNAPSHOT 
+					| PORTFOLIO MEETING SNAPSHOT 
 					br
 					span(style="font-size:28px;font-weight:bold") #{_date.pDate}
 					br

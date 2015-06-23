@@ -55,23 +55,53 @@ style.
 
 link(rel='stylesheet', href='/stylesheets/flip.css')
 
+
+mixin ragStatus(rag,size)
+	div(style="margin:auto;width: #{size}px;height: #{size}px;-moz-border-radius: 50%; -webkit-border-radius: 50%; border-radius: 50%;background-color:#{mapRAG2Color(rag)};margin-top:2px")
+	
 // -----------------------------------------------------------------------
 // ------------------ mixin L1 targets ----------------------------
 // -----------------------------------------------------------------------
-mixin renderL1Targets(target)
-	// div.table-responsive
+mixin renderL1Target(target)
 	td(style="text-align:center;padding:10px")
-		div(style=";color:white;background-color:#{color_PL}")
-			span(style="line-height:28px;font-size:24px;font-weight:bold")
-				|#{target.directMetric}
-			span(style="line-height:12px;font-size:11px;font-weight:normal")
-				|&nbsp;#{target.directMetricScale}
-			div
-				span(style="line-height:20px;font-weight:normal;font-size:11px") #{target.directTarget}
-			div
-				span(style="line-height:16px;font-weight:bold;font-size:14px") #{target.directTime}
+		div.panel
+			div(style="line-height:8px") &nbsp;
+			table.responsive(style="max-width:300px;color:#{color_PL};background-color:white")
+				tr
+					td(style="width:350px;text-align:center")
+						div
+							span(style="") 
+								a.targetDetail(style="line-height:20px;font-weight:normal;font-size:16px" id="targetL1Detail" href="#targetL1Detail" title="show more details..."
+									data-_id="#{target._id}"
+									data-id="#{target.id}"
+									data-name="#{target.target}"
+									data-rag="#{target.rag}"
+									data-ragComment="#{target.ragComment}"
+									data-outcome="#{target.outcome}"
+									data-bywhen="#{target.byWhen}"
+									data-description="#{target.description}"
+									data-baseline="#{target.baseline}"
+									data-measure="#{target.measure}"
+									data-link="#{target.link}"
+									data-comments="#{target.comments}"
+									data-sponsor="#{target.sponsor}"
+									data-contributors="#{target.contributors}"
+									data-start="#{target.start}"
+									data-end="#{target.end}"
+									data-group="#{target.group}"
+									data-icon="#{target.icon}"
+									data-theme="#{target.theme}"
+									data-cluster="#{target.cluster}"
+									) #{target.directTarget}
+						span(style="line-height:28px;font-size:28px;font-weight:bold")
+							|#{target.directMetric}
+						span(style="line-height:12px;font-size:11px;font-weight:normal")
+							|&nbsp;#{target.directMetricScale}
+							+ragStatus(target.rag,15)
+						div(style="line-height:8px") &nbsp;
+							//span(style="line-height:16px;font-weight:normal;font-size:10px") #{target.directTime}
 		div(style="margin-top:10px;margin-bottom:10px")
-			img(src="/images/space_triangle_grey_up.png" style="vertical-align:middle;display:block;margin: auto auto" height="10px" width="80px"  )
+			img(src="/images/space_triangle_grey_up.png" style="vertical-align:middle;display:block;margin: auto auto" height="10px" width="120px"  )
 
 // -----------------------------------------------------------------------
 // ------------------ mixin target lane start ----------------------------
@@ -79,10 +109,10 @@ mixin renderL1Targets(target)
 mixin renderTargetLane(lane)
 	div.col-sm-2.col-md-4.col-lg-4
 		div(style="min-width:350px;max-width:600px" class="panel-body-lane")
-			div(class="box-#{lane.name.toLowerCase()}" style="text-align:center;line-height:50px;vertical-align:middle")
-				img(src="/images/targets/#{lane.name}_white_circle.png" height="40px" style="vertical-align:middle;margin-bottom:8px")
+			div(class="box-#{lane.name.toLowerCase()}" style="text-align:center;line-height:40px;vertical-align:middle")
+				img(src="/images/targets/#{lane.name}_white_circle.png" height="30px" style="vertical-align:middle;margin-bottom:8px")
 				//span(class="text-heading-#{lane.name.toLowerCase()}" style="margin-left:2px;font-size:26px;color:black;font-weight:bold")  #{lane.name}
-				span(style="margin-left:2px;font-size:28px;color:white;font-weight:bold")  #{lane.name}
+				span(style="margin-left:2px;font-size:24px;color:white;font-weight:normal")  #{lane.name}
 					//span(class="text-heading-#{lane.name.toLowerCase()}" style="font-size:14px;color:black;font-weight:normal") #{lane.children[0].name.toUpperCase()}
 				//span(style="font-size:14px;color:white;font-weight:normal") #{lane.children[0].name.toUpperCase()}
 			br
@@ -90,12 +120,12 @@ mixin renderTargetLane(lane)
 				each t in lane.children[0].children
 					center
 						div.col-xs-6.col-sm-6.col-md-6.col-lg6
-							+renderTarget(t)
+							+renderL2Target(t)
 
 // -----------------------------------------------------------------------
 // ------------------ mixin target card start ----------------------------
 // -----------------------------------------------------------------------
-mixin renderTarget(target)
+mixin renderL2Target(target)
 	div.fliptarget(id="#{target.name}")
 		div.front
 			div.panel(style="margin-left:-10px;position: relative;background-color:white;width:230px;text-align: left;height:280px")
@@ -118,15 +148,15 @@ mixin renderTarget(target)
 					table(style="")
 						each line in target.children
 							tr(style="line-height:15px")
-								td(style="width:205px;font-size:10px;text-align:left;vertical-align:top;border-bottom: 1px solid lightgrey")
-									table(style="width:190px")
-										tr(style="line-height:15px")
+								td(style="font-size:10px;text-align:left;vertical-align:top")
+									table(style="width:210px")
+										tr(style="line-height:15px;border-bottom: 1px solid lightgrey")
 											td(style="width:10px;font-size:10px;text-align:left")
 												|-
 											td(style="width:145px;font-size:11px;font-weight:bold")
 												div(style="width:140px")
 													//a(style="color:black" id="#{line.id}" href="" title="show more details...") #{line.target}
-													a.targetDetail(style="color:black" id="targetDetail" href="#targetDetail" title="show more details..."
+													a.targetDetail(style="color:black" id="targetL2Detail" href="#targetL2Detail" title="show more details..."
 														data-_id="#{line._id}"
 														data-id="#{line.id}"
 														data-name="#{line.target}"
@@ -148,14 +178,11 @@ mixin renderTarget(target)
 														data-theme="#{line.theme}"
 														data-cluster="#{line.cluster}"
 														) #{line.target}
-											td(style="width:10px;font-size:10px;font-style:italic")
-
-											td(style="width:15px;font-size:8px;vertical-align:top")
-												
-												div(style="margin-left:2px;width: 8px;height: 8px;-moz-border-radius: 50%; -webkit-border-radius: 50%; border-radius: 50%;background-color:#{mapRAG2Color(line.rag)};margin-top:2px")
-													
-											td(style="width:25px;font-size:10px;vertical-align:top")
+											
+											td(style="width:15px;font-size:10px;vertical-align:top")
 												|#{line.id}
+											td(style="width:10px;font-size:8px;vertical-align:top")
+												div(style="margin-left:2px;width: 10px;height: 10px;-moz-border-radius: 50%; -webkit-border-radius: 50%; border-radius: 50%;background-color:#{mapRAG2Color(line.rag)};margin-top:2px")
 							tr(style="line-height:3px")
 								td
 									|&nbsp;
@@ -163,7 +190,8 @@ mixin renderTarget(target)
 // -----------------------------------------------------------------------
 // ------------------ mixin target detail modal ----------------------------
 // -----------------------------------------------------------------------
-mixin renderTargetDetail(target)
+
+mixin renderL1TargetDetail(target)
 	div.modal-header
 		button.close(type="button" data-dismiss="modal" aria-label="Close")
 			span(aria-hidden="true") &times
@@ -171,16 +199,65 @@ mixin renderTargetDetail(target)
 			table.table.table-borderless(style="width:450px;vertical-align:middle")
 				tr(style="vertical-align:middle")
 					td(style="width:70px;text-align:right;font-style:italic;color:black;font-size:12px;vertical-align:middle")
-						img(id="modal_theme_icon" src="" height="60px")
+					td(style="width:350px;vertical-align:middle")
+				tr(style="vertical-align:middle")
+					td
+					td(style="text-align:left;color:black;font-size:12px;vertical-align:top")
+						span(id="targetGroup" style="font-weight:normal;font-size:14px")
+						|&nbsp;&nbsp;
+						img(id="modal_group_icon" src="" height="25px")
+						
+	div.modal-body
+		div
+			table.table(style="width:450px;vertical-align:middle")
+				tr(style="vertical-align:middle")
+					td(style="width:70px;text-align:right;font-style:italic;color:grey;font-size:10px;vertical-align:top")
+						|target
+					td(style="width:350px")
+						span(id="targetId" style=";font-size:12px;vertical-align:top")
+						| &nbsp; - &nbsp;
+						span(id="targetName" style="font-weight:bold;font-size:12px;vertical-align:top")
+				tr(style="vertical-align:top")
+					td(style="text-align:right;font-style:italic;color:grey;font-size:10px;vertical-align:middle")
+						|RAG
+					td
+						div(id ="targetRag")
+				tr(style="vertical-align:middle")
+					td(style="text-align:right;font-style:italic;color:grey;font-size:10px;vertical-align:top")
+						|outcome
+					td
+						span(id="targetOutcome" style=";font-size:12px;vertical-align:top")
+				tr(style="vertical-align:middle")
+					td(style="text-align:right;font-style:italic;color:grey;font-size:10px;vertical-align:top")
+						|description
+					td
+						span(id="targetDescription" style=";font-size:12px;vertical-align:top")
+
+	div.modal-footer
+		button.btn.btn-default.btn-xs(type="button" data-dismiss="modal")
+			span Close
+
+
+
+mixin renderL2TargetDetail(target)
+	div.modal-header
+		button.close(type="button" data-dismiss="modal" aria-label="Close")
+			span(aria-hidden="true") &times
+		h4.modal-title(id="myModalLabel")
+			table.table.table-borderless(style="width:450px;vertical-align:middle")
+				tr(style="vertical-align:middle")
+					td(style="width:70px;text-align:right;font-style:italic;color:black;font-size:12px;vertical-align:middle")
+						img(id="modal_theme_icon" src="" height="40px")
 					td(style="width:350px;vertical-align:middle")
 						div(id="targetTheme" style="")
 						div(id="targetCluster" style="")
 				tr(style="vertical-align:middle")
 					td
 					td(style="text-align:left;color:black;font-size:12px;vertical-align:top")
-						img(id="modal_group_icon" src="" height="35px")
+						span(id="targetGroup" style="font-weight:normal;font-size:14px")
 						|&nbsp;&nbsp;
-						span(id="targetGroup" style="font-weight:bold;font-size:14px")
+						img(id="modal_group_icon" src="" height="25px")
+						
 	div.modal-body
 		div
 			table.table(style="width:450px;vertical-align:middle")
@@ -261,36 +338,30 @@ mixin renderTargetDetail(target)
 // -----------------------------------------------------------------------
 block content
 	
-div(style="text-align:right")
-	a(href="/api/space/export/xlsx/targets" title="export targets as xlsx")
-		span(style="font-size:10px;text-align:right") >> export targets xlsx &nbsp;
-		img(src="/images/space/logo_msexcel.png" height="30px")
+// ------------------------------ target detail modal -------------------------------
+div.modal.fade(id="targetL1Detail" tabindex="-1" role="dialog" aria-labelledby="targetL1DetailModal" aria-hidden="true" )
+	div.modal-dialog
+		div.modal-content(style="opacity:1")
+			+renderL1TargetDetail()
 
 
 // ------------------------------ target detail modal -------------------------------
-div.modal.fade(id="targetDetail" tabindex="-1" role="dialog" aria-labelledby="targetDetailModal" aria-hidden="true" )
+div.modal.fade(id="targetL2Detail" tabindex="-1" role="dialog" aria-labelledby="targetL2DetailModal" aria-hidden="true" )
 	div.modal-dialog
 		div.modal-content(style="opacity:1")
-			+renderTargetDetail()
+			+renderL2TargetDetail()
 
 // ------------------------------ main view -------------------------------
 div.container-fluid(style="max-width:1600px")
 	div.row
+		if vision
+			div(style="font-weight:bold;font-size:20px;color:#{color_PL};text-align:center") "#{vision}"
+		div(style="font-weight:normal;font-size:48px;color:#{color_PL};text-align:center") #{period} 
+		div(style="font-weight:normal;font-size:28px;color:#{color_PL};text-align:center") KPI's & TARGETS
+		div(style="font-weight:normal;font-size:12px;color:#{color_PL};text-align:center") as of 2015-06-23
 		
-		if session.AUTH=="admin" || session.AUTH=="exec"
-			div(style=";color:white;background-color:#{color_PARENT};text-align:center;font-size:16px;font-weight:normal;margin-left:10px;margin-right:10px;line-height:32px;") 
-				span(style="line-height:28px;font-size:16px;font-weight:normal")
-					a(href="/targets/rollup" style="line-height:28px;font-size:16px;font-weight:normal;color:white") #{_.first(context.split("."))} group
-			div(style="margin-top:10px;margin-bottom:10px")
-				img(src="/images/space_triangle_grey_up.png" style="vertical-align:middle;display:block;margin: auto auto" height="10px" width="80px" )
-
-		div(style="margin-top:10px;margin-bottom:10px")
-			img(src="/images/#{context}_logo.png" style="vertical-align:middle;display:block;margin: auto auto" height="40px"  )
-		div(style="font-weight:bold;font-size:20px;color:#{color_PL};text-align:center") "#{vision}"
-		div(style="font-weight:normal;font-size:14px;color:#{color_PL};text-align:center") #{period}
-		div(style="margin-top:10px;margin-bottom:10px")
-			img(src="/images/space_triangle_grey_up.png" style="vertical-align:middle;display:block;margin: auto auto" height="20px" width="300px"  )
-
+		
+		br
 		div(style=";color:white;background-color:#{color_PL};text-align:center;font-size:16px;font-weight:normal;margin-left:10px;margin-right:10px;line-height:32px") 
 			span(style="line-height:28px;font-size:16px;font-weight:normal;color:white") #{_.last(context.split("."))} P&L
 				//a(href="/targets/rollup" style="line-height:28px;font-size:16px;font-weight:normal;color:white") #{context} group
@@ -301,12 +372,18 @@ div.container-fluid(style="max-width:1600px")
 		table.table.table-borderless(style="background-color:transparent")
 			tr
 				each target in L1targets
-					+renderL1Targets(target)
+					+renderL1Target(target)
 
 	div.row(style="vertical-align:top")
 			each lane in targets
 				if lane.name != "P&L"
 					+renderTargetLane(lane)
+
+	div(style="text-align:right")
+		a(href="/api/space/export/xlsx/targets" title="export targets as xlsx")
+			span(style="font-size:10px;text-align:right") >> export targets xlsx &nbsp;
+			img(src="/images/space/logo_msexcel.png" height="30px")
+
 
 
 script.
@@ -339,7 +416,7 @@ script.
 	* http://stackoverflow.com/questions/20723111/passing-data-to-bootstrap-3-modal
 	*/
 	$(document).on("click", ".targetDetail", function (e) {
-		console.log("**************** targetDetail called *************************");
+		console.log("**************** targetL2Detail called *************************");
 		e.preventDefault();
 
 		var _self = $(this);
@@ -387,7 +464,7 @@ script.
 		$(".modal-header #targetId").text(_id);
 		$(".modal-header #targetTheme").text(_theme);
 		$(".modal-header #targetCluster").text(_cluster);
-		$(".modal-header #targetGroup").text(_group);
+		$(".modal-header #targetGroup").text(_.initial(_id.split("."))+ " - "+_group);
 
 		$(".modal-body #targetId").text(_id);
 		$(".modal-header #targetName").text(_name);
@@ -402,7 +479,7 @@ script.
 		$(".modal-body #targetSponsor").text(_sponsor);
 		
 		$(".modal-body #targetContributorTree").html("&rarr; show outcome2employee 'broccoli'");
-		$(".modal-body #targetContributorTree").attr("href","/targets/employee2target?pickL2="+_id+"&showEmployeeTree=location");
+		$(".modal-body #targetContributorTree").attr("href","/targets/employee2target?pickL2="+_id+"&showEmployeeTree=costCenter");
 		
 		$(".modal-body #targetContributorList").html("&rarr; show target2employee list");
 		$(".modal-body #targetContributorList").attr("href","/targets/target2outcomes/"+_id);
@@ -415,9 +492,9 @@ script.
 		$("#modal_theme_icon").attr("src","/images/targets/"+_theme+".png");
 		$("#modal_group_icon").attr("src","/images/iconexp/"+_icon);
 
-		$("#targetTheme").attr("style","font-weight:bold;font-size:32px;color:"+_getColor(_theme));
-		$("#targetCluster").attr("style","font-weight:bold;font-size:18px;color:"+_getColor(_theme));
-		$("#targetRag").attr("style","background-color:"+mapRAG2Color(_rag)+";border-radius: 100%;width:20px;height:20px;");
+		$("#targetTheme").attr("style","font-weight:normal;font-size:24px;color:"+_getColor(_theme));
+		$("#targetCluster").attr("style","font-weight:normal;font-size:16px;color:"+_getColor(_theme));
+		$("#targetRag").attr("style","background-color:"+mapRAG2Color(_rag)+";border-radius: 100%;width:15px;height:15px;");
 		if (_ragComment){
 			//write text after RAG indicator
 		}
