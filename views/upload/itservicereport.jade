@@ -6,7 +6,7 @@ div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;back
 	div.panel-heading
 		i.glyphicon.glyphicon-floppy-open(style="font-size:20px")
 		span(style="font-size:25px")&nbsp; UPLOAD 
-		span(style="font-size:14px") firereport 
+		
 		
 	div.panel-body 
 		
@@ -15,17 +15,17 @@ div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;back
 				td.td(style="width:70px")
 					img(src="/images/space/logo_pdf.jpg" height="40px") 
 				td.td(style="font-size:14px;font-weight:bold;vertical-align:middle")
-					span Fire Report 
+					span IT Service  Report 
 			tr
 				td(style="font-size:12px;vertical-align:middle")
 					|format:
 				td(style="font-style:italic;font-size:12px;vertical-align:middle")
-					|firereport_{YEAR}-{TYPE}-{COUNT}.pdf
+					|itservicereport_{YEAR}-{TYPE}-{COUNT}.pdf
 			tr
 				td(style="font-size:12px;vertical-align:middle")
 					|example:
 				td(style="font-style:italic;font-size:12px;vertical-align:middle")
-					|firereport_2015-week-7.pdf
+					|itservicereport-week-7.pdf
 			tr
 				td
 				td
@@ -33,7 +33,7 @@ div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;back
 			
 
 	div.form-box
-		form(id="uploadForm" enctype="multipart/form-data" action="/upload/process/firereport" method="post")
+		form(id="uploadForm" enctype="multipart/form-data" action="/upload/process/itservicereport" method="post")
 			
 			
 			.fileinput.fileinput-new.input-group(data-provides="fileinput")
@@ -49,7 +49,7 @@ div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;back
 			
 			
 			
-			input.btn.btn-primary.btn-block(id="uploadfirereportsubmit" type="submit" value="Upload firereport" data-loading-text="...processing..." name="submit" data-toggle="tooltip" data-placement="top" title="......explanaotry stuff")
+			input.btn.btn-primary.btn-block(id="uploaditservicereportsubmit" type="submit" value="Upload itservicereport" data-loading-text="...processing..." name="submit" data-toggle="tooltip" data-placement="top" title="......explanaotry stuff")
 	
 			if success && uploadfilename
 				.alert.alert-success(role="alert" style="font-size:10px; font-weight:normal")
@@ -73,6 +73,6 @@ include ../includes/material
 
 
 	script.
-		$('#uploadfirereportsubmit').on('click', function () {
+		$('#uploaditservicereportsubmit').on('click', function () {
 			var $btn = $(this).button('loading')
 		})

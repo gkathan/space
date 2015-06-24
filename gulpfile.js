@@ -244,7 +244,7 @@ gulp.task('transfermongodump', function () {
 
 	return gulpSSH.sftp('read','./'+MONGODUMP)
     .pipe(gulp.dest(DUMP))
-    .pipe(unzip())
+    //.pipe(unzip())
     .pipe(gulp.dest(DUMP+'mongodump_space'+SERVER.env+'_'+timestamp));
 });
 
@@ -255,7 +255,7 @@ gulp.task('transferfilesdump', function () {
 
 	return gulpSSH.sftp('read','./'+FILESDUMP)
     .pipe(gulp.dest(DUMP))
-    .pipe(unzip())
+    //.pipe(unzip())
     .pipe(gulp.dest(DUMP+'files_space'+SERVER.env+'_'+timestamp));
 });
 

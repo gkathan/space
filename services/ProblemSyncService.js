@@ -97,8 +97,9 @@ function _syncProblem(url,type,callback){
 		})
 
 	}).on('error',function(err){
-			logger.error('[ProblemSyncService] says: something went wrong on the request', err.request.options);
-			app.io.emit('syncUpdate', {status:_statusERROR,from:_syncName,timestamp:_timestamp,info:err.message,type:type});
+			var _message = '[ProblemSyncService] says: something went wrong on the request'+err.message;
+			logger.error(_message, err.request.options);
+			app.io.emit('syncUpdate', {status:_statusERROR,from:_syncName,timestamp:_timestamp,info:_message,type:type});
 			_syncStatus.saveLastSync(_syncName,_timestamp,_message,_statusERROR,type);
 	})
 }

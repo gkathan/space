@@ -35,7 +35,7 @@ block content
 						li
 							a(href='/login') login
 						li
-							a(role="menuitem" tabindex="-1" href="/firereports") IT service reports
+							a(role="menuitem" tabindex="-1" href="/itservicereports") IT service reports
 					if session.AUTH
 						li.active
 							a(href='/logout') logout
@@ -74,7 +74,7 @@ block content
 									li(role="presentation")
 										a(role="menuitem" tabindex="-1" href="/labels") labels
 									li(role="presentation")
-										a(role="menuitem" tabindex="-1" href="/firereports") fire reports
+										a(role="menuitem" tabindex="-1" href="/itservicereports") IT service reports
 									li
 										a(href='/playbooks') playbooks
 									li
@@ -162,11 +162,11 @@ block content
 									span.caret
 								ul.dropdown-menu(role="menu" aria-labelledby="reports")
 									li(role="presentation")
-										a(role="menuitem" tabindex="-1" href="/upload/firereport") upload firereport pdf
+										a(role="menuitem" tabindex="-1" href="/upload/itservicereport") upload IT service report pdf
 									li(role="presentation")
-										a(role="menuitem" tabindex="-1" href="/firereports") firerport list
+										a(role="menuitem" tabindex="-1" href="/itservicereports") IT service report list
 									li(role="presentation")
-										a(role="menuitem" tabindex="-1" href="/dashboard/firereport") firerport online prototype
+										a(role="menuitem" tabindex="-1" href="/dashboard/itservicereport") IT service report online prototype
 					if session.AUTH=="admin"
 						ul.nav.navbar-nav
 							li.dropdown(id="fat-menu")
@@ -217,7 +217,7 @@ block content
 									li(role="presentation")
 										a(role="menuitem" tabindex="-1" href="/admin?type=availability") availability
 									li(role="presentation")
-										a(role="menuitem" tabindex="-1" href="/admin?type=firereport") fire reports
+										a(role="menuitem" tabindex="-1" href="/admin?type=itservicereport") IT service reports
 									li(role="presentation")
 										a(role="menuitem" tabindex="-1" href="/admin?type=content") content
 									li(role="presentation")

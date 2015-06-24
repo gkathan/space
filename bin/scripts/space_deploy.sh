@@ -18,16 +18,18 @@ if [ -a $PACKAGE ]; then
 
 
 	mv $PACKAGE space/app/
-	# transfer the files directory from roll_back (all the uploads,..)
 
+	# transfer the files directory from roll_back (all the uploads,..)
 	if [ -d "space/app_rollback/public/files" ]; then
-		echo "handle firereports"
-		mkdir space/app/public/files/firereports -p
-		cp -r space/app_rollback/public/files/firereports/* space/app/public/files/firereports/
+		echo "handle IT service reports"
+		mkdir space/app/public/files/itservicereports -p
+		cp -r space/app_rollback/public/files/itservicereports/* space/app/public/files/itservicereports/
 	fi
 
 	cd space/app
 	unzip ./$PACKAGE
+
+
 
 else
 	echo "[s p a c e - deploy] says: SORRY but there is NO $PACKAGE around .... "

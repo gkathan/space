@@ -24,7 +24,7 @@
 
 		"soc_outages" : {
 			"mode": "on",
-			"intervalMinutes" :10,
+			"intervalMinutes" :240,
 			"url" : "http://avreport.bwinparty.corp/API/AvReportingService.svc/GetIncidentsDatapoints/?from=2014-01-01"
 		},
 

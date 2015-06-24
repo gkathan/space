@@ -81,13 +81,13 @@ router.get('/xlsx/target2employee', function(req, res) {
 });
 
 
-router.get('/firereport', function(req, res) {
+router.get('/itservicereport', function(req, res) {
    if (!req.session.AUTH){
 		req.session.ORIGINAL_URL = req.originalUrl;
 		res.redirect("/login");
 	}
 
-    res.render('upload/firereport',{title:'upload firereport .pdf'});
+    res.render('upload/itservicereport',{title:'upload IT service.pdf'});
 });
 
 
@@ -160,7 +160,7 @@ router.post('/process/xlsx',function(req,res){
 
 
 
-router.post('/process/firereport',function(req,res){
+router.post('/process/itservicereport',function(req,res){
   if(req.files){
 
 
@@ -183,26 +183,26 @@ router.post('/process/firereport',function(req,res){
     if (_filename==undefined){
 			res.locals.success=false;
 			logger.debug("no filename: sending back...");
-			res.locals.message="[s p a c e] says: come on ! - you should pick a valid firereport file to upload ;-)";
-      res.render("upload/firereport", { title: 's p a c e - import' });
+			res.locals.message="[s p a c e] says: come on ! - you should pick a valid itservicereport file to upload ;-)";
+      res.render("upload/itservicereport", { title: 's p a c e - import' });
 			return;
 		}
 		if (_.last(_filename.split("."))!="pdf"){
 			res.locals.success=false;
 			logger.debug("no pdf file ....");
-			res.locals.message="[s p a c e] says: "+_filename+" seems not to be a valid .pdf firereport file...";
-			res.render("upload/firereport", { title: 's p a c e - import' });
+			res.locals.message="[s p a c e] says: "+_filename+" seems not to be a valid .pdf itservicereport file...";
+			res.render("upload/itservicereport", { title: 's p a c e - import' });
 			return;
 		}
 		var pdfimport = require('../services/PdfImportService');
-    pdfimport.store(_filename,"firereports");
+    pdfimport.store(_filename,"itservicereports");
 
     res.locals.success=true;
     res.locals.uploadfilename= _filename;
-    res.render("upload/firereport", { title: 's p a c e - import' });
+    res.render("upload/itservicereport", { title: 's p a c e - import' });
   }
   else{
-	 res.redirect("/upload/firereport");//,{msg:"[SUCCESS] File uploaded, converted to json and imported to mongoDB"});
+	 res.redirect("/upload/itservicereport");//,{msg:"[SUCCESS] File uploaded, converted to json and imported to mongoDB"});
 
   }
 });

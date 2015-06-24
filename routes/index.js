@@ -70,11 +70,11 @@ router.get('/labels', function(req, res) {
 });
 
 
-router.get('/firereports', function(req, res) {
-	var firereports =  db.collection('firereport');
-		firereports.find().sort({$natural:-1}, function (err, docs){
-			res.locals.firereports=docs;
-			res.render('firereports', { title: 's p a c e - firereports' })
+router.get('/itservicereports', function(req, res) {
+	var itservicereports =  db.collection('itservicereport');
+		itservicereports.find().sort({$natural:-1}, function (err, docs){
+			res.locals.itservicereports=docs;
+			res.render('itservicereports', { title: 's p a c e - IT service reports' })
 	});
 });
 

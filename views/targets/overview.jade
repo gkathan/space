@@ -56,8 +56,9 @@ style.
 link(rel='stylesheet', href='/stylesheets/flip.css')
 
 
-mixin ragStatus(rag,size)
+mixin ragStatus(rag,size,ragComment)
 	div(style="margin:auto;width: #{size}px;height: #{size}px;-moz-border-radius: 50%; -webkit-border-radius: 50%; border-radius: 50%;background-color:#{mapRAG2Color(rag)};margin-top:2px")
+		
 	
 // -----------------------------------------------------------------------
 // ------------------ mixin L1 targets ----------------------------
@@ -76,7 +77,7 @@ mixin renderL1Target(target)
 									data-id="#{target.id}"
 									data-name="#{target.target}"
 									data-rag="#{target.rag}"
-									data-ragComment="#{target.ragComment}"
+									data-ragcomment="#{target.ragComment}"
 									data-outcome="#{target.outcome}"
 									data-bywhen="#{target.byWhen}"
 									data-description="#{target.description}"
@@ -84,8 +85,8 @@ mixin renderL1Target(target)
 									data-measure="#{target.measure}"
 									data-link="#{target.link}"
 									data-comments="#{target.comments}"
-									data-sponsor="#{target.sponsor}"
-									data-contributors="#{target.contributors}"
+									data-metric="#{target.directMetric}"
+									data-scale="#{target.directMetricScale}"
 									data-start="#{target.start}"
 									data-end="#{target.end}"
 									data-group="#{target.group}"
@@ -161,7 +162,6 @@ mixin renderL2Target(target)
 														data-id="#{line.id}"
 														data-name="#{line.target}"
 														data-rag="#{line.rag}"
-														data-ragComment="#{line.ragComment}"
 														data-outcome="#{line.outcome}"
 														data-bywhen="#{line.byWhen}"
 														data-description="#{line.description}"
@@ -198,40 +198,48 @@ mixin renderL1TargetDetail(target)
 		h4.modal-title(id="myModalLabel")
 			table.table.table-borderless(style="width:450px;vertical-align:middle")
 				tr(style="vertical-align:middle")
-					td(style="width:70px;text-align:right;font-style:italic;color:black;font-size:12px;vertical-align:middle")
+					td(style="width:70px;text-align:right;font-style:italic;color:#{color_PL};font-size:12px;vertical-align:middle")
+						img(id="modal_theme_iconL1" src="" height="40px")
+					td(style="width:350px;vertical-align:middle;color:#{color_PL}")
+						div(id="targetTheme" style="")
+						div(id="targetCluster" style="")
+				tr(style="vertical-align:middle")
+					td(style="width:70px;text-align:right;font-style:italic;color:#{color_PL};font-size:12px;vertical-align:middle")
 					td(style="width:350px;vertical-align:middle")
 				tr(style="vertical-align:middle")
 					td
-					td(style="text-align:left;color:black;font-size:12px;vertical-align:top")
-						span(id="targetGroup" style="font-weight:normal;font-size:14px")
-						|&nbsp;&nbsp;
-						img(id="modal_group_icon" src="" height="25px")
+					td(style="text-align:left;color:#{color_PL};vertical-align:top")
+						span(id="targetName" style="font-weight:normal;font-size:18px")
 						
 	div.modal-body
 		div
 			table.table(style="width:450px;vertical-align:middle")
+		
 				tr(style="vertical-align:middle")
 					td(style="width:70px;text-align:right;font-style:italic;color:grey;font-size:10px;vertical-align:top")
-						|target
+						|Measure
 					td(style="width:350px")
-						span(id="targetId" style=";font-size:12px;vertical-align:top")
-						| &nbsp; - &nbsp;
-						span(id="targetName" style="font-weight:bold;font-size:12px;vertical-align:top")
+						span(id="targetMeasure" style="font-weight:normal;font-size:12px;vertical-align:top;color:#{color_PL}")
 				tr(style="vertical-align:top")
 					td(style="text-align:right;font-style:italic;color:grey;font-size:10px;vertical-align:middle")
-						|RAG
+						|Target
 					td
-						div(id ="targetRag")
+						div(id ="targetTarget" style="color:#{color_PL};font-weight:bold")
 				tr(style="vertical-align:middle")
 					td(style="text-align:right;font-style:italic;color:grey;font-size:10px;vertical-align:top")
-						|outcome
-					td
-						span(id="targetOutcome" style=";font-size:12px;vertical-align:top")
+						|Current trending
+					td(style="text-align:left")
+						table
+							tr
+								td(style="width:30px")
+									div(id="targetRagL1")
+								td
+									span(id="targetRagCommentL1" style="font-size:12px;color:#{color_PL}")
 				tr(style="vertical-align:middle")
 					td(style="text-align:right;font-style:italic;color:grey;font-size:10px;vertical-align:top")
-						|description
+						|Comments
 					td
-						span(id="targetDescription" style=";font-size:12px;vertical-align:top")
+						span(id="targetComments" style=";font-size:12px;vertical-align:top;color:#{color_PL}")
 
 	div.modal-footer
 		button.btn.btn-default.btn-xs(type="button" data-dismiss="modal")
@@ -263,14 +271,14 @@ mixin renderL2TargetDetail(target)
 			table.table(style="width:450px;vertical-align:middle")
 				tr(style="vertical-align:middle")
 					td(style="width:70px;text-align:right;font-style:italic;color:grey;font-size:10px;vertical-align:top")
-						|target
+						|Target
 					td(style="width:350px")
 						span(id="targetId" style=";font-size:12px;vertical-align:top")
 						| &nbsp; - &nbsp;
 						span(id="targetName" style="font-weight:bold;font-size:12px;vertical-align:top")
 				tr(style="vertical-align:middle")
 					td(style="width:70px;text-align:right;font-style:italic;color:grey;font-size:10px;vertical-align:middle")
-						|sponsor
+						|Sponsor
 					td(style="width:350px;vertical-align:middle")
 						img.img-circle(id ="modal_sponsor_icon" src="" height="30" width="30")
 						span(id="targetSponsor" style="font-weight:normal;vertical-align:middle;margin-left:10px;font-size:12px")
@@ -278,55 +286,41 @@ mixin renderL2TargetDetail(target)
 					td(style="text-align:right;font-style:italic;color:grey;font-size:10px;vertical-align:middle")
 						|RAG
 					td
-						div(id ="targetRag")
+						div(id="targetRag")
+						
 				tr(style="vertical-align:middle")
 					td(style="text-align:right;font-style:italic;color:grey;font-size:10px;vertical-align:top")
-						|outcome
+						|Outcome
 					td
 						span(id="targetOutcome" style=";font-size:12px;vertical-align:top")
 				tr(style="vertical-align:middle")
 					td(style="text-align:right;font-style:italic;color:grey;font-size:10px;vertical-align:top")
-						|by when
-					td
-						span(id="targetByWhen" style=";font-size:12px;vertical-align:top")
-				tr(style="vertical-align:middle")
-					td(style="text-align:right;font-style:italic;color:grey;font-size:10px;vertical-align:top")
-						|description
+						|Description
 					td
 						span(id="targetDescription" style=";font-size:12px;vertical-align:top")
 				tr(style="vertical-align:middle")
 					td(style="text-align:right;font-style:italic;color:grey;font-size:10px;vertical-align:top")
-						|baseline
-					td
-						span(id="targetBaseline" style=";font-size:12px;vertical-align:top")
-				tr(style="vertical-align:middle")
-					td(style="text-align:right;font-style:italic;color:grey;font-size:10px;vertical-align:top")
-						|measure
+						|Measure
 					td
 						span(id="targetMeasure" style=";font-size:12px;vertical-align:top")
 				tr(style="vertical-align:middle")
 					td(style="text-align:right;font-style:italic;color:grey;font-size:10px;vertical-align:top")
-						|link
+						|By when
 					td
-						span(id="targetLink" style=";font-size:12px;vertical-align:top")
+						span(id="targetByWhen" style=";font-size:12px;vertical-align:top")
+
 				tr(style="vertical-align:middle")
 					td(style="text-align:right;font-style:italic;color:grey;font-size:10px;vertical-align:top")
-						|comments
-					td
-						span(id="targetComments" style=";font-size:12px;vertical-align:top")
-				tr(style="vertical-align:middle")
-					td(style="text-align:right;font-style:italic;color:grey;font-size:10px;vertical-align:top")
-						|contributors
+						|Contributors
 					td
 						a(href="#" id="targetContributorTree" style=";font-size:12px;vertical-align:top")
 						br
 						a(href="#" id="targetContributorList" style=";font-size:12px;vertical-align:top")
-						
 				tr(style="vertical-align:middle")
 					td(style="text-align:right;font-style:italic;color:grey;font-size:10px;vertical-align:top")
-						|time period
+						|Comments
 					td
-						span(id="targetTime" style=";font-size:12px;vertical-align:top")
+						span(id="targetComments" style=";font-size:12px;vertical-align:top")						
 
 	div.modal-footer
 		button.btn.btn-default.btn-xs(type="button" data-dismiss="modal")
@@ -339,17 +333,20 @@ mixin renderL2TargetDetail(target)
 block content
 	
 // ------------------------------ target detail modal -------------------------------
+
+
+// ------------------------------ target detail modal -------------------------------
 div.modal.fade(id="targetL1Detail" tabindex="-1" role="dialog" aria-labelledby="targetL1DetailModal" aria-hidden="true" )
 	div.modal-dialog
 		div.modal-content(style="opacity:1")
 			+renderL1TargetDetail()
-
-
-// ------------------------------ target detail modal -------------------------------
+			
 div.modal.fade(id="targetL2Detail" tabindex="-1" role="dialog" aria-labelledby="targetL2DetailModal" aria-hidden="true" )
 	div.modal-dialog
 		div.modal-content(style="opacity:1")
 			+renderL2TargetDetail()
+
+
 
 // ------------------------------ main view -------------------------------
 div.container-fluid(style="max-width:1600px")
@@ -357,13 +354,16 @@ div.container-fluid(style="max-width:1600px")
 		if vision
 			div(style="font-weight:bold;font-size:20px;color:#{color_PL};text-align:center") "#{vision}"
 		div(style="font-weight:normal;font-size:48px;color:#{color_PL};text-align:center") #{period} 
-		div(style="font-weight:normal;font-size:28px;color:#{color_PL};text-align:center") KPI's & TARGETS
+		div(style="font-weight:normal;font-size:28px;color:#{color_PL};text-align:center") KPI's & TARGETS DASHBOARD 
+			sup(style="font-size:10px;top:-15px")
+				|BETA
+		
 		div(style="font-weight:normal;font-size:12px;color:#{color_PL};text-align:center") as of 2015-06-23
 		
 		
 		br
 		div(style=";color:white;background-color:#{color_PL};text-align:center;font-size:16px;font-weight:normal;margin-left:10px;margin-right:10px;line-height:32px") 
-			span(style="line-height:28px;font-size:16px;font-weight:normal;color:white") #{_.last(context.split("."))} P&L
+			span(style="line-height:28px;font-size:16px;font-weight:normal;color:white") #{_.capitalize(_.last(context.split(".")))} P&L
 				//a(href="/targets/rollup" style="line-height:28px;font-size:16px;font-weight:normal;color:white") #{context} group
 			
 		
@@ -426,7 +426,9 @@ script.
 		var _id = _self.data('id');
 		var _name = _self.data('name');
 		var _rag = _self.data('rag');
-		var _ragComment = _self.data('ragComment');
+		//var _ragComment = _self.data('ragComment');
+		var _ragcomment = _self.data('ragcomment');
+		
 		var _outcome = _self.data('outcome');
 		var _byWhen = _self.data('bywhen');
 		var _description = _self.data('description');
@@ -438,6 +440,10 @@ script.
 		var _contributors = _self.data('contributors');
 		var _start = _self.data('start');
 		var _end = _self.data('end');
+
+		var _directMetric = _self.data('metric');
+		var _directMetricScale = _self.data('scale');
+
 
 		var _m1 = moment(_start).format("MMMM");
 		var _m2 = moment(_end).format("MMMM");
@@ -460,6 +466,10 @@ script.
 		console.log("**************** description: "+_description+" *************************");
 		console.log("**************** sponsor: "+_sponsor+" *************************");
 		console.log("**************** byWhen: "+_byWhen+" *************************");
+		console.log("**************** RAG: "+_rag+" *************************");
+		console.log("**************** RAGComment: "+_ragcomment+" *************************");
+		
+		
 		
 		$(".modal-header #targetId").text(_id);
 		$(".modal-header #targetTheme").text(_theme);
@@ -477,6 +487,7 @@ script.
 		$(".modal-body #targetLink").text(_link);
 		$(".modal-body #targetComments").text(_comments);
 		$(".modal-body #targetSponsor").text(_sponsor);
+		$(".modal-body #targetTarget").text(_directMetric+" "+_directMetricScale);
 		
 		$(".modal-body #targetContributorTree").html("&rarr; show outcome2employee 'broccoli'");
 		$(".modal-body #targetContributorTree").attr("href","/targets/employee2target?pickL2="+_id+"&showEmployeeTree=costCenter");
@@ -485,18 +496,25 @@ script.
 		$(".modal-body #targetContributorList").attr("href","/targets/target2outcomes/"+_id);
 		
 		$(".modal-body #targetTime").text(_time);
-		$(".modal-body #targetRAGComment").text(_ragComment);
+		$(".modal-body #targetRAGComment").text(_ragcomment);
 
 
 
 		$("#modal_theme_icon").attr("src","/images/targets/"+_theme+".png");
+		$("#modal_theme_iconL1").attr("src","/images/targets/"+_theme+".png");
+
 		$("#modal_group_icon").attr("src","/images/iconexp/"+_icon);
+		
 
 		$("#targetTheme").attr("style","font-weight:normal;font-size:24px;color:"+_getColor(_theme));
 		$("#targetCluster").attr("style","font-weight:normal;font-size:16px;color:"+_getColor(_theme));
-		$("#targetRag").attr("style","background-color:"+mapRAG2Color(_rag)+";border-radius: 100%;width:15px;height:15px;");
-		if (_ragComment){
+		$("#targetRag").attr("style","width:15px;height:15px;-moz-border-radius: 50%; -webkit-border-radius: 50%; border-radius: 50%;background-color:"+mapRAG2Color(_rag)+";margin-top:2px");
+		$("#targetRagL1").attr("style","width:15px;height:15px;-moz-border-radius: 50%; -webkit-border-radius: 50%; border-radius: 50%;background-color:"+mapRAG2Color(_rag)+";margin-top:2px");
+		
+		
+		if (_ragcomment){
 			//write text after RAG indicator
+				$("#targetRagCommentL1").text(_ragcomment);
 		}
 
 		

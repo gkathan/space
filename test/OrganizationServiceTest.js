@@ -37,9 +37,9 @@ describe('OrganizationService', function(){
   describe('#findEmployeeById()', function(){
     it('should return a employee record for a given employeeId', function(done){
 			var orgService = require('../services/OrganizationService');
-      orgService.findEmployeeById("E2988",function(err,employee){
-				console.log("employee found: "+employee);
-				assert.equal("E2988", employee["Employee Number"]);
+      orgService.findEmployeeById("E517",function(err,employee){
+				console.log("employee found: "+JSON.stringify(employee));
+				assert.equal("E517", employee["Employee Number"]);
 				done();
 			});
     })
