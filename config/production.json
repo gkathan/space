@@ -19,7 +19,7 @@
       "prettyPrint":true,
       "showLevel":true,
       "colorize":true,
-      "level":"debug"
+      "level":"info"
 			}
     }
 	},
