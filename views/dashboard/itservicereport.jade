@@ -53,7 +53,7 @@ block content
 	div
 		br
 		img(src="/images/bpty_logo.png" style="display:block;margin-left:auto;margin-right:auto;")
-	h3(style="text-align:center;font-weight:bold") firereport-online prototype
+	h3(style="text-align:center;font-weight:bold") IT service report-online prototype
 	div(style="margin:0px auto;;width:100px;height:100px")
 		select.form-control.floating-label(id="filter"  name="filter" type="select"  placeholder="type" autocomplete="off"  )
 			option * ALL *
@@ -155,7 +155,7 @@ script.
 		$('#daterange').on('apply.daterangepicker', function(ev, picker) {
 			_from = picker.startDate.format('YYYY-MM-DD');
 			_to = picker.endDate.format('YYYY-MM-DD');
-			window.location.href = "/dashboard/firereport?from="+_from+"&to="+_to+"&customer="+_customer;
+			window.location.href = "/dashboard/itservicereport?from="+_from+"&to="+_to+"&customer="+_customer;
 		});	
 
 		$('#filter').on('change', function() {
@@ -165,9 +165,9 @@ script.
 			else 
 				_customer="customer="+this.value;
 			if (_from && _to)
-				window.location.href = "/dashboard/firereport?from="+_from+"&to="+_to+"&"+_customer
+				window.location.href = "/dashboard/itservicereport?from="+_from+"&to="+_to+"&"+_customer
 			else
-				window.location.href = "/dashboard/firereport?"+_customer;
+				window.location.href = "/dashboard/itservicereport?"+_customer;
 		});
 			
 	

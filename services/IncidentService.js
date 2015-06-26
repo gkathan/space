@@ -22,9 +22,13 @@ var _incidentsDeltaCollection="incidentsdelta";
 
 
 exports.find = _find;
+exports.findById = _findById;
+
 exports.findFiltered = _findFiltered;
 exports.findAll = _findAll;
 exports.findOld = _findOld;
+exports.findChangeLog = _findChangeLog;
+
 exports.flush = _flush;
 exports.insert = _insert;
 exports.update = _update;
@@ -88,9 +92,9 @@ function _findRevenueImpactMapping(callback) {
 	});
 }
 
+
 function _findFiltered(filter,callback) {
 	logger.debug("filter: "+JSON.stringify(filter));
-
 	_findAll(filter, function (err, docs){
 			if (err){
 				logger.error("error: "+err.message);
@@ -99,6 +103,10 @@ function _findFiltered(filter,callback) {
 			callback(err,docs);
 			return;
 	});
+}
+
+function _findById(id,callback){
+	_findFiltered({id:id},callback);
 }
 
 /**
@@ -142,6 +150,30 @@ function _findAll(filter,callback) {
 			callback(err,_all);
 		});
 	});
+}
+
+//finds all change entries for a given incident Id
+function _findChangeLog(incidentId,callback){
+	var delta =  db.collection(_incidentsDeltaCollection);
+
+	delta.find({CHANGED:{$elemMatch:{id:incidentId}}},{CHANGED:1,createDate:1}, function (err, docs){
+		if (err){
+			logger.error("[error] "+err.message);
+			callback(err);
+			return;
+		}
+
+		logger.debug("in _findChangeLog: id= "+incidentId);
+		logger.debug("docs.length = "+docs.length);
+
+		var deltas = [];
+		for (var d in docs){
+			var _d = {changeDate:docs[d].createDate,change:_.findWhere(docs[d].CHANGED,{"id":incidentId}).diff};
+			deltas.push(_d)
+
+		}
+		callback(err,deltas)
+	})
 }
 
 /**

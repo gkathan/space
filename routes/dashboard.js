@@ -73,7 +73,7 @@ router.get('/qos', function(req, res) {
 		res.render('dashboard/qos', { title: 's p a c e - QoS dashboard' });
 });
 
-router.get('/firereport', function(req, res) {
+router.get('/itservicereport', function(req, res) {
 		var avc = require ('../services/AvailabilityCalculatorService');
 		var inc = require ('../services/IncidentService');
 
@@ -96,7 +96,10 @@ router.get('/firereport', function(req, res) {
 
 		avc.calculateOverall(_from,_to,_filter,function(avDataOverall){
 			avc.calculateExternal(_from,_to,_filter,function(avDataExternal){
-				var _incfilter={openedAt:{$gte:new Date(_from),$lte:new Date(_to)},priority:"P01 - Critical"};
+				var _prio = "P01 - Critical";
+				// var _prio  = "P08 - High";
+				// var _prio  = "P16 - Moderate";
+				var _incfilter={openedAt:{$gte:new Date(_from),$lte:new Date(_to)},priority:_prio};
 
 				inc.findFiltered(_incfilter,function(err,snowIncidents){
 
@@ -112,7 +115,7 @@ router.get('/firereport', function(req, res) {
 					res.locals.accounting=accounting;
 					logger.debug("*****customer: "+_customer);
 
-					res.render('dashboard/firereport', { title: 's p a c e - firereport' });
+					res.render('dashboard/itservicereport', { title: 's p a c e - IT service report prototype' });
 				});
 			});
 		});

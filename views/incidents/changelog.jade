@@ -1,0 +1,42 @@
+include ../kanban_menu
+
+
+block content
+	script(type="text/javascript").
+		$(document).ready(function() {
+			$('#kanban_menu').sidr({speed:300});
+		});
+
+	
+	div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;background-color:white;;max-width:1000px;text-align: center;margin: 10px auto;")
+		.panel-heading
+			h3.panel-title INCIDENT CHANGELOG 
+		.panel-body
+			div(style="text-align:left")
+				|"...the life of incident: 
+				a(href="https://bwinparty.service-now.com/ess/incident.do?sys_id=#{incident.sysId}" target="_new")
+					|#{incident.id}
+			br
+			
+			table.table-striped.table-hover
+				each change in changelog
+					tr
+						td(style="width:120px;font-size:10px;vertical-align:top") #{moment(change.changeDate).format("YYYY-MM-DD HH:mm:ss")}
+						td(style="text-align:left;font-size:12px") #{_key}
+							each _key in _.keys(change.change)
+								table
+									tr
+										td(style="width:120px;text-align:left;font-weight:bold;vertical-align:top") #{_key}:
+										td(style="width:250px") 
+											span(style="font-style:italic;font-size:10px") old: 
+											if _key == "priority"
+												img(src="/images/incidents/#{change.change[_key][0].split(' ')[0]}.png" height="20px") 
+											else
+												|#{change.change[_key][0]}
+										td(style="width:30px")  &nbsp;&rarr;&nbsp;
+										td(style="width:250px")  
+											span(style="font-style:italic;font-size:10px") new: 
+											if _key == "priority"
+												img(src="/images/incidents/#{change.change[_key][1].split(' ')[0]}.png" height="20px") 
+											else
+												|#{change.change[_key][1]}

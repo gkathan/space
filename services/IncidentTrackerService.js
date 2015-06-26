@@ -61,7 +61,6 @@ function _buildStatistics(tracker,callback){
 
 	for (var i in tracker){
 			var _day = tracker[i];
-
 			for (var d in dateFields){
 				var dateField = dateFields[d];
 				if (_day[dateField]){
@@ -69,21 +68,17 @@ function _buildStatistics(tracker,callback){
 					cumP08[dateField]+=_day[dateField].P08.total;
 					cumP16[dateField]+=_day[dateField].P16.total;
 					cumP120[dateField]+=_day[dateField].P120.total;
-					//logger.debug("_________________________P01 total for day: "+_day.date+" dateField: "+dateField+" = "+_day[dateField].P01.total);
-					//logger.debug("_________________________P08 total for day: "+_day.date+" dateField: "+dateField+" = "+_day[dateField].P08.total);
 					_day[dateField].P01.cumulative= cumP01[dateField];
 					_day[dateField].P08.cumulative= cumP08[dateField];
 					_day[dateField].P16.cumulative= cumP16[dateField];
 					_day[dateField].P120.cumulative= cumP120[dateField];
 				}
 			}
-
-
 			// is liek a burnrate => can be negative if i close more than i open ....
-			var activeP01=_day.openedAt.P01.total-_day.closedAt.P01.total;
-			var activeP08=_day.openedAt.P08.total-_day.closedAt.P08.total;
-			var activeP16=_day.openedAt.P16.total-_day.closedAt.P16.total;
-			var activeP120=_day.openedAt.P120.total-_day.closedAt.P120.total;
+			var activeP01=_day.openedAt.P01.total-(_day.closedAt ? _day.closedAt.P01.total : 0) ;
+			var activeP08=_day.openedAt.P08.total-(_day.closedAt ? _day.closedAt.P08.total : 0) ;
+			var activeP16=_day.openedAt.P16.total-(_day.closedAt ? _day.closedAt.P16.total : 0) ;
+			var activeP120=_day.openedAt.P120.total-(_day.closedAt ? _day.closedAt.P120.total : 0) ;
 
 			if (!_day["active"]) _day["active"]={P01:0,P08:0,P16:0,P120:0};
 			_day["active"].P01=activeP01;
@@ -91,20 +86,16 @@ function _buildStatistics(tracker,callback){
 			_day["active"].P16=activeP16;
 			_day["active"].P120=activeP120;
 
-
-
-			cumP01.notResolved+=_day.openedAt.P01.total-_day.resolvedAt.P01.total;
-			cumP08.notResolved+=_day.openedAt.P08.total-_day.resolvedAt.P08.total;
-			cumP16.notResolved+=_day.openedAt.P16.total-_day.resolvedAt.P16.total;
-			cumP120.notResolved+=_day.openedAt.P120.total-_day.resolvedAt.P120.total;
-
+			cumP01.notResolved+=_day.openedAt.P01.total-(_day.resolvedAt ? _day.resolvedAt.P01.total : 0);
+			cumP08.notResolved+=_day.openedAt.P08.total-(_day.resolvedAt ? _day.resolvedAt.P08.total : 0);
+			cumP16.notResolved+=_day.openedAt.P16.total-(_day.resolvedAt ? _day.resolvedAt.P16.total : 0);
+			cumP120.notResolved+=_day.openedAt.P120.total-(_day.resolvedAt ? _day.resolvedAt.P120.total : 0);
 	}
 		var statistics = {sum:{P01:cumP01,P08:cumP08,P16:cumP16,P120:cumP120}};
 	var result = {tracker:tracker,statistics:statistics};
 
 	callback(null,result);
 }
-
 
 /**
 * drops and rebuilds the according IncidentTracker collection

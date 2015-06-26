@@ -422,7 +422,7 @@ function getV1EpicsConfig(){
 
 function getIncidentsConfig(){
 	var _incidents =[
-    { id:"id", name: "id", field: "id",sortable:true,width:70,cssClass:"onKanbanImmutable" },
+    { id:"id", name: "id", field: "id",sortable:true,width:70,formatter:Slick.Formatters.IncidentChangeLogURL,cssClass:"onKanbanImmutable" },
   	{ id:"sysId", name: "sysId", field: "sysId",sortable:true,width:70,formatter:Slick.Formatters.SnowIncidentURL,cssClass:"onKanbanImmutable" },
 		//{ id:"context", name: "context", field: "context",sortable:true,width:80,cssClass:"onKanbanImmutable"},
 		{ id:"priority", name: "prio", field: "priority",sortable:true,width:25,  formatter:Slick.Formatters.IncidentPriorityIcon,cssClass: "cell-standard" },

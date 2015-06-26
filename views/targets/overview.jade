@@ -379,10 +379,11 @@ div.container-fluid(style="max-width:1600px")
 				if lane.name != "P&L"
 					+renderTargetLane(lane)
 
-	div(style="text-align:right")
-		a(href="/api/space/export/xlsx/targets" title="export targets as xlsx")
-			span(style="font-size:10px;text-align:right") >> export targets xlsx &nbsp;
-			img(src="/images/space/logo_msexcel.png" height="30px")
+	if session.AUTH=="admin" 
+		div(style="text-align:right")
+			a(href="/api/space/export/xlsx/targets" title="export targets as xlsx")
+				span(style="font-size:10px;text-align:right") >> export targets xlsx &nbsp;
+				img(src="/images/space/logo_msexcel.png" height="30px")
 
 
 

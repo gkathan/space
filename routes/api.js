@@ -52,6 +52,8 @@ var PATH = {
 
 						REST_INCIDENTS : BASE+'/space/rest/incidents',
 						REST_INCIDENTCOMMUNICATIONTRAIL : BASE+'/space/rest/incidents/commtrail/:sysid',
+						REST_INCIDENTCHANGELOG : BASE+'/space/rest/incidents/changelog/:id',
+
 
 
 						REST_SOCOUTAGES : BASE+'/space/rest/soc_outages',
@@ -164,6 +166,7 @@ router.get(PATH.REST_PROBLEMS, function(req, res, next) {findAllByName(req,res,n
 router.get(PATH.REST_INCIDENTS, function(req, res, next) {findIncidents(req,res,next);});
 
 router.get(PATH.REST_INCIDENTCOMMUNICATIONTRAIL, function(req, res, next) {findIncidentCommTrail(req,res,next);});
+router.get(PATH.REST_INCIDENTCHANGELOG, function(req, res, next) {findIncidentChangeLog(req,res,next);});
 
 
 router.get(PATH.REST_SOCOUTAGES, function(req, res, next) {findAllByName(req,res,next);});
@@ -474,6 +477,26 @@ function findIncidentCommTrail(req,res,next){
 		*/
 }
 
+
+/**
+*/
+function findIncidentChangeLog(req,res,next){
+	  var _id = req.params.id;
+
+		logger.debug("findIncidentChangeLog() called: id = "+_id);
+
+		var incService = require("../services/IncidentService");
+		incService.findChangeLog(_id,function(err,data){
+				if (err){
+					logger.error("[error] findincidents says: "+err)
+					res.send(err);
+				}
+				
+				res.send(data);
+				return;
+		});
+
+}
 
 /**
 */

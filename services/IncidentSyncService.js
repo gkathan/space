@@ -244,17 +244,30 @@ function _handleIncidentsCHANGED(changes,baseline,_incidentsNEW){
 		var _diff = changes[i];
 		var _oldinc = _.findWhere(baseline,{"id":_pointer.id});
 		_inc._id = _oldinc._id;
+
+		var _prioChanged = false;
+		if (_inc.priority != _oldinc.priority) _prioChanged=true;
+
 		logger.debug("---------------------------------------------------------------------------------------------------------------------------------");
 		logger.debug("---------------------------------------------------------------------------------------------------------------------------------");
 		logger.debug("   ---  _pointer.id: "+_pointer.id);
 		logger.debug("   ---  _inc from incidentsNEW: : "+_inc.id+" sysId: "+_inc.sysId);
 		logger.debug("   ---  _oldinc from incidentsOLD: : "+_oldinc.id+" sysId: "+_oldinc.sysId+ " _id: "+_oldinc._id);
-		logger.debug("   ---  _oldinc: "+JSON.stringify(_oldinc));
+		if (_prioChanged){
+			logger.debug("   ---  ********************************************************* ---");
+			logger.debug("   ---  PRIO OLD: "+_oldinc.priority+" <---> PRIO NEW: "+_inc.priority);
+			logger.debug("   ---  ********************************************************* ---");
+			_inc.prioChange={old:_oldinc.priority.split(" - ")[0],new:_inc.priority.split(" - ")[0]};
+
+		}
+
 		logger.debug("   ---  enriched incident with _id: "+_inc._id);
 		logger.debug("---------------------------------------------------------------------------------------------------------------------------------");
 		logger.debug("---------------------------------------------------------------------------------------------------------------------------------");
 		// we also need an mongo _id to to a proper update....
 		_updateIncidents.push(_inc);
+
+
 
 		if (config.emit.snow_incidents_changes =="on"){
 			_emitCHANGEIncidentMessage(_diff,_inc);

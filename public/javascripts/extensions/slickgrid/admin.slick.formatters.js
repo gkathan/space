@@ -21,6 +21,7 @@
         "RAG":RAGFormatter,
         "V1EpicURL":V1EpicURLFormatter,
         "SnowIncidentURL":SnowIncidentURLFormatter,
+        "IncidentChangeLogURL":IncidentChangeLogURLFormatter,
         "CheckInSync":CheckInSyncFormatter,
         "IncidentSLABreach":IncidentSLABreachFormatter,
         "IncidentState":IncidentStateFormatter,
@@ -47,9 +48,7 @@
     if (value == null || value === "") {
       return "";
     }
-
     var color;
-
     if (value < 30) {
       color = "red";
     } else if (value < 70) {
@@ -57,10 +56,8 @@
     } else {
       color = "green";
     }
-
     return "<span class='percent-complete-bar' style='background:" + color + ";width:" + value + "%'></span>";
   }
-
   function YesNoFormatter(row, cell, value, columnDef, dataContext) {
     return value ? "Yes" : "No";
   }
@@ -93,6 +90,10 @@
   }
 
 
+  function IncidentChangeLogURLFormatter(row, cell, value, columnDef, dataContext) {
+    return value ? "<a href=\"/incidents/changelog/"+value+"\">"+value+"</a>" : "";
+  }
+
   /** employee profile
    * https://my.bwinparty.com/People/S/MassimilianoScorzaE5148.aspx
    * firstname
@@ -103,12 +104,8 @@
    **/
    http://v1.bwinparty.corp/V1-Production/Epic.mvc/Summary?oidToken=Epic%3A3394319
   function EmployeeProfileURLFormatter(row, cell, value, columnDef, dataContext) {
-
     return value ? "<a href=\"https://my.bwinparty.com/People/F/fuckingBla+Number+.aspx target=\"_new\">"+value+"</a>" : "";
   }
-
-
-
 
   function RAGFormatter(row, cell, value, columnDef, dataContext) {
     var _color;
@@ -117,7 +114,6 @@
   		if (value.toLowerCase()=="amber") _color="gold";
   		if (value.toLowerCase()=="green") _color="limegreen";
 	  }
-
     return value ? "<div style='text-align:center'><div style='display:inline-block;margin-top:2px;width:10px;height:10px;-moz-border-radius: 50%; -webkit-border-radius: 50%; border-radius: 50%;background-color:"+_color+"''></div></div>" : "";
   }
 
@@ -134,7 +130,6 @@
   		if (value == true) _color="red";
   		if (value==false) _color="limegreen";
 	  }
-
     return value ? "<div style='text-align:center'><div style='display:inline-block;margin-top:2px;width:10px;height:10px;-moz-border-radius: 50%; -webkit-border-radius: 50%; border-radius: 50%;background-color:"+_color+"''></div></div>" : "";
   }
 
