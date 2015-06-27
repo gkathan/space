@@ -258,7 +258,6 @@ function _handleIncidentsCHANGED(changes,baseline,_incidentsNEW){
 			logger.debug("   ---  PRIO OLD: "+_oldinc.priority+" <---> PRIO NEW: "+_inc.priority);
 			logger.debug("   ---  ********************************************************* ---");
 			_inc.prioChange={old:_oldinc.priority.split(" - ")[0],new:_inc.priority.split(" - ")[0]};
-
 		}
 
 		logger.debug("   ---  enriched incident with _id: "+_inc._id);

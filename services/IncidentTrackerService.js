@@ -206,6 +206,10 @@ function _calculateDailyTracker(incidents,dateFields,context,callback){
 					_handleBusinessService(_dailytracker,_day,dateField,"P120",_businessService);
 					_handleLabel(_dailytracker,_day,dateField,"P120",_labels);
 				}
+				// in case of update
+				if (incidents[i].prioChange){
+					_.findWhere(_dailytracker,{"date":_day})[dateField][incidents[i].prioChange.old].total--;
+				}
 			}
 			else{
 				logger.info("[IncidentTrackerService._calculateDailyTracker()] says: "+dateField+" is not yet set.. so we can skip ");

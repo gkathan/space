@@ -1,5 +1,90 @@
 include ../kanban_menu
 
+style
+	
+
+mixin renderIncidentPriority(incident,size)
+	img(src="/images/incidents/#{incident.priority.split(' ')[0]}.png" height="#{size}px") 
+
+
+mixin renderIncidentDetail(incident)
+	table.table-responsive.table-hover(style="text-align:left")
+		tr
+			td(style="width:100px;font-size:10px;font-style:italic;text-align:right;vertical-align:top")
+				|id
+			td(style="max-width:400px;font-size:12px;padding-left:10px")
+					|#{incident.id}
+		tr
+			td(style="width:100px;font-size:10px;font-style:italic;text-align:right;vertical-align:top")
+				|opened
+			td(style="max-width:400px;font-size:12px;padding-left:10px")
+					|#{moment(incident.openedAt).format("YYYY-MM-DD HH:mm:ss")}
+		tr
+			td(style="width:100px;font-size:10px;font-style:italic;text-align:right;vertical-align:top")
+				|priority
+			td(style="max-width:400px;font-size:12px;padding-left:10px")
+					+renderIncidentPriority(incident,25)
+		tr
+			td(style="width:100px;font-size:10px;font-style:italic;text-align:right;vertical-align:top")
+				|business service
+			td(style="max-width:400px;font-size:12px;padding-left:10px")
+					|#{incident.businessService}
+		tr
+			td(style="width:100px;font-size:10px;font-style:italic;text-align:right;vertical-align:top")
+				|label
+			td(style="max-width:400px;font-size:12px;padding-left:10px")
+					|#{incident.label}
+		tr
+			td(style="width:100px;font-size:10px;font-style:italic;text-align:right;vertical-align:top")
+				|problem
+			td(style="max-width:400px;font-size:12px;padding-left:10px")
+					|#{incident.problemId}
+		tr
+			td(style="width:100px;font-size:10px;font-style:italic;text-align:right;vertical-align:top")
+				|category
+			td(style="max-width:400px;font-size:12px;padding-left:10px")
+					|#{incident.category} - #{incident.subCategory}
+		tr
+			td(style="width:100px;font-size:10px;font-style:italic;text-align:right;vertical-align:top")
+				|short description
+			td(style="max-width:400px;font-size:12px;padding-left:10px")
+					|#{incident.shortDescription}
+		tr
+			td(style="width:100px;font-size:10px;font-style:italic;text-align:right;vertical-align:top")
+				|description
+			td(style="max-width:400px;font-size:12px;padding-left:10px")
+					|#{incident.description}
+		tr
+			td(style="width:100px;font-size:10px;font-style:italic;text-align:right;vertical-align:top")
+				|state
+			td(style="max-width:400px;font-size:12px;padding-left:10px")
+					|#{incident.state}
+		tr
+			td(style="width:100px;font-size:10px;font-style:italic;text-align:right;vertical-align:top")
+				|assignment group
+			td(style="max-width:400px;font-size:12px;padding-left:10px")
+					|#{incident.assignmentGroup}
+
+		if incident.resolvedAt
+			tr
+				td(style="width:100px;font-size:10px;font-style:italic;text-align:right;vertical-align:top")
+					|resolved
+				td(style="max-width:400px;font-size:12px;padding-left:10px")
+						|#{moment(incident.resolvedAt).format("YYYY-MM-DD HH:mm:ss")}
+			tr
+				td(style="width:100px;font-size:10px;font-style:italic;text-align:right;vertical-align:top")
+					|time to resolve
+				td(style="max-width:400px;font-size:12px;padding-left:10px")
+						|#{incident.timeToResolve}
+						
+		if incident.closedAt
+			tr
+				td(style="width:100px;font-size:10px;font-style:italic;text-align:right;vertical-align:top")
+					|closed
+				td(style="max-width:400px;font-size:12px;padding-left:10px")
+						|#{moment(incident.closedAt).format("YYYY-MM-DD HH:mm:ss")}
+
+
 
 block content
 	script(type="text/javascript").
@@ -12,6 +97,9 @@ block content
 		.panel-heading
 			h3.panel-title INCIDENT CHANGELOG 
 		.panel-body
+			+renderIncidentDetail(incident)
+			br
+			
 			div(style="text-align:left")
 				|"...the life of incident: 
 				a(href="https://bwinparty.service-now.com/ess/incident.do?sys_id=#{incident.sysId}" target="_new")
