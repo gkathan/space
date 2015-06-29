@@ -27,6 +27,7 @@ exports.findById = _findById;
 exports.findFiltered = _findFiltered;
 exports.findAll = _findAll;
 exports.findOld = _findOld;
+exports.findProblem = _findProblem;
 exports.findChangeLog = _findChangeLog;
 
 exports.flush = _flush;
@@ -106,7 +107,9 @@ function _findFiltered(filter,callback) {
 }
 
 function _findById(id,callback){
-	_findFiltered({id:id},callback);
+	_findFiltered({id:id},function (err,incidents){
+		callback(err,incidents[0]);
+	});
 }
 
 /**
@@ -126,6 +129,17 @@ function _findOld(filter,callback) {
 			callback(err,docs);
 			return;
 	});
+}
+
+
+function _findProblem(incident,callback) {
+	if (incident.problemId){
+		var items =  db.collection('problems');
+		items.findOne({id:incident.problemId}, function (err, problem){
+				callback(err,problem);
+				return;
+		});
+	}
 }
 
 

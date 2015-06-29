@@ -25,6 +25,7 @@ router.get("/changelog/:incidentId", function(req, res, next) {
 	var incService = require('../services/IncidentService');
 	var incident;
 	incService.findById(_id,function(err,incident){
+		incService.findProblem(incident,function(err,problem){
 			logger.debug("============ incident: "+incident.id);
 			incService.findChangeLog(_id,function(err,changelog){
 					if (err){
@@ -32,16 +33,14 @@ router.get("/changelog/:incidentId", function(req, res, next) {
 					}
 					else{
 						res.locals.changelog=changelog;
-						res.locals.incident=incident[0];
+						res.locals.incident=incident;
+						res.locals.problem=problem;
 						res.locals.moment=moment;
 						res.render("incidents/changelog");
 					}
 			})
-
+		})
 	})
-
-
-
 });
 
 

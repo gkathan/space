@@ -1,90 +1,112 @@
 include ../kanban_menu
 
-style
-	
+link(rel='stylesheet', href='/stylesheets/timeline.css')
 
-mixin renderIncidentPriority(incident,size)
-	img(src="/images/incidents/#{incident.priority.split(' ')[0]}.png" height="#{size}px") 
+style.
+	.descriptor{
+		width:100px;
+		font-size:10px;
+		font-style:italic;
+		text-align:right;
+		vertical-align:top;
+	}
+	.valueStandard{
+		max-width:400px;
+		font-size:12px;
+		padding-left:10px
+	}
+	.valueBold{
+		max-width:400px;
+		font-size:12px;
+		padding-left:10px;
+		font-weight:bold
+	}
 
+mixin renderPriority(item,size)
+	img(src="/images/incidents/#{item.priority.split(' ')[0]}.png" height="#{size}px") 
 
-mixin renderIncidentDetail(incident)
+mixin renderDetailRow(key,keyStyle,value,valueStyle)
+		tr
+			td(class='#{keyStyle}')
+				|#{key}
+			td(class='#{valueStyle}')
+				|#{value}
+
+mixin renderDetail(item)
 	table.table-responsive.table-hover(style="text-align:left")
 		tr
-			td(style="width:100px;font-size:10px;font-style:italic;text-align:right;vertical-align:top")
-				|id
-			td(style="max-width:400px;font-size:12px;padding-left:10px")
-					|#{incident.id}
-		tr
-			td(style="width:100px;font-size:10px;font-style:italic;text-align:right;vertical-align:top")
-				|opened
-			td(style="max-width:400px;font-size:12px;padding-left:10px")
-					|#{moment(incident.openedAt).format("YYYY-MM-DD HH:mm:ss")}
-		tr
-			td(style="width:100px;font-size:10px;font-style:italic;text-align:right;vertical-align:top")
-				|priority
-			td(style="max-width:400px;font-size:12px;padding-left:10px")
-					+renderIncidentPriority(incident,25)
-		tr
-			td(style="width:100px;font-size:10px;font-style:italic;text-align:right;vertical-align:top")
-				|business service
-			td(style="max-width:400px;font-size:12px;padding-left:10px")
-					|#{incident.businessService}
-		tr
-			td(style="width:100px;font-size:10px;font-style:italic;text-align:right;vertical-align:top")
-				|label
-			td(style="max-width:400px;font-size:12px;padding-left:10px")
-					|#{incident.label}
-		tr
-			td(style="width:100px;font-size:10px;font-style:italic;text-align:right;vertical-align:top")
-				|problem
-			td(style="max-width:400px;font-size:12px;padding-left:10px")
-					|#{incident.problemId}
-		tr
-			td(style="width:100px;font-size:10px;font-style:italic;text-align:right;vertical-align:top")
-				|category
-			td(style="max-width:400px;font-size:12px;padding-left:10px")
-					|#{incident.category} - #{incident.subCategory}
-		tr
-			td(style="width:100px;font-size:10px;font-style:italic;text-align:right;vertical-align:top")
-				|short description
-			td(style="max-width:400px;font-size:12px;padding-left:10px")
-					|#{incident.shortDescription}
-		tr
-			td(style="width:100px;font-size:10px;font-style:italic;text-align:right;vertical-align:top")
-				|description
-			td(style="max-width:400px;font-size:12px;padding-left:10px")
-					|#{incident.description}
-		tr
-			td(style="width:100px;font-size:10px;font-style:italic;text-align:right;vertical-align:top")
-				|state
-			td(style="max-width:400px;font-size:12px;padding-left:10px")
-					|#{incident.state}
-		tr
-			td(style="width:100px;font-size:10px;font-style:italic;text-align:right;vertical-align:top")
-				|assignment group
-			td(style="max-width:400px;font-size:12px;padding-left:10px")
-					|#{incident.assignmentGroup}
+			td.descriptor
+				+renderPriority(item,30)
+			td(style="max-width:400px;font-size:16px;padding-left:10px;vertical-align:bottom")
+				a(href="https://bwinparty.service-now.com/ess/incident.do?sys_id=#{item.sysId}" target="_new")
+					|#{item.id}
+				
+		+renderDetailRow("business service","descriptor",item.businessService,"valueBold")
+		+renderDetailRow("label - labelType","descriptor",item.labelType+" - "+item.label,"valueStandard")
+		+renderDetailRow("opened at","descriptor",moment(item.openedAt).format("YYYY-MM-DD HH:mm:ss"),"valueStandard")
+		+renderDetailRow("category","descriptor",item.subCategory+" - "+item.category,"valueStandard")
+		+renderDetailRow("short description","descriptor",item.shortDescription,"valueStandard")
+		+renderDetailRow("state","descriptor",item.state,"valueStandard")
+		+renderDetailRow("assignment group","descriptor",item.assignmentGroup,"valueStandard")
+		if item.resolvedAt
+			+renderDetailRow("resolved at","descriptor",moment(item.resolvedAt).format("YYYY-MM-DD HH:mm:ss"),"valueStandard")
+			+renderDetailRow("time to resolve","descriptor",item.timeToResolve,"valueStandard")
+		if item.closedAt
+			+renderDetailRow("closed at","descriptor",moment(item.closedAt).format("YYYY-MM-DD HH:mm:ss"),"valueStandard")
+			+renderDetailRow("close code","descriptor",item.closeCode,"valueStandard")
+			+renderDetailRow("SLA breach","descriptor",item.slaBreach,"valueStandard")
+			+renderDetailRow("SLA breach time","descriptor",item.slaBreachTime,"valueStandard")
+		+renderDetailRow("is active","descriptor",item.active,"valueStandard")
+		+renderDetailRow("problem","descriptor",item.problemId,"valueStandard")
+		+renderDetailRow("imapct - urgency - severity","descriptor",item.imact+" - "+item.urgency+" - "+item.severity,"valueStandard")
+		+renderDetailRow("location","descriptor",item.location,"valueStandard")
+		+renderDetailRow("environment","descriptor",item.environment,"valueStandard")
+		+renderDetailRow("created by","descriptor",item.createdBy,"valueStandard")
+		+renderDetailRow("contact type","descriptor",item.contactType,"valueStandard")
+		+renderDetailRow("notify","descriptor",item.notify,"valueStandard")
+		+renderDetailRow("description","descriptor",item.description,"valueStandard")
 
-		if incident.resolvedAt
-			tr
-				td(style="width:100px;font-size:10px;font-style:italic;text-align:right;vertical-align:top")
-					|resolved
-				td(style="max-width:400px;font-size:12px;padding-left:10px")
-						|#{moment(incident.resolvedAt).format("YYYY-MM-DD HH:mm:ss")}
-			tr
-				td(style="width:100px;font-size:10px;font-style:italic;text-align:right;vertical-align:top")
-					|time to resolve
-				td(style="max-width:400px;font-size:12px;padding-left:10px")
-						|#{incident.timeToResolve}
-						
-		if incident.closedAt
-			tr
-				td(style="width:100px;font-size:10px;font-style:italic;text-align:right;vertical-align:top")
-					|closed
-				td(style="max-width:400px;font-size:12px;padding-left:10px")
-						|#{moment(incident.closedAt).format("YYYY-MM-DD HH:mm:ss")}
+mixin renderTimelineBox(change)
+	-var _class="default"
+	-var _icon="glyphicon glyphicon-pencil"
+	-var _header="CHANGED"
+	
+	if _.keys(change.change).indexOf("priority")>-1
+		-_class="warning"
+		-_header="CHANGED PRIORITY"
+		
+	else if _.keys(change.change).indexOf("closedAt")>-1
+		-_class="success"
+		-_icon="glyphicon glyphicon-ok"
+		-_header="CLOSED"
+	else if _.keys(change.change).indexOf("assignmentGroup")>-1
+		-_header="RE-ASSIGNED"
 
-
+	.timeline-badge(class="#{_class}")
+			i(class="#{_icon}")
+	.timeline-panel
+		.timeline-heading
+			h4.timeline-title #{_header}
+			p
+				small.text-muted
+					i.glyphicon.glyphicon-time
+					|#{moment(change.changeDate).format("YYYY-MM-DD HH:mm:ss")}
+		.timeline-body
+				each _key in _.keys(change.change)
+					table.table(style="max-width:300px")
+						tr
+							td.descriptor(style="max-width:100px") #{_key}:
+							td.valueStandard(style="width:90px;text-align:right")
+								if _key == "priority"
+									img(src="/images/incidents/#{change.change[_key][0].split(' ')[0]}.png" height="20px") 
+								else
+									|#{change.change[_key][0]}
+							td(style="width:20px;text-align:left")&rarr;
+							td.valueStandard(style="width:90px;text-align:left")  
+								if _key == "priority"
+									img(src="/images/incidents/#{change.change[_key][1].split(' ')[0]}.png" height="20px") 
+								else
+									|#{change.change[_key][1]}
 
 block content
 	script(type="text/javascript").
@@ -95,36 +117,34 @@ block content
 	
 	div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;background-color:white;;max-width:1000px;text-align: center;margin: 10px auto;")
 		.panel-heading
-			h3.panel-title INCIDENT CHANGELOG 
+			h3.panel-title INCIDENT DETAIL
 		.panel-body
-			+renderIncidentDetail(incident)
-			br
+			.panel(style="padding-top:20px;padding-bottom:20px")
+				+renderDetail(incident)
 			
-			div(style="text-align:left")
-				|"...the life of incident: 
-				a(href="https://bwinparty.service-now.com/ess/incident.do?sys_id=#{incident.sysId}" target="_new")
-					|#{incident.id}
-			br
-			
-			table.table-striped.table-hover
+			ul.timeline
+				li
+					.timeline-badge(class="danger")
+							i.glyphicon.glyphicon-flash
+					.timeline-panel
+						.timeline-heading
+							h4.timeline-title OPENED
+							p
+								small.text-muted
+									i.glyphicon.glyphicon-time
+									|#{moment(incident.openedAt).format("YYYY-MM-DD HH:mm:ss")}
+						.timeline-body
+				-var x=1;
 				each change in changelog
-					tr
-						td(style="width:120px;font-size:10px;vertical-align:top") #{moment(change.changeDate).format("YYYY-MM-DD HH:mm:ss")}
-						td(style="text-align:left;font-size:12px") #{_key}
-							each _key in _.keys(change.change)
-								table
-									tr
-										td(style="width:120px;text-align:left;font-weight:bold;vertical-align:top") #{_key}:
-										td(style="width:250px") 
-											span(style="font-style:italic;font-size:10px") old: 
-											if _key == "priority"
-												img(src="/images/incidents/#{change.change[_key][0].split(' ')[0]}.png" height="20px") 
-											else
-												|#{change.change[_key][0]}
-										td(style="width:30px")  &nbsp;&rarr;&nbsp;
-										td(style="width:250px")  
-											span(style="font-style:italic;font-size:10px") new: 
-											if _key == "priority"
-												img(src="/images/incidents/#{change.change[_key][1].split(' ')[0]}.png" height="20px") 
-											else
-												|#{change.change[_key][1]}
+					-x++;
+					if (x%2 == 1)
+						li
+							+renderTimelineBox(change)
+					else
+						li.timeline-inverted
+							+renderTimelineBox(change)
+
+			if problem
+				hr
+				.panel(style="padding-top:20px;padding-bottom:20px")
+					+renderDetail(problem)
