@@ -207,7 +207,7 @@ function _calculateDailyTracker(incidents,dateFields,context,callback){
 					_handleLabel(_dailytracker,_day,dateField,"P120",_labels);
 				}
 				// in case of update
-				if (incidents[i].prioChange){
+				if (incidents[i].prioChange && dateField =="openedAt"){
 					_.findWhere(_dailytracker,{"date":_day})[dateField][incidents[i].prioChange.old].total--;
 				}
 			}

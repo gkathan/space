@@ -33,6 +33,7 @@ exports.excelFirereport = excelFirereport;
 exports.excelV1Teams = excelV1Teams;
 exports.excelIncidenttracker = excelIncidenttracker;
 exports.excelIncidents = excelIncidents;
+exports.excelIncidentsOldSnow = excelIncidentsOldSnow;
 exports.excelProblems= excelProblems;
 exports.excelContent = excelContent;
 exports.excelLabels = excelLabels;
@@ -625,6 +626,48 @@ function excelIncidents(req, res , next){
 		{caption:'syncDate',type:'string',width:40,captionStyleIndex:2,beforeCellWrite:_formatCell}
 	];
     _generateAndSendExcel("incidents",conf,req,res,next);
+}
+
+function excelIncidentsOldSnow(req, res , next){
+	var conf ={};
+    conf.stylesXmlFile = "views/excel_export/styles.xml";
+    conf.cols = [
+		{caption:'_id',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'id',type:'string',width:12,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'sysId',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'priority',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'state',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'openedAt',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'shortDescription',type:'string',width:50,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'slaResolutionDate',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'resolvedAt',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'closedAt',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'timeToResolve',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'closeCode',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'revenueImpact',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'slaBreach',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'slaBreachTime',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'businessService',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'category',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'subCategory',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'location',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'label',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'assignmentGroup',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'environment',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'impact',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'urgency',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'description',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'labelType',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'active',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'problemId',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'severity',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'isMajorIncident',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'createdBy',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'contactType',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'timeWorked',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'syncDate',type:'string',width:40,captionStyleIndex:2,beforeCellWrite:_formatCell}
+	];
+    _generateAndSendExcel("incidentsoldsnow",conf,req,res,next);
 }
 /**
  * generate customers excel

@@ -16,8 +16,8 @@ block content
 				if l1targets.length>0
 					each target in l1targets
 						div.col-md-2.col-lg3(style="width:220px")
-							.panel.panel-default(style="width:200px;margin:0px;height:300px ")
-								.panel-heading(style="text-align:center;font-weight:bold") 
+							.panel.panel-default(style="width:200px;margin:0px;height:340px ")
+								.panel-heading(style="text-align:center;font-weight:bold;font-size:12px") 
 									if target.id=="K2"
 										a(href="/dashboard/#{_.last(target.dashboardDetail.split('_'))}?period=q#{moment().quarter()}-#{moment().year()}") 
 											|#{target.id} - #{target.directTarget} 
@@ -30,7 +30,7 @@ block content
 								div(style="font-weight:bold;font-size:28px;text-align:center")
 									|#{target.directMetric}#{target.directMetricScale} 
 								div(id="#{target.dashboardTop}")
-								div(style="font-size:12px;text-align:center")
+								div(style="font-size:12px;text-align:left;padding-left:20px")
 									if target.id=="K1"
 										br
 										if availability

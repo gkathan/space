@@ -1,8 +1,12 @@
 var incidents;//={unplannedYTD:99.61,targetYTD:99.75};
 var _period = "Q2-2015";
 
-var _baselineYear = parseInt(_.last(_period.split("-")))-1;
-var _baselinePeriod =_.first(_period.split("-"))+"-"+_baselineYear;
+//var _baselineYear = parseInt(_.last(_period.split("-")))-1;
+//var _baselinePeriod =_.first(_period.split("-"))+"-"+_baselineYear;
+
+
+var _baselinePeriod ="Q4-2014";
+
 
 console.log("------------------------------- c3_incident_barchart period: "+_period);
 console.log("baseline period: "+_baselinePeriod);
@@ -13,28 +17,47 @@ var _urlBaseline = "/api/space/rest/incidenttracker/"+_baselinePeriod+"?aggregat
 console.log("---------------- url: "+_url);
 
 // do a ajax call for target data period
-$.get( _url, function( dataBaseline ) {
+$.get( _url, function( data ) {
   //and for baseline data period
-  var _baselineMetrics = _calculateMetrics(dataBaseline);
-  console.log("baseline P01 sum: "+_baselineMetrics.sumP01);
-  console.log("baseline P08 sum: "+_baselineMetrics.sumP08);
-
-  var _baselineString = "baseline: "+_baselinePeriod+" P01:"+_baselineMetrics.sumP01+" P08:"+_baselineMetrics.sumP08;
-  $('#baseline').text(_baselineString);
-  var _target = 0.25;
-  var _targetString = "target: "+_period+" P01:"+(_baselineMetrics.sumP01*(1-_target))+" P08:"+(_baselineMetrics.sumP08*(1-_target));
-  $('#target').text(_targetString);
+  var _metrics = _calculateMetrics(data);
+  console.log("target P01 sum: "+_metrics.sumP01);
+  console.log("target P08 sum: "+_metrics.sumP08);
 
 
-  $.get( _urlBaseline, function( data ) {
 
-    var _metrics = _calculateMetrics(data);
+  $.get( _urlBaseline, function( baselineData ) {
 
-    console.log("P01 sum: "+_metrics.sumP01);
-    console.log(" sum: "+_metrics.sum);
+    var _baselineMetrics = _calculateMetrics(baselineData);
 
-    console.log("weekly aggregation: "+JSON.stringify(_metrics.weeks));
-    console.log("daily aggregation: "+JSON.stringify(_metrics.days));
+    console.log("baseline P01 sum: "+_baselineMetrics.sumP01);
+    console.log(" sum: "+_baselineMetrics.sum);
+
+    console.log("weekly aggregation: "+JSON.stringify(_baselineMetrics.weeks));
+    console.log("daily aggregation: "+JSON.stringify(_baselineMetrics.days));
+
+    var _baselineString = "<b>"+_baselinePeriod+"</b><img src='/images/incidents/P01.png' height='20px' style='padding-left:2px;padding-right:2px'><b style='font-size:14px'>"+_baselineMetrics.sumP01+"</b> <img src='/images/incidents/P08.png' height='20px' style='padding-left:2px;padding-right:2px'><b style='font-size:14px'>"+_baselineMetrics.sumP08+"</b>";
+    $('#baseline').html(_baselineString);
+
+    var _targetP01= (_baselineMetrics.sumP01-(_baselineMetrics.sumP01*0.2)).toFixed(0);
+    var _targetP08= (_baselineMetrics.sumP08-(_baselineMetrics.sumP08*0.2)).toFixed(0);
+
+
+    var _trendP01 = (-(1-(_metrics.sumP01/_baselineMetrics.sumP01)).toFixed(2)*100)
+    if (_trendP01>0) _trendP01="+"+_trendP01+"%";
+    else _trendP01=_trendP01+"%";
+
+    var _trendP08 = (-(1-(_metrics.sumP08/_baselineMetrics.sumP08)).toFixed(2)*100);
+    if (_trendP08>0) _trendP08="+"+_trendP08+"%";
+    else _trendP08=_trendP08+"%";
+
+    var _targetString = "<b>"+_period+"</b><img src='/images/incidents/P01.png' height='20px' style='padding-left:2px;padding-right:2px'><b style='font-size:14px'>"+_metrics.sumP01+"</b> <img src='/images/incidents/P08.png' height='20px' style='padding-left:2px;padding-right:2px'><b style='font-size:14px'>"+_metrics.sumP08+"</b>";
+    _targetString+="<br> P01 target: "+_targetP01+" P08 target: "+_targetP08;
+    _targetString+="<br> P01 trend: "+_trendP01+" P08 trend: "+_trendP08;
+
+
+
+
+    $('#target').html(_targetString);
 
 
     var chart2 = c3.generate({
@@ -46,7 +69,12 @@ $.get( _url, function( dataBaseline ) {
         data: {
             json: _metrics.weeks,
             keys: {
-                value: ['P01','']
+                value: ['P01','P08']
+            },
+            colors: {
+              P01: '#FF3333',
+              P08: '#FF9933'
+
             },
             type: 'bar'
         },

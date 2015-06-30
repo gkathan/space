@@ -140,6 +140,10 @@ function _findProblem(incident,callback) {
 				return;
 		});
 	}
+	else{
+		logger.debug("************************** No problem ???"+incident.problemId);
+		callback(null,null);
+	}
 }
 
 

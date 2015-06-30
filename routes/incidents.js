@@ -18,7 +18,7 @@ router.get("/", function(req, res, next) {
 });
 
 
-router.get("/changelog/:incidentId", function(req, res, next) {
+router.get("/detail/:incidentId", function(req, res, next) {
 	logger.debug("--------------------- incidentId: "+_id);
 	var _id = req.params.incidentId;
 
@@ -36,7 +36,7 @@ router.get("/changelog/:incidentId", function(req, res, next) {
 						res.locals.incident=incident;
 						res.locals.problem=problem;
 						res.locals.moment=moment;
-						res.render("incidents/changelog");
+						res.render("incidents/detail");
 					}
 			})
 		})

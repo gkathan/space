@@ -263,7 +263,8 @@ mixin renderIncidentList(title,incidents,excludeNOLABEL)
 						- if (moment(inc.resolvedAt) > moment(inc.openedAt)) _sumTTR+=moment.duration(moment(inc.resolvedAt).diff(moment(inc.openedAt)));
 						tr(style="line-height:16px;font-size:12px")
 							td(style="text-align:center;font-size:10px")
-								|#{moment(inc.openedAt).format("YYYY-MM-DD")}
+								a(href="/incidents/detail/#{inc.id}")
+									|#{moment(inc.openedAt).format("YYYY-MM-DD")}
 							td(style="text-align:right;vertical-align:center")
 								img(src="/images/incidents/#{inc.priority.split(' ')[0]}.png" height="25px") 
 							td(style="text-align:center;font-size:10px")

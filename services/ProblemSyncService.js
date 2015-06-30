@@ -12,7 +12,7 @@ var mongojs = require("mongojs");
 var DB="space";
 var connection_string = '127.0.0.1:27017/'+DB;
 var db = mongojs(connection_string, [DB]);
-
+var moment = require('moment');
 // logger
 var winston = require('winston');
 var logger = winston.loggers.get('space_log');
@@ -116,27 +116,33 @@ function _filterRelevantData(data){
 	_problem.urgency = data.urgency;
 	_problem.description = data.description;
 	_problem.priority = data.priority;
-	_problem.closedAt = data.closed_at;
+	if (data.closed_at)
+		_problem.closedAt = new moment(data.closed_at,"DD-MM-YYYY HH:mm:ss").toDate();
 	_problem.id = data.number;
 	_problem.sysId = data.sys_id;
-
-	_problem.workStart = data.work_start;
-	_problem.slaResolutionDate = data.u_sla_resolution_due_date;
-	_problem.category = data.category;
+	_problem.manager = data.u_problem_manager;
+	_problem.closeNotes = data.close_notes;
+	_problem.rootCause = data.u_root_cause;
+	_problem.businessService = data.u_business_service;
 	_problem.labelType = data.u_label_type;
+	_problem.label = data.u_label;
+	_problem.knownErrorKB = data.u_known_error_kb;
+	_problem.knownErrorDescription = data.u_known_error_description;
+	_problem.knownError = data.u_known_error;
+	_problem.commentAndWorknotes = data.comments_and_work_notes;
+	_problem.workaround = data.work_around;
+	_problem.relatedIncidents = data.u_related_incidents;
+	_problem.workStart = data.work_start;
+	_problem.category = data.u_category;
 	_problem.active = data.active;
 	_problem.closeCode = data.u_close_code;
-	_problem.assignmentGroup = data.assignmentGroup;
+	_problem.assignmentGroup = data.assignment_group;
 	_problem.state = data.state;
-	_problem.openedAt = data.opened_at;
+	_problem.openedAt = new moment(data.opened_at,"DD-MM-YYYY HH:mm:ss").toDate();
+	_problem.openedBy = data.opened_by;
+
 	_problem.shortDescription = data.short_description;
-	_problem.notify = data.notify;
-	_problem.problemId = data.problem_id;
-	_problem.severity = data.severity;
-	_problem.isMajorIncident = data.u_major_incident;
-	_problem.createdBy = data.sys_created_by;
-	_problem.contactType = data.contact_type;
-	_problem.timeWorked = data.time_worked;
+
 	_problem.syncDate = new Date();
 
 	return _problem;

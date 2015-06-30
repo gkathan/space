@@ -21,7 +21,7 @@
         "RAG":RAGFormatter,
         "V1EpicURL":V1EpicURLFormatter,
         "SnowIncidentURL":SnowIncidentURLFormatter,
-        "IncidentChangeLogURL":IncidentChangeLogURLFormatter,
+        "IncidentDetailURL":IncidentDetailURLFormatter,
         "CheckInSync":CheckInSyncFormatter,
         "IncidentSLABreach":IncidentSLABreachFormatter,
         "IncidentState":IncidentStateFormatter,
@@ -90,8 +90,8 @@
   }
 
 
-  function IncidentChangeLogURLFormatter(row, cell, value, columnDef, dataContext) {
-    return value ? "<a href=\"/incidents/changelog/"+value+"\">"+value+"</a>" : "";
+  function IncidentDetailURLFormatter(row, cell, value, columnDef, dataContext) {
+    return value ? "<a href=\"/incidents/detail/"+value+"\">"+value+"</a>" : "";
   }
 
   /** employee profile

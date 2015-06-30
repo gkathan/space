@@ -186,9 +186,14 @@ function _handleClosedIncidents(deltaIds,type,callback){
 		async.each(deltaIds, function(_sysId, done) {
 			var _url =config.sync[_syncName].url+"&sysparm_sys_id="+_sysId;
 			_getSnowData(_url,type,function(err,data){
-				var _incident = incService.filterRelevantData(data.records[0]);
-				logger.debug("+++ I N C I D E N T : "+JSON.stringify(_incident));
-				_list.push(_incident);
+				logger.debug("+++ _getSnowData : url = "+_url);
+				if (data.records.length>0){
+					var _incident = incService.filterRelevantData(data.records[0]);
+					logger.debug("+++ I N C I D E N T : "+JSON.stringify(_incident));
+					_list.push(_incident);
+				}
+				else logger.warn("!!!!!!!!!!!!!!!!!! incident with sysId: "+_sysId+" cannot be found under "+_url);
+
 				done();
 			})
 		},function(err){

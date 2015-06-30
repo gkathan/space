@@ -51,6 +51,8 @@ var PATH = {
 						REST_PRODUCTCATALOG : BASE+'/space/rest/productcatalog',
 
 						REST_INCIDENTS : BASE+'/space/rest/incidents',
+						REST_INCIDENTSOLDSNOW : BASE+'/space/rest/incidentsoldsnow',
+
 						REST_INCIDENTCOMMUNICATIONTRAIL : BASE+'/space/rest/incidents/commtrail/:sysid',
 						REST_INCIDENTCHANGELOG : BASE+'/space/rest/incidents/changelog/:id',
 
@@ -117,6 +119,7 @@ var PATH = {
 						EXPORT_SOCOUTAGES : BASE+'/space/export/xlsx/soc_outages',
 						EXPORT_SOCSERVICES : BASE+'/space/export/xlsx/soc_services',
 						EXPORT_INCIDENTS : BASE+'/space/export/xlsx/incidents',
+						EXPORT_INCIDENTSOLDSNOW : BASE+'/space/export/xlsx/incidentsoldsnow',
 						EXPORT_PROBLEMS : BASE+'/space/export/xlsx/problems',
 
 						CONFIG : BASE+'/space/config',
@@ -164,6 +167,7 @@ router.get(PATH.REST_PROBLEMS, function(req, res, next) {findAllByName(req,res,n
 
 //router.get(PATH.REST_INCIDENTS, function(req, res, next) {findAllByName(req,res,next);});
 router.get(PATH.REST_INCIDENTS, function(req, res, next) {findIncidents(req,res,next);});
+router.get(PATH.REST_INCIDENTSOLDSNOW, function(req, res, next) {findIncidentsOldSnow(req,res,next);});
 
 router.get(PATH.REST_INCIDENTCOMMUNICATIONTRAIL, function(req, res, next) {findIncidentCommTrail(req,res,next);});
 router.get(PATH.REST_INCIDENTCHANGELOG, function(req, res, next) {findIncidentChangeLog(req,res,next);});
@@ -294,6 +298,7 @@ router.get(PATH.EXPORT_ORGANIZATION, function(req, res, next) {exporter.excelOrg
 router.get(PATH.EXPORT_SOCOUTAGES, function(req, res, next) {exporter.excelSOCOutages(req,res,next);});
 router.get(PATH.EXPORT_SOCSERVICES, function(req, res, next) {exporter.excelSOCServices(req,res,next);});
 router.get(PATH.EXPORT_INCIDENTS, function(req, res, next) {exporter.excelIncidents(req,res,next);});
+router.get(PATH.EXPORT_INCIDENTSOLDSNOW, function(req, res, next) {exporter.excelIncidentsOldSnow(req,res,next);});
 router.get(PATH.EXPORT_PROBLEMS, function(req, res, next) {exporter.excelProblems(req,res,next);});
 
 
@@ -460,6 +465,21 @@ function findIncidents(req,res,next){
 		});
 }
 
+function findIncidentsOldSnow(req,res,next){
+	  logger.debug("findIncidents() called");
+
+		var incService = require("../services/IncidentService");
+		incService.findOld({},function(err,data){
+				if (err){
+					logger.error("[error] findincidentsOldSnow says: "+err)
+					res.send(err);
+				}
+				res.send(data);
+				return;
+		});
+}
+
+
 /**
 */
 function findIncidentCommTrail(req,res,next){
@@ -491,7 +511,7 @@ function findIncidentChangeLog(req,res,next){
 					logger.error("[error] findincidents says: "+err)
 					res.send(err);
 				}
-				
+
 				res.send(data);
 				return;
 		});

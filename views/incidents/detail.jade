@@ -32,7 +32,7 @@ mixin renderDetailRow(key,keyStyle,value,valueStyle)
 			td(class='#{valueStyle}')
 				|#{value}
 
-mixin renderDetail(item)
+mixin renderIncidentDetail(item)
 	table.table-responsive.table-hover(style="text-align:left")
 		tr
 			td.descriptor
@@ -58,13 +58,55 @@ mixin renderDetail(item)
 			+renderDetailRow("SLA breach time","descriptor",item.slaBreachTime,"valueStandard")
 		+renderDetailRow("is active","descriptor",item.active,"valueStandard")
 		+renderDetailRow("problem","descriptor",item.problemId,"valueStandard")
-		+renderDetailRow("imapct - urgency - severity","descriptor",item.imact+" - "+item.urgency+" - "+item.severity,"valueStandard")
+		+renderDetailRow("impact - urgency - severity","descriptor",item.impact+" - "+item.urgency+" - "+item.severity,"valueStandard")
 		+renderDetailRow("location","descriptor",item.location,"valueStandard")
 		+renderDetailRow("environment","descriptor",item.environment,"valueStandard")
 		+renderDetailRow("created by","descriptor",item.createdBy,"valueStandard")
 		+renderDetailRow("contact type","descriptor",item.contactType,"valueStandard")
 		+renderDetailRow("notify","descriptor",item.notify,"valueStandard")
 		+renderDetailRow("description","descriptor",item.description,"valueStandard")
+
+
+mixin renderProblemDetail(item)
+	table.table-responsive.table-hover(style="text-align:left")
+		tr
+			td.descriptor
+				+renderPriority(item,30)
+			td(style="max-width:400px;font-size:16px;padding-left:10px;vertical-align:bottom")
+				a(href="https://bwinparty.service-now.com/ess/problem.do?sys_id=#{item.sysId}" target="_new")
+					|#{item.id}
+				
+		+renderDetailRow("business service","descriptor",item.businessService,"valueBold")
+		+renderDetailRow("label - labelType","descriptor",item.labelType+" - "+item.label,"valueStandard")
+		+renderDetailRow("opened at","descriptor",moment(item.openedAt).format("YYYY-MM-DD HH:mm:ss"),"valueStandard")
+		+renderDetailRow("opened by","descriptor",item.openedBy,"valueStandard")
+		+renderDetailRow("manager","descriptor",item.manager,"valueStandard")
+		+renderDetailRow("category","descriptor",item.category,"valueStandard")
+		+renderDetailRow("short description","descriptor",item.shortDescription,"valueStandard")
+		+renderDetailRow("state","descriptor",item.state,"valueStandard")
+		+renderDetailRow("workaround","descriptor",item.workaround,"valueStandard")
+		+renderDetailRow("assignment group","descriptor",item.assignmentGroup,"valueStandard")
+		+renderDetailRow("root cause","descriptor",item.rootCause,"valueStandard")
+		+renderDetailRow("related incidents","descriptor",item.relatedIncidents,"valueStandard")
+		if item.resolvedAt
+			+renderDetailRow("resolved at","descriptor",moment(item.resolvedAt).format("YYYY-MM-DD HH:mm:ss"),"valueStandard")
+			+renderDetailRow("time to resolve","descriptor",item.timeToResolve,"valueStandard")
+		if item.closedAt
+			+renderDetailRow("closed at","descriptor",moment(item.closedAt).format("YYYY-MM-DD HH:mm:ss"),"valueStandard")
+			+renderDetailRow("close code","descriptor",item.closeCode,"valueStandard")
+			+renderDetailRow("SLA breach","descriptor",item.slaBreach,"valueStandard")
+			+renderDetailRow("SLA breach time","descriptor",item.slaBreachTime,"valueStandard")
+		+renderDetailRow("is active","descriptor",item.active,"valueStandard")
+		+renderDetailRow("impact - urgency","descriptor",item.impact+" - "+item.urgency,"valueStandard")
+		+renderDetailRow("location","descriptor",item.location,"valueStandard")
+		+renderDetailRow("description","descriptor",item.description,"valueStandard")
+		+renderDetailRow("comment & worknotes","descriptor",item.commentAndWorknotes,"valueStandard")
+		+renderDetailRow("known error","descriptor",item.knownError,"valueStandard")
+		+renderDetailRow("known error description","descriptor",item.knownErrorDescription,"valueStandard")
+		+renderDetailRow("known error KB","descriptor",item.knownErrorKB,"valueStandard")
+		
+
+
 
 mixin renderTimelineBox(change)
 	-var _class="default"
@@ -117,10 +159,10 @@ block content
 	
 	div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;background-color:white;;max-width:1000px;text-align: center;margin: 10px auto;")
 		.panel-heading
-			h3.panel-title INCIDENT DETAIL
+			h3.panel-title(style="font-size:20px;font-weight:bold") INCIDENT DETAIL
 		.panel-body
-			.panel(style="padding-top:20px;padding-bottom:20px")
-				+renderDetail(incident)
+			.panel(style="margin:auto;padding-top:20px;padding-bottom:20px;max-width:500px")
+				+renderIncidentDetail(incident)
 			
 			ul.timeline
 				li
@@ -144,7 +186,9 @@ block content
 						li.timeline-inverted
 							+renderTimelineBox(change)
 
+		
 			if problem
 				hr
-				.panel(style="padding-top:20px;padding-bottom:20px")
-					+renderDetail(problem)
+				.panel(style="margin:auto;padding-top:20px;padding-bottom:20px;max-width:500px")
+					h4 ASSOCIATED PROBLEM
+					+renderProblemDetail(problem)
