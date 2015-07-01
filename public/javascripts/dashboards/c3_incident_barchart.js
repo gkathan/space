@@ -1,5 +1,6 @@
 var incidents;//={unplannedYTD:99.61,targetYTD:99.75};
-var _period = "Q2-2015";
+//var _period = "Q2-2015";
+var _period = "NOW-90";
 
 //var _baselineYear = parseInt(_.last(_period.split("-")))-1;
 //var _baselinePeriod =_.first(_period.split("-"))+"-"+_baselineYear;
@@ -42,22 +43,23 @@ $.get( _url, function( data ) {
     var _targetP08= (_baselineMetrics.sumP08-(_baselineMetrics.sumP08*0.2)).toFixed(0);
 
 
-    var _trendP01 = (-(1-(_metrics.sumP01/_baselineMetrics.sumP01)).toFixed(2)*100)
+    var _trendP01 = (-(1-(_metrics.sumP01/_baselineMetrics.sumP01))*100).toFixed(1);
     if (_trendP01>0) _trendP01="+"+_trendP01+"%";
     else _trendP01=_trendP01+"%";
 
-    var _trendP08 = (-(1-(_metrics.sumP08/_baselineMetrics.sumP08)).toFixed(2)*100);
+    var _trendP08 = (-(1-(_metrics.sumP08/_baselineMetrics.sumP08))*100).toFixed(1);
     if (_trendP08>0) _trendP08="+"+_trendP08+"%";
     else _trendP08=_trendP08+"%";
 
     var _targetString = "<b>"+_period+"</b><img src='/images/incidents/P01.png' height='20px' style='padding-left:2px;padding-right:2px'><b style='font-size:14px'>"+_metrics.sumP01+"</b> <img src='/images/incidents/P08.png' height='20px' style='padding-left:2px;padding-right:2px'><b style='font-size:14px'>"+_metrics.sumP08+"</b>";
-    _targetString+="<br> P01 target: "+_targetP01+" P08 target: "+_targetP08;
-    _targetString+="<br> P01 trend: "+_trendP01+" P08 trend: "+_trendP08;
+
+    _targetString+="<br> trend P01: "+_trendP01+" | P08: "+_trendP08;
 
 
 
 
     $('#target').html(_targetString);
+    $('#targetIncidentAbsolut').html("P01 < "+_targetP01+" P08 < "+_targetP08);
 
 
     var chart2 = c3.generate({

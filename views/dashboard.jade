@@ -29,6 +29,11 @@ block content
 									|target | #{target.directTime} 
 								div(style="font-weight:bold;font-size:28px;text-align:center")
 									|#{target.directMetric}#{target.directMetricScale} 
+								if target.id=="K2"
+									div(style="font-weight:normal;font-size:12px;text-align:center")
+										span(id="targetIncidentAbsolut")
+
+									
 								div(id="#{target.dashboardTop}")
 								div(style="font-size:12px;text-align:left;padding-left:20px")
 									if target.id=="K1"

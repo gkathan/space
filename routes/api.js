@@ -369,6 +369,7 @@ function findById(req, res , next){
 /**
  * find incidenttracker by date
 * uri looks like /api/space/rest/incidenttracker/<type>/q2-2015
+* enhanced by also sending start and end of period by dates e.g. 2015-01-01_2015-02-01
  */
 function findIncidenttrackerByDate(req, res , next){
 	var path = req.path.split("/");

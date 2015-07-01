@@ -369,6 +369,7 @@ function _findIncidenttrackerByDate(aggregate,period,callback){
 	var _month = _parseMonth(_date);
 	var _week = _parseWeek(_date);
 
+
 	logger.debug("------------------------ date: "+_date+" quarter: "+_quarter)
 	logger.debug("------------------------ date: "+_date+" half: "+_half)
 	logger.debug("------------------------ date: "+_date+" month: "+_month)
@@ -385,7 +386,20 @@ function _findIncidenttrackerByDate(aggregate,period,callback){
 	var _from;
 	var _to;
 
-	if ( _year != NaN && _year >2010){
+
+
+		//2015-01-01_2015-02-01
+	if (_date.split("_").length==2){
+			_from = new Date(_date.split("_")[0]);
+			_to = new Date(_date.split("_")[1]);
+	}
+	//NOW-90 => 90 days back from now
+	else if (_date.split("-")[0]=="NOW"){
+		_from = new moment().subtract(_date.split("-")[1],'days').toDate();
+		_to = new Date();
+
+	}
+	else if ( _year != NaN && _year >2010){
 		_from = new Date(_date+"-01-01");
 		_to = new Date(_date+"-12-31");
 		logger.debug("[year]:" +_year+ "[from]: "+_from+" [to]: "+_to);
@@ -410,6 +424,7 @@ function _findIncidenttrackerByDate(aggregate,period,callback){
 		_to = new Date(_week[1]);
 		logger.debug("[_week]:" +_week+ "[from]: "+_from+" [to]: "+_to);
 	}
+
 	else {
 		logger.error("no way - no valid date specified");
 	}
