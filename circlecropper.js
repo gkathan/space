@@ -21,7 +21,7 @@ convertToCircle();
 
 
 function convertToCircle(){
-  var _dir = "./temp/employees/squared/";
+  var _dir = "./temp/employees/squared/default/";
   //var _dir = "./temp/testimages/";
   fs.readdir(_dir,function(err,files){
     for (var f in files){
