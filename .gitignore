@@ -1,5 +1,6 @@
 access.log
 build
+data
 dist
 doc
 log
