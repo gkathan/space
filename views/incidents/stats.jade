@@ -1,0 +1,30 @@
+include ../kanban_menu
+
+
+mixin renderPriority(prio,size)
+	img(src="/images/incidents/#{prio}.png" height="#{size}px") 
+
+block content
+
+	div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;background-color:white;;max-width:1000px;text-align: center;margin: 10px auto;")
+		.panel-heading
+			h3.panel-title(style="font-size:20px;font-weight:bold") INCIDENT STATS
+		.panel-body
+			|total open: #{stats.totalOpen}
+			br
+			+renderPriority("P01",25) 
+			|open: #{stats.P01Open}
+			br
+			+renderPriority("P08",25) 
+			|open: #{stats.P08Open}
+			br
+			+renderPriority("P16",25) 
+			|open: #{stats.P16Open}
+			br
+			+renderPriority("P120",25)  
+			|open: #{stats.P120Open}
+			
+				
+		
+		
+		

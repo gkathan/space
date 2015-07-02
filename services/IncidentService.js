@@ -40,6 +40,7 @@ exports.getOverdueGroupedByAssignmentGroup = _getOverdueGroupedByAssignmentGroup
 exports.findRevenueImpactMapping = _findRevenueImpactMapping;
 exports.flushAll = _flushAll;
 exports.filterRelevantData = _filterRelevantData;
+exports.calculateStats = _calculateStats;
 
 
 /** loads all incidents from snow endpoint
@@ -211,6 +212,30 @@ function _flush(data,callback){
 		}
 	});
 }
+
+
+function _calculateStats(callback){
+//	var _prios = _.pluck(config.mappings.snow.priority,"bpty");
+	var _stats= {};
+
+	var items =  db.collection(_incidentsCollection);
+	items.find({active:"true",state:{$ne:"Resolved"}},function(err,incidents){
+
+
+		_stats.totalOpen=incidents.length;
+
+
+		_stats.P01Open = _.where(incidents,{priority:"P01 - Critical"}).length;
+		_stats.P08Open = _.where(incidents,{priority:"P08 - High"}).length;
+		_stats.P16Open = _.where(incidents,{priority:"P16 - Moderate"}).length;
+		_stats.P120Open = _.where(incidents,{priority:"P40 - Low"}).length;
+
+
+		callback(null,_stats);
+	})
+
+}
+
 
 /**
 * saves

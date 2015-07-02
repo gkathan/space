@@ -13,8 +13,16 @@ var moment = require('moment');
 var winston = require('winston');
 var logger = winston.loggers.get('space_log');
 
-router.get("/", function(req, res, next) {
-	res.render("incidents/incidents");
+var incService = require('../services/IncidentService');
+
+router.get("/stats", function(req, res, next) {
+
+	incService.calculateStats(function(err,stats){
+			res.locals.stats = stats;
+			res.render("incidents/stats");
+	})
+
+
 });
 
 
@@ -22,7 +30,7 @@ router.get("/detail/:incidentId", function(req, res, next) {
 	logger.debug("--------------------- incidentId: "+_id);
 	var _id = req.params.incidentId;
 
-	var incService = require('../services/IncidentService');
+	incService = require('../services/IncidentService');
 	var incident;
 	incService.findById(_id,function(err,incident){
 		incService.findProblem(incident,function(err,problem){
@@ -32,6 +40,15 @@ router.get("/detail/:incidentId", function(req, res, next) {
 							logger.error("[error] "+err.message);
 					}
 					else{
+
+						if (incident.slaResolutionDate){
+							var _opened = incident.openedAt;
+							var _sla = incident.slaResolutionDate;
+							var _now = new Date();
+							if (_now > _sla && incident.active=="true") incident.overdue = true;
+							else incident.overdue = false;
+						}
+
 						res.locals.changelog=changelog;
 						res.locals.incident=incident;
 						res.locals.problem=problem;

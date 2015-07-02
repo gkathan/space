@@ -54,8 +54,9 @@ mixin renderIncidentDetail(item)
 		if item.closedAt
 			+renderDetailRow("closed at","descriptor",moment(item.closedAt).format("YYYY-MM-DD HH:mm:ss"),"valueStandard")
 			+renderDetailRow("close code","descriptor",item.closeCode,"valueStandard")
-			+renderDetailRow("SLA breach","descriptor",item.slaBreach,"valueStandard")
-			+renderDetailRow("SLA breach time","descriptor",item.slaBreachTime,"valueStandard")
+		+renderDetailRow("SLA breach","descriptor",item.slaBreach,"valueStandard")
+		+renderDetailRow("SLA breach time","descriptor",item.slaBreachTime,"valueStandard")
+		+renderDetailRow("overdue","descriptor",item.overdue,"valueStandard")
 		+renderDetailRow("is active","descriptor",item.active,"valueStandard")
 		+renderDetailRow("problem","descriptor",item.problemId,"valueStandard")
 		+renderDetailRow("impact - urgency - severity","descriptor",item.impact+" - "+item.urgency+" - "+item.severity,"valueStandard")
@@ -94,8 +95,9 @@ mixin renderProblemDetail(item)
 		if item.closedAt
 			+renderDetailRow("closed at","descriptor",moment(item.closedAt).format("YYYY-MM-DD HH:mm:ss"),"valueStandard")
 			+renderDetailRow("close code","descriptor",item.closeCode,"valueStandard")
-			+renderDetailRow("SLA breach","descriptor",item.slaBreach,"valueStandard")
-			+renderDetailRow("SLA breach time","descriptor",item.slaBreachTime,"valueStandard")
+		+renderDetailRow("SLA breach","descriptor",item.slaBreach,"valueStandard")
+		+renderDetailRow("SLA breach time","descriptor",item.slaBreachTime,"valueStandard")
+		
 		+renderDetailRow("is active","descriptor",item.active,"valueStandard")
 		+renderDetailRow("impact - urgency","descriptor",item.impact+" - "+item.urgency,"valueStandard")
 		+renderDetailRow("location","descriptor",item.location,"valueStandard")
@@ -151,17 +153,12 @@ mixin renderTimelineBox(change)
 									|#{change.change[_key][1]}
 
 block content
-	script(type="text/javascript").
-		$(document).ready(function() {
-			$('#kanban_menu').sidr({speed:300});
-		});
-
-	
 	div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;background-color:white;;max-width:1000px;text-align: center;margin: 10px auto;")
 		.panel-heading
 			h3.panel-title(style="font-size:20px;font-weight:bold") INCIDENT DETAIL
 		.panel-body
 			.panel(style="margin:auto;padding-top:20px;padding-bottom:20px;max-width:500px")
+				
 				+renderIncidentDetail(incident)
 			
 			ul.timeline
