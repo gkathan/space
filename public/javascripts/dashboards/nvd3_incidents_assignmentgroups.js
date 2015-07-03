@@ -30,7 +30,7 @@ function init(prio,dateField,chartId){
       .y(function(d) { return d.y })
       .staggerLabels(true)
       .tooltips(true)
-      .showLegend(false)
+      .showLegend(true)
       .groupSpacing(0.2)
       .rotateLabels(45)
       .showControls(true)
