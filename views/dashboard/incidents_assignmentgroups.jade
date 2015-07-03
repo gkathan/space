@@ -1,0 +1,26 @@
+include ../kanban_menu
+include mixins/chart_incident
+// Load d3.js and c3.js
+script(src='/javascripts/components/c3/c3.min.js')
+// Load nv3d
+script(src='/javascripts/components/nvd3/build/nv.d3.min.js')
+script(src='/javascripts/dashboards/nvd3_incidents_assignmentgroups.js')
+
+
+style.
+
+	#chartP01-closedAt svg {
+	  height: 500px;
+		width:980px;
+	}
+	#chartP08-closedAt svg {
+	  height: 500px;
+		width:980px;
+	}
+	
+block content
+	//+graph("test","chartTest")
+	+chartIncident("Incidents - Split By AssignmentGroups","P01","closedAt")
+	+chartIncident("Incidents - Split By AssignmentGroups","P08","closedAt")
+
+include ../includes/material			

@@ -51,6 +51,7 @@ function _sync(url,type,callback){
 		if (err){
 			logger.error("_getSnowData failed: "+err);
 			callback(err);
+			return;
 		}
 		// parsed response body as js object
 		logger.debug("[_syncIncident]...client.get data..: _url:"+url);

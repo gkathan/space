@@ -357,6 +357,9 @@ function _saveDailyTracker(tracker,dateFields,callback){
 	}
 }
 
+
+
+
 /**
 * param type: "openedAt", "resolvedAt" or "closedAt" are currently supported
 */
@@ -397,8 +400,12 @@ function _findIncidenttrackerByDate(aggregate,period,callback){
 	else if (_date.split("-")[0]=="NOW"){
 		_from = new moment().subtract(_date.split("-")[1],'days').toDate();
 		_to = new Date();
-
 	}
+	else if (_date=="ALL"){
+		_from = new Date("2014-01-01");
+		_to = new Date();
+	}
+
 	else if ( _year != NaN && _year >2010){
 		_from = new Date(_date+"-01-01");
 		_to = new Date(_date+"-12-31");
@@ -517,6 +524,35 @@ function _parseWeek(week){
 	return _parsePeriod(week,"week");
 }
 
+
+/** helper method to convert a time string
+*/
+function getTimeName(time,dateString){
+	var _timeName;
+	// needs special treatment per time
+	if (time=="week"){
+		_timeName = "cw"+moment(dateString).format("WW")+"-"+moment(dateString).format("YYYY");
+	}
+	else if (time=="month"){
+		_timeName = moment(dateString).format("MMMM")+"-"+moment(dateString).format("YYYY");
+	}
+	else if (time=="quarter"){
+		_timeName = "Q"+moment(dateString).format("Q")+"-"+moment(dateString).format("YYYY");
+	}
+	else if (time=="halfyear"){
+		var _half = parseInt((parseInt(moment(dateString).format("Q"))+1)/2);
+		_timeName = "H"+_half+"-"+moment(dateString).format("YYYY");
+	}
+	else if (time=="year"){
+		_timeName = moment(dateString).format("YYYY");
+	}
+	else if (time=="day"){
+		_timeName = moment(dateString).format("YYYY-MM-DD");
+	}
+	return _timeName;
+}
+
+
 /** generic aggregator incidenttracker data
 * param period: defines whether we arte looking at "yearly",  "quarterly", "monthly", or "weekly"
 * param time: "week", "month", "quarter" "year"
@@ -529,92 +565,58 @@ function _aggregateByTime(data,period,time){
 	*/
 	//weeks,months,....
 	var items =[];
-	var _p01_aggregate={"openedAt":0,"resolvedAt":0,"closedAt":0};
-  var _p08_aggregate={"openedAt":0,"resolvedAt":0,"closedAt":0};
-	var _p16_aggregate={"openedAt":0,"resolvedAt":0,"closedAt":0};
-	var _p120_aggregate={"openedAt":0,"resolvedAt":0,"closedAt":0};
+	var _item;
+	var _timeName;
 
+	var dateFields=["openedAt","resolvedAt","closedAt"];
+	var subDimensions=["assignmentGroup","label","businessService"];
+	var _prios = ["P01","P08","P16","P120"];
+
+	// --- following code is quite complicated - but it got developed iterativly and optimized ;-)
   for (var i in data){
-		var _time;
-		var _timeName;
-		// needs special treatment per time
-		if (time=="week"){
-			_time = moment(data[i].date).week();
-			_timeName = "cw"+moment(data[i].date).format("WW")+"-"+moment(data[i].date).format("YYYY");
-		}
-		else if (time=="month"){
-			_time = moment(data[i].date).month();
-			_timeName = moment(data[i].date).format("MMMM")+"-"+moment(data[i].date).format("YYYY");
-		}
-		else if (time=="quarter"){
-			_time = moment(data[i].date).quarter();
-			_timeName = "Q"+moment(data[i].date).format("Q")+"-"+moment(data[i].date).format("YYYY");
-		}
-		else if (time=="halfyear"){
-			_time = moment(data[i].date).quarter();
-			var _half = parseInt((parseInt(moment(data[i].date).format("Q"))+1)/2);
-			_timeName = "H"+_half+"-"+moment(data[i].date).format("YYYY");
-		}
-		else if (time=="year"){
-			_time = moment(data[i].date).year();
-			_timeName = moment(data[i].date).format("YYYY");
-		}
-  	else if (time=="day"){
-			_time = moment(data[i].date).day();
-			_timeName = moment(data[i].date).format("YYYY-MM-DD");
-		}
-
+		_timeName = getTimeName(time,data[i].date);
 		if (!_.findWhere(items,{"date":_timeName})){
-			_p01_aggregate={"openedAt":0,"resolvedAt":0,"closedAt":0};
-      _p08_aggregate={"openedAt":0,"resolvedAt":0,"closedAt":0};
-			_p16_aggregate={"openedAt":0,"resolvedAt":0,"closedAt":0};
-			_p120_aggregate={"openedAt":0,"resolvedAt":0,"closedAt":0};
-
-			items.push({date:_timeName,
-				"openedAt":{P01:{total:_p01_aggregate.openedAt},P08:{total:_p08_aggregate.openedAt},P16:{total:_p16_aggregate.openedAt},P120:{total:_p120_aggregate.openedAt}},
-				"resolvedAt":{P01:{total:_p01_aggregate.resolvedAt},P08:{total:_p08_aggregate.resolvedAt},P16:{total:_p16_aggregate.resolvedAt},P120:{total:_p120_aggregate.resolvedAt}},
-				"closedAt":{P01:{total:_p01_aggregate.closedAt},P08:{total:_p08_aggregate.closedAt},P16:{total:_p16_aggregate.closedAt},P120:{total:_p120_aggregate.closedAt}}
-			});
+			// init empty tracker data
+			_item = {date:_timeName};
+			for (var d in dateFields){
+				// init the prios
+				var _p={};
+				for (var p in _prios){
+					_p[_prios[p]]={total:0,assignmentGroup:{},label:{},businessService:{}};
+				}
+				_item[dateFields[d]]=_p;
+			}
+			items.push(_item);
 		}
 
-		if (data[i]["openedAt"]){
-			_p01_aggregate.openedAt+=parseInt(data[i]["openedAt"].P01.total);
-	    _p08_aggregate.openedAt+=parseInt(data[i]["openedAt"].P08.total);
-			_p16_aggregate.openedAt+=parseInt(data[i]["openedAt"].P16.total);
-			_p120_aggregate.openedAt+=parseInt(data[i]["openedAt"].P120.total);
+		for (var d in dateFields){
+			var _dateField = dateFields[d];
 
-			_.findWhere(items,{"date":_timeName})["openedAt"].P01.total=_p01_aggregate.openedAt;
-			_.findWhere(items,{"date":_timeName})["openedAt"].P08.total=_p08_aggregate.openedAt;
-			_.findWhere(items,{"date":_timeName})["openedAt"].P16.total=_p16_aggregate.openedAt;
-			_.findWhere(items,{"date":_timeName})["openedAt"].P120.total=_p120_aggregate.openedAt;
-		}
-
-
-
-		if (data[i]["resolvedAt"]){
-			_p01_aggregate.resolvedAt+=parseInt(data[i]["resolvedAt"].P01.total);
-	    _p08_aggregate.resolvedAt+=parseInt(data[i]["resolvedAt"].P08.total);
-			_p16_aggregate.resolvedAt+=parseInt(data[i]["resolvedAt"].P16.total);
-			_p120_aggregate.resolvedAt+=parseInt(data[i]["resolvedAt"].P120.total);
-
-			_.findWhere(items,{"date":_timeName})["resolvedAt"].P01.total=_p01_aggregate.resolvedAt;
-			_.findWhere(items,{"date":_timeName})["resolvedAt"].P08.total=_p08_aggregate.resolvedAt;
-			_.findWhere(items,{"date":_timeName})["resolvedAt"].P16.total=_p16_aggregate.resolvedAt;
-			_.findWhere(items,{"date":_timeName})["resolvedAt"].P120.total=_p120_aggregate.resolvedAt;
-		}
-
-
-
-		if (data[i]["closedAt"]){
-			_p01_aggregate.closedAt+=parseInt(data[i]["closedAt"].P01.total);
-	    _p08_aggregate.closedAt+=parseInt(data[i]["closedAt"].P08.total);
-			_p16_aggregate.closedAt+=parseInt(data[i]["closedAt"].P16.total);
-			_p120_aggregate.closedAt+=parseInt(data[i]["closedAt"].P120.total);
-
-			_.findWhere(items,{"date":_timeName})["closedAt"].P01.total=_p01_aggregate.closedAt;
-			_.findWhere(items,{"date":_timeName})["closedAt"].P08.total=_p08_aggregate.closedAt;
-			_.findWhere(items,{"date":_timeName})["closedAt"].P16.total=_p16_aggregate.closedAt;
-			_.findWhere(items,{"date":_timeName})["closedAt"].P120.total=_p120_aggregate.closedAt;
+			if (data[i][_dateField]){
+				for (var p in _prios){
+					var _prio = _prios[p];
+					// _item is the existing openedAt
+					_item = _.findWhere(items,{"date":_timeName})[_dateField][_prio];
+					// now do the increments
+					_item.total+=parseInt(data[i][_dateField][_prio].total);
+					for (var s in subDimensions){
+						var _sub=subDimensions[s];
+						// the to be added items
+						var _a = data[i][_dateField][_prio][_sub];
+						for (var a in _.keys(_a)){
+							//_.trim removes whitespaces at begin and end
+							var _ag = _.trim(_.keys(_a)[a]);
+							//logger.debug("++++++++++ assignmentGroup: "+_ag+" count: "+_a[_ag]);
+							if (!_item[_sub][_ag]){
+								_item[_sub][_ag]=_a[_ag];
+							}
+							else{
+								_item[_sub][_ag]+=_a[_ag];
+							}
+						}
+					}
+				}
+			}
 		}
   }
 	return {period:period,aggregate:time,tracker:items};

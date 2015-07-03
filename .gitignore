@@ -11,6 +11,7 @@ temp
 config/secret.json
 Dockerfile
 public/files
-public/images/employees
+public/images
 change.log
 !.gitignore
+caspertest.js

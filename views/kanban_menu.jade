@@ -81,6 +81,18 @@ block content
 										a(href='/incidentmatrix') incident matrix
 						ul.nav.navbar-nav
 							li.dropdown(id="fat-menu")
+								a.dropdown-toggle(id="targets" href="#" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false") incidents
+									span.caret
+								ul.dropdown-menu(role="menu" aria-labelledby="admin")
+									li(role="presentation")
+										a(role="menuitem" tabindex="-1" href="/dashboard/incidents") incidents
+									li(role="presentation")
+										a(role="menuitem" tabindex="-1" href="/dashboard/incidents_assignmentgroups") incidents - split by assignment group
+									li(role="presentation")
+										a(role="menuitem" tabindex="-1" href="/dashboard/incidents_line") incidents - line chart experiment
+
+						ul.nav.navbar-nav
+							li.dropdown(id="fat-menu")
 								a.dropdown-toggle(id="targets" href="#" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false") targets
 									span.caret
 								ul.dropdown-menu(role="menu" aria-labelledby="admin")

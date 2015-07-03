@@ -67,6 +67,13 @@ router.get('/incidents_line', function(req, res) {
 		res.render('dashboard/incidents_line', { title: 's p a c e - incidents linedashboard' });
 });
 
+router.get('/incidents_assignmentgroups', function(req, res) {
+		var _period = req.query.period;
+		res.locals.period = _period;
+		res.locals.moment = moment;
+		res.render('dashboard/incidents_assignmentgroups', { title: 's p a c e - incidents by assignmentgroup' });
+});
+
 
 
 router.get('/qos', function(req, res) {

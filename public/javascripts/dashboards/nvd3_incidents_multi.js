@@ -87,10 +87,7 @@ function init(prio,dateField,chartId){
 
   // clickhandler for
 	$('a.dropdown.incidentstrend').click( function(event) {
-
     var _prio =event.target.id.split("_")[0].split("chart")[1].split("-")[0];
-
-
     var _chart=event.target.id.split("_")[0];
     var _dateField = _chart.split("-")[1];
 
@@ -155,8 +152,6 @@ function _prepareData(incidents,incidentsPrev,prio,period,dateField){
       _PSumPrev+=parseInt(incidentsPrev[day][dateField][prio]);
 
   }
-  //console.log(prio+"Sum = "+_PSumPrev+" "+prio+"BaseSum = "+_PBaseSumPrev);
-
   var incData = [{key:_year,values:_P},{key:_yearPrev,values:_PPrev}]
 
   return incData
