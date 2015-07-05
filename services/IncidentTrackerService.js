@@ -439,7 +439,16 @@ function _findIncidenttrackerByDate(aggregate,period,callback){
 	logger.debug("collection: "+collection);
  	var _query = {date : { $gte : _from,$lte : _to}};
 
+	/*
+	// this would calculate dailytracker on demand =>> is at least 20xtimes slower !!!
+	var _query = {openedAt : { $gte : _from,$lte : _to}};
+	var incService = require('../services/IncidentService');
+	incService.findFiltered(_query,function(err,incidents){
+		_calculateDailyTracker(incidents,["openedAt","resolvedAt","closedAt"],"bpty.studios",function(err,success){
+	*/
+
   db.collection(collection).find( _query).sort({"date":1}, function(err , success){
+
     logger.debug('Response success '+success);
     logger.debug('Response error '+err);
     if(success){
@@ -468,6 +477,7 @@ function _findIncidenttrackerByDate(aggregate,period,callback){
 			logger.warn("************* callback error: "+err.message);
 			callback(err,null);
 		}
+		//})
 	})
 }
 

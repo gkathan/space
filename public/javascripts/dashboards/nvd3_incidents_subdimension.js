@@ -9,7 +9,7 @@ var _dateField;//="openedAt";
 
 
 
-function init(prio,dateField,chartId){
+function init(prio,dateField,chartId,subDimension){
   _dateField = dateField;
   nv.addGraph(function() {
     var incidents;
@@ -44,7 +44,11 @@ function init(prio,dateField,chartId){
     chart.reduceXTicks(_reduceXTicks).staggerLabels(true);
     chart.yAxis
         .tickFormat(d3.format(',d'));
-    redraw(_chartId,_period,_aggregate,_prio,dateField);
+
+
+
+
+    redraw(_chartId,_period,_aggregate,_prio,dateField,subDimension);
 
     //function pointer
     charts[chartId]=chart;
@@ -81,7 +85,7 @@ function init(prio,dateField,chartId){
 /**
 * prepares data to be consumable by NVd3
 */
-function _prepareData(tracker,prio,period,dateField){
+function _prepareData(tracker,prio,period,dateField,subDimension){
   console.log("----------------- _prepareData: prio= "+prio);
   console.log("----------------- _prepareData: period= "+period);
   console.log("----------------- _prepareData: dateField= "+dateField);
@@ -90,6 +94,8 @@ function _prepareData(tracker,prio,period,dateField){
   var aGroups=[];
   var dates=[];
 
+  if (!subDimension) subDimension="label";
+
   for (var d in tracker){
     var _date = tracker[d].date;
     if (dates.indexOf(_date)<0){
@@ -97,27 +103,21 @@ function _prepareData(tracker,prio,period,dateField){
     }
     console.log("--- date: "+_date);
     console.log("--- tracker: "+JSON.stringify(tracker[d]));
-      for (var a in _.keys(tracker[d][dateField][prio].assignmentGroup)){
-        var _ag = _.keys(tracker[d][dateField][prio].assignmentGroup)[a];
+      for (var a in _.keys(tracker[d][dateField][prio][subDimension])){
+        var _ag = _.keys(tracker[d][dateField][prio][subDimension])[a];
         // track all distinc assignment groups
         if (aGroups.indexOf(_ag)<0){
           aGroups.push(_ag);
         }
-        console.log("---------------assignmentGroup: "+_ag+" count: "+tracker[d][dateField][prio].assignmentGroup[_ag]);
+        console.log("---------------"+subDimension+": "+_ag+" count: "+tracker[d][dateField][prio][subDimension][_ag]);
 
         var _aGroup = _.findWhere(agData,{"key":_ag});
         if (!_aGroup){
           agData.push({key:_ag,values:[]});
         }
-        _.findWhere(agData,{"key":_ag}).values.push({date:_date,y:tracker[d][dateField][prio].assignmentGroup[_ag]})
+        _.findWhere(agData,{"key":_ag}).values.push({date:_date,y:tracker[d][dateField][prio][subDimension][_ag]})
       }
   }
-
-
-
-  // incData: [{"key":2015,"values":[{"date":"cw27-2015","y":2}]},{"key":2014,"values":[{"date":"cw27-2015","y":6},{"date":"cw28-2015","y":4},{"date":"cw29-2015","y":4},{"date":"cw30-2015","y":3},{"date":"cw31-2015","y":2},{"date":"cw32-2015","y":2},{"date":"cw33-2015","y":3},{"date":"cw34-2015","y":1},{"date":"cw35-2015","y":4},{"date":"cw36-2015","y":0},{"date":"cw37-2015","y":3},{"date":"cw38-2015","y":7},{"date":"cw39-2015","y":8},{"date":"cw40-2015","y":2}]}]
-  // incData[[{"assignmentGroup":"Sports CRM and Promo","y":1},{"assignmentGroup":"LO-International Hyderabad (LO-INT-HYD)","y":6},{"assignmentGroup":"LO-Social","y":1},{"assignmentGroup":"LO-Core (LO-CORE)","y":1},{"assignmentGroup":"LO-Sports B2C (LO-B2C)","y":4},{"assignmentGroup":"BPTY Information Security","y":1},{"assignmentGroup":"LO-Sports POS (webs and engine)","y":1},{"assignmentGroup":"Infra Ops Network","y":6},{"assignmentGroup":"LO-Casino (LO-CAS)","y":2},{"assignmentGroup":"SOC","y":4},{"assignmentGroup":"LO-Sports Trading, Content, Security","y":1},{"assignmentGroup":"LO-CRM (LO-CRM)","y":3},{"assignmentGroup":"SOC","y":2},{"assignmentGroup":"LO-International Hyderabad (LO-INT-HYD)","y":6},{"assignmentGroup":"LO-FireChiefs (LO-FIR)","y":1},{"assignmentGroup":"LO-Casino (LO-CAS)","y":3},{"assignmentGroup":"Infra Ops Network","y":2},{"assignmentGroup":"Mobile Casino & Games","y":2},{"assignmentGroup":"LO-Sports POS (webs and engine)","y":1},{"assignmentGroup":"CQR Tech Ops","y":1},{"assignmentGroup":"Infra Ops Unix","y":2},{"assignmentGroup":"US-TechOps","y":1},{"assignmentGroup":"LO-Poker (LO-POK)","y":1},{"assignmentGroup":"Bwin Casino Ops & CRM","y":1},{"assignmentGroup":"LO-Sports Trading, Content, Security","y":1},{"assignmentGroup":"Database Development","y":1},{"assignmentGroup":"LO-Sports B2C (LO-B2C)","y":2},{"assignmentGroup":"LO-International Hyderabad (LO-INT-HYD)","y":6},{"assignmentGroup":"SOC","y":3},{"assignmentGroup":"LO-CRM (LO-CRM)","y":2},{"assignmentGroup":"Infra Ops Oracle DB En
-  // gData[{"key":"Sports CRM and Promo","values":[]},{"key":"LO-International Hyderabad (LO-INT-HYD)","values":[{"date":"February-2015","y":6},{"date":"March-2015","y":6},{"date":"April-2015","y":1}]},
 
   var agSorted = [];
   // fill with 0 oobjects..
@@ -151,7 +151,7 @@ function _prepareData(tracker,prio,period,dateField){
   return agSorted;
 }
 
-function redraw(chartId,period,aggregate,prio,dateField) {
+function redraw(chartId,period,aggregate,prio,dateField,subDimension) {
   var _url = "/api/space/rest/incidenttracker/"+period;
 
   if (aggregate){
@@ -161,7 +161,7 @@ function redraw(chartId,period,aggregate,prio,dateField) {
 
   d3.json(_url, function(data) {
       d3.select('#'+chartId+' svg')
-        .datum(_prepareData(data.tracker,prio,period,dateField))
+        .datum(_prepareData(data.tracker,prio,period,dateField,subDimension))
         .transition().duration(500)
         .call(charts[chartId]);
 
