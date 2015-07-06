@@ -1,5 +1,6 @@
 //var chart;
 var charts=[];
+var _url;
 
 var _period;
 var _aggregate;
@@ -45,7 +46,7 @@ function init(prio,dateField,chartId){
     if (_aggregate){
       _url+="?aggregate="+_aggregate;
     }
-    if (!_aggregate) _aggregate="monthly";
+    if (!_aggregate) _aggregate="month";
     var _colors={};
     // #ED1C24	#EF333A	#F14A50	#F36166	#F5787C	#F78F92	#F9A6A8	#FBBDBE	#FDD4D4	#FFEBEA	#FFFFFF
     _colors["P01"]=["#ED1C24","#FDD4D4"];
@@ -71,7 +72,7 @@ function init(prio,dateField,chartId){
     $("#period_"+_chartId).text(_period);
     $("#aggregate_"+_chartId).text(_aggregate);
     var _reduceXTicks = false;
-    //if (_aggregate=="daily" || _aggregate=="weekly") _reduceXTicks = true;
+    //if (_aggregate=="day" || _aggregate=="week") _reduceXTicks = true;
     _reduceXTicks = true;
     chart.reduceXTicks(_reduceXTicks).staggerLabels(true);
     chart.yAxis

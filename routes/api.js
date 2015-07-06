@@ -378,7 +378,7 @@ function findIncidenttrackerByDate(req, res , next){
 	var _aggregate = req.query.aggregate;
 	//default grouping
 	if (!_aggregate){
-		_aggregate="weekly";
+		_aggregate="week";
 	}
 	var incidentTrackerService = require('../services/IncidentTrackerService');
 		logger.debug("********************* findIncidenttrackerByDate(): _aggregate= "+_aggregate+" _date = "+_date);

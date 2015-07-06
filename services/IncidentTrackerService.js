@@ -22,8 +22,6 @@ exports.rebuildTracker = _rebuildTracker;
 exports.incrementTracker = _incrementTracker;
 
 exports.flushTracker = _flushTracker;
-exports.weeklyTracker = _aggregateWeekly;
-exports.monthlyTracker = _aggregateMonthly;
 exports.findTrackerByDate = _findIncidenttrackerByDate;
 exports.calculateDailyTracker = _calculateDailyTracker;
 exports.initDailyTrackerForDay = _initDailyTrackerForDay
@@ -364,13 +362,13 @@ function _saveDailyTracker(tracker,dateFields,callback){
 * param type: "openedAt", "resolvedAt" or "closedAt" are currently supported
 */
 function _findIncidenttrackerByDate(aggregate,period,callback){
-  if (!aggregate) aggregate="weekly";
+  if (!aggregate) aggregate="week";
 	var collection = "incidenttracker";
 	var _date = period;
-	var _quarter = _parseQuarter(_date);
-	var _half = _parseHalf(_date);
-	var _month = _parseMonth(_date);
-	var _week = _parseWeek(_date);
+	var _quarter = _parsePeriod(period,"quarter");
+	var _half = _parsePeriod(_date,"halfyear");
+	var _month = _parsePeriod(_date,"month");
+	var _week = _parsePeriod(_date,"week");
 
 
 	logger.debug("------------------------ date: "+_date+" quarter: "+_quarter)
@@ -452,24 +450,8 @@ function _findIncidenttrackerByDate(aggregate,period,callback){
     logger.debug('Response success '+success);
     logger.debug('Response error '+err);
     if(success){
-			if (aggregate=="weekly"){
-				success = _aggregateWeekly(success,period);
-			}
-			else if (aggregate=="monthly"){
-				success = _aggregateMonthly(success,period);
-			}
-			else if (aggregate=="quarterly"){
-				success = _aggregateQuarterly(success,period);
-			}
-			else if (aggregate=="halfyearly"){
-				success = _aggregateHalfyearly(success,period);
-			}
-			else if (aggregate=="yearly"){
-				success = _aggregateYearly(success,period);
-			}
-			else if (aggregate=="daily"){
-				success = _aggregateDaily(success,period);
-			}
+			success = _aggregateByTime(success,period,aggregate);
+
 			logger.debug("************* callback success");
 			callback(null,success);
     }
@@ -518,22 +500,6 @@ function _parsePeriod(period,type){
 }
 
 
-function _parseQuarter(quarter){
-	return _parsePeriod(quarter,"quarter");
-}
-
-function _parseHalf(half){
-	return _parsePeriod(half,"halfyear");
-}
-
-function _parseMonth(month){
-	return _parsePeriod(month,"month");
-}
-
-function _parseWeek(week){
-	return _parsePeriod(week,"week");
-}
-
 
 /** helper method to convert a time string
 */
@@ -564,8 +530,8 @@ function getTimeName(time,dateString){
 
 
 /** generic aggregator incidenttracker data
-* param period: defines whether we arte looking at "yearly",  "quarterly", "monthly", or "weekly"
-* param time: "week", "month", "quarter" "year"
+* param period: defines whether we are looking at (aggregate by) "year",  "quarter", "month", or "week"
+* param time: a concrete instance of "week", "month", "quarter" "year"
 */
 function _aggregateByTime(data,period,time){
 	/* we need to consider now the different types which exist in data
@@ -630,29 +596,4 @@ function _aggregateByTime(data,period,time){
 		}
   }
 	return {period:period,aggregate:time,tracker:items};
-}
-
-
-function _aggregateDaily(data,period){
-		return _aggregateByTime(data,period,"day");
-}
-
-function _aggregateWeekly(data,period){
-		return _aggregateByTime(data,period,"week");
-}
-
-function _aggregateMonthly(data,period){
-		return _aggregateByTime(data,period,"month");
-}
-
-function _aggregateQuarterly(data,period){
-		return _aggregateByTime(data,period,"quarter");
-}
-
-function _aggregateHalfyearly(data,period){
-		return _aggregateByTime(data,period,"halfyear");
-}
-
-function _aggregateYearly(data,period){
-		return _aggregateByTime(data,period,"year");
 }

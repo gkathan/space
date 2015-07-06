@@ -22,7 +22,7 @@ function init(prio,dateField,chartId,subDimension){
     if (_aggregate){
       _url+="?aggregate="+_aggregate;
     }
-    if (!_aggregate) _aggregate="monthly";
+    if (!_aggregate) _aggregate="month";
 
     console.log("period: "+_period);
     chart = nv.models.multiBarChart()
@@ -39,7 +39,7 @@ function init(prio,dateField,chartId,subDimension){
     $("#period_"+_chartId).text(_period);
     $("#aggregate_"+_chartId).text(_aggregate);
     var _reduceXTicks = false;
-    //if (_aggregate=="daily" || _aggregate=="weekly") _reduceXTicks = true;
+    //if (_aggregate=="day" || _aggregate=="week") _reduceXTicks = true;
     _reduceXTicks = true;
     chart.reduceXTicks(_reduceXTicks).staggerLabels(true);
     chart.yAxis

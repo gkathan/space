@@ -14,7 +14,9 @@ var DB=config.database.db;
 var HOST = config.database.host;
 var connection_string = HOST+'/'+DB;
 var db = mongojs(connection_string, [DB]);
-
+// logger
+var winston = require('winston');
+var logger = winston.loggers.get('space_log');
 
 
 
@@ -46,8 +48,9 @@ exports.findById = function (id, fn) {
 }
 
 exports.findByUsername = function (username,fn) {
-  for (var i = 0, len = users.length; i < len; i++) {
+  for (var i in users) {
     var user = users[i];
+    logger.debug("checking user: "+JSON.stringify(user)+" == "+username);
     if (user.username === username) {
       return fn(null, user);
     }

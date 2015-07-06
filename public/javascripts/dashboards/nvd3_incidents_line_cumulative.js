@@ -76,7 +76,7 @@ chart.brushExtent([50,70]);
     $("#period_"+_chartId).text(_period);
     $("#aggregate_"+_chartId).text(_aggregate);
     var _reduceXTicks = false;
-    //if (_aggregate=="daily" || _aggregate=="weekly") _reduceXTicks = true;
+    //if (_aggregate=="day" || _aggregate=="week") _reduceXTicks = true;
 
     chart.xAxis.tickFormat(function(d) {
             return d3.time.format('%m/%d/%y')(new Date(d))

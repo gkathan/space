@@ -122,7 +122,7 @@ describe('#calculate DailyTracker()', function(){
 					assert.equal(2, _.findWhere(result.tracker,{date:new Date("2015-05-08")})["closedAt"].P01.cumulative);
 					assert.equal(3, result.statistics.sum.P01.openedAt);
 
-					incidentTrackerService.findTrackerByDate("weekly","Q2-2015",function(err,data){
+					incidentTrackerService.findTrackerByDate("week","Q2-2015",function(err,data){
 						logger.debug("--------------------------------------- data: "+JSON.stringify(data));
 						done();
 					});
