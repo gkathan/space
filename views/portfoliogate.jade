@@ -136,7 +136,7 @@ block content
 									div.panel-body
 										if _state
 											div.row(style="font-size:11px;margin-left:2px")
-												table.table-hover.tablsesorter(id="table_#{_date._id}_#{status[0].Status}")
+												table.table-hover.tablsesorter(id="table_#{_date._id}_#{status}")
 													thead
 														tr(style="height:15px")
 															th(style="width:25px;text-align:left;font-size:8px;vertical-align:top") 
@@ -161,7 +161,7 @@ block content
 													tbody
 														each epic in _state
 															+renderEpic(epic)
-											script $("#table_#{_date._id}_#{status[0].Status}").tablesorter();
+											script $("#table_#{_date._id}_#{status}").tablesorter();
 
 	script.
 		$(function () {
