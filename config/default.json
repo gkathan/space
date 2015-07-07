@@ -159,6 +159,8 @@
      },
 
      "api" : {
+		"protocol":"http",
+		"host":"localhost:3000",
 		"url" :"/api/space/rest/"
 	},
 

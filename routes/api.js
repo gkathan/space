@@ -323,10 +323,15 @@ function findAllByName(req, res , next){
 	var _filterOperator = req.query.o;
 	var _filter = {};
 
-	_filter[_filterName]={};
-	_filter[_filterName][_filterOperator]=_filterValue;
 
-	if (_filterName===undefined) _filter = null;
+	if (_filterName!=undefined){
+		_filter[_filterName]={};
+		_filter[_filterName][_filterOperator]=_filterValue;
+	}
+
+	if (collection=="targets"){
+		_filter.context=config.context;
+	}
 
 	// e.g http://localhost:3000/api/space/rest/boards?filterName=name&filterOperator=$eq&filterValue=studios
 	logger.debug("***** filter: "+JSON.stringify(_filter));

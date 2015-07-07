@@ -61,7 +61,7 @@ mixin renderEpic(epic)
 							
 				td(style="max-width:15px;vertical-align:middle;text-align:center")
 					if epic.oldState && epic.PB
-						span.glyphicon.glyphicon-star(style="font-size:12px;color:fuchsia; ") 
+						span.glyphicon.glyphicon-star(style="font-size:12px;color:black; ") 
 						span(style="opacity:0") x
 						//span(style="color:orange; font-size:10px") #{epic.oldState}
 				
@@ -81,13 +81,10 @@ block content
 		each _date in pgates
 			div.panel(style="max-width:1400px")
 				div.panel-heading(style="font-size:16px; color:black") 
-					| PORTFOLIO MEETING SNAPSHOT 
-					br
-					span(style="font-size:28px;font-weight:bold") #{_date.pDate}
+					span(style="margin-left:7px;font-size:28px;font-weight:bold") #{_date.pDate}
 					br
 					if _date.portfolioBoardBucket.length > 0
-						span(style="font-size:11px;font-weight:normal;color:black;text-align:center") <b>GATE DECISIONS</b>:
-						br
+						span(style="margin-left:7px;font-size:11px;font-weight:normal;color:black;text-align:center") PORTFOLIO MEETING | <b>GATE DECISIONS</b>
 						br
 						table.table(style="max-width:600px")
 							// state changes
@@ -123,50 +120,47 @@ block content
 											if (_pb.Comment)
 												br
 												|  #{_pb.Comment}
-												
-												
-												
-
-					
 				div.panel-body
-					each status in _date.pItems
-						// no NEW items for now
-						if status[0].Status != "New" && status[0].Status != "Done" 
+					each status in states
+						if status != "New" && status != "Done" 
 							div.col-sm-2.col-md-3.col-lg5
 								div.panel(style="background-color:white;width:330px;text-align: left")
 									//status header
 									div.panel-heading(style="text-align:center")
-										span(style="font-size:20px;color:#{colors[status[0].Status]};margin-left:0px") #{status[0].Status.toUpperCase()}
-										span.badge #{status.length}
+										span(style="font-size:20px;color:#{colors[status]};margin-left:0px") #{status.toUpperCase()}
+										-var _state = _date.pItems[status];
+										if _state
+											span.badge(style="margin-left:10px;font-size:14px") #{_state.length}
 										
 									//list epics per status	
 									div.panel-body
-										div.row(style="font-size:11px;margin-left:2px")
-											table.table-hover.tablsesorter(id="table_#{_date._id}_#{status[0].Status}")
-												thead
-													tr(style="height:15px")
-														th(style="width:25px;text-align:left;font-size:8px;vertical-align:top") 
-															a(href="#" title="sort by health" ) 
-																
-																//span.glyphicon.glyphicon-triangle-bottom(style="font-size:8px;color:black;")
-														th(style="width:35px;text-align:left;font-size:8px;vertical-align:top") 
-															a(href="#" title="sort by id") 
-																
-																//span.glyphicon.glyphicon-triangle-bottom(style="font-size:8px;color:black;")
-														th(style="width:180px;text-align:left;font-size:8px;vertical-align:top")
-															a(href="#" title="sort by name") 
-																
-																//span.glyphicon.glyphicon-triangle-bottom(style="font-size:8px;color:black;")
-														th(style="width:35px;text-align:left;font-size:8px;vertical-align:top")
-															a(href="#" title="sort by ref" )
-																
-														th(style="width:30px;text-align:left;font-size:8px;vertical-align:top") 
-															a(href="#" title="sort by changed from last time")
-																
-																//span.glyphicon.glyphicon-triangle-bottom(style="font-size:8px;color:black;")
-												tbody
-													each epic in status
-														+renderEpic(epic)
+										if _state
+											div.row(style="font-size:11px;margin-left:2px")
+												table.table-hover.tablsesorter(id="table_#{_date._id}_#{status[0].Status}")
+													thead
+														tr(style="height:15px")
+															th(style="width:25px;text-align:left;font-size:8px;vertical-align:top") 
+																a(href="#" title="sort by health" ) 
+																	
+																	//span.glyphicon.glyphicon-triangle-bottom(style="font-size:8px;color:black;")
+															th(style="width:35px;text-align:left;font-size:8px;vertical-align:top") 
+																a(href="#" title="sort by id") 
+																	
+																	//span.glyphicon.glyphicon-triangle-bottom(style="font-size:8px;color:black;")
+															th(style="width:180px;text-align:left;font-size:8px;vertical-align:top")
+																a(href="#" title="sort by name") 
+																	
+																	//span.glyphicon.glyphicon-triangle-bottom(style="font-size:8px;color:black;")
+															th(style="width:35px;text-align:left;font-size:8px;vertical-align:top")
+																a(href="#" title="sort by ref" )
+																	
+															th(style="width:30px;text-align:left;font-size:8px;vertical-align:top") 
+																a(href="#" title="sort by changed from last time")
+																	
+																	//span.glyphicon.glyphicon-triangle-bottom(style="font-size:8px;color:black;")
+													tbody
+														each epic in _state
+															+renderEpic(epic)
 											script $("#table_#{_date._id}_#{status[0].Status}").tablesorter();
 
 	script.

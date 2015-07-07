@@ -6,12 +6,10 @@ var mongo = require('mongodb');
 var mongojs = require('mongojs');
 var _ = require('lodash');
 
-
 var DB=config.database.db;
 var HOST = config.database.host;
 var connection_string = HOST+'/'+DB;
 var db = mongojs(connection_string, [DB]);
-
 
 var winston=require('winston');
 var logger = winston.loggers.get('space_log');
@@ -19,7 +17,6 @@ var logger = winston.loggers.get('space_log');
 var appRoot = require('app-root-path');
 
 /**
- *
  * converts xlsx to json
  */
 exports.convertXlsx2Json = function convertXlsx2Json (filename,req,done) {
@@ -59,7 +56,6 @@ exports.convertXlsx2Json = function convertXlsx2Json (filename,req,done) {
 			else if (_collection=="target2employee"){
 				_handlers = [_handleTarget2Employee];
 			}
-
 			else if (_.indexOf(_plainElements,_collection) >-1){
 				 _handlers = [_handlePlain];
 				 _dropBeforeInsert = true;
@@ -70,7 +66,6 @@ exports.convertXlsx2Json = function convertXlsx2Json (filename,req,done) {
 				logger.warn(err);
 				done(err,false);
 				return;
-
 			}
 			logger.info("***************** [DEBUG]: _collection: "+_collection+" _date: "+_date);
 
@@ -80,31 +75,27 @@ exports.convertXlsx2Json = function convertXlsx2Json (filename,req,done) {
 				// execute all handlers specified
 				async.each(_handlers, function (_handler, callback){
 					_handler(json,_date,_fillblanks,function(_data){
-
 						async.series([
 							function(callback){
 								logger.debug("+++++++ _handler: "+_getFunctionName(_handler));
 								logger.debug("****async.series: 1) check if we should drop...");
-
 								// ok - this is also not beautiful ;-)
 								if (_getFunctionName(_handler) == "_handleOrganization" ||_getFunctionName(_handler) == "_handleTarget2Employee") {
 									_dropBeforeInsert=true;
 								}
-
 								if (_dropBeforeInsert){
 									  logger.debug("****async.series: 1) yep - lets drop:"+_collection);
-									 db.collection(_collection).drop();
-									}
+									 	db.collection(_collection).drop();
+								}
 								callback();
 							},
 							function(callback){
-
-
 								logger.debug("****async.series: 2) insert stuff: "+_collection);
 								logger.debug("****async.series: 2) _data.length: "+_data.length);
+								// db.collection(_collection).insert(_data);
 
-								db.collection(_collection).insert(_data);
 
+								db.collection(_collection).save(_data);
 								// ok - this is not beautiful - but for now it works
 								// some more generic way of handling historization of data like orga.....
 								if (_getFunctionName(_handler) == "_handleOrganization") {
@@ -113,16 +104,10 @@ exports.convertXlsx2Json = function convertXlsx2Json (filename,req,done) {
 									var _orghistory = {};
 									_orghistory.oDate = _date;
 									_orghistory.oItems = _data;
-
-									logger.debug("_orghistory: "+_orghistory);
-									logger.debug("_orghistory: oDate="+_orghistory.oDate);
-									logger.debug("_orghistory: oItems="+_orghistory.oItems);
-
 									db.collection(_collection).insert(_orghistory,function(){
 										// and update the app.locals.organizationhistoryDates for the menu
 										orgService = require('../services/OrganizationService');
 										orgService.getOrganizationHistoryDates(function(data){
-											logger.debug("...and updating the menu with: "+JSON.stringify(data));
 											req.app.locals.organizationhistoryDates=data;
 											callback();
 										 });
@@ -163,11 +148,9 @@ exports.convertXlsx2Json = function convertXlsx2Json (filename,req,done) {
 	});
 }
 
-
 var _getFunctionName = function (fn) {
    return (fn + '').split(/\s|\(/)[1];
 };
-
 
 /**
  * checks format for portfoliogate xlsx upload
@@ -212,47 +195,67 @@ function _handlePortfolioGate(json,date,fillblanks,callback){
 		logger.debug("*************** epics.length: "+_epics.length);
 		//group by Date
 		logger.debug("######################## _handlePortfolioGate called with date: "+date);
-		var map = _clusterBy(json,"pDate",date,"pItems");
-		var map2 = new Object();
 
-		for(i =0 ; i < map.pItems.length; i++){
-			var key = map.pItems[i].Status;
-			if(!map2[key]){
-			   var array = new Array();
-				map2[key] = array;
+		// check whether we have a record with given date => if so attach the ObjectID
+		db.collection("portfoliogate").findOne({pDate:date},function(err,existingPB){
+			logger.debug("######################## existingPB: "+existingPB);
+
+			var map = _clusterBy(json,"pDate",date,"pItems");
+			if (existingPB){
+				map._id=existingPB._id;
+				logger.debug("######################## existingPB: map._id "+map._id);
+
 			}
-			var _ref = map.pItems[i].EpicRef;
-			var _e = _.find(_epics, { 'Number': _ref });
 
-			//enrich with health attribute snapshot from current V1Epics
-			if (_e != undefined){
-				if (_e.Health != undefined){
-					map.pItems[i]["Health"]=_e.Health;
-				}
-				if (_e.HealthComment != undefined){
-					map.pItems[i]["HealthComment"]=_e.HealthComment;
-				}
+			var map2 = new Object();
 
-				if (_e.PlannedStart != undefined){
-					map.pItems[i]["PlannedStart"]=_e.PlannedStart;
+			for(i =0 ; i < map.pItems.length; i++){
+				var key = map.pItems[i].Status;
+				if(!map2[key]){
+				   var array = new Array();
+					map2[key] = array;
 				}
-				if (_e.PlannedEnd != undefined){
-					map.pItems[i]["PlannedEnd"]=_e.PlannedEnd;
-				}
-				if (_e.LaunchDate != undefined){
-					map.pItems[i]["LaunchDate"]=_e.LaunchDate;
-				}
-				if (_e.Swag != undefined){
-					map.pItems[i]["Swag"]=_e.Swag;
-				}
-			 }
-			map2[key].push(map.pItems[i]);
-		}
-		map.pItems=map2;
+				var _ref = map.pItems[i].EpicRef;
+				var _e = _.find(_epics, { 'Number': _ref });
 
-		callback(map);
-		return;
-	});
+				//enrich with health attribute snapshot from current V1Epics
+				if (_e != undefined){
+					if (_e.Health != undefined){
+						map.pItems[i]["Health"]=_e.Health;
+					}
+					if (_e.HealthComment != undefined){
+						map.pItems[i]["HealthComment"]=_e.HealthComment;
+					}
+
+					if (_e.PlannedStart != undefined){
+						map.pItems[i]["PlannedStart"]=_e.PlannedStart;
+					}
+					if (_e.PlannedEnd != undefined){
+						map.pItems[i]["PlannedEnd"]=_e.PlannedEnd;
+					}
+					if (_e.LaunchDate != undefined){
+						map.pItems[i]["LaunchDate"]=_e.LaunchDate;
+					}
+					if (_e.Swag != undefined){
+						map.pItems[i]["Swag"]=_e.Swag;
+					}
+				 }
+				map2[key].push(map.pItems[i]);
+			}
+			map.pItems=map2;
+			map.uploaded=new Date();
+
+			callback(map);
+			return;
+		});
+
+
+
+		})
+
+
+
+
 }
 
 /**

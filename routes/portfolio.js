@@ -19,6 +19,7 @@ var logger = winston.loggers.get('space_log');
 
 module.exports = router;
 
+
 router.get('/', function(req, res) {
 	// join pgates with epics
 	var pgates =  db.collection('portfoliogate');
@@ -35,6 +36,9 @@ router.get('/', function(req, res) {
 	*/
 	pgates.find().sort({pDate:-1}, function (err, docs){
 	var _gates = docs;
+
+	// the lifecycle of an initiative
+	var _states = ["New","Understanding","Conception","Implementation","Monitoring","On hold","Cancelled","Done"];
 	// find all initiatives which have ExtNumber set
 	//initiatives.find({ExtNumber:{$exists:1}},function (err,docs){
 	initiatives.find({},function (err,docs){
@@ -66,6 +70,7 @@ router.get('/', function(req, res) {
 		// sort the states by
 		// NEW -> UNDERSTANDING -> CONCEPTION -> IMPLEMENTATION -> MONITORING -> CLOSED
 		// pg state
+
 		for (var _state in _gates[_date].pItems){
 			//console.log("?????????????????? _color: "+_gates[_date].pItems[_state].color);
 			//console.log("?????????????????? JSON: "+JSON.stringify(_gates[_date].pItems[_state]));
@@ -125,12 +130,16 @@ router.get('/', function(req, res) {
 				else if (a.HealthRank>b.HealthRank) return -1;
 				else return 0
 			});
+
+			// and sort the items by state lifecycle
+
 		}
 		}
 
 
 
 		res.locals.pgates=_gates;
+		res.locals.states=_states;
 		res.locals.colors=_color;
 		res.locals.v1LastUpdate=_V1lastUpdate;
 

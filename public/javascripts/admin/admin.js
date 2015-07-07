@@ -31,10 +31,12 @@ refresh(_type);
 
 
 function refresh(collection){
-	console.log("---------------------- dataSourceFor(collection): "+dataSourceFor(collection));
+
+	var _url = dataSourceFor(collection);
+	console.log("---------------------- dataSourceFor(collection): "+_url);
 	$.ajax({
 		type: "GET",
-		url: dataSourceFor(collection),
+		url: _url ,
 		cache: true,
 		success: function(data){
 			var _data = data;
@@ -50,12 +52,16 @@ function refresh(collection){
 			}
 			renderAdminGrid(_data,getConfig(collection));
 		},
-		error: function(msg){
-				console.log("==== error handler...");
+		error: function(error){
+				console.log("==== error handler..."+JSON.stringify(error));
+				renderError("refresh call for: "+collection+" to URL: "+_url+" had an issue: "+error);
 		}
 	});
 }
 
+function renderError(error){
+	$("#error").text("error: "+error);
+}
 
 function renderAdminGrid(data,conf){
 	var columns = [];

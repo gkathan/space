@@ -15,7 +15,7 @@ var CONFIG_URL = "/api/space/config";
 var CONFIG=loadConfig();
 
 
-var SPACE_API = "/api/space/rest/"
+var SPACE_API = CONFIG.api.protocol+"://"+CONFIG.api.host+"/api/space/rest/"
 
 
 var TRANSCODE_URL = CONFIG.transcoder.url;
