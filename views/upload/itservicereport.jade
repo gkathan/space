@@ -2,14 +2,12 @@ include ../kanban_menu
 
 block content
 
-div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;background-color:white;margin-top: 60px;width:400px;text-align: left;margin: 10px auto;")
+div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;background-color:white;margin-top: 60px;width:500px;text-align: left;margin: 10px auto;")
 	div.panel-heading
 		i.glyphicon.glyphicon-floppy-open(style="font-size:20px")
 		span(style="font-size:25px")&nbsp; UPLOAD 
 		
-		
 	div.panel-body 
-		
 		table.table
 			tr
 				td.td(style="width:70px")
@@ -20,34 +18,28 @@ div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;back
 				td(style="font-size:12px;vertical-align:middle")
 					|format:
 				td(style="font-style:italic;font-size:12px;vertical-align:middle")
-					|itservicereport_{YEAR}-{TYPE}-{COUNT}.pdf
+					|Studios IT Service Report <Month> - Week<number>.pdf
 			tr
 				td(style="font-size:12px;vertical-align:middle")
 					|example:
 				td(style="font-style:italic;font-size:12px;vertical-align:middle")
-					|itservicereport-week-7.pdf
+					|Studios IT Service Report July - Week1.pdf
 			tr
 				td
 				td
-					
-			
 
 	div.form-box
 		form(id="uploadForm" enctype="multipart/form-data" action="/upload/process/itservicereport" method="post")
-			
-			
 			.fileinput.fileinput-new.input-group(data-provides="fileinput")
 				.form-control(data-trigger="fileinput")
 					i.glyphicon.glyphicon-file.fileinput-exists
-						span.fileinput-filename(style="width:190px;font-size:12px;font-family:arial")
+						span.fileinput-filename(style="width:250px;font-size:12px;font-family:arial")
 				span.input-group-addon.btn.btn-info.btn-file
 					span.fileinput-new Select file
-					span.fileinput-exists(style="width:190px") Change
+					span.fileinput-exists(style="width:250px") Change
 					input(type="file" name="userFile")
 				a.input-group-addon.btn.btn-default.fileinput-exists(href="#" data-dismiss="fileinput")
 						Remove
-			
-			
 			
 			input.btn.btn-primary.btn-block(id="uploaditservicereportsubmit" type="submit" value="Upload itservicereport" data-loading-text="...processing..." name="submit" data-toggle="tooltip" data-placement="top" title="......explanaotry stuff")
 	

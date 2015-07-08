@@ -162,10 +162,7 @@ router.post('/process/xlsx',function(req,res){
 
 router.post('/process/itservicereport',function(req,res){
   if(req.files){
-
-
     logger.debug(req.files);
-
     // [TODO]and put some message in the locals....
     //res.locals.message="[SUCCESS] File uploaded, converted to json and imported to mongoDB";
     //res.send({msg:"[SUCCESS] File uploaded, converted to json and imported to mongoDB"});
@@ -180,29 +177,42 @@ router.post('/process/itservicereport',function(req,res){
 		logger.debug("_filename: "+_filename)
     // lets take the first
     // and do the json
-    if (_filename==undefined){
-			res.locals.success=false;
-			logger.debug("no filename: sending back...");
-			res.locals.message="[s p a c e] says: come on ! - you should pick a valid itservicereport file to upload ;-)";
-      res.render("upload/itservicereport", { title: 's p a c e - import' });
-			return;
-		}
-		if (_.last(_filename.split("."))!="pdf"){
-			res.locals.success=false;
-			logger.debug("no pdf file ....");
-			res.locals.message="[s p a c e] says: "+_filename+" seems not to be a valid .pdf itservicereport file...";
-			res.render("upload/itservicereport", { title: 's p a c e - import' });
-			return;
-		}
+
 		var pdfimport = require('../services/PdfImportService');
-    pdfimport.store(_filename,"itservicereports");
+		pdfimport.store(_filename,"itservicereports",function(err,message){
+		  if (message=="OK"){
+		    res.locals.success=true;
+		    res.locals.uploadfilename= _filename;
+		    res.render("upload/itservicereport", { title: 's p a c e - import' });
+			}
 
-    res.locals.success=true;
-    res.locals.uploadfilename= _filename;
-    res.render("upload/itservicereport", { title: 's p a c e - import' });
-  }
-  else{
-	 res.redirect("/upload/itservicereport");//,{msg:"[SUCCESS] File uploaded, converted to json and imported to mongoDB"});
+			else if (_filename==undefined){
+				res.locals.success=false;
+				logger.debug("no filename: sending back...");
+				res.locals.message="[s p a c e] says: come on ! - you should pick a valid itservicereport file to upload ;-)";
+	      res.render("upload/itservicereport", { title: 's p a c e - import' });
+				return;
+			}
+			else if (_.last(_filename.split("."))!="pdf"){
+				res.locals.success=false;
+				logger.debug("no pdf file ....");
+				res.locals.message="[s p a c e] says: "+_filename+" seems not to be a valid .pdf itservicereport file...";
+				res.render("upload/itservicereport", { title: 's p a c e - import' });
+				return;
+			}
+			else if (message!="OK"){
+				res.locals.success=false;
+				logger.debug(message);
+				res.locals.message="[s p a c e] says: "+_filename+" seems not to be a valid .pdf itservicereport file...";
+				res.render("upload/itservicereport", { title: 's p a c e - import' });
+				return;
 
+			}
+
+		});
+	}
+	else{
+		 res.redirect("/upload/itservicereport");//,{msg:"[SUCCESS] File uploaded, converted to json and imported to mongoDB"});
   }
+
 });

@@ -3,7 +3,7 @@ include kanban_menu
 
 block content
 
-	div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;background-color:white;width:650px;text-align: center;margin: 10px auto;")
+	div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;background-color:white;max-width:800px;text-align: center;margin: 10px auto;")
 		.panel-heading
 			h3.panel-title IT SERVICE REPORTS
 		.panel-body
@@ -11,10 +11,11 @@ block content
 			thead
 				tr
 					th(style="width:40px") path
-					th(style="width:200px") 
+					th(style="width:300px") 
 					th(style="width:50px") year
-					th(style="width:50px") type
+					th(style="width:50px") month
 					th(style="width:50px") count
+					th(style="width:50px") type
 					th(style="width:250") contact
 			tbody
 				each f in itservicereports
@@ -23,13 +24,14 @@ block content
 						img(src="/images/space/logo_pdf.jpg"  height="20px") 
 					td(style="vertical-align:top;text-align:left;font-size:12px;vertical-align:middle")
 						a(href="#{f.path}" target="_blank") #{_.last(f.path.split("/"))}
-							
 					td(style="vertical-align:top;text-align:left;vertical-align:middle;font-size:12px") 
 						|#{f.year}
-					td(style="vertical-align:top;text-align:left;font-size:12px;vertical-align:middle") 
-						|#{f.type}
+					td(style="vertical-align:top;text-align:left;vertical-align:middle;font-size:12px") 
+						|#{f.month}
 					td(style="vertical-align:top;text-align:left;font-size:12px;vertical-align:middle")
 						|#{f.count}
+					td(style="vertical-align:top;text-align:left;font-size:12px;vertical-align:middle") 
+						|#{f.type}
 					td(style="vertical-align:top;text-align:left;font-size:12px;vertical-align:middle")
 						a(href="mailto:#{f.contactEmail}") #{f.contact}
 							
