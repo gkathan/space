@@ -24,6 +24,10 @@ if [ -a $PACKAGE ]; then
 		echo "handle IT service reports"
 		mkdir space/app/public/files/itservicereports -p
 		cp -r space/app_rollback/public/files/itservicereports/* space/app/public/files/itservicereports/
+
+		echo "handle HOWTOs"
+		mkdir space/app/public/files/howto -p
+		cp -r space/app_rollback/public/files/howto/* space/app/public/files/howto/
 	fi
 
 	cd space/app

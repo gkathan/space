@@ -5,10 +5,6 @@ var _period;
 var _aggregate;
 var _dateField;//="openedAt";
 
-
-
-
-
 function init(prio,dateField,chartId,subDimension){
   _dateField = dateField;
   nv.addGraph(function() {

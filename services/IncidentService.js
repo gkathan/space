@@ -19,6 +19,7 @@ var logger = winston.loggers.get('space_log');
 
 var _incidentsCollection="incidents";
 var _incidentsDeltaCollection="incidentsdelta";
+var _incidentsActiveTickerCollection="incidentsactiveticker";
 
 
 exports.find = _find;
@@ -34,6 +35,7 @@ exports.flush = _flush;
 exports.insert = _insert;
 exports.update = _update;
 exports.saveDelta = _saveDelta;
+exports.saveActiveTicker = _saveActiveTicker;
 exports.mapPriority = _mapPriority;
 exports.mapState = _mapState;
 exports.getOverdueGroupedByAssignmentGroup = _getOverdueGroupedByAssignmentGroup;
@@ -153,7 +155,6 @@ function _findProblem(incident,callback) {
  */
 function _findAll(filter,callback) {
 	var items =  db.collection(_incidentsCollection);
-
 	items.find(filter).sort({openedAt:-1}, function (err, incidents){
 		var olditems =  db.collection('oldsnowincidents');
 		if (err){
@@ -174,22 +175,18 @@ function _findAll(filter,callback) {
 //finds all change entries for a given incident Id
 function _findChangeLog(incidentId,callback){
 	var delta =  db.collection(_incidentsDeltaCollection);
-
 	delta.find({CHANGED:{$elemMatch:{id:incidentId}}},{CHANGED:1,createDate:1}, function (err, docs){
 		if (err){
 			logger.error("[error] "+err.message);
 			callback(err);
 			return;
 		}
-
 		logger.debug("in _findChangeLog: id= "+incidentId);
 		logger.debug("docs.length = "+docs.length);
-
 		var deltas = [];
 		for (var d in docs){
 			var _d = {changeDate:docs[d].createDate,change:_.findWhere(docs[d].CHANGED,{"id":incidentId}).diff};
 			deltas.push(_d)
-
 		}
 		callback(err,deltas)
 	})
@@ -215,25 +212,17 @@ function _flush(data,callback){
 
 
 function _calculateStats(callback){
-//	var _prios = _.pluck(config.mappings.snow.priority,"bpty");
+	//	var _prios = _.pluck(config.mappings.snow.priority,"bpty");
 	var _stats= {};
-
 	var items =  db.collection(_incidentsCollection);
 	items.find({active:"true",state:{$ne:"Resolved"}},function(err,incidents){
-
-
 		_stats.totalOpen=incidents.length;
-
-
 		_stats.P01Open = _.where(incidents,{priority:"P01 - Critical"}).length;
 		_stats.P08Open = _.where(incidents,{priority:"P08 - High"}).length;
 		_stats.P16Open = _.where(incidents,{priority:"P16 - Moderate"}).length;
 		_stats.P120Open = _.where(incidents,{priority:"P40 - Low"}).length;
-
-
 		callback(null,_stats);
 	})
-
 }
 
 
@@ -283,6 +272,23 @@ function _saveDelta(data,callback){
 	});
 }
 
+
+/**
+* save ticker
+*/
+function _saveActiveTicker(data,callback){
+	var items =  db.collection(_incidentsActiveTickerCollection);
+	items.insert(data, function(err , success){
+		if (err){
+			callback(err);
+			return;
+		}
+		else{
+			callback(null,success);
+			return;
+		}
+	});
+}
 /**
  * param prioritylist: ["P01","P08","P40"]
  *
@@ -329,13 +335,10 @@ function _mapCode(_code,_collection,_resolve){
 	else return false;
 }
 
-
-
 /**
 * filters out the relevant attributes of the 87 fields from snow ;-)
 */
 function _filterRelevantData(data){
-
 	var _incident={};
 	_incident.location = data.location;
 	_incident.context="bpty";

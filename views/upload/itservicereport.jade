@@ -14,19 +14,17 @@ div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;back
 					img(src="/images/space/logo_pdf.jpg" height="40px") 
 				td.td(style="font-size:14px;font-weight:bold;vertical-align:middle")
 					span IT Service  Report 
+		
 			tr
 				td(style="font-size:12px;vertical-align:middle")
-					|format:
-				td(style="font-style:italic;font-size:12px;vertical-align:middle")
-					|Studios IT Service Report <Month> - Week<number>.pdf
-			tr
-				td(style="font-size:12px;vertical-align:middle")
-					|example:
+					|example
 				td(style="font-style:italic;font-size:12px;vertical-align:middle")
 					|Studios IT Service Report July - Week1.pdf
 			tr
-				td
-				td
+				td(style="font-size:12px;vertical-align:middle")
+					|manual
+				td(style="font-style:italic;font-size:12px;vertical-align:middle")
+					a(href="/files/howto/s p a c e - HOWTO - upload IT service report.pdf" target="_new") [HOWTO upload IT service report]
 
 	div.form-box
 		form(id="uploadForm" enctype="multipart/form-data" action="/upload/process/itservicereport" method="post")

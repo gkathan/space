@@ -8,9 +8,6 @@ var moment = require('moment');
 var jsondiffpatch=require('jsondiffpatch');
 var app=require('../app');
 var mongojs = require("mongojs");
-var DB="space";
-var connection_string = '127.0.0.1:27017/'+DB;
-var db = mongojs(connection_string, [DB]);
 // logger
 var winston = require('winston');
 var logger = winston.loggers.get('space_log');
@@ -92,6 +89,24 @@ function _sync(url,type,callback){
 	        logger.debug("NEW *************** "+_incidentsNEWSysIds.length);
 	        logger.debug("CHANGES *********** "+_incidentsDELTA_CHANGED.length);
 					logger.debug("******************* DELTA:  "+_incidentsDELTASysIds.length);
+
+
+					var activeTicker = _createActiveTicker(_incidentsNEW);
+
+					logger.debug("------------------- P01: "+activeTicker.totals.P01);
+					logger.debug("------------------- P08: "+activeTicker.totals.P08);
+					logger.debug("------------------- P16: "+activeTicker.totals.P16);
+					logger.debug("------------------- P120: "+activeTicker.totals.P120);
+
+					app.io.emit('incidentTickerUpdate', activeTicker);
+					if (_incidentsDELTASysIds.length>0){
+						incService.saveActiveTicker(activeTicker,function(err,result){
+							if (err) logger.error("saving ticker failed.."+err.message);
+							else logger.debug("saving ticker OK");
+
+						});
+					}
+
 					// do the NEW HANDLING
 	        var _incidentsDELTA_NEW =[];
 	        for (var d in _incidentsDELTASysIds){
@@ -135,6 +150,99 @@ function _sync(url,type,callback){
 		})
 	})
 }
+
+/**
+* creates the ticker count data for incidents
+*/
+function _createActiveTicker(_incidentsNEW){
+		var _groupedByPrio = _.groupBy(_incidentsNEW,"priority");
+
+		var _prios =["P01 - Critical","P08 - High","P16 - Moderate","P40 - Low"];
+		var _subDimensions = ["assignmentGroup","businessService"];
+
+		var activeTicker = {};
+
+		activeTicker.totals={ALL:_incidentsNEW.length};
+		activeTicker.totalsResolved={ALL:_.where(_incidentsNEW,{"state":"Resolved"}).length};
+		activeTicker.totalsUnResolved={ALL:activeTicker.totals.ALL-activeTicker.totalsResolved.ALL}
+
+
+
+		activeTicker.assignmentGroup={};
+		activeTicker.assignmentGroupResolved={};
+
+		activeTicker.businessService={};
+		activeTicker.businessServiceResolved={};
+
+
+		for (var p in _prios){
+			var _prio=_prios[p].split(" - ")[0];
+			if (_prio=="P40") _prio="P120";
+			activeTicker.totals[_prio]=_groupedByPrio[_prios[p]].length;
+			activeTicker.totalsResolved[_prio]=_.where(_groupedByPrio[_prios[p]],{"state":"Resolved"}).length;
+			activeTicker.totalsUnResolved[_prio]=activeTicker.totals[_prio]-activeTicker.totalsResolved[_prio];
+
+			// _processSubDimension(activeTicker,_subDimensions,_groupedByPrio,_prio);
+
+
+			var _assignmentGroup = _.groupBy(_groupedByPrio[_prios[p]],"assignmentGroup");
+			var _assignmentGroupResolved = _.groupBy(_.where(_groupedByPrio[_prios[p]],{"state":"Resolved"}),"assignmentGroup");
+
+			var _businessService = _.groupBy(_groupedByPrio[_prios[p]],"businessService");
+			var _businessServiceResolved = _.groupBy(_.where(_groupedByPrio[_prios[p]],{"state":"Resolved"}),"businessService");
+
+
+			var _ag ={};
+			var _agr ={};
+			for (var a in _assignmentGroup){
+				_ag[a.split(".").join("-")]=_assignmentGroup[a].length;
+			}
+			for (var a in _assignmentGroupResolved){
+				_agr[a.split(".").join("-")]=_assignmentGroupResolved[a].length;
+			}
+			activeTicker.assignmentGroup[_prio]=_ag;
+			activeTicker.assignmentGroupResolved[_prio]=_agr;
+
+			var _bs ={};
+			var _bsr ={};
+			for (var a in _businessService){
+				_bs[a.split(".").join("-")]=_businessService[a].length;
+			}
+			for (var a in _businessServiceResolved){
+				_bsr[a.split(".").join("-")]=_businessServiceResolved[a].length;
+			}
+			activeTicker.businessService[_prio]=_bs;
+			activeTicker.businessServiceResolved[_prio]=_bsr;
+			
+		}
+
+		activeTicker.timestamp = new Date();
+		return activeTicker
+}
+
+
+/** subDimension handling
+*/
+function _processSubDimension(activeTicker,subDimensions,list,prio){
+	for (var s in subDimensions){
+		var subDimension = subDimensions[s];
+		var _active = _.groupBy(list[prio],subDimension);
+		var _resolved = _.groupBy(_.where(list[prio],{"state":"Resolved"}),subDimension);
+		// needed to get rid of "." in keys => as mongoDB does not like "." ;-)
+		var _activeClean ={};
+		var _resolvedClean ={};
+		for (var a in _active){
+			_activeClean[a.split(".").join("-")]=_active[a].length;
+		}
+		for (var r in _resolved){
+			_resolvedClean[r.split(".").join("-")]=_resolved[r].length;
+		}
+		activeTicker[subDimension][prio]=_activeClean;
+		activeTicker[subDimension+"Resolved"][prio]=_resolvedClean;
+	}
+}
+
+
 
 /**
 * takes the raw data we got from the API call
@@ -188,7 +296,11 @@ function _handleClosedIncidents(deltaIds,type,callback){
 			var _url =config.sync[_syncName].url+"&sysparm_sys_id="+_sysId;
 			_getSnowData(_url,type,function(err,data){
 				logger.debug("+++ _getSnowData : url = "+_url);
-				if (data.records.length>0){
+				if (err){
+					logger.error("error: "+err.message);
+					done();
+				}
+				if (data && data.records.length>0){
 					var _incident = incService.filterRelevantData(data.records[0]);
 					logger.debug("+++ I N C I D E N T : "+JSON.stringify(_incident));
 					_list.push(_incident);

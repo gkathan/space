@@ -67,11 +67,13 @@ router.get('/incidents_line', function(req, res) {
 		res.render('dashboard/incidents_line', { title: 's p a c e - incidents linedashboard' });
 });
 
-router.get('/incidents_assignmentgroups', function(req, res) {
+router.get('/incidents_subdimension', function(req, res) {
 		var _period = req.query.period;
+		var _subdimension = req.query.subDimension;;
 		res.locals.period = _period;
 		res.locals.moment = moment;
-		res.render('dashboard/incidents_assignmentgroups', { title: 's p a c e - incidents by assignmentgroup' });
+		res.locals.subDimension=_subdimension;
+		res.render('dashboard/incidents_subdimension', { title: 's p a c e - incidents by '+_subdimension });
 });
 
 

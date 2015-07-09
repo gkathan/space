@@ -51,6 +51,7 @@ var PATH = {
 						REST_PRODUCTCATALOG : BASE+'/space/rest/productcatalog',
 
 						REST_INCIDENTS : BASE+'/space/rest/incidents',
+						REST_INCIDENTSACTIVETICKER : BASE+'/space/rest/incidentsactiveticker',
 						REST_INCIDENTSOLDSNOW : BASE+'/space/rest/incidentsoldsnow',
 
 						REST_INCIDENTCOMMUNICATIONTRAIL : BASE+'/space/rest/incidents/commtrail/:sysid',
@@ -185,6 +186,7 @@ router.delete(PATH.REST_SOCSERVICES, function(req, res, next) {remove(req,res,ne
 
 
 router.get(PATH.REST_INCIDENTTRACKER, function(req, res, next) {findAllByName(req,res,next);});
+router.get(PATH.REST_INCIDENTSACTIVETICKER, function(req, res, next) {findAllByName(req,res,next);});
 //router.post(PATH.REST_INCIDENTTRACKER, function(req, res, next) {save(req,res,next);});
 //router.delete(PATH.REST_INCIDENTTRACKER, function(req, res, next) {delete(req,res,next);});
 router.get(PATH.REST_INCIDENTTRACKER_DATE, function(req, res, next) {findIncidenttrackerByDate(req,res,next);});

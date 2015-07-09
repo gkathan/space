@@ -58,6 +58,7 @@ div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;back
 		span(style="font-size:20px") &nbsp;SYNC PROCESSES
 	.panel-body(style="font-size:12px")
 		
+		
 		table.table.table-striped.table-hover.table-condensed
 			thead
 				tr(style="line-height:24px")
@@ -109,6 +110,8 @@ div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;back
 							
 						td(style="font-size:10px")
 							a(id="sync_#{sync.name}" href="#" ) -- force sync --
+		br
+		div(id="ticker" style="font-size:8px")
 
 include ../includes/material
 
@@ -284,4 +287,10 @@ script.
 		if (data.status=="[ERROR]") $(_idInfo).animate({color: "red"}, 1000 );
 		else if (data.status=="[SUCCESS]") $(_idInfo).animate({color: "green"}, 1000 );
 
+	});
+	
+	socket.on('incidentTickerUpdate', function (data) {
+		console.log("ticker update: "+JSON.stringify(data));
+		
+		$("#ticker").html(JSON.stringify(data));
 	});

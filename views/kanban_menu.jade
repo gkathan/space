@@ -39,13 +39,12 @@ block content
 					if session.AUTH
 						li.active
 							a(href='/logout') logout
-					ul.nav.navbar-nav
+					if !session.AUTH
 						li
 							a(href="/portfolio") [portfolio meeting]
-					
-						if !session.AUTH
-							li
-								a( href="/targets/overview") targets overview
+					if !session.AUTH
+						li
+							a( href="/targets/overview") targets overview
 					if session.AUTH && (session.CONTEXT=="bpty.customer.bwin" || session.CONTEXT=="bpty.customer.premium" || session.CONTEXT=="bpty.customer.games" || session.CONTEXT=="bpty.customer.party US" || session.CONTEXT=="bpty.customer.pmu")
 						ul.nav.navbar-nav
 							li.dropdown(id="fat-menu")
@@ -61,6 +60,19 @@ block content
 								ul.dropdown-menu(role="menu" aria-labelledby="targets")
 									li(role="presentation")
 											a(role="menuitem" tabindex="-1" href="/targets/overview") targets overview
+					
+					if session.AUTH=="studios"
+						ul.nav.navbar-nav
+							li.dropdown(id="fat-menu")
+								a.dropdown-toggle(id="targets" href="#" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false") [portfolio meeting]
+									span.caret
+								ul.dropdown-menu(role="menu" aria-labelledby="admin")
+									li(role="presentation")
+										a(role="menuitem" tabindex="-1" href="/portfolio") show list
+									li(role="presentation")
+										a(role="menuitem" tabindex="-1" href="/upload/xlsx/portfolio") upload snapshot
+								
+						
 					if session.AUTH=="exec" || session.AUTH=="admin" || session.AUTH=="studios"
 						ul.nav.navbar-nav
 							li.dropdown(id="fat-menu")
@@ -87,7 +99,11 @@ block content
 									li(role="presentation")
 										a(role="menuitem" tabindex="-1" href="/dashboard/incidents") incidents
 									li(role="presentation")
-										a(role="menuitem" tabindex="-1" href="/dashboard/incidents_assignmentgroups") incidents - split by assignment group
+										a(role="menuitem" tabindex="-1" href="/dashboard/incidents_subdimension?subDimension=label") incidents - split by label
+									li(role="presentation")
+										a(role="menuitem" tabindex="-1" href="/dashboard/incidents_subdimension?subDimension=businessService") incidents - split by business service
+									li(role="presentation")
+										a(role="menuitem" tabindex="-1" href="/dashboard/incidents_subdimension?subDimension=assignmentGroup") incidents - split by assignment group
 									li(role="presentation")
 										a(role="menuitem" tabindex="-1" href="/dashboard/incidents_line") incidents - line chart experiment
 

@@ -20,7 +20,8 @@ style.
 	
 block content
 	//+graph("test","chartTest")
-	+chartIncident("Incidents - Split By AssignmentGroups","P01","closedAt")
-	+chartIncident("Incidents - Split By AssignmentGroups","P08","closedAt")
+
+	+chartIncident("Incidents - split by: "+subDimension,"P01","closedAt")
+	+chartIncident("Incidents - split by: "+subDimension,"P08","closedAt")
 
 include ../includes/material			
