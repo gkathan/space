@@ -29,7 +29,9 @@ mixin chartIncident(title,prio,dateField)
 							li
 								a.dropdown.incidentstrend(id="#{chart}_q1-2015") Q1-2015
 							li
-								a.dropdown.incidentstrend(id="#{chart}_q1-2015") Q2-2015
+								a.dropdown.incidentstrend(id="#{chart}_q2-2015") Q2-2015
+							li
+								a.dropdown.incidentstrend(id="#{chart}_q3-2015") Q3-2015
 				.btn-group
 					a.btn.btn-default(href='javascript:void(0)') HalfYear
 					a.btn.btn-default.dropdown-toggle(href='bootstrap-elements.html', data-target='#', data-toggle='dropdown')
@@ -38,7 +40,7 @@ mixin chartIncident(title,prio,dateField)
 							li
 								a.dropdown.incidentstrend(id="#{chart}_h1-2014") H1-2014
 							li
-								a.dropdown.incidentstrend(id="#{chart}_h1-2014") H2-2014
+								a.dropdown.incidentstrend(id="#{chart}_h2-2014") H2-2014
 							li
 								a.dropdown.incidentstrend(id="#{chart}_h1-2015") H1-2015
 				.btn-group
@@ -78,6 +80,46 @@ mixin chartIncident(title,prio,dateField)
 					
 				div(id="#{chart}" style="text-align:center")
 					svg
+	script.
+		init("#{prio}","#{dateField}","#{chart}","#{subDimension}");
+
+
+					
+mixin chartIncidentActiveTicker(title,id)
+	- var chart = "chart"+id;
+	div.row(style="margin:auto;max-width:1000px")
+		div.panel.panel-default
+			div.panel-heading 
+				span(style="color:black;font-size:24px;font-weight:bold") #{title} &nbsp;
+				
+			div.panel-body
+				div(id="#{chart}" style="text-align:center")
+					svg					
+				
+				div
+					table(style="margin-left:60px;max-width:800px")
+						tr(style="line-height:60px")
+							td(style="padding-left:30px;font-size:14px;text-align:left;max-width:100px;vertical-align:top")
+								img(src="/images/incidents/P01.png" height="50px") 
+							td(style="padding-left:5px;text-align:right;vertical-align:bottom")
+								span(id="#{chart}_P01" style="font-size:44px;text-align:right;font-weight:normal") #{ticker.totals.P01-ticker.totalsResolved.P01}
+							
+							td(style="padding-left:30px;font-size:14px;text-align:left;vertical-align:top")
+								img(src="/images/incidents/P08.png" height="50px") 
+							td(style="padding-left:5px;text-align:right;vertical-align:bottom")
+								span(id="#{chart}_P08" style="font-size:44px;text-align:right;font-weight:normal") #{ticker.totals.P08-ticker.totalsResolved.P08}
+							
+							td(style="padding-left:30px;font-size:14px;text-align:left;vertical-align:top")
+								img(src="/images/incidents/P16.png" height="50px") 
+							td(style="padding-left:5px;text-align:right;vertical-align:bottom")
+								span(id="#{chart}_P16" style="font-size:44px;text-align:right;font-weight:normal") #{ticker.totals.P16-ticker.totalsResolved.P16}
+							
+							td(style="padding-left:30px;font-size:14px;text-align:left;vertical-align:top")
+								img(src="/images/incidents/P120.png" height="50px") 
+							td(style="padding-left:5px;text-align:right;vertical-align:bottom")
+								span(id="#{chart}_P120" style="font-size:44px;text-align:right;font-weight:normal") #{ticker.totals.P120-ticker.totalsResolved.P120}
+				br
+				div(id="ticker" style="font-size:7px")
 	script.
 		init("#{prio}","#{dateField}","#{chart}","#{subDimension}");
 

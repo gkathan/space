@@ -158,7 +158,7 @@
         "host" : "localhost:27017"
      },
 
-     "api" : {
+  "api" : {
 		"protocol":"http",
 		"host":"localhost:3000",
 		"url" :"/api/space/rest/"

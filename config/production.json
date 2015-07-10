@@ -12,6 +12,13 @@
 		"deployTargetEnv" : "PRODUCTION"
 	},
 
+  "api" : {
+		"protocol":"https",
+		"host":"space.bwinparty.corp",
+		"url" :"/api/space/rest/"
+	},
+
+
   "logger": {
 		"production":{
 	    "DailyRotateFile":{
@@ -72,7 +79,7 @@
   		},
   		"apm" : {
   			"login" :{
-  				"mode": "on",
+  				"mode": "off",
   				"intervalMinutes" :5,
   				"url" : "https://apm.bwinparty.corp/controller/rest/applications/bwin.party/metric-data",
   				"timing" : "&time-range-type=BEFORE_NOW&duration-in-mins=5",

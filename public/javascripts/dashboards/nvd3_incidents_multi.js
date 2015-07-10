@@ -34,6 +34,8 @@ function _alterPeriodByYear(period,yearDelta){
 
 
 function init(prio,dateField,chartId){
+  console.log("******** init");
+
   _dateField = dateField;
   nv.addGraph(function() {
     var incidents;

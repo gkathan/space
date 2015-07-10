@@ -30,7 +30,7 @@ exports.findAll = _findAll;
 exports.findOld = _findOld;
 exports.findProblem = _findProblem;
 exports.findChangeLog = _findChangeLog;
-
+exports.getLatestTicker = _getLatestTicker;
 exports.flush = _flush;
 exports.insert = _insert;
 exports.update = _update;
@@ -255,6 +255,23 @@ function _update(data){
 }
 
 
+
+/**
+* insertsdelta
+*/
+function _getLatestTicker(callback){
+	var ticker =  db.collection(_incidentsActiveTickerCollection);
+	ticker.findOne({}, {sort:{$natural:-1}},function(err , success){
+		if (err){
+			callback(err);
+			return;
+		}
+		else{
+			callback(null,success);
+			return;
+		}
+	});
+}
 /**
 * insertsdelta
 */

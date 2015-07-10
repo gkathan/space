@@ -213,7 +213,7 @@ function _createActiveTicker(_incidentsNEW){
 			}
 			activeTicker.businessService[_prio]=_bs;
 			activeTicker.businessServiceResolved[_prio]=_bsr;
-			
+
 		}
 
 		activeTicker.timestamp = new Date();
@@ -383,9 +383,6 @@ function _handleIncidentsCHANGED(changes,baseline,_incidentsNEW){
 		logger.debug("---------------------------------------------------------------------------------------------------------------------------------");
 		// we also need an mongo _id to to a proper update....
 		_updateIncidents.push(_inc);
-
-
-
 		if (config.emit.snow_incidents_changes =="on"){
 			_emitCHANGEIncidentMessage(_diff,_inc);
 		}

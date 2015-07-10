@@ -101,7 +101,9 @@ block content
 	br
 	br
 	
-	div.row(style="margin: auto;max-width:1000px")
+	+renderIncidentList("snow reported P01 incidents",snowIncidents,excludeNOLABEL)
+
+	div.row(style="margin:auto;max-width:1000px")
 		div.panel.panel-default
 			div.panel-heading 
 				span(style="color:black;font-size:24px;font-weight:bold") Availability - Downtime - Revenue Impact 
@@ -124,26 +126,7 @@ block content
 		+chartIncident("Incidents Trend","P120","openedAt")
 		+chartIncident("Incidents Trend","P120","closedAt")
 
-		+renderIncidentList("snow reported P01 incidents",snowIncidents,excludeNOLABEL)
 		
-	script(src='/javascripts/dashboards/nvd3_availability.js')
-	div.row(style="margin: auto;max-width:1000px")
-		div.panel.panel-default
-			div.panel-heading 
-				|availability: 
-				b unplanned
-			div.panel-body
-				div(id="chart" style="text-align:center")
-					svg
-	script(src='/javascripts/dashboards/nvd3_availability_multi.js')
-	div.row(style="margin: auto;max-width:1000px")
-		div.panel.panel-default
-			div.panel-heading 
-				|availability: 
-				b planned | unplanned | total 
-			div.panel-body
-				div(id="chart2" style="text-align:center")
-					svg
 	
 include ../includes/material
 

@@ -8,6 +8,7 @@ var accounting = require('accounting');
 
 var avService = require('../services/AvailabilityService');
 var targetService = require('../services/TargetService');
+var incService=require('../services/IncidentService');
 
 var winston=require('winston');
 var logger = winston.loggers.get('space_log');
@@ -76,6 +77,19 @@ router.get('/incidents_subdimension', function(req, res) {
 		res.render('dashboard/incidents_subdimension', { title: 's p a c e - incidents by '+_subdimension });
 });
 
+router.get('/incidents_activeticker', function(req, res) {
+		var _period = req.query.period;
+
+		incService.getLatestTicker(function(err,ticker){
+			res.locals.period = _period;
+			res.locals.moment = moment;
+			res.locals.ticker=ticker;
+
+			res.render('dashboard/incidents_activeticker', { title: 's p a c e - incidents activeticker ' });
+
+		})
+
+});
 
 
 router.get('/qos', function(req, res) {

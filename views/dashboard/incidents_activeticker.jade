@@ -1,0 +1,39 @@
+include ../kanban_menu
+include mixins/chart_incident
+// Load nv3d
+script(src='/javascripts/components/nvd3/build/nv.d3.min.js')
+script(src='/javascripts/dashboards/nvd3_incidents_activeticker.js')
+
+
+style.
+
+	#chartticker01 svg {
+	  height: 500px;
+		width:980px;
+	}
+
+	
+block content
+	//+graph("test","chartTest")
+	
+	+chartIncidentActiveTicker("Incidents - Active & Not Resolved - Ticker","ticker01")
+	
+	
+	
+include ../includes/material			
+
+script.
+	// connect to the socket server
+	//var socket = io.connect('http://localhost:3333'); 
+	var socket = io.connect(); 
+	socket.on('incidentTickerUpdate', function (data) {
+		console.log("ticker update: "+JSON.stringify(data));
+		
+		$("#ticker").html("last update: "+data.timestamp);
+		$("#chartticker01_P01").html(data.totals.P01-data.totalsResolved.P01);
+		$("#chartticker01_P08").html(data.totals.P08-data.totalsResolved.P08);
+		$("#chartticker01_P16").html(data.totals.P16-data.totalsResolved.P16);
+		$("#chartticker01_P120").html(data.totals.P120-data.totalsResolved.P120);
+		
+		redraw("chartticker01");
+	});
