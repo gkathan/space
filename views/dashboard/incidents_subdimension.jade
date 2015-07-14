@@ -10,11 +10,19 @@ script(src='/javascripts/dashboards/nvd3_incidents_subdimension.js')
 style.
 
 	#chartP01-closedAt svg {
-	  height: 500px;
+	  height: 800px;
 		width:980px;
 	}
 	#chartP08-closedAt svg {
-	  height: 500px;
+	  height: 2000px;
+		width:980px;
+	}
+	#chartP16-closedAt svg {
+	  height: 2000px;
+		width:980px;
+	}
+	#chartP120-closedAt svg {
+	  height: 2000px;
 		width:980px;
 	}
 	
@@ -23,5 +31,8 @@ block content
 
 	+chartIncident("Incidents - split by: "+subDimension,"P01","closedAt")
 	+chartIncident("Incidents - split by: "+subDimension,"P08","closedAt")
+	+chartIncident("Incidents - split by: "+subDimension,"P16","closedAt")
+	+chartIncident("Incidents - split by: "+subDimension,"P120","closedAt")
+
 
 include ../includes/material			

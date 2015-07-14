@@ -4,9 +4,11 @@ var charts=[];
 var _period;
 var _aggregate;
 var _dateField;//="openedAt";
+var _subDimension;
 
 function init(prio,dateField,chartId,subDimension){
   _dateField = dateField;
+  _subDimension = subDimension;
   nv.addGraph(function() {
     var incidents;
     var chart;
@@ -72,7 +74,7 @@ function init(prio,dateField,chartId,subDimension){
 
 		$("#period_"+_chart).text(_period);
 		$("#aggregate_"+_chart).text(_aggregate);
-		redraw(_chart,_period,_aggregate,_prio,_dateField);
+		redraw(_chart,_period,_aggregate,_prio,_dateField,_subDimension);
 	});
 
 
@@ -85,12 +87,14 @@ function _prepareData(tracker,prio,period,dateField,subDimension){
   console.log("----------------- _prepareData: prio= "+prio);
   console.log("----------------- _prepareData: period= "+period);
   console.log("----------------- _prepareData: dateField= "+dateField);
+  console.log("----------------- _prepareData: subDimension= "+subDimension);
+
   //assignmentGroup clustered
   var agData=[];
   var aGroups=[];
   var dates=[];
 
-  if (!subDimension) subDimension="label";
+  //if (!subDimension) subDimension="label";
 
   for (var d in tracker){
     var _date = tracker[d].date;
