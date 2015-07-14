@@ -158,7 +158,6 @@ function _calculateDailyTracker(incidents,dateFields,context,callback){
 
 			if (incidents[i][dateField]){
 				var _day = moment(incidents[i][dateField]).format("YYYY-MM-DD");
-
 				_day = new Date(_day);
 				//var _dayBefore =  new Date(moment(_day).substract(1, 'days').format("YYYY-MM-DD"));
 
@@ -206,7 +205,14 @@ function _calculateDailyTracker(incidents,dateFields,context,callback){
 				}
 				// in case of update
 				if (incidents[i].prioChange && dateField =="openedAt"){
-					_.findWhere(_dailytracker,{"date":_day})[dateField][incidents[i].prioChange.old].total--;
+					var _track = _.findWhere(_dailytracker,{"date":_day});
+					logger.debug("++++++"+JSON.stringify(_track));
+					logger.debug("++++++"+JSON.stringify(_track[dateField]));
+					logger.debug("++++++incident[i]: "+JSON.stringify(incidents[i]));
+					//P40 are handled as P120
+					var _prioOld = incidents[i].prioChange.old;
+					if (_prioOld=="P40") _prioOld="P120";
+					_track[dateField][_prioOld].total--;
 				}
 			}
 			else{

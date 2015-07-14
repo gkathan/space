@@ -391,10 +391,10 @@ function _handleIncidentsCHANGED(changes,baseline,_incidentsNEW){
 	// => with this list I can easily create the tracker ??
 	// ===> looks like we double count stuff currently ... on CHANGES
 	// ===> try to fix: only handle resolved and closed datefields => opened is only for new ones !
-	incTrackerService.incrementTracker(_updateIncidents,["resolvedAt","closedAt"],function(err,result){
+	incTrackerService.incrementTracker(_updateIncidents,["openedAt","resolvedAt","closedAt"],function(err,result){
 		if (err) logger.error("[IncidentSyncService] CHANGED Incident - incTrackerService.incrementTracker FAILED: "+err-message);
 		else {
-			logger.info("[IncidentSyncService] CHANGED Incident - incTrackerService.incrementTracker SUCCESS: "+JSON.stringify(result));
+			logger.info("[IncidentSyncService] CHANGED Incident - incTrackerService.incrementTracker SUCCESS");
 		}
 	});
 }
@@ -485,7 +485,7 @@ function _getSnowData(url,type,callback){
 		callback(null,data);
 	}).on('error',function(err){
       var _message=err.message;
-			logger.error('[IncidentSyncSerice] says: something went wrong on the request', err.request.options);
+			logger.error('[IncidentSyncSerice] says: something went wrong on the request', err.message);
 			app.io.emit('syncUpdate', {status:"[ERROR]",from:"incident",timestamp:new Date(),info:err.message,type:type});
 			_syncStatus.saveLastSync(_syncName,_timestamp,_message,_statusERROR,type);
 			callback(err);

@@ -39,10 +39,10 @@ block content
 					if session.AUTH
 						li.active
 							a(href='/logout') logout
-					if !session.AUTH
+					if !session.AUTH || session.AUTH=="admin"
 						li
 							a(href="/portfolio") [portfolio meeting]
-					if !session.AUTH
+					if !session.AUTH 
 						li
 							a( href="/targets/overview") targets overview
 					if session.AUTH && (session.CONTEXT=="bpty.customer.bwin" || session.CONTEXT=="bpty.customer.premium" || session.CONTEXT=="bpty.customer.games" || session.CONTEXT=="bpty.customer.party US" || session.CONTEXT=="bpty.customer.pmu")
