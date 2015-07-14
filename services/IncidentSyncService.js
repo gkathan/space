@@ -391,7 +391,13 @@ function _handleIncidentsCHANGED(changes,baseline,_incidentsNEW){
 	// => with this list I can easily create the tracker ??
 	// ===> looks like we double count stuff currently ... on CHANGES
 	// ===> try to fix: only handle resolved and closed datefields => opened is only for new ones !
-	incTrackerService.incrementTracker(_updateIncidents,["openedAt","resolvedAt","closedAt"],function(err,result){
+
+	// try this => only if we have a prio change we will handle "openedAt.."
+	var _datefields =[];
+	if (_prioChanged) _datefields.push("openedAt");
+	_datefields.push("resolvedAt","closedAt");
+
+	incTrackerService.incrementTracker(_updateIncidents,_datefields,function(err,result){
 		if (err) logger.error("[IncidentSyncService] CHANGED Incident - incTrackerService.incrementTracker FAILED: "+err-message);
 		else {
 			logger.info("[IncidentSyncService] CHANGED Incident - incTrackerService.incrementTracker SUCCESS");
