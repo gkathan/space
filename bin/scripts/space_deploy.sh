@@ -34,6 +34,8 @@ if [ -a $PACKAGE ]; then
 	cd $SPACE_HOME/app
 	unzip ./$PACKAGE
 
+	mkdir $SPACE_HOME/app/logs -p
+
 
 
 else
