@@ -111,7 +111,7 @@ gulp.task('buildfile', function () {
 
 
 gulp.task('package', function () {
-    var _src = ['./**','!logs','!.git','!public/files/**','!temp','!Dockerfile'];
+    var _src = ['./**','!logs/**','!.git','!public/files/**','!temp/**','!Dockerfile'];
     gutil.log('[s p a c e - package] package stuff together - ', '_src:'+_src.join(","));
     gutil.log('[s p a c e - package] package name: ', PACKAGE+PACKAGE_EXTENSION);
     gutil.log('[s p a c e - package] destination: ', DIST);
