@@ -300,7 +300,7 @@ function _handleClosedIncidents(deltaIds,type,callback){
 					logger.error("error: "+err.message);
 					done();
 				}
-				if (data && data.records.length>0){
+				if (data && data.records && data.records.length>0){
 					var _incident = incService.filterRelevantData(data.records[0]);
 					logger.debug("+++ I N C I D E N T : "+JSON.stringify(_incident));
 					_list.push(_incident);
@@ -312,6 +312,7 @@ function _handleClosedIncidents(deltaIds,type,callback){
 		},function(err){
 			if(err){
 				logger.error("something bad happened: "+err);
+				callback(err);
 			}
 			else{
 				logger.debug("...OK all stuff processed");
