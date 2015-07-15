@@ -92,10 +92,8 @@ exports.convertXlsx2Json = function convertXlsx2Json (filename,req,done) {
 							function(callback){
 								logger.debug("****async.series: 2) insert stuff: "+_collection);
 								logger.debug("****async.series: 2) _data.length: "+_data.length);
-								// db.collection(_collection).insert(_data);
-
-
-								db.collection(_collection).save(_data);
+								if (_dropBeforeInsert) db.collection(_collection).insert(_data);
+								else db.collection(_collection).save(_data);
 								// ok - this is not beautiful - but for now it works
 								// some more generic way of handling historization of data like orga.....
 								if (_getFunctionName(_handler) == "_handleOrganization") {
@@ -161,15 +159,10 @@ var _getFunctionName = function (fn) {
  */
 function _validateName(fileName){
 	var _check={};
-
 	logger.debug("[DEBUG] validateName(filename): "+fileName);
 	var _parts=_.first(fileName.split('.')).split('_');
-	//if (_parts[0]!="portfoliogate") return false;
-
 	var _date = new Date(_parts[1]);
 	if ( Object.prototype.toString.call(_date) !== "[object Date]" ) _date = null;
-
-
 	_check.collection=_parts[0];
 	if (_parts.indexOf("fillblanks")>=0){
 		_check.fillblanks=true;
@@ -177,12 +170,9 @@ function _validateName(fileName){
 	else {
 		_check.fillblanks=false;
 	}
-
 	if (_date) _check.date= _parts[1];
-
 	return _check;
 }
-
 
 /**
  * pre-process portfolio gate data
@@ -195,20 +185,15 @@ function _handlePortfolioGate(json,date,fillblanks,callback){
 		logger.debug("*************** epics.length: "+_epics.length);
 		//group by Date
 		logger.debug("######################## _handlePortfolioGate called with date: "+date);
-
 		// check whether we have a record with given date => if so attach the ObjectID
 		db.collection("portfoliogate").findOne({pDate:date},function(err,existingPB){
 			logger.debug("######################## existingPB: "+existingPB);
-
 			var map = _clusterBy(json,"pDate",date,"pItems");
 			if (existingPB){
 				map._id=existingPB._id;
 				logger.debug("######################## existingPB: map._id "+map._id);
-
 			}
-
 			var map2 = new Object();
-
 			for(i =0 ; i < map.pItems.length; i++){
 				var key = map.pItems[i].Status;
 				if(!map2[key]){
@@ -217,7 +202,6 @@ function _handlePortfolioGate(json,date,fillblanks,callback){
 				}
 				var _ref = map.pItems[i].EpicRef;
 				var _e = _.find(_epics, { 'Number': _ref });
-
 				//enrich with health attribute snapshot from current V1Epics
 				if (_e != undefined){
 					if (_e.Health != undefined){
@@ -226,7 +210,6 @@ function _handlePortfolioGate(json,date,fillblanks,callback){
 					if (_e.HealthComment != undefined){
 						map.pItems[i]["HealthComment"]=_e.HealthComment;
 					}
-
 					if (_e.PlannedStart != undefined){
 						map.pItems[i]["PlannedStart"]=_e.PlannedStart;
 					}
@@ -248,30 +231,8 @@ function _handlePortfolioGate(json,date,fillblanks,callback){
 			callback(map);
 			return;
 		});
-
-
-
-		})
-
-
-
-
+	})
 }
-
-/**
- * pre-process HR data
- *
-function _handleOrganizationHistory(json,date,fillblanks,callback){
-	//group by Date
-	logger.debug("######################## _handleOrganizationHistory called with date: "+date);
-	var map = _clusterBy(json,"oDate",date,"oItems");
-
-	logger.debug("++++++++++++++++++++++++++++++++ length of json: "+json.length);
-	callback(map);
-	return;
-}
-*/
-
 
 /**
  * pre-process HR data
@@ -279,10 +240,7 @@ function _handleOrganizationHistory(json,date,fillblanks,callback){
 function _handleOrganization(json,date,fillblanks,callback){
 		// 1) overwrite latest into organization
 		// 2) add the same with date to organizationhistory
-
 	logger.debug("######################## _handleOrganization called with date: "+date);
-
-
 	logger.debug("++++++++++++++++++++++++++++++++ length of json: "+json.length);
 	callback(json);
 	return;
@@ -294,9 +252,7 @@ function _handleOrganization(json,date,fillblanks,callback){
 function _handleTarget2Employee(json,date,fillblanks,callback){
 		// 1) overwrite latest into organization
 		// 2) add the same with date to organizationhistory
-
 		logger.debug("######################## _handleOrganization called with date: "+date);
-
 		var _mapping=[];
 		for (var i in json){
 			var _targets = [];
@@ -305,16 +261,12 @@ function _handleTarget2Employee(json,date,fillblanks,callback){
 			if (json[i].Target3) _targets.push(json[i].Target3.split(" ")[0]);
 			if (json[i].Target4) _targets.push(json[i].Target4.split(" ")[0]);
 			if (json[i].Target5) _targets.push(json[i].Target5.split(" ")[0]);
-
 			var _employeeId = json[i]["Id"];
 			if (!_.startsWith(_employeeId,"E")){
 				_employeeId = "E"+_employeeId;
 			}
 			var _employeeName = json[i]["Name"];
-
 			var _context = json[i]["Context"];
-
-
 			var _item = {
 				context:_context,
 				employeeId:_employeeId ,
@@ -328,17 +280,11 @@ function _handleTarget2Employee(json,date,fillblanks,callback){
 				team:json[i]["Team"],
 				role:json[i]["Role"]
 			};
-
 			_mapping.push(_item);
 		}
-
-
-
 		callback(_mapping);
 	return;
 }
-
-
 
 
 /**
@@ -370,30 +316,14 @@ function _handlePlain(json,date,fillblanks,callback){
 	// check if we find some dates and lets convert them into real date types
 	for (var j in json){
 		//var _index = _.indexOf(_.keys(json[j]),"openedAt");
-
 		var _dateFieldNames=["date","openedAt","resolvedAt","createdAt","closedAt","slaResolutionDate"];
-
 		for (var f in _dateFieldNames){
 			var _index = _.indexOf(_.keys(json[j]),_dateFieldNames[f]);
 			if (_index>=0){
 				json[j][_dateFieldNames[f]]=new Date(json[j][_dateFieldNames[f]]);
 			}
 		}
-
-/*
-		var _index = _.indexOf(_.keys(json[j]),"date");
-		if (_index>=0){
-			json[j].date=new Date(json[j].date);
-		}
-
-		var _index = _.indexOf(_.keys(json[j]),"openedAt");
-		if (_index>=0){
-			json[j].openedAt=new Date(json[j].openedAt);
-		}
-*/
 	}
-
-
 	callback(json);
 	return;
 }
@@ -424,7 +354,6 @@ function _sendPortfolioUpdate(to){
 function _clusterBy(inArray,clusterName,clusterValue,itemBucket){
 	var map = new Object();
 	for(i =0 ; i < inArray.length; i++){
-
 		var key = clusterValue;
 		//logger.debug("key:"+key);
 		if (!map[clusterName]) map[clusterName]=key;
