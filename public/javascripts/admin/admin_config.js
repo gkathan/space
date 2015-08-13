@@ -415,7 +415,10 @@ function getV1EpicsConfig(){
     { id: "healthComment", name: "healthComment", field: "HealthComment" ,width:150, cssClass: "cell-standard",sortable:true},
     { id: "description", name: "description", field: "Description",width:150, cssClass: "cell-standard",sortable:true},
     { id: "attachments", name: "attachements", field: "EpicAttachments",width:300, cssClass: "cell-standard",sortable:true},
-		{ id: "strategicThemes", name: "strategicThemes", field: "StrategicThemesNames",width:300, cssClass: "cell-standard",sortable:true}];
+		{ id: "strategicThemes", name: "strategicThemes", field: "StrategicThemesNames",width:300, cssClass: "cell-standard",sortable:true},
+		{ id: "initiativeOwner", name: "initiativeOwner", field: "InitiativeOwner",width:200, cssClass: "cell-standard",sortable:true},
+		{ id: "elevatorPitch", name: "elevatorPitch", field: "ElevatorPitch",width:300, cssClass: "cell-standard",sortable:true},
+		{ id: "launchDateWhy", name: "launchDateWhy", field: "LaunchDateWhy",width:300, cssClass: "cell-standard",sortable:true}];
 	var _config ={};
 	_config.mode="readonly";
 	_config.fields = _v1Epics;
