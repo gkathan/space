@@ -414,7 +414,8 @@ function getV1EpicsConfig(){
     { id: "value", name: "Value", field: "value",width:30, cssClass: "cell-standard",sortable:true},
     { id: "healthComment", name: "healthComment", field: "HealthComment" ,width:150, cssClass: "cell-standard",sortable:true},
     { id: "description", name: "description", field: "Description",width:150, cssClass: "cell-standard",sortable:true},
-    { id: "attachments", name: "attachements", field: "EpicAttachments",width:300, cssClass: "cell-standard",sortable:true}];
+    { id: "attachments", name: "attachements", field: "EpicAttachments",width:300, cssClass: "cell-standard",sortable:true},
+		{ id: "strategicThemes", name: "strategicThemes", field: "StrategicThemesNames",width:300, cssClass: "cell-standard",sortable:true}];
 	var _config ={};
 	_config.mode="readonly";
 	_config.fields = _v1Epics;

@@ -82,7 +82,8 @@ router.get('/', function(req, res) {
 				// and enrich
 				if (_item[0]) {
 					_epic["name"] = _item[0].Name;
-					// stuff needed for sorting
+					_epic["strategicThemes"] = _item[0].StrategicThemesNames;
+ 					// stuff needed for sorting
 					if (_epic.Health=="Green") _epic["HealthRank"]=1;
 					else if (_epic.Health=="Amber") _epic["HealthRank"]=2;
 					else if (_epic.Health=="Red") _epic["HealthRank"]=3;
