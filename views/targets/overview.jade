@@ -118,6 +118,7 @@ mixin renderTargetLane(lane)
 				//span(style="font-size:14px;color:white;font-weight:normal") #{lane.children[0].name.toUpperCase()}
 			br
 			div.row(style="font-size:11px")
+				// sort by id 
 				each t in lane.children[0].children
 					center
 						div.col-xs-6.col-sm-6.col-md-6.col-lg6
@@ -147,7 +148,7 @@ mixin renderL2Target(target)
 								|#{target.children[0].id.split(".")[0]}
 				.panel-body
 					table(style="")
-						each line in target.children
+						each line in _.sortBy(target.children,"id")
 							tr(style="line-height:15px")
 								td(style="font-size:10px;text-align:left;vertical-align:top")
 									table(style="width:210px")
@@ -358,7 +359,7 @@ div.container-fluid(style="max-width:1600px")
 			sup(style="font-size:10px;top:-15px")
 				|BETA
 		
-		div(style="font-weight:normal;font-size:12px;color:#{color_PL};text-align:center") as of 2015-06-23
+		div(style="font-weight:normal;font-size:12px;color:#{color_PL};text-align:center") as of 2015-08-14
 		
 		
 		br

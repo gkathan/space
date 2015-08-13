@@ -192,7 +192,7 @@ function _handleTargetOverview(req,res,next,view){
 			var L2targetsClustered = _.nst.nest(_L2targets,["theme","cluster","group"]);
 			logger.debug("****L2targetsClustered: "+JSON.stringify(L2targetsClustered));
 			res.locals.targets=L2targetsClustered.children;
-			res.locals.L1targets=_L1targets;
+			res.locals.L1targets=_.sortBy(_L1targets,"id");
 			logger.debug("L1targets: "+_L1targets.length);
 			logger.debug("L2targets: "+L2targetsClustered.children.length);
 			// take the first for the globals...
