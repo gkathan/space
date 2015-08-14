@@ -190,8 +190,16 @@ function _handleTargetOverview(req,res,next,view){
 				if (data[i].type=="L1") _L1targets.push(data[i]);
 			}
 			var L2targetsClustered = _.nst.nest(_L2targets,["theme","cluster","group"]);
-			logger.debug("****L2targetsClustered: "+JSON.stringify(L2targetsClustered));
-			res.locals.targets=L2targetsClustered.children;
+			//logger.debug("****L2targetsClustered: "+JSON.stringify(L2targetsClustered));
+
+			// the lanes like RUN GROW TRANSFORM
+			//["RUN","GROW","TRANSFORM"]
+
+			var _sortOrder= config.targets.laneSorting;
+
+			res.locals.targets=_.sortBy(L2targetsClustered.children,function(lane){
+					return _sortOrder.indexOf(lane.name);
+			});
 			res.locals.L1targets=_.sortBy(_L1targets,"id");
 			logger.debug("L1targets: "+_L1targets.length);
 			logger.debug("L2targets: "+L2targetsClustered.children.length);

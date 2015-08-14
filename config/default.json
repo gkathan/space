@@ -62,7 +62,9 @@
 		}
 	},
 
-
+	"targets":{
+		"laneSorting": ["RUN","GROW","TRANSFORM"]
+	},
 
 	"availability":{
 		"coreTime":[
