@@ -194,7 +194,6 @@ function _handleTargetOverview(req,res,next,view){
 
 			// the lanes like RUN GROW TRANSFORM
 			//["RUN","GROW","TRANSFORM"]
-
 			var _sortOrder= config.targets.laneSorting;
 
 			res.locals.targets=_.sortBy(L2targetsClustered.children,function(lane){
@@ -211,6 +210,7 @@ function _handleTargetOverview(req,res,next,view){
 				res.locals.start=moment(_target.start).format();
 				res.locals.end=moment(_target.end).format();
 				res.locals.period = new moment(_target.end).format('YYYY').toLowerCase();
+				res.locals.lastUpdate = moment(_target.lastUpdate).format('MMMM Do YYYY');
 			}
 			var _colors = _.findWhere(config.entities,{'name':_context}).skin.colors;
 			logger.debug("colors: "+_colors.secondary);
