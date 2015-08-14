@@ -1,9 +1,7 @@
 var express = require('express');
 var router = express.Router();
-
 var mongo = require('mongodb');
 var mongojs = require('mongojs');
-
 var moment = require('moment');
 var _ = require('lodash');
 
@@ -19,12 +17,10 @@ var logger = winston.loggers.get('space_log');
 
 module.exports = router;
 
-
 router.get('/', function(req, res) {
 	// join pgates with epics
 	var pgates =  db.collection('portfoliogate');
 	var initiatives = db.collection('v1epics');
-
 	/* find and mark deltas
 	=> if we have 3 snapshots (dates) online
 	=> we will have 2 deltas to calculate
@@ -59,21 +55,22 @@ router.get('/', function(req, res) {
 		var _healthChangeBucket=[];
 		// the ones which were dealed with in portfolioboard (PB==1)
 		var _portfolioBoardBucket=[];
-
+		var _targetContributionBucket={};
 
 		_gates[_date]["stateChangeBucket"]=_stateChangeBucket;
 		_gates[_date]["healthChangeBucket"]=_healthChangeBucket;
 		_gates[_date]["portfolioBoardBucket"]=_portfolioBoardBucket;
-
 		_gates[_date].pDate=moment(_gates[_date].pDate).format('LL');
 		_gates[_date].pBoardDate=moment(_gates[_date].pBoardDate).format('LL');
+
+		_gates[_date]["targetContributionBucket"]=_targetContributionBucket;
+
 		// sort the states by
 		// NEW -> UNDERSTANDING -> CONCEPTION -> IMPLEMENTATION -> MONITORING -> CLOSED
 		// pg state
-
 		for (var _state in _gates[_date].pItems){
-			//console.log("?????????????????? _color: "+_gates[_date].pItems[_state].color);
-			//console.log("?????????????????? JSON: "+JSON.stringify(_gates[_date].pItems[_state]));
+			if (!_gates[_date]["targetContributionBucket"][_state]) _gates[_date]["targetContributionBucket"][_state] = [];
+
 			for (var _ref in _gates[_date].pItems[_state]){
 				var _epic = _gates[_date].pItems[_state][_ref];
 				var _item = _initiatives.filter(function( obj ) {
@@ -81,8 +78,23 @@ router.get('/', function(req, res) {
 				});
 				// and enrich
 				if (_item[0]) {
+					_epic["id"] = _item[0].ID.split(":")[1];
 					_epic["name"] = _item[0].Name;
-					_epic["strategicThemes"] = _item[0].StrategicThemesNames;
+					_epic["strategicThemes"] = _parseStrategicThemes(_item[0].StrategicThemesNames);
+
+					var _targets=_epic["strategicThemes"].targets;
+
+					for (var t in _targets){
+							if (!_gates[_date]["targetContributionBucket"][_state][_targets[t]]){
+								_gates[_date]["targetContributionBucket"][_state][_targets[t]]={count:0,epics:[]};
+
+							}
+							_gates[_date]["targetContributionBucket"][_state][_targets[t]].count++;
+							_gates[_date]["targetContributionBucket"][_state][_targets[t]].epics.push(_epic.EpicRef);
+
+
+					}
+
  					// stuff needed for sorting
 					if (_epic.Health=="Green") _epic["HealthRank"]=1;
 					else if (_epic.Health=="Amber") _epic["HealthRank"]=2;
@@ -94,8 +106,7 @@ router.get('/', function(req, res) {
 					_epic["attachmentClosing"]=_.find(_attachments,function(d){return d.type=="closing";})
 				}
 				else _epic["name"] = "<not synced>";
-				// v1 epic.ID comes in format Epic:2783462387
-				if (_item[0]) {_epic["id"] = _item[0].ID.split(":")[1];}
+
 				// and now check whether something changed since last date
 				// do not check for last date - as there is nothing to check against ;-)
 				if (_date < _gates.length-1){
@@ -131,51 +142,35 @@ router.get('/', function(req, res) {
 				else if (a.HealthRank>b.HealthRank) return -1;
 				else return 0
 			});
-
 			// and sort the items by state lifecycle
-
+			}
 		}
-		}
-
-
-
+		//slogger.debug("---------------------------------------- targetContributionBucket: "+JSON.stringify(_gates));
 		res.locals.pgates=_gates;
 		res.locals.states=_states;
 		res.locals.colors=_color;
 		res.locals.v1LastUpdate=_V1lastUpdate;
-
 		res.render('portfoliogate'), { title: 's p a c e - portfoliogate' }
 		});
 	});
 });
 
-
-
 /**
  * @param array of EpicAttachments (_item[0].EpicAttachments);
  * @param array of EpicAttachmentsName (_item[0].EpicAttachmentNames)
- *
- *
  * @return collection of attachement data [{type:"Proposal",oid:823749283},{type:"Closing",oid:28374382},{type:"Scope",oid:28975}
  */
 function _parseAttachments(_epicAttachments, _epicAttachmentNames){
 	var _attachments = [];
-
 	var _oids = _parseAttachmentOIDs(_epicAttachments);
-	//console.log("_oids length:"+_oids.length)
-
 	var _names = _parseAttachmentNames(_epicAttachmentNames);
-	//console.log("_names length:"+_names.length)
 
 	for (var i=0; i<_oids.length;i++){
-		//console.log("* constructing...."+i)
-
 		var _attachment = {};
 		_attachment["type"]=_names[i];
 		_attachment["oid"]=_oids[i];
 		_attachments.push(_attachment);
 	}
-
 	return _attachments;
 }
 
@@ -214,23 +209,16 @@ function _parseAttachmentNames(_attachmentName){
 		for (var i in _split1){
 			// strip out the brackets
 			var _name = _split1[i].replace("[","").replace("]","");
-
 			var _type="";
 			// and now check for patterns
 			if (_name.toLowerCase().indexOf("closing")>=0) _type = "closing";
 			else if (_name.toLowerCase().indexOf("proposal")>=0) _type = "proposal";
 			else if (_name.toLowerCase().indexOf("scope")>=0) _type = "scope";
-
 			_names.push(_type);
 		}
 	}
 	return _names;
 }
-
-
-
-
-
 
 /**
  * helper for delta check to find an item by EpicRef for a given date
@@ -241,4 +229,24 @@ function _findItemByDateandRef(items,ref){
 			if (items[_state][_ref].EpicRef==ref) return items[_state][_ref];
 		}
 	}
+}
+
+/**
+* takes a string of strategic theme from version1 and creates a proper object with datra
+* e.g. "[[STR] G1 Push Mobile-First, [STR] G2 Execute Product Roadmap, [CUS] Bwin, [MAR] .es]"
+*/
+function _parseStrategicThemes(strategicThemeString){
+	var strategicTheme = {customers:[],markets:[],targets:[]};
+		// cut first and last bracket
+	var _transform = _.initial(_.rest(strategicThemeString)).join("");
+	_transform = _transform.split(",");
+
+	for (var i in _transform){
+		var _temp = _.trim(_transform[i]);
+		if (_.startsWith(_temp,"[CUS]")) strategicTheme.customers.push(_.trim(_temp.split("[CUS]")[1]));
+		else if (_.startsWith(_temp,"[MAR]")) strategicTheme.markets.push(_.trim(_temp.split("[MAR]")[1]));
+		else if (_.startsWith(_temp,"[STR]")) strategicTheme.targets.push(_.trim(_temp.split("[STR]")[1]));
+	}
+
+	return strategicTheme;
 }

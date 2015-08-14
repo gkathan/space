@@ -40,15 +40,15 @@ style(type='text/css').
 
 mixin renderEpic(epic)
 	div.col 
-		tr
-			if epic.id
+		if epic.id
+			tr(id="#{epic.EpicRef}")
 				td(style="max-width:15px;vertical-align:middle")
 					if epic.Status != "Monitoring"
 						div(style="margin-left:5px;width: 10px;height: 10px;-moz-border-radius: 50%; -webkit-border-radius: 50%; border-radius: 50%;background-color:#{mapHealth2Color(epic.Health)};margin-top:2px")
 				td(style="font-weight:normal;font-size:8px;max-width:50px;height:14px;vertical-align:middle")
 					| #{epic.EpicRef} 
 				td(style="font-weight:bold;font-size:9px;max-width:180px;vertical-align:middle;white-space:nowrap;overflow:hidden;text-overflow:ellipsis")
-					a(href="http://v1.bwinparty.corp/V1-Production/Epic.mvc/Summary?oidToken=Epic%3A"+epic.id target="_new" data-toggle="tooltip" data-placement="top" title="strategicThemes: "+epic.strategicThemes)
+					a(href="http://v1.bwinparty.corp/V1-Production/Epic.mvc/Summary?oidToken=Epic%3A"+epic.id target="_new" data-toggle="tooltip" data-placement="top" title="strategicThemes: "+JSON.stringify(epic.strategicThemes))
 						| <b>#{epic.name}</b> 
 				td(style="font-weight:normal;font-size:8px;max-width:35px;height:14px;vertical-align:middle;text-align:left")
 					&nbsp;&nbsp;
@@ -64,8 +64,9 @@ mixin renderEpic(epic)
 						span.glyphicon.glyphicon-star(style="font-size:12px;color:black; ") 
 						span(style="opacity:0") x
 						//span(style="color:orange; font-size:10px") #{epic.oldState}
-				
-			else
+			
+		else
+			tr(id="#{epic.EpicRef}")
 				td(style="width:15px;vertical-align:middle") 
 					div(style="margin-left:5px;width: 10px;height: 10px;-moz-border-radius: 50%; -webkit-border-radius: 50%; border-radius: 50%;background-color:lightgrey;margin-top:2px")
 				td(style="font-weight:normal;font-size:8px;width:35px;height:14px;vertical-align:middle")
@@ -131,7 +132,6 @@ block content
 										-var _state = _date.pItems[status];
 										if _state
 											span.badge(style="margin-left:10px;font-size:14px") #{_state.length}
-										
 									//list epics per status	
 									div.panel-body
 										if _state
@@ -141,27 +141,36 @@ block content
 														tr(style="height:15px")
 															th(style="width:25px;text-align:left;font-size:8px;vertical-align:top") 
 																a(href="#" title="sort by health" ) 
-																	
 																	//span.glyphicon.glyphicon-triangle-bottom(style="font-size:8px;color:black;")
 															th(style="width:35px;text-align:left;font-size:8px;vertical-align:top") 
 																a(href="#" title="sort by id") 
-																	
 																	//span.glyphicon.glyphicon-triangle-bottom(style="font-size:8px;color:black;")
 															th(style="width:180px;text-align:left;font-size:8px;vertical-align:top")
 																a(href="#" title="sort by name") 
-																	
 																	//span.glyphicon.glyphicon-triangle-bottom(style="font-size:8px;color:black;")
 															th(style="width:35px;text-align:left;font-size:8px;vertical-align:top")
 																a(href="#" title="sort by ref" )
-																	
 															th(style="width:30px;text-align:left;font-size:8px;vertical-align:top") 
 																a(href="#" title="sort by changed from last time")
-																	
 																	//span.glyphicon.glyphicon-triangle-bottom(style="font-size:8px;color:black;")
 													tbody
 														each epic in _state
 															+renderEpic(epic)
+														
 											script $("#table_#{_date._id}_#{status}").tablesorter();
+										hr
+										div(style="font-size:10px;padding-bottom:10px;margin-left:10px") target contribution:
+										div(style="margin-left:25px")
+											table.table-hover.tablsesorter
+												if _date.targetContributionBucket[status]
+													each target in _.keys(_date.targetContributionBucket[status])
+														tr
+															td(style="font-size:9px;margin-left:10px;font-weight:normal;padding-right:10px") 
+																-var _epicRefs = _date.targetContributionBucket[status][target].epics.join(",#");
+																
+																a(title="#{_epicRefs}" onMouseOver="$('##{_epicRefs}').css('background', 'skyblue')" onMouseOut="$('##{_epicRefs}').css('background', '')") #{target} 
+															td(style="font-size:9px;margin-left:10px;font-weight:bold;text-align:right") #{_date.targetContributionBucket[status][target].count}
+										hr		
 
 	script.
 		$(function () {
