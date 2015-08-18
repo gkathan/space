@@ -178,42 +178,48 @@ function _createActiveTicker(_incidentsNEW){
 		for (var p in _prios){
 			var _prio=_prios[p].split(" - ")[0];
 			if (_prio=="P40") _prio="P120";
-			activeTicker.totals[_prio]=_groupedByPrio[_prios[p]].length;
-			activeTicker.totalsResolved[_prio]=_.where(_groupedByPrio[_prios[p]],{"state":"Resolved"}).length;
-			activeTicker.totalsUnResolved[_prio]=activeTicker.totals[_prio]-activeTicker.totalsResolved[_prio];
+			logger.debug("***** _prios[p]: "+_prios[p]);
 
-			// _processSubDimension(activeTicker,_subDimensions,_groupedByPrio,_prio);
+			//logger.debug("*****_groupedByPrio: "+JSON.stringify(_groupedByPrio));
+
+			if (_groupedByPrio[_prios[p]]){
+
+				activeTicker.totals[_prio]=_groupedByPrio[_prios[p]].length;
+				activeTicker.totalsResolved[_prio]=_.where(_groupedByPrio[_prios[p]],{"state":"Resolved"}).length;
+				activeTicker.totalsUnResolved[_prio]=activeTicker.totals[_prio]-activeTicker.totalsResolved[_prio];
+
+				// _processSubDimension(activeTicker,_subDimensions,_groupedByPrio,_prio);
 
 
-			var _assignmentGroup = _.groupBy(_groupedByPrio[_prios[p]],"assignmentGroup");
-			var _assignmentGroupResolved = _.groupBy(_.where(_groupedByPrio[_prios[p]],{"state":"Resolved"}),"assignmentGroup");
+				var _assignmentGroup = _.groupBy(_groupedByPrio[_prios[p]],"assignmentGroup");
+				var _assignmentGroupResolved = _.groupBy(_.where(_groupedByPrio[_prios[p]],{"state":"Resolved"}),"assignmentGroup");
 
-			var _businessService = _.groupBy(_groupedByPrio[_prios[p]],"businessService");
-			var _businessServiceResolved = _.groupBy(_.where(_groupedByPrio[_prios[p]],{"state":"Resolved"}),"businessService");
+				var _businessService = _.groupBy(_groupedByPrio[_prios[p]],"businessService");
+				var _businessServiceResolved = _.groupBy(_.where(_groupedByPrio[_prios[p]],{"state":"Resolved"}),"businessService");
 
 
-			var _ag ={};
-			var _agr ={};
-			for (var a in _assignmentGroup){
-				_ag[a.split(".").join("-")]=_assignmentGroup[a].length;
+				var _ag ={};
+				var _agr ={};
+				for (var a in _assignmentGroup){
+					_ag[a.split(".").join("-")]=_assignmentGroup[a].length;
+				}
+				for (var a in _assignmentGroupResolved){
+					_agr[a.split(".").join("-")]=_assignmentGroupResolved[a].length;
+				}
+				activeTicker.assignmentGroup[_prio]=_ag;
+				activeTicker.assignmentGroupResolved[_prio]=_agr;
+
+				var _bs ={};
+				var _bsr ={};
+				for (var a in _businessService){
+					_bs[a.split(".").join("-")]=_businessService[a].length;
+				}
+				for (var a in _businessServiceResolved){
+					_bsr[a.split(".").join("-")]=_businessServiceResolved[a].length;
+				}
+				activeTicker.businessService[_prio]=_bs;
+				activeTicker.businessServiceResolved[_prio]=_bsr;
 			}
-			for (var a in _assignmentGroupResolved){
-				_agr[a.split(".").join("-")]=_assignmentGroupResolved[a].length;
-			}
-			activeTicker.assignmentGroup[_prio]=_ag;
-			activeTicker.assignmentGroupResolved[_prio]=_agr;
-
-			var _bs ={};
-			var _bsr ={};
-			for (var a in _businessService){
-				_bs[a.split(".").join("-")]=_businessService[a].length;
-			}
-			for (var a in _businessServiceResolved){
-				_bsr[a.split(".").join("-")]=_businessServiceResolved[a].length;
-			}
-			activeTicker.businessService[_prio]=_bs;
-			activeTicker.businessServiceResolved[_prio]=_bsr;
-
 		}
 
 		activeTicker.timestamp = new Date();
