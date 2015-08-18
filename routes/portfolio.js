@@ -30,7 +30,7 @@ router.get('/', function(req, res) {
 				if (==) nothing
 				if (!) mark and add previous state
 	*/
-	pgates.find().sort({pDate:-1}, function (err, docs){
+	pgates.find().limit(config.portfolio.gatesLimit).sort({pDate:-1}, function (err, docs){
 	var _gates = docs;
 
 	// the lifecycle of an initiative
@@ -80,21 +80,22 @@ router.get('/', function(req, res) {
 				if (_item[0]) {
 					_epic["id"] = _item[0].ID.split(":")[1];
 					_epic["name"] = _item[0].Name;
-					_epic["strategicThemes"] = _parseStrategicThemes(_item[0].StrategicThemesNames);
+					_epic["value"] = _item[0].Value;
 
-					var _targets=_epic["strategicThemes"].targets;
+					if (_item[0].strategicThemes){
+						_epic["strategicThemes"] = _item[0].strategicThemes;
+						var _targets=_epic["strategicThemes"].targets;
 
-					for (var t in _targets){
-							if (!_gates[_date]["targetContributionBucket"][_state][_targets[t]]){
-								_gates[_date]["targetContributionBucket"][_state][_targets[t]]={count:0,epics:[]};
+						for (var t in _targets){
+								if (!_gates[_date]["targetContributionBucket"][_state][_targets[t]]){
+									_gates[_date]["targetContributionBucket"][_state][_targets[t]]={count:0,swag:0,epics:[]};
+								}
+								_gates[_date]["targetContributionBucket"][_state][_targets[t]].count++;
+								_gates[_date]["targetContributionBucket"][_state][_targets[t]].swag+=_item[0].Swag;
 
-							}
-							_gates[_date]["targetContributionBucket"][_state][_targets[t]].count++;
-							_gates[_date]["targetContributionBucket"][_state][_targets[t]].epics.push(_epic.EpicRef);
-
-
+								_gates[_date]["targetContributionBucket"][_state][_targets[t]].epics.push(_epic.EpicRef+"_"+moment(_gates[_date].pDate).format("YYYY-MM-DD"));
+						}
 					}
-
  					// stuff needed for sorting
 					if (_epic.Health=="Green") _epic["HealthRank"]=1;
 					else if (_epic.Health=="Amber") _epic["HealthRank"]=2;
@@ -147,6 +148,7 @@ router.get('/', function(req, res) {
 		}
 		//slogger.debug("---------------------------------------- targetContributionBucket: "+JSON.stringify(_gates));
 		res.locals.pgates=_gates;
+		res.locals.moment=moment;
 		res.locals.states=_states;
 		res.locals.colors=_color;
 		res.locals.v1LastUpdate=_V1lastUpdate;
@@ -229,24 +231,4 @@ function _findItemByDateandRef(items,ref){
 			if (items[_state][_ref].EpicRef==ref) return items[_state][_ref];
 		}
 	}
-}
-
-/**
-* takes a string of strategic theme from version1 and creates a proper object with datra
-* e.g. "[[STR] G1 Push Mobile-First, [STR] G2 Execute Product Roadmap, [CUS] Bwin, [MAR] .es]"
-*/
-function _parseStrategicThemes(strategicThemeString){
-	var strategicTheme = {customers:[],markets:[],targets:[]};
-		// cut first and last bracket
-	var _transform = _.initial(_.rest(strategicThemeString)).join("");
-	_transform = _transform.split(",");
-
-	for (var i in _transform){
-		var _temp = _.trim(_transform[i]);
-		if (_.startsWith(_temp,"[CUS]")) strategicTheme.customers.push(_.trim(_temp.split("[CUS]")[1]));
-		else if (_.startsWith(_temp,"[MAR]")) strategicTheme.markets.push(_.trim(_temp.split("[MAR]")[1]));
-		else if (_.startsWith(_temp,"[STR]")) strategicTheme.targets.push(_.trim(_temp.split("[STR]")[1]));
-	}
-
-	return strategicTheme;
 }

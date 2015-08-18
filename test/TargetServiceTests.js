@@ -17,6 +17,7 @@ winston.loggers.add('test_log',{
 
 var logger = winston.loggers.get('test_log');
 var assert = require("assert")
+var _ = require("lodash");
 
 
 
@@ -41,6 +42,21 @@ describe('TargetService', function(){
 
 					console.log("L2target: "+JSON.stringify(L2Target));
 					assert.equal("G1.1", L2Target.id);
+					done();
+			})
+
+		});
+  })
+
+
+	describe('#getL2ByGroups()', function(){
+    it('should read L2 target groups ', function(done){
+      var targetService = require('../services/TargetService');
+			targetService.getL2Groups("bpty.studios",function(err,L2TargetGroups){
+
+					console.log("L2targetGroups: "+JSON.stringify(L2TargetGroups));
+					console.log("L2targetGroups.length: "+_.keys(L2TargetGroups).length);
+
 					done();
 			})
 

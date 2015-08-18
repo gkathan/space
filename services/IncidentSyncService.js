@@ -220,7 +220,18 @@ function _createActiveTicker(_incidentsNEW){
 				activeTicker.businessService[_prio]=_bs;
 				activeTicker.businessServiceResolved[_prio]=_bsr;
 			}
+			else{
+					activeTicker.totals[_prio]=0;
+					activeTicker.totalsResolved[_prio]=0;
+					activeTicker.totalsUnResolved[_prio]=0;
+					activeTicker.businessService[_prio]=0;
+					activeTicker.businessServiceResolved[_prio]=0;
+					activeTicker.assignmentGroup[_prio]=0;
+					activeTicker.assignmentGroupResolved[_prio]=0;
+
+			}
 		}
+
 
 		activeTicker.timestamp = new Date();
 		return activeTicker

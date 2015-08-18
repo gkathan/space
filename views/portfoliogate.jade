@@ -38,18 +38,24 @@ style(type='text/css').
 
 // ------------------ mixin start ----------------------------
 
-mixin renderEpic(epic)
+mixin renderEpic(epic,_date)
 	div.col 
 		if epic.id
-			tr(id="#{epic.EpicRef}")
+			tr(id="#{epic.EpicRef}_#{moment(_date).format('YYYY-MM-DD')}")
 				td(style="max-width:15px;vertical-align:middle")
 					if epic.Status != "Monitoring"
 						div(style="margin-left:5px;width: 10px;height: 10px;-moz-border-radius: 50%; -webkit-border-radius: 50%; border-radius: 50%;background-color:#{mapHealth2Color(epic.Health)};margin-top:2px")
 				td(style="font-weight:normal;font-size:8px;max-width:50px;height:14px;vertical-align:middle")
 					| #{epic.EpicRef} 
-				td(style="font-weight:bold;font-size:9px;max-width:180px;vertical-align:middle;white-space:nowrap;overflow:hidden;text-overflow:ellipsis")
+				td(style="font-weight:bold;font-size:9px;max-width:160px;vertical-align:middle;white-space:nowrap;overflow:hidden;text-overflow:ellipsis")
 					a(href="http://v1.bwinparty.corp/V1-Production/Epic.mvc/Summary?oidToken=Epic%3A"+epic.id target="_new" data-toggle="tooltip" data-placement="top" title="strategicThemes: "+JSON.stringify(epic.strategicThemes))
 						| <b>#{epic.name}</b> 
+				td(style="font-weight:normal;font-size:8px;max-width:20px;height:14px;vertical-align:middle;text-align:right")
+					if epic.value
+						|#{epic.value}
+					else
+						|-
+
 				td(style="font-weight:normal;font-size:8px;max-width:35px;height:14px;vertical-align:middle;text-align:left")
 					&nbsp;&nbsp;
 					if epic.attachmentProposal
@@ -58,10 +64,9 @@ mixin renderEpic(epic)
 					if epic.attachmentClosing
 						a(href="http://v1.bwinparty.corp/V1-Production/attachment.img/"+epic.attachmentClosing.oid+"/" target="_new" data-toggle="tooltip" data-placement="top" title="download #{epic.attachmentClosing.type} for #{epic.name}" )
 							| [CD] 
-							
 				td(style="max-width:15px;vertical-align:middle;text-align:center")
 					if epic.oldState && epic.PB
-						span.glyphicon.glyphicon-star(style="font-size:12px;color:black; ") 
+						span.glyphicon.glyphicon-star(style="font-size:10px;color:black; ") 
 						span(style="opacity:0") x
 						//span(style="color:orange; font-size:10px") #{epic.oldState}
 			
@@ -74,104 +79,129 @@ mixin renderEpic(epic)
 				td(style="font-weight:normal;font-size:8px;color:grey;width:180px;vertical-align:middle;white-space:nowrap")
 					|* not synced | not an initiative *
 				
+
+mixin renderStatus(status,_date)
+	if status != "New" && status != "Done" 
+		div.col-sm-2.col-md-3.col-lg5
+			div.panel(style="background-color:white;width:330px;text-align: left")
+				//status header
+				div.panel-heading(style="text-align:center")
+					span(style="font-size:20px;color:#{colors[status]};margin-left:0px") #{status.toUpperCase()}
+					-var _state = _date.pItems[status];
+					if _state
+						span.badge(style="margin-left:10px;font-size:14px") #{_state.length}
+				//list epics per status	
+				div.panel-body
+					if _state
+						div.row(style="font-size:11px;margin-left:2px")
+							table.table-hover.tablsesorter(id="table_#{_date._id}_#{status}")
+								thead
+									tr(style="height:15px")
+										th(style="width:25px;text-align:left;font-size:8px;vertical-align:top") 
+											a(href="#" title="sort by health" ) 
+												//span.glyphicon.glyphicon-triangle-bottom(style="font-size:8px;color:black;")
+										th(style="width:35px;text-align:left;font-size:8px;vertical-align:top") 
+											a(href="#" title="sort by id") 
+												//span.glyphicon.glyphicon-triangle-bottom(style="font-size:8px;color:black;")
+										th(style="width:160px;text-align:left;font-size:8px;vertical-align:top")
+											a(href="#" title="sort by name") 
+												//span.glyphicon.glyphicon-triangle-bottom(style="font-size:8px;color:black;")
+										th(style="width:20px;text-align:right;font-size:8px;vertical-align:top")
+											a(href="#" title="sort by value") 
+
+										th(style="width:35px;text-align:left;font-size:8px;vertical-align:top")
+											a(href="#" title="sort by ref" )
+										th(style="width:30px;text-align:left;font-size:8px;vertical-align:top") 
+											a(href="#" title="sort by changed from last time")
+												//span.glyphicon.glyphicon-triangle-bottom(style="font-size:8px;color:black;")
+								tbody
+									each epic in _state
+										+renderEpic(epic,_date.pDate)
+									
+						script $("#table_#{_date._id}_#{status}").tablesorter();
+						+renderTargetContribution(status,_date)
+
+
+mixin renderTargetContribution(status,_date)
+	hr
+	div(style="margin-left:25px")
+		table.table-hover.tablsesorter
+			tr
+				th(style="font-size:10px") target contribution
+				th(style="font-size:10px;text-align:right") epics
+				th(style="font-size:10px;text-align:right") swag
+			if _date.targetContributionBucket[status]
+				each target in _.sortBy(_.keys(_date.targetContributionBucket[status]),function(d){if (_.startsWith(d,"R")) return 0; else if (_.startsWith(d,"G")) return 1;if (_.startsWith(d,"T")) return 2; else return d;})
+					-var _targetHighlight="#dddddd";
+					-//if (_.startsWith(target,"R")) _targetHighlight=config.targets.laneColors.RUN;
+					-//else if (_.startsWith(target,"G")) _targetHighlight=config.targets.laneColors.GROW;
+					-//else if (_.startsWith(target,"T")) _targetHighlight=config.targets.laneColors.TRANSFORM;
+					tr
+						td(style="font-size:9px;margin-left:10px;font-weight:normal;padding-right:10px") 
+							-var _epicRefs = _date.targetContributionBucket[status][target].epics.join(",#");
+							
+							a(title="#{_epicRefs}" onMouseOver="$('##{_epicRefs}').css('background', '#{_targetHighlight}')" onMouseOut="$('##{_epicRefs}').css('background', '')") #{target} 
+						td(style="font-size:9px;margin-left:10px;font-weight:bold;text-align:right") #{_date.targetContributionBucket[status][target].count}
+						td(style="font-size:9px;padding-left:30px;font-weight:normal;text-align:right") #{_date.targetContributionBucket[status][target].swag}
+	hr		
+
+
+
+mixin renderPortfolioMeeting(_date)
+	div.panel(style="max-width:1400px")
+		div.panel-heading(style="font-size:16px; color:black") 
+			span(style="margin-left:7px;font-size:28px;font-weight:bold") #{_date.pDate}
+			br
+			if _date.portfolioBoardBucket.length > 0
+				span(style="margin-left:7px;font-size:11px;font-weight:normal;color:black;text-align:center") PORTFOLIO MEETING | <b>GATE DECISIONS</b>
+				br
+				table.table(style="max-width:600px")
+					// state changes
+					thead
+						tr
+							th(style="width:50px;font-size:10px;vertical-align:top") Epic ID
+							th(style="max-width:100px;font-size:10px;vertical-align:top") Epic Name
+							th(style="max-width:60px;font-size:10px;vertical-align:top") Decision
+							th(style="max-width:150px;font-size:10px;vertical-align:top") Comment
+							
+					tbody
+						each _pb in _date.portfolioBoardBucket
+							tr(style="line-height:12px")
+								td(style="font-size:10px;vertical-align:top")
+									| <span style="font-size:9px">#{_pb.EpicRef}</span>
+								
+								td(style="font-size:10px;vertical-align:top")
+									
+									-var _epicRef = _pb.EpicRef+"_"+moment(_date.pDate).format("YYYY-MM-DD");
+									a(href="http://v1.bwinparty.corp/V1-Production/Epic.mvc/Summary?oidToken=Epic%3A"+_pb.id target="_new" onMouseOver="$('##{_epicRef}').css('background', '#dddddd')" onMouseOut="$('##{_epicRef}').css('background', '')" )
+										| <span style="font-size:9px"><b>#{_pb.name}</b>  
+								td(style="font-size:10px;vertical-align:top")
+									if _pb.PB==1 || _pb.PB=="x"
+										span(style="color:limegreen;font-weight:bold") APPROVED  
+									else if _pb.PB==0
+										span(style="color:red;font-weight:bold") REJECTED   	
+								td(style="font-size:10px;vertical-align:top")
+									if _.findWhere(_date.stateChangeBucket,{"EpicRef":_pb.EpicRef}) && (_.findWhere(_date.stateChangeBucket,{"EpicRef":_pb.EpicRef}).oldState != _.findWhere(_date.stateChangeBucket,{"EpicRef":_pb.EpicRef}).Status) 
+										span(style="font-style:italic") #{_.findWhere(_date.stateChangeBucket,{"EpicRef":_pb.EpicRef}).oldState}&nbsp; 
+										span.glyphicon.glyphicon-arrow-right 
+										span(style="font-style:italic") &nbsp;#{_.findWhere(_date.stateChangeBucket,{"EpicRef":_pb.EpicRef}).Status}
+									else if _.findWhere(_date.stateChangeBucket,{"EpicRef":_pb.EpicRef})
+										span(style="font-style:italic") Remains in #{_.findWhere(_date.stateChangeBucket,{"EpicRef":_pb.EpicRef}).oldState}&nbsp; 
+									if (_pb.Comment)
+										br
+										|  #{_pb.Comment}
+		div.panel-body
+			each status in states
+				+renderStatus(status,_date)
+
 // ------------------ mixin end ----------------------------
 
 block content
 	div.container-fluid
 		span(style="color:#999999;font-size:8px") #{pgates.length} [portfolio meeting] snapshots online | last v1.epics sync #{v1LastUpdate}
 		each _date in pgates
-			div.panel(style="max-width:1400px")
-				div.panel-heading(style="font-size:16px; color:black") 
-					span(style="margin-left:7px;font-size:28px;font-weight:bold") #{_date.pDate}
-					br
-					if _date.portfolioBoardBucket.length > 0
-						span(style="margin-left:7px;font-size:11px;font-weight:normal;color:black;text-align:center") PORTFOLIO MEETING | <b>GATE DECISIONS</b>
-						br
-						table.table(style="max-width:600px")
-							// state changes
-							thead
-								tr
-									th(style="width:50px;font-size:10px;vertical-align:top") Epic ID
-									th(style="max-width:100px;font-size:10px;vertical-align:top") Epic Name
-									th(style="max-width:60px;font-size:10px;vertical-align:top") Decision
-									th(style="max-width:150px;font-size:10px;vertical-align:top") Comment
-									
-							tbody
-								each _pb in _date.portfolioBoardBucket
-									tr(style="line-height:12px")
-										td(style="font-size:10px;vertical-align:top")
-											a(href="http://v1.bwinparty.corp/V1-Production/Epic.mvc/Summary?oidToken=Epic%3A"+_pb.id target="_new" )
-												| <span style="font-size:9px">#{_pb.EpicRef}</span>
-										
-										td(style="font-size:10px;vertical-align:top")
-											a(href="http://v1.bwinparty.corp/V1-Production/Epic.mvc/Summary?oidToken=Epic%3A"+_pb.id target="_new" )
-												| <span style="font-size:9px"><b>#{_pb.name}</b>  
-										td(style="font-size:10px;vertical-align:top")
-											if _pb.PB==1
-												span(style="color:limegreen;font-weight:bold") APPROVED  
-											else if _pb.PB==0
-												span(style="color:red;font-weight:bold") REJECTED   	
-										td(style="font-size:10px;vertical-align:top")
-											if _.findWhere(_date.stateChangeBucket,{"EpicRef":_pb.EpicRef}) && (_.findWhere(_date.stateChangeBucket,{"EpicRef":_pb.EpicRef}).oldState != _.findWhere(_date.stateChangeBucket,{"EpicRef":_pb.EpicRef}).Status) 
-												span(style="font-style:italic") #{_.findWhere(_date.stateChangeBucket,{"EpicRef":_pb.EpicRef}).oldState}&nbsp; 
-												span.glyphicon.glyphicon-arrow-right 
-												span(style="font-style:italic") &nbsp;#{_.findWhere(_date.stateChangeBucket,{"EpicRef":_pb.EpicRef}).Status}
-											else if _.findWhere(_date.stateChangeBucket,{"EpicRef":_pb.EpicRef})
-												span(style="font-style:italic") Remains in #{_.findWhere(_date.stateChangeBucket,{"EpicRef":_pb.EpicRef}).oldState}&nbsp; 
-											if (_pb.Comment)
-												br
-												|  #{_pb.Comment}
-				div.panel-body
-					each status in states
-						if status != "New" && status != "Done" 
-							div.col-sm-2.col-md-3.col-lg5
-								div.panel(style="background-color:white;width:330px;text-align: left")
-									//status header
-									div.panel-heading(style="text-align:center")
-										span(style="font-size:20px;color:#{colors[status]};margin-left:0px") #{status.toUpperCase()}
-										-var _state = _date.pItems[status];
-										if _state
-											span.badge(style="margin-left:10px;font-size:14px") #{_state.length}
-									//list epics per status	
-									div.panel-body
-										if _state
-											div.row(style="font-size:11px;margin-left:2px")
-												table.table-hover.tablsesorter(id="table_#{_date._id}_#{status}")
-													thead
-														tr(style="height:15px")
-															th(style="width:25px;text-align:left;font-size:8px;vertical-align:top") 
-																a(href="#" title="sort by health" ) 
-																	//span.glyphicon.glyphicon-triangle-bottom(style="font-size:8px;color:black;")
-															th(style="width:35px;text-align:left;font-size:8px;vertical-align:top") 
-																a(href="#" title="sort by id") 
-																	//span.glyphicon.glyphicon-triangle-bottom(style="font-size:8px;color:black;")
-															th(style="width:180px;text-align:left;font-size:8px;vertical-align:top")
-																a(href="#" title="sort by name") 
-																	//span.glyphicon.glyphicon-triangle-bottom(style="font-size:8px;color:black;")
-															th(style="width:35px;text-align:left;font-size:8px;vertical-align:top")
-																a(href="#" title="sort by ref" )
-															th(style="width:30px;text-align:left;font-size:8px;vertical-align:top") 
-																a(href="#" title="sort by changed from last time")
-																	//span.glyphicon.glyphicon-triangle-bottom(style="font-size:8px;color:black;")
-													tbody
-														each epic in _state
-															+renderEpic(epic)
-														
-											script $("#table_#{_date._id}_#{status}").tablesorter();
-										hr
-										div(style="font-size:10px;padding-bottom:10px;margin-left:10px") target contribution:
-										div(style="margin-left:25px")
-											table.table-hover.tablsesorter
-												if _date.targetContributionBucket[status]
-													each target in _.keys(_date.targetContributionBucket[status])
-														tr
-															td(style="font-size:9px;margin-left:10px;font-weight:normal;padding-right:10px") 
-																-var _epicRefs = _date.targetContributionBucket[status][target].epics.join(",#");
-																
-																a(title="#{_epicRefs}" onMouseOver="$('##{_epicRefs}').css('background', 'skyblue')" onMouseOut="$('##{_epicRefs}').css('background', '')") #{target} 
-															td(style="font-size:9px;margin-left:10px;font-weight:bold;text-align:right") #{_date.targetContributionBucket[status][target].count}
-										hr		
-
+			+renderPortfolioMeeting(_date)
+			
 	script.
 		$(function () {
 			//$('[data-toggle="tooltip"]').tooltip({html:true})

@@ -63,7 +63,11 @@
 	},
 
 	"targets":{
-		"laneSorting": ["RUN","GROW","TRANSFORM"]
+		"laneSorting": ["RUN","GROW","TRANSFORM"],
+		"laneColors": {"RUN":"#00b8e4","GROW":"#82cec1","TRANSFORM":"#f99d1c"}
+	},
+	"portfolio":{
+		"gatesLimit":0
 	},
 
 	"availability":{

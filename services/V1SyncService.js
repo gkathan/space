@@ -56,6 +56,9 @@ function _sync(url,type,callback){
 		var _epics = JSON.parse(data);
 		var v1epics =  db.collection(_syncName);
 		v1epics.drop();
+
+		_enrichEpics(_epics);
+
 		v1epics.insert({createDate:new Date(),epics:_epics}	 , function(err , success){
 			//console.log('Response success '+success);
 			if (err) {
@@ -78,4 +81,32 @@ function _sync(url,type,callback){
 			_syncStatus.saveLastSync(_syncName,_timestamp,_message,_statusERROR,type);
 			callback(err);
 	});
+}
+
+
+function _enrichEpics(epics){
+	for (var e in epics){
+		epics[e].strategicThemes = _parseStrategicThemes(epics[e].StrategicThemesNames);
+	}
+
+}
+
+/**
+* takes a string of strategic theme from version1 and creates a proper object with datra
+* e.g. "[[STR] G1 Push Mobile-First, [STR] G2 Execute Product Roadmap, [CUS] Bwin, [MAR] .es]"
+*/
+function _parseStrategicThemes(strategicThemeString){
+	var strategicTheme = {customers:[],markets:[],targets:[]};
+		// cut first and last bracket
+	var _transform = _.initial(_.rest(strategicThemeString)).join("");
+	_transform = _transform.split(",");
+
+	for (var i in _transform){
+		var _temp = _.trim(_transform[i]);
+		if (_.startsWith(_temp,"[CUS]")) strategicTheme.customers.push(_.trim(_temp.split("[CUS]")[1]));
+		else if (_.startsWith(_temp,"[MAR]")) strategicTheme.markets.push(_.trim(_temp.split("[MAR]")[1]));
+		else if (_.startsWith(_temp,"[STR]")) strategicTheme.targets.push(_.trim(_temp.split("[STR]")[1]));
+	}
+
+	return strategicTheme;
 }

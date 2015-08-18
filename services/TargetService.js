@@ -17,6 +17,7 @@ var logger = winston.loggers.get('space_log');
 
 exports.getL1 = _getL1;
 exports.getL2 = _getL2;
+exports.getL2Groups = _getL2Groups;
 exports.getL2ById = _getL2ById;
 
 exports.getAll = _getAll;
@@ -40,6 +41,31 @@ function _getL2(context,callback) {
 		return;
 	});
 }
+
+function _getL2Groups(context,callback) {
+	var targets =  db.collection('targets');
+	targets.find({context:context,"type":"L2"}).sort({id:1}, function (err, docs){
+
+		var _L2Groups = [];
+		var _grouped = _.groupBy(docs,"group");
+		var _targetSortOrder = config.targets.laneSorting;
+
+		logger.debug("sorting: "+_targetSortOrder);
+
+		for (var i in _.keys(_grouped)){
+			var _key = _.keys(_grouped)[i];
+			var _refTarget = _grouped[_key][0];
+			logger.debug("_key: "+_key);
+			logger.debug("group: "+_grouped[_key][0].id);
+
+			var _group = {id:_refTarget.id.split(".")[0],name:_key,theme:_refTarget.theme,icon:_refTarget.icon,L2targets:_grouped[_key]};
+			_L2Groups.push(_group)
+		}
+		callback(err,_.groupBy(_L2Groups,"theme"));
+		return;
+	});
+}
+
 
 function _getL2ById(context,id,callback) {
 	var targets =  db.collection('targets');
