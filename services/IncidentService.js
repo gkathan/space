@@ -307,6 +307,10 @@ function _getFromTo(config){
 function _getKPIs(callback){
 	_countKPI("baseline",function(err,baseline){
 		_countKPI("target",function(err,target){
+			var _trendP01 = (-(1-(target.P01/baseline.P01))*100).toFixed(1);
+			var _trendP08 = (-(1-(target.P08/baseline.P08))*100).toFixed(1);
+			baseline.trend={P01:_trendP01,P08:_trendP08};
+
 			callback(err,{baseline:baseline,target:target});
 		})
 	})
@@ -327,6 +331,9 @@ function _countKPI(type,callback){
 	}, function(err) {
 	    if (err) console.log("error: "+err.message);
 			_return.config=_config;
+
+
+
 			callback(null,_return);
 	});
 }
