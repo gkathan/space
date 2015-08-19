@@ -62,10 +62,30 @@
 		}
 	},
 
+
+
 	"targets":{
+		"kpis": {
+			"K2":{
+				"baseline": {
+					"priority" : ["P01","P08"],
+					"openedAt" : ["2014-10-01", "2015-01-01"],
+					"categoryExclude":["Failure"],
+					"state":"Closed"
+				},
+				"target": {
+					"priority" : ["P01","P08"] ,
+					"openedAt" : ["2015-05-01", "2015-08-01"],
+					"categoryExclude":["Failure","Request","Misplaced Call"],
+					"state":"Closed",
+					"businessServiceExclude":["Workplace"]
+					}
+				}
+			},
 		"laneSorting": ["RUN","GROW","TRANSFORM"],
 		"laneColors": {"RUN":"#00b8e4","GROW":"#82cec1","TRANSFORM":"#f99d1c"}
 	},
+
 	"portfolio":{
 		"gatesLimit":0
 	},

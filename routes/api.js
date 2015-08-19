@@ -52,6 +52,8 @@ var PATH = {
 
 						REST_INCIDENTS : BASE+'/space/rest/incidents',
 						REST_INCIDENTSACTIVETICKER : BASE+'/space/rest/incidentsactiveticker',
+						REST_INCIDENTSKPIS : BASE+'/space/rest/incidentskpis',
+
 						REST_INCIDENTSOLDSNOW : BASE+'/space/rest/incidentsoldsnow',
 
 						REST_INCIDENTCOMMUNICATIONTRAIL : BASE+'/space/rest/incidents/commtrail/:sysid',
@@ -187,6 +189,8 @@ router.delete(PATH.REST_SOCSERVICES, function(req, res, next) {remove(req,res,ne
 
 router.get(PATH.REST_INCIDENTTRACKER, function(req, res, next) {findAllByName(req,res,next);});
 router.get(PATH.REST_INCIDENTSACTIVETICKER, function(req, res, next) {findAllByName(req,res,next);});
+router.get(PATH.REST_INCIDENTSKPIS, function(req, res, next) {getIncidentKPIs(req,res,next);});
+
 //router.post(PATH.REST_INCIDENTTRACKER, function(req, res, next) {save(req,res,next);});
 //router.delete(PATH.REST_INCIDENTTRACKER, function(req, res, next) {delete(req,res,next);});
 router.get(PATH.REST_INCIDENTTRACKER_DATE, function(req, res, next) {findIncidenttrackerByDate(req,res,next);});
@@ -338,7 +342,8 @@ function findAllByName(req, res , next){
 	// e.g http://localhost:3000/api/space/rest/boards?filterName=name&filterOperator=$eq&filterValue=studios
 	logger.debug("***** filter: "+JSON.stringify(_filter));
 
-    db.collection(collection).find(_filter).sort({id : 1} , function(err , success){
+    //db.collection(collection).find(_filter).sort({id : 1} , function(err , success){
+		db.collection(collection).find(_filter,function(err , success){
         //console.log("[DEBUG] findAllByName() for: "+_name+", Response success: "+JSON.stringify(success));
         //console.log('Response error '+err);
         if(success){
@@ -558,6 +563,15 @@ function _transformDomains(data){
 			_domains.push(_d);
 		}
 		return _domains;
+
+}
+
+
+function getIncidentKPIs(req,res,next){
+	incidentService.getKPIs(function(err,kpis){
+			logger.debug("KPIs: "+JSON.stringify(kpis));
+			res.send(kpis);
+	});
 
 }
 

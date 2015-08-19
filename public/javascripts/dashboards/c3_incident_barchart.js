@@ -5,15 +5,15 @@ var _period = "NOW-90";
 //var _baselineYear = parseInt(_.last(_period.split("-")))-1;
 //var _baselinePeriod =_.first(_period.split("-"))+"-"+_baselineYear;
 
-
 var _baselinePeriod ="Q4-2014";
-
 
 console.log("------------------------------- c3_incident_barchart period: "+_period);
 console.log("baseline period: "+_baselinePeriod);
 
 var _url = "/api/space/rest/incidenttracker/"+_period+"?aggregate=daily";
 var _urlBaseline = "/api/space/rest/incidenttracker/"+_baselinePeriod+"?aggregate=daily";
+
+
 
 console.log("---------------- url: "+_url);
 
@@ -132,7 +132,7 @@ function _calculateMetrics(data){
   data=data.tracker;
   var dateField="openedAt";
 
-  console.log("data: "+JSON.stringify(data));
+  //console.log("data: "+JSON.stringify(data));
 
   var w =0;
   var d =0;

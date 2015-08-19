@@ -1,4 +1,5 @@
 var winston = require('winston');
+var moment = require("moment");
 
 winston.loggers.add('test_log',{
 	console:{
@@ -111,6 +112,29 @@ describe('IncidentService', function(){
 
 		});
   });
+
+
+describe('#countIncidentKPI()', function(){
+  it('returns count for configered baseline and target incident KPIs', function(done){
+
+    var incidentService = require('../services/IncidentService');
+		//var _filter = {priority:/^P08/,"openedAt" : { $gte : new Date("2015-05-01T00:00:00Z"), $lt : new Date("2015-08-01T00:00:00Z")},category:{$nin:["Failure","Request","Misplaced Call"]},state:"Closed",businessService:{$not:/^Workplace/}};
+
+		//var _filter = {priority:/^P01/,"openedAt" : { $gte : moment().subtract(90, 'days').toDate(), $lt : new Date()},category:{$nin:["Failure","Request","Misplaced Call"]},state:"Closed",businessService:{$not:/^Workplace/}};
+
+	//	var _filter = {priority:/^P01/,"openedAt" : { $gte : new Date("2014-10-01T00:00:00Z"), $lt : new Date("2015-01-01T00:00:00Z")},category:{$ne:"Failure"},state:"Closed"}};
+
+
+		incidentService.getKPIs(function(err,kpis){
+				logger.debug("KPIs: "+JSON.stringify(kpis));
+
+
+
+				done();
+			})
+
+	});
+});
 /*
 	describe('#findOld()', function(){
     it('returns incidents from old snow', function(done){

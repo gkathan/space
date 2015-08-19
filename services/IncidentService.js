@@ -4,6 +4,7 @@
 var config = require('config');
 var mongojs = require('mongojs');
 var moment = require('moment');
+var async = require("async");
 require('moment-duration-format');
 _ = require('lodash');
 _.nst=require('underscore.nest');
@@ -18,6 +19,7 @@ var winston = require('winston');
 var logger = winston.loggers.get('space_log');
 
 var _incidentsCollection="incidents";
+var _oldIncidentsCollection="oldsnowincidents";
 var _incidentsDeltaCollection="incidentsdelta";
 var _incidentsActiveTickerCollection="incidentsactiveticker";
 
@@ -34,6 +36,9 @@ exports.getLatestTicker = _getLatestTicker;
 exports.flush = _flush;
 exports.insert = _insert;
 exports.update = _update;
+exports.getKPIs = _getKPIs;
+//exports.countKPITarget = _countKPITarget;
+
 exports.saveDelta = _saveDelta;
 exports.saveActiveTicker = _saveActiveTicker;
 exports.mapPriority = _mapPriority;
@@ -127,7 +132,7 @@ function _find(callback) {
 }
 
 function _findOld(filter,callback) {
-	var items =  db.collection('oldsnowincidents');
+	var items =  db.collection(_oldIncidentsCollection);
 	items.find(filter).sort({openedAt:-1}, function (err, docs){
 			callback(err,docs);
 			return;
@@ -253,6 +258,87 @@ function _update(data){
 	}
 
 }
+
+
+/**
+*/
+function _count(type,filter,callback){
+
+	var incidents;
+	if (type=="baseline") incidents =  db.collection(_oldIncidentsCollection);
+	else if (type=="target") incidents =  db.collection(_incidentsCollection);
+	incidents.find(filter).count(function (err, res) {
+		if (err){
+			logger.error("error: "+err.message);
+		}
+		callback(err,res);
+	})
+}
+
+/*
+function _countOld(filter,callback){
+	var incidents =  db.collection(_oldIncidentsCollection);
+	incidents.find(filter).count(function (err, res) {
+		if (err){
+			logger.error("error: "+err.message);
+		}
+		callback(err,res);
+	})
+}
+*/
+
+/**
+helper
+*/
+function _getFromTo(config){
+		var _from;
+		var _to;
+		if (config.openedAt.length==2){
+			_from = new Date(config.openedAt[0]);
+			_to = new Date(config.openedAt[1]);
+		}
+		else if (config.openedAt.length==1 && config.openedAt[0].split("-")[0]=="NOW" ){
+			_from = moment().subtract(config.openedAt[0].split("-")[1], 'days').toDate();
+			_to = new Date();
+		}
+		return {from:_from,to:_to};
+}
+
+function _getKPIs(callback){
+	_countKPI("baseline",function(err,baseline){
+		_countKPI("target",function(err,target){
+			callback(err,{baseline:baseline,target:target});
+		})
+	})
+}
+
+function _countKPI(type,callback){
+	var _config = config.targets.kpis.K2[type];
+	logger.debug("type: "+type+" "+JSON.stringify(_config));
+	var _return = {};
+	async.forEach(_config.priority, function (_prio, done){
+    console.log("* prio: "+_prio);
+    var _filter = {priority:{$regex : _prio+".*"},openedAt:{$gte:_getFromTo(_config).from,$lt:_getFromTo(_config).to},state:_config.state,category:{$nin:_config.categoryExclude}};
+		_count(type,_filter,function(err,result){
+			logger.debug("...."+result);
+			_return[_prio]=result;
+			done(); // tell async that the iterator has completed
+		});
+	}, function(err) {
+	    if (err) console.log("error: "+err.message);
+			_return.config=_config;
+			callback(null,_return);
+	});
+}
+
+/*
+function _countKPITarget(callback){
+	var _target = config.targets.kpis.K2.target;
+	var _filter = {priority:{$regex : _target.priority[1]+".*"},openedAt:{$gte:_getFromTo(_target).from,$lt:_getFromTo(_target).to},state:_target.state,category:{$nin:_target.categoryExclude},businessService:{$regex : "^((?!"+_target.businessServiceExclude[0]+").)*$"}};
+
+	_count(_filter,callback);
+}
+*/
 
 
 
