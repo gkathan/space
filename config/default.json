@@ -74,7 +74,7 @@
 					"categoryExclude":["Failure"]
 				},
 				"target": {
-					"openedAt" : ["2015-05-01", "2015-08-01"],
+					"openedAt" : ["NOW-90"],
 					"categoryExclude":["Failure","Request","Misplaced Call"],
 					"businessServiceExclude":["Workplace"]
 					}
