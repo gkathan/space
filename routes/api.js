@@ -568,7 +568,10 @@ function _transformDomains(data){
 
 
 function getIncidentKPIs(req,res,next){
-	incidentService.getKPIs(function(err,kpis){
+	var baseline = {type:"baseline",range:config.targets.kpis.incidents.baseline.openedAt};
+	var target = {type:"target",range:config.targets.kpis.incidents.target.openedAt};
+
+	incidentService.getKPIs(baseline,target,function(err,kpis){
 			logger.debug("KPIs: "+JSON.stringify(kpis));
 			res.send(kpis);
 	});

@@ -401,6 +401,7 @@ function getV1EpicsConfig(){
     { id: "number", name: "number", field: "Number",width:50, cssClass: "cell-standard",sortable:true},
     { id: "name", name: "name", field: "Name",sortable:true,width:350,cssClass: "cell-title" },
     { id: "status", name: "status", field: "Status", width:150 ,sortable:true, cssClass: "cell-standard"},
+		{ id: "portfolioApproval", name: "portfolioApproval", field: "PortfolioApproval",width:50, cssClass: "cell-standard",sortable:true},
     { id: "scope", name: "scope",  field: "Scope",width:150 ,sortable:true, cssClass: "cell-standard"},
     { id: "swag", name: "swag", field: "Swag", width:50, cssClass: "cell-standard",sortable:true},
     { id: "plannedEnd", name: "plannedEnd", field: "PlannedEnd", width:100,formatter: Slick.Formatters.SimpleDate, cssClass: "cell-standard",sortable:true},
@@ -418,7 +419,8 @@ function getV1EpicsConfig(){
 		{ id: "strategicThemes", name: "strategicThemes", field: "StrategicThemesNames",width:300, cssClass: "cell-standard",sortable:true},
 		{ id: "initiativeOwner", name: "initiativeOwner", field: "InitiativeOwner",width:200, cssClass: "cell-standard",sortable:true},
 		{ id: "elevatorPitch", name: "elevatorPitch", field: "ElevatorPitch",width:300, cssClass: "cell-standard",sortable:true},
-		{ id: "launchDateWhy", name: "launchDateWhy", field: "LaunchDateWhy",width:300, cssClass: "cell-standard",sortable:true}];
+		{ id: "launchDateWhy", name: "launchDateWhy", field: "LaunchDateWhy",width:300, cssClass: "cell-standard",sortable:true}
+		];
 	var _config ={};
 	_config.mode="readonly";
 	_config.fields = _v1Epics;

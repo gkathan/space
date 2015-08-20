@@ -275,79 +275,110 @@ function _count(type,filter,callback){
 	})
 }
 
-/*
-function _countOld(filter,callback){
-	var incidents =  db.collection(_oldIncidentsCollection);
-	incidents.find(filter).count(function (err, res) {
-		if (err){
-			logger.error("error: "+err.message);
-		}
-		callback(err,res);
-	})
-}
-*/
+
 
 /**
 helper
 */
-function _getFromTo(config){
+function _getFromTo(range){
 		var _from;
 		var _to;
-		if (config.openedAt.length==2){
-			_from = new Date(config.openedAt[0]);
-			_to = new Date(config.openedAt[1]);
+		if (range.length==2){
+			_from = new Date(range[0]);
+			_to = new Date(range[1]);
 		}
-		else if (config.openedAt.length==1 && config.openedAt[0].split("-")[0]=="NOW" ){
-			_from = moment().subtract(config.openedAt[0].split("-")[1], 'days').toDate();
+		else if (range.length==1 && range[0].split("-")[0]=="NOW" ){
+			_from = moment().subtract(range[0].split("-")[1], 'days').toDate();
 			_to = new Date();
 		}
 		return {from:_from,to:_to};
 }
 
-function _getKPIs(callback){
-	_countKPI("baseline",function(err,baseline){
-		_countKPI("target",function(err,target){
-			var _trendP01 = (-(1-(target.P01/baseline.P01))*100).toFixed(1);
-			var _trendP08 = (-(1-(target.P08/baseline.P08))*100).toFixed(1);
-			baseline.trend={P01:_trendP01,P08:_trendP08};
 
-			callback(err,{baseline:baseline,target:target});
+function _calculateTotal(kpi){
+	_.forIn(kpi,function(key,value){
+		var _total = 0;
+		_.forIn(kpi[value],function(_count,_state){
+				_total+=_count;
+		})
+		logger.debug("key. "+	key);
+		logger.debug("value. "+	value);
+		kpi[value]["Total"]=_total;
+	})
+}
+
+function _calculateTrends(baseline,target){
+	var _prios = _.keys(baseline);
+	var _states = _.keys(baseline[_prios[0]]);
+	var _trends=[];
+
+	for (var p in _prios){
+		var _prio = _prios[p];
+		for (var s in _states){
+			var _state=_states[s];
+			var _baseline = baseline[_prio][_state];
+
+			var _trend = (-(1-(target[_prio][_state]/_baseline))*100).toFixed(1);
+			if (isNaN(_trend)) _trend = 0;
+			var _result = {prio:_prio,state:_state,trend:_trend};
+			_trends.push(_result);
+		}
+	}
+	return _trends;
+}
+
+
+/**
+ * param baseline: type:"baseline",range:{from:date, to:date}
+ */
+function _getKPIs(baseline,target,callback){
+	_countKPI(baseline.type,baseline.range,function(err,_baseline){
+		_calculateTotal(_baseline.kpis);
+		_countKPI(target.type,target.range,function(err,_target){
+			_calculateTotal(_target.kpis);
+
+			callback(err,{baseline:_baseline,target:_target,trends:_calculateTrends(_baseline.kpis,_target.kpis)});
 		})
 	})
 }
 
-function _countKPI(type,callback){
-	var _config = config.targets.kpis.K2[type];
-	logger.debug("type: "+type+" "+JSON.stringify(_config));
-	var _return = {};
-	async.forEach(_config.priority, function (_prio, done){
-    console.log("* prio: "+_prio);
-    var _filter = {priority:{$regex : _prio+".*"},openedAt:{$gte:_getFromTo(_config).from,$lt:_getFromTo(_config).to},state:_config.state,category:{$nin:_config.categoryExclude}};
-		_count(type,_filter,function(err,result){
-			logger.debug("...."+result);
-			_return[_prio]=result;
-			done(); // tell async that the iterator has completed
+/**
+* calculates the KPI numbers by configured data
+*/
+function _countKPI(type,range,callback){
+	var _config = config.targets.kpis.incidents[type];
+	var _states = config.targets.kpis.incidents.states;
+	var _priorities = config.targets.kpis.incidents.priorities;
+	var _from = _getFromTo(range).from;
+	var _to = _getFromTo(range).to;
+
+
+	var _return = {kpis:{}};
+	// init return
+	for (var p in _priorities){
+		_return.kpis[_priorities[p]]={};
+		for (var s in _states){
+			_return.kpis[_priorities[p]][_states[s]]=0;
+		}
+	}
+	async.forEach(_priorities, function (_prio, done){
+		// nested loop to go over all states
+		async.forEach(_states,function(_state,doneState){
+				var _filter = {priority:{$regex : _prio+".*"},openedAt:{$gte:_from,$lt:_to},state:_state,category:{$nin:_config.categoryExclude}};
+				_count(type,_filter,function(err,result){
+					logger.debug("_prio: "+_prio+"...._state: "+_state+" : "+result);
+					_return.kpis[_prio][_state]=result;
+					doneState(); // tell async that the iterator has completed
+				});
+		},function(err){
+			done();
 		});
 	}, function(err) {
 	    if (err) console.log("error: "+err.message);
 			_return.config=_config;
-
-
-
 			callback(null,_return);
 	});
 }
-
-/*
-function _countKPITarget(callback){
-	var _target = config.targets.kpis.K2.target;
-	var _filter = {priority:{$regex : _target.priority[1]+".*"},openedAt:{$gte:_getFromTo(_target).from,$lt:_getFromTo(_target).to},state:_target.state,category:{$nin:_target.categoryExclude},businessService:{$regex : "^((?!"+_target.businessServiceExclude[0]+").)*$"}};
-
-	_count(_filter,callback);
-}
-*/
-
-
 
 /**
 * insertsdelta

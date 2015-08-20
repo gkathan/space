@@ -125,7 +125,7 @@ describe('#countIncidentKPI()', function(){
 	//	var _filter = {priority:/^P01/,"openedAt" : { $gte : new Date("2014-10-01T00:00:00Z"), $lt : new Date("2015-01-01T00:00:00Z")},category:{$ne:"Failure"},state:"Closed"}};
 
 
-		incidentService.getKPIs(function(err,kpis){
+		incidentService.getKPIs({type:"baseline",range:["2014-10-01", "2015-01-01"]},{type:"target",range:["2015-05-01", "2015-08-01"]},function(err,kpis){
 				logger.debug("KPIs: "+JSON.stringify(kpis));
 
 

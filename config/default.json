@@ -66,18 +66,16 @@
 
 	"targets":{
 		"kpis": {
-			"K2":{
+			"incidents":{
+				"states":["New","In progress","Awaiting","Resolved","Closed"],
+				"priorities": ["P01","P08"],
 				"baseline": {
-					"priority" : ["P01","P08"],
 					"openedAt" : ["2014-10-01", "2015-01-01"],
-					"categoryExclude":["Failure"],
-					"state":"Closed"
+					"categoryExclude":["Failure"]
 				},
 				"target": {
-					"priority" : ["P01","P08"] ,
 					"openedAt" : ["2015-05-01", "2015-08-01"],
 					"categoryExclude":["Failure","Request","Misplaced Call"],
-					"state":"Closed",
 					"businessServiceExclude":["Workplace"]
 					}
 				}

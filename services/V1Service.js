@@ -20,7 +20,27 @@ exports.findEpics = function(callback) {
 		epics.find({}, function (err, docs){
 			//sort
 			var _e =_.sortBy(docs[0].epics, "Number")
-			callback(_e);
+			callback(err,_e);
+			return;
+	});
+}
+
+exports.findInitiativeEpics = function(callback) {
+	var epics =  db.collection('v1epics');
+		epics.find({}, function (err, docs){
+			//sort
+			var _e =_.sortBy(_.where(docs[0].epics,{CategoryName:"Initiative"}), "Number")
+			callback(err,_e);
+			return;
+	});
+}
+
+exports.findPortfolioApprovalEpics = function(callback) {
+	var epics =  db.collection('v1epics');
+		epics.find({}, function (err, docs){
+			//sort
+			var _e =_.sortBy(_.where(docs[0].epics,{PortfolioApproval:"Yes"}), "Number")
+			callback(err,_e);
 			return;
 	});
 }
@@ -43,5 +63,3 @@ exports.findEpicByRef = function(epicRef,callback) {
 	});
 	return;
 }
-
-

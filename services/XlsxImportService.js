@@ -181,7 +181,7 @@ function _validateName(fileName){
 function _handlePortfolioGate(json,date,fillblanks,callback){
 	var v1Service = require('../services/V1Service');
 
-	v1Service.findEpics(function(_epics){
+	v1Service.findPortfolioApprovalEpics(function(err,_epics){
 		logger.debug("*************** epics.length: "+_epics.length);
 		//group by Date
 		logger.debug("######################## _handlePortfolioGate called with date: "+date);
