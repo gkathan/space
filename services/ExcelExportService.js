@@ -203,8 +203,6 @@ function excelRoadmapInitiatives(req, res , next){
 	var conf ={};
     conf.stylesXmlFile = "views/excel_export/styles.xml";
     conf.cols = [
-		{caption:'_id',type:'string',width:8,captionStyleIndex:2,beforeCellWrite:_formatCell},
-		{caption:'context',type:'string',width:12,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'Number',type:'string',width:10,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'Name',type:'string',width:40,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'BusinessBacklog',type:'string',width:25,captionStyleIndex:2,beforeCellWrite:_formatCell},
@@ -731,7 +729,15 @@ function excelProblems(req, res , next){
 
 
 function _generateAndSendExcel(collection,conf,req,res,next){
-	db.collection(collection).find().sort({_id : 1} , function(err , success){
+
+	var _url = req.protocol+"://"+req.headers.host+"/api/space/rest/"+collection;
+	logger.debug("----------------- "+_url);
+	var Client = require('node-rest-client').Client;
+	client = new Client();
+	client.get(_url, function(data,response){
+		logger.debug("----------------- "+_url);
+		var success=JSON.parse(data);
+	//db.collection(collection).find().sort({_id : 1} , function(err , success){
 		if(success){
 
 			if (collection=="domains"){
