@@ -82,9 +82,9 @@ router.get('/', function(req, res) {
 					_epic["name"] = _item[0].Name;
 					_epic["value"] = _item[0].Value;
 
-					if (_item[0].strategicThemes){
-						_epic["strategicThemes"] = _item[0].strategicThemes;
-						var _targets=_epic["strategicThemes"].targets;
+					if (_item[0].Targets){
+						_epic["targets"] = _item[0].Targets;
+						var _targets=_epic["targets"];
 
 						for (var t in _targets){
 								if (!_gates[_date]["targetContributionBucket"][_state][_targets[t]]){
