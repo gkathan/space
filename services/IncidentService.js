@@ -342,6 +342,7 @@ function _getKPIs(baseline,target,callback){
 	})
 }
 
+
 /**
 * calculates the KPI numbers by configured data
 */

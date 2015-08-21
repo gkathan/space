@@ -24,7 +24,10 @@ function getConfig(collection){
 		case "soc_outages" : return getSOCOutagesConfig();
 		case "soc_services" : return getSOCServicesConfig();
 		case "socincident2revenueimpact" : return getSOCIncident2RevenueImpactConfig();
+		case "roadmapinitiatives" : return getRoadmapInitiativesConfig();
+
 	}
+
 }
 
 function getInitiativeConfig(){
@@ -402,17 +405,17 @@ function getV1EpicsConfig(){
     { id: "name", name: "name", field: "Name",sortable:true,width:350,cssClass: "cell-title" },
     { id: "status", name: "status", field: "Status", width:150 ,sortable:true, cssClass: "cell-standard"},
 		{ id: "portfolioApproval", name: "portfolioApproval", field: "PortfolioApproval",width:50, cssClass: "cell-standard",sortable:true},
-    { id: "scope", name: "scope",  field: "Scope",width:150 ,sortable:true, cssClass: "cell-standard"},
+    { id: "backlog", name: "backlog",  field: "BusinessBacklog",width:150 ,sortable:true, cssClass: "cell-standard"},
     { id: "swag", name: "swag", field: "Swag", width:50, cssClass: "cell-standard",sortable:true},
-    { id: "plannedEnd", name: "plannedEnd", field: "PlannedEnd", width:100,formatter: Slick.Formatters.SimpleDate, cssClass: "cell-standard",sortable:true},
     { id: "plannedStart", name: "plannedStart", field: "PlannedStart",formatter: Slick.Formatters.SimpleDate,width:100, cssClass: "cell-standard",sortable:true},
+    { id: "plannedEnd", name: "plannedEnd", field: "PlannedEnd", width:100,formatter: Slick.Formatters.SimpleDate, cssClass: "cell-standard",sortable:true},
     { id: "health", name: "health", field: "Health", width:150, cssClass: "cell-title",formatter: Slick.Formatters.RAG,width:50 ,sortable:true},
     { id: "capitalizable", name: "capitalizable", field: "Capitalizable", width:20, cssClass: "cell-standard",sortable:true},
     { id: "createdBy", name: "createdBy", field: "CreatedBy", width:150, cssClass: "cell-standard",sortable:true},
     { id: "changedBy", name: "changedBy", field: "ChangedBy", width:150, cssClass: "cell-standard",sortable:true},
     { id: "categoryName", name: "categoryName", field: "CategoryName",width:150, cssClass: "cell-standard",sortable:true},
-    { id: "risk", name: "Risk", field: "risk",width:30, cssClass: "cell-standard",sortable:true},
     { id: "value", name: "Value", field: "value",width:30, cssClass: "cell-standard",sortable:true},
+    { id: "risk", name: "Risk", field: "risk",width:30, cssClass: "cell-standard",sortable:true},
     { id: "healthComment", name: "healthComment", field: "HealthComment" ,width:150, cssClass: "cell-standard",sortable:true},
     { id: "description", name: "description", field: "Description",width:150, cssClass: "cell-standard",sortable:true},
     { id: "attachments", name: "attachements", field: "EpicAttachments",width:300, cssClass: "cell-standard",sortable:true},
@@ -426,6 +429,33 @@ function getV1EpicsConfig(){
 	_config.fields = _v1Epics;
 	return _config;
 }
+
+function getRoadmapInitiativesConfig(){
+		//v1 epics
+	var _roadmapinitiatives =[
+    { id:"id", name: "id", field: "_id",sortable:true,width:20,cssClass:"onKanbanImmutable"},
+    { id: "number", name: "number", field: "Number",width:50, cssClass: "cell-standard",sortable:true},
+    { id: "name", name: "name", field: "Name",sortable:true,width:350,cssClass: "cell-title" },
+    { id: "backlog", name: "backlog",  field: "BusinessBacklog",width:150 ,sortable:true, cssClass: "cell-standard"},
+    { id: "product", name: "product",  field: "Product",width:150 ,sortable:true, cssClass: "cell-standard"},
+    { id: "plannedStart", name: "plannedStart", field: "PlannedStart",formatter: Slick.Formatters.SimpleDate,width:100, cssClass: "cell-standard",sortable:true},
+    { id: "plannedEnd", name: "plannedEnd", field: "PlannedEnd", width:100,formatter: Slick.Formatters.SimpleDate, cssClass: "cell-standard",sortable:true},
+    { id: "status", name: "status", field: "Status", width:150 ,sortable:true, cssClass: "cell-standard"},
+    { id: "value", name: "Value", field: "value",width:30, cssClass: "cell-standard",sortable:true},
+    { id: "risk", name: "Risk", field: "risk",width:30, cssClass: "cell-standard",sortable:true},
+		{ id: "strategicThemes", name: "strategicThemes", field: "StrategicThemesNames",width:300, cssClass: "cell-standard",sortable:true},
+		{ id: "portfolioApproval", name: "portfolioApproval", field: "PortfolioApproval",width:50, cssClass: "cell-standard",sortable:true},
+    { id: "swag", name: "swag", field: "Swag", width:50, cssClass: "cell-standard",sortable:true},
+    { id: "health", name: "health", field: "Health", width:150, cssClass: "cell-title",formatter: Slick.Formatters.RAG,width:50 ,sortable:true},
+		{ id: "elevatorPitch", name: "elevatorPitch", field: "ElevatorPitch",width:300, cssClass: "cell-standard",sortable:true},
+		{ id: "launchDateWhy", name: "launchDateWhy", field: "LaunchDateWhy",width:300, cssClass: "cell-standard",sortable:true}
+		];
+	var _config ={};
+	_config.mode="readonly";
+	_config.fields = _roadmapinitiatives;
+	return _config;
+}
+
 
 function getIncidentsConfig(){
 	var _incidents =[

@@ -68,7 +68,7 @@
 		"kpis": {
 			"incidents":{
 				"states":["New","In progress","Awaiting","Resolved","Closed"],
-				"priorities": ["P01","P08"],
+				"priorities": ["P01","P08","P16"],
 				"baseline": {
 					"openedAt" : ["2014-10-01", "2015-01-01"],
 					"categoryExclude":["Failure"]

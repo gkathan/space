@@ -70,6 +70,9 @@ var PATH = {
 						REST_PROBLEMS : BASE+'/space/rest/problems',
 
 						REST_V1EPICS : BASE+'/space/rest/v1epics',
+						REST_ROADMAPINITIATIVES_DATE : BASE+'/space/rest/roadmapinitiatives/:start',
+						REST_ROADMAPINITIATIVES : BASE+'/space/rest/roadmapinitiatives',
+
 						REST_LABELS : BASE+'/space/rest/labels',
 						REST_DOMAINS : BASE+'/space/rest/domains',
 						REST_CUSTOMERS : BASE+'/space/rest/customers',
@@ -196,6 +199,8 @@ router.get(PATH.REST_INCIDENTSKPIS, function(req, res, next) {getIncidentKPIs(re
 router.get(PATH.REST_INCIDENTTRACKER_DATE, function(req, res, next) {findIncidenttrackerByDate(req,res,next);});
 
 router.get(PATH.REST_V1EPICS, function(req, res, next) {findAllByName(req,res,next);});
+router.get(PATH.REST_ROADMAPINITIATIVES, function(req, res, next) {getRoadmapInitiatives(req,res,next);});
+router.get(PATH.REST_ROADMAPINITIATIVES_DATE, function(req, res, next) {getRoadmapInitiatives(req,res,next);});
 //
 
 
@@ -566,6 +571,18 @@ function _transformDomains(data){
 
 }
 
+
+function getRoadmapInitiatives(req,res,next){
+	var v1Service = require("../services/V1Service");
+	var _start = req.params.start;
+
+	if (_start) _start = new Date(_start);
+	else _start = null;
+	v1Service.getRoadmapInitiatives(new Date(_start),function(err,roadmap){
+		res.send(roadmap);
+	})
+
+}
 
 function getIncidentKPIs(req,res,next){
 	var baseline = {type:"baseline",range:config.targets.kpis.incidents.baseline.openedAt};

@@ -41,14 +41,14 @@ $.get( _url, function( data ) {
 
 
 
-    var _baselineString = "<span style='font-weight:normal;font-size:9px'>"+_baselinePeriod+"</span><br><img src='/images/incidents/P01.png' height='20px' style='padding-left:2px;padding-right:2px'><b style='font-size:14px'>"+_baseline.P01.Total+"</b> <img src='/images/incidents/P08.png' height='20px' style='padding-left:2px;padding-right:2px'><b style='font-size:14px'>"+_baseline.P08.Total+"</b>";
+    var _baselineString = "<br><span style='font-weight:normal;font-size:9px'>baseline: "+_baselinePeriod+"</span><br><img src='/images/incidents/P01.png' height='20px' style='padding-left:2px;padding-right:2px'><b style='font-size:12px'>"+_baseline.P01.Total+"</b> <img src='/images/incidents/P08.png' height='20px' style='padding-left:2px;padding-right:2px'><b style='font-size:12px'>"+_baseline.P08.Total+"</b> <img src='/images/incidents/P16.png' height='20px' style='padding-left:2px;padding-right:2px'><b style='font-size:12px'>"+_baseline.P16.Total+"</b>";
     $('#baseline').html(_baselineString);
 
 
 
-    var _targetString = "<span style='font-weight:normal;font-size:9px'>"+_targetPeriod+"</span><br><img src='/images/incidents/P01.png' height='20px' style='padding-left:2px;padding-right:2px'><b style='font-size:14px'>"+_target.P01.Total+"</b> <img src='/images/incidents/P08.png' height='20px' style='padding-left:2px;padding-right:2px'><b style='font-size:14px'>"+_target.P08.Total+"</b><hr>";
+    var _targetString = "<span style='font-weight:normal;font-size:9px'>target: "+_targetPeriod+"</span><br><img src='/images/incidents/P01.png' height='20px' style='padding-left:2px;padding-right:2px'><b style='font-size:12px'>"+_target.P01.Total+"</b> <img src='/images/incidents/P08.png' height='20px' style='padding-left:2px;padding-right:2px'><b style='font-size:12px'>"+_target.P08.Total+"</b> <img src='/images/incidents/P16.png' height='20px' style='padding-left:2px;padding-right:2px'><b style='font-size:12px'>"+_target.P16.Total+"</b>";
 
-    _targetString+="trending:<br><img src='/images/incidents/P01.png' height='20px' style='padding-left:2px;padding-right:2px'> <b>"+_.findWhere(_trends,{"prio":"P01",state:"Total"}).trend+"%</b> <img src='/images/incidents/P08.png' height='20px' style='padding-left:2px;padding-right:2px'> <b>"+_.findWhere(_trends,{"prio":"P08",state:"Total"}).trend+"%</b>";
+    _targetString+="<br><span style='font-weight:normal;font-size:9px'>trending</span><br><img src='/images/incidents/P01.png' height='15px' style='padding-left:2px;padding-right:2px'> <b  style='font-size:10px'>"+_.findWhere(_trends,{"prio":"P01",state:"Total"}).trend+"%</b> <img src='/images/incidents/P08.png' height='15px' style='padding-left:2px;padding-right:2px'> <b  style='font-size:10px'>"+_.findWhere(_trends,{"prio":"P08",state:"Total"}).trend+"%</b> <img src='/images/incidents/P16.png' height='15px' style='padding-left:2px;padding-right:2px'> <b style='font-size:10px'>"+_.findWhere(_trends,{"prio":"P16",state:"Total"}).trend+"%</b>";
 
 
 
@@ -57,6 +57,7 @@ $.get( _url, function( data ) {
 
     var _targetP01= (_baseline.P01.Total-(_baseline.P01.Total*0.2)).toFixed(0);
     var _targetP08= (_baseline.P08.Total-(_baseline.P08.Total*0.2)).toFixed(0);
+    var _targetP16= (_baseline.P16.Total-(_baseline.P16.Total*0.2)).toFixed(0);
 
     $('#targetIncidentAbsolut').html("P01 < "+_targetP01+" P08 < "+_targetP08);
 
