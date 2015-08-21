@@ -15,6 +15,8 @@ var logger = winston.loggers.get('space_log');
 
 var _syncName = "v1epics";
 
+var v1Service = require("../services/V1Service");
+
 exports.sync = _sync;
 
 exports.init = function(callback){
@@ -67,6 +69,13 @@ function _sync(url,type,callback){
 			if(success){
 				var _message = "syncv1 [DONE]: "+_epics.length+" epics";
 				logger.info(_message);
+
+				// and write a cahe collection with the roadmapinitiatives
+				v1Service.getRoadmapInitiatives(new Date("2014-01-01"),function(err,roadmapinitiatives){
+					logger.debug("------------- SAVE ")
+					var roadmap =  db.collection("roadmapinitiatives");
+					roadmap.insert(roadmapinitiatives);
+				})
 
 				app.io.emit('syncUpdate', {status:"[SUCCESS]",from:_syncName,timestamp:_timestamp,info:_epics.length+" epics",type:type});
 				_syncStatus.saveLastSync(_syncName,_timestamp,_message,_statusSUCCESS,type);
