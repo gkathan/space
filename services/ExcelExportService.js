@@ -732,17 +732,22 @@ function excelProblems(req, res , next){
 
 
 function _generateAndSendExcel(collection,conf,req,res,next){
-
-	var _url = req.protocol+"://"+req.headers.host+"/api/space/rest/"+collection;
+	/*
+	--- CRASHES when used with https on PRODUCTION
+	--- looks like it cant handle SSL => mabye a local proxy for API ??
+	--- ask lukas....
+	var _url = config.api.protocol+"://"+config.api.host+"/api/space/rest/"+collection;
 	logger.debug("----------------- "+_url);
 	var Client = require('node-rest-client').Client;
 	client = new Client();
 	client.get(_url, function(data,response){
-		logger.debug("----------------- "+_url);
-		var success=JSON.parse(data);
-	//db.collection(collection).find().sort({_id : 1} , function(err , success){
+		logger.info("----------------- "+_url);
+		logger.info("----------------- data: "+data);
+		var success;
+		success=data[0];
+*/
+	db.collection(collection).find().sort({_id : 1} , function(err , success){
 		if(success){
-
 			if (collection=="domains"){
 				success = _transformDomains(success);
 			}
