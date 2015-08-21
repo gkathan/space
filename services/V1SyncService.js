@@ -86,7 +86,11 @@ function _sync(url,type,callback){
 
 function _enrichEpics(epics){
 	for (var e in epics){
-		epics[e].strategicThemes = _parseStrategicThemes(epics[e].StrategicThemesNames);
+		var _strategicThemes = _parseStrategicThemes(epics[e].StrategicThemesNames);
+		epics[e].Markets = _strategicThemes.markets;
+		epics[e].Targets = _strategicThemes.targets;
+		epics[e].Customers = _strategicThemes.customers;
+
 		epics[e].Product = _deriveProduct(epics[e].BusinessBacklog);
 	}
 

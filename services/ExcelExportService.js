@@ -207,17 +207,20 @@ function excelRoadmapInitiatives(req, res , next){
 		{caption:'Name',type:'string',width:40,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'BusinessBacklog',type:'string',width:25,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'Product',type:'string',width:25,captionStyleIndex:2,beforeCellWrite:_formatCell},
-		{caption:'Status',type:'string',width:12,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'PlannedStart',type:'string',width:10,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'PlannedEnd',type:'string',width:10,captionStyleIndex:2,beforeCellWrite:_formatCell},
-		{caption:'Health',type:'string',width:8,captionStyleIndex:2,beforeCellWrite:_formatCell},
-		{caption:'CreatedBy',type:'string',width:15,captionStyleIndex:2,beforeCellWrite:_formatCell},
-		{caption:'ChangedBy',type:'string',width:12,captionStyleIndex:2,beforeCellWrite:_formatCell},
-		{caption:'CategoryName',type:'string',width:10,captionStyleIndex:2,beforeCellWrite:_formatCell},
-		{caption:'Risk',type:'number',width:3,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'Status',type:'string',width:12,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'Value',type:'number',width:3,captionStyleIndex:2,beforeCellWrite:_formatCell},
-		{caption:'HealthComment',type:'string',width:2,captionStyleIndex:2,beforeCellWrite:_formatCell},
-		{caption:'Description',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell}
+		{caption:'Risk',type:'number',width:3,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'InitiativeOwner',type:'string',width:15,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'Targets',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'Markets',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'Customers',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'PortfolioApproval',type:'string',width:8,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'Swag',type:'string',width:8,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'Health',type:'string',width:8,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'ElevatorPitch',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'LaunchDateWhy',type:'string',width:8,captionStyleIndex:2,beforeCellWrite:_formatCell}
 	];
 
     _generateAndSendExcel("roadmapinitiatives",conf,req,res,next);

@@ -443,7 +443,11 @@ function getRoadmapInitiativesConfig(){
     { id: "status", name: "status", field: "Status", width:150 ,sortable:true, cssClass: "cell-standard"},
     { id: "value", name: "Value", field: "value",width:30, cssClass: "cell-standard",sortable:true},
     { id: "risk", name: "Risk", field: "risk",width:30, cssClass: "cell-standard",sortable:true},
-		{ id: "strategicThemes", name: "strategicThemes", field: "StrategicThemesNames",width:300, cssClass: "cell-standard",sortable:true},
+		{ id: "initiativeOwner", name: "initiativeOwner", field: "InitiativeOwner",width:200, cssClass: "cell-standard",sortable:true},
+
+		{ id: "targets", name: "targets", field: "Targets",width:300, cssClass: "cell-standard",sortable:true},
+		{ id: "markets", name: "markets", field: "Markets",width:300, cssClass: "cell-standard",sortable:true},
+		{ id: "customers", name: "customers", field: "Customers",width:300, cssClass: "cell-standard",sortable:true},
 		{ id: "portfolioApproval", name: "portfolioApproval", field: "PortfolioApproval",width:50, cssClass: "cell-standard",sortable:true},
     { id: "swag", name: "swag", field: "Swag", width:50, cssClass: "cell-standard",sortable:true},
     { id: "health", name: "health", field: "Health", width:150, cssClass: "cell-title",formatter: Slick.Formatters.RAG,width:50 ,sortable:true},
