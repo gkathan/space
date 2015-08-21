@@ -45,6 +45,8 @@ exports.excelCompetitors = excelCompetitors;
 exports.excelInitiatives = excelInitiatives;
 exports.excelSOCOutages= excelSOCOutages;
 exports.excelSOCServices= excelSOCServices;
+exports.excelRoadmapInitiatives= excelRoadmapInitiatives;
+
 
 
 /**
@@ -189,13 +191,40 @@ function excelV1Epics(req, res , next){
 		{caption:'Value',type:'number',width:3,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'HealthComment',type:'string',width:2,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'Description',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell}
-
-
 	];
 	conf._field="epics";
-
     _generateAndSendExcel("v1epics",conf,req,res,next);
 }
+
+/**
+ * generate roadmap items excel
+ */
+function excelRoadmapInitiatives(req, res , next){
+	var conf ={};
+    conf.stylesXmlFile = "views/excel_export/styles.xml";
+    conf.cols = [
+		{caption:'_id',type:'string',width:8,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'context',type:'string',width:12,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'Number',type:'string',width:10,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'Name',type:'string',width:40,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'BusinessBacklog',type:'string',width:25,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'Product',type:'string',width:25,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'Status',type:'string',width:12,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'PlannedStart',type:'string',width:10,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'PlannedEnd',type:'string',width:10,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'Health',type:'string',width:8,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'CreatedBy',type:'string',width:15,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'ChangedBy',type:'string',width:12,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'CategoryName',type:'string',width:10,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'Risk',type:'number',width:3,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'Value',type:'number',width:3,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'HealthComment',type:'string',width:2,captionStyleIndex:2,beforeCellWrite:_formatCell},
+		{caption:'Description',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell}
+	];
+
+    _generateAndSendExcel("roadmapinitiatives",conf,req,res,next);
+}
+
 
 /**
  * generate productcatalog excel

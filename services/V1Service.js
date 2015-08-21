@@ -56,21 +56,6 @@ function _getRoadmapInitiatives(start,callback){
 		for (var i in initiatives){
 			var _in=initiatives[i];
 			if (new Date(_in.PlannedStart)>=start && _in.StrategicThemesNames!="[]" ) _roadmap.push(_in);
-
-			// map the "Product"
-			if (_in.BusinessBacklog.indexOf("Studios")>-1) _in.Product="Studios";
-			else if(_in.BusinessBacklog.indexOf("Casino")>-1) _in.Product="Casino";
-			else if(_in.BusinessBacklog.indexOf("Compliance")>-1) _in.Product="Compliance";
-			else if(_in.BusinessBacklog.indexOf("Core Services")>-1) _in.Product="Core Services";
-			else if(_in.BusinessBacklog.indexOf("CRM Services")>-1) _in.Product="CRM Services";
-			else if(_in.BusinessBacklog.indexOf("[DTP]")>-1) _in.Product="Portal";
-			else if(_in.BusinessBacklog.indexOf("Payments")>-1) _in.Product="Payments";
-			else if(_in.BusinessBacklog.indexOf("Poker")>-1) _in.Product="Poker";
-			else if(_in.BusinessBacklog.indexOf("Sports POS")>-1) _in.Product="Sports";
-			else if(_in.BusinessBacklog.indexOf("[TCS")>-1) _in.Product="Sports Content, Trading & security";
-
-
-
 		}
 		callback(err,_roadmap);
 	});

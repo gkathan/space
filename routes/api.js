@@ -112,6 +112,7 @@ var PATH = {
 						EXPORT_SCRUMTEAMS : BASE+'/space/export/xlsx/scrumteams',
 						EXPORT_BOARDS : BASE+'/space/export/xlsx/boards',
 						EXPORT_V1EPICS : BASE+'/space/export/xlsx/v1epics',
+						EXPORT_ROADMAPINITIATIVES : BASE+'/space/export/xlsx/roadmapinitiatives',
 						EXPORT_LABELS : BASE+'/space/export/xlsx/labels',
 						EXPORT_DOMAINS : BASE+'/space/export/xlsx/domains',
 						EXPORT_CUSTOMERS : BASE+'/space/export/xlsx/customers',
@@ -296,6 +297,7 @@ router.get(PATH.EXPORT_INITIATIVES, function(req, res, next) {exporter.excelInit
 router.get(PATH.EXPORT_BOARDS, function(req, res, next) {exporter.excelBoards(req,res,next);});
 router.get(PATH.EXPORT_SCRUMTEAMS, function(req, res, next) {exporter.excelScrumTeams(req,res,next);});
 router.get(PATH.EXPORT_V1EPICS, function(req, res, next) {exporter.excelV1Epics(req,res,next);});
+router.get(PATH.EXPORT_ROADMAPINITIATIVES, function(req, res, next) {exporter.excelRoadmapInitiatives(req,res,next);});
 router.get(PATH.EXPORT_LABELS, function(req, res, next) {exporter.excelLabels(req,res,next);});
 router.get(PATH.EXPORT_DOMAINS, function(req, res, next) {exporter.excelDomains(req,res,next);});
 router.get(PATH.EXPORT_CUSTOMERS, function(req, res, next) {exporter.excelCustomers(req,res,next);});
@@ -319,8 +321,6 @@ router.get(PATH.CONFIG, function(req, res, next) {getConfig(req,res,next);});
 
 
 module.exports = router;
-
-
 
 
 /**
