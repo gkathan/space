@@ -840,7 +840,8 @@ function save(req, res , next){
 					if(success){
 						logger.info("[success] updatedExisting: "+success.updatedExisting+ " success:"+JSON.stringify(success));
 							if(success.updatedExisting===false){
-								_newid = success.upserted[0]._id;
+								//_newid = success.upserted[0]._id;
+								_newid = success.upserted;
 								logger.info("[success] _newid = "+_newid);
 							}
 							callback(null,'two');

@@ -34,8 +34,6 @@ exports.init = function(callback){
 }
 
 
-
-
 function _sync(url,type,callback){
 	logger.debug("**** _syncV1Epics, url: "+url);
 
@@ -61,7 +59,7 @@ function _sync(url,type,callback){
 
 		_enrichEpics(_epics);
 
-		v1epics.insert({createDate:new Date(),epics:_epics}	 , function(err , success){
+		v1epics.insert(_epics, function(err , success){
 			//console.log('Response success '+success);
 			if (err) {
 				logger.error('Response error '+err.message);

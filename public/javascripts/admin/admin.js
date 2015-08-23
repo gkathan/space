@@ -40,9 +40,6 @@ function refresh(collection){
 		cache: true,
 		success: function(data){
 			var _data = data;
-			if (collection=="v1epics"){
-				 _data = data[0].epics;
-			}
 			// check for "_id" field
 			if (_data[0]._id == undefined){
 				 // slickgrid needs an _id field.....

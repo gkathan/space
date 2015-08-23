@@ -126,32 +126,6 @@ router.get('/boards', function(req, res) {
 
 
 
-router.get('/sync/v1/epics', function(req, res) {
-    // call v1 rest service
-    var Client = require('node-rest-client').Client;
-
-	client = new Client();
-
-	V1_DATA_URL = "http://knbnprxy.ea.bwinparty.corp/rest/epics";
-	// direct way
-	client.get(V1_DATA_URL, function(data, response){
-		// parsed response body as js object
-		console.log(data);
-		// raw response
-		console.log(response);
-		// and insert
-		var v1epics =  db.collection('v1epics');
-		v1epics.drop();
-		v1epics.insert({createDate:new Date(),epics:JSON.parse(data)}	 , function(err , success){
-			//console.log('Response success '+success);
-			console.log('Response error '+err);
-			if(success){
-				res.send("syncv1 called..");
-			}
-			//return next(err);
-		})
-	});
-});
 
 
 router.get('/login', function(req, res) {
@@ -170,10 +144,10 @@ router.get('/signup', function(req, res) {
 router.get('/kanban/:id', function(req, res) {
 	if (ensureAuthenticated(req,res)){
 	var id = req.params.id;
-  	var v1epics =  db.collection('v1epics');
-  		v1epics.find({}, function (err, docs){
+  	var v1Service =  require('../services/V1Service');
+  		v1Service.findEpics(function (err, docs){
   		res.locals.kanbanId = id;
-  		res.locals.epics = docs[0].epics;
+  		res.locals.epics = docs;
   		res.render('kanban', { title: 's p a c e - kanban board' })
   	});
   }

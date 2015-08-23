@@ -268,7 +268,7 @@ function render(svgFile){
 		//var _boardId="54bba57720f4764e7e797849";
 		_boardId = _.last(window.location.href.split("/"));
 		console.log("kanban.js render: _boardId: "+_boardId);
-		$.when($.getJSON(dataSourceFor("initiatives")),
+		$.when($.getJSON(dataSourceFor("v1epics")),
 				$.getJSON(dataSourceFor("metrics")),
 				$.getJSON(dataSourceFor("releases")),
 				$.getJSON(dataSourceFor("boards/"+_boardId)),
@@ -277,7 +277,10 @@ function render(svgFile){
 				)
 
 			.done(function(initiatives,metrics,releases,board,targets){
-					if (initiatives[1]=="success") initiativeData=initiatives[0];
+					if (initiatives[1]=="success"){
+						console.log("************************"+initiatives[0]);
+						initiativeData=initiatives[0];
+					}
 					else throw new Exception("error loading initiatives");
 					if (metrics[1]=="success") metricData=metrics[0];
 					else throw new Exception("error loading metrics");
@@ -298,13 +301,28 @@ function render(svgFile){
 
 
 function joinBoard2Initiatives(board,initiatives){
+		console.log("join: "+initiatives.length);
 		var _items = board.items;
 
 		var _join = [];
 
 		for (var i in _items){
-			var _initiative = getItemByKey(initiatives,"_id",_items[i].itemRef);
+			var _initiative = getItemByKey(initiatives,"Number",_items[i].itemRef);
+
+			console.log("+: "+_items[i].itemRef);
+			console.log("=: "+initiatives[i].Number);
+
 			if (_initiative){
+				// legacy attributes
+				_initiative.id=_items[i].itemRef;
+				_initiative.Type="item";
+				_initiative.state="planned";
+				_initiative.name=_initiative.Name;
+				_initiative.planDate=_initiative.PlannedEnd;
+				_initiative.actualDate=_initiative.PlannedEnd;
+
+
+
 
 				for (ii in _items[i].itemView){
 						var _view = _items[i].itemView[ii];

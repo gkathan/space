@@ -24,7 +24,7 @@ function _findEpics(callback) {
 	var epics =  db.collection('v1epics');
 		epics.find({}, function (err, docs){
 			//sort
-			var _e =_.sortBy(docs[0].epics, "Number")
+			var _e =_.sortBy(docs, "Number")
 			callback(err,_e);
 			return;
 	});
@@ -34,7 +34,7 @@ function _findInitiativeEpics(callback) {
 	var epics =  db.collection('v1epics');
 		epics.find({}, function (err, docs){
 			//sort
-			var _e =_.sortBy(_.where(docs[0].epics,{CategoryName:"Initiative"}), "Number")
+			var _e =_.sortBy(_.where(docs,{CategoryName:"Initiative"}), "Number")
 			callback(err,_e);
 			return;
 	});
@@ -44,7 +44,7 @@ function _findPortfolioApprovalEpics(callback) {
 	var epics =  db.collection('v1epics');
 		epics.find({}, function (err, docs){
 			//sort
-			var _e =_.sortBy(_.where(docs[0].epics,{PortfolioApproval:"Yes"}), "Number")
+			var _e =_.sortBy(_.where(docs,{PortfolioApproval:"Yes"}), "Number")
 			callback(err,_e);
 			return;
 	});
@@ -68,7 +68,7 @@ function _getRoadmapInitiatives(start,callback){
 exports.findEpicByRef = function(epicRef,callback) {
 	var epics =  db.collection('v1epics');
 	epics.find( function(err , docs){
-			var _e =docs[0].epics;
+			var _e =docs;
 			for (var i in _e){
 				if (_e[i].Number==epicRef){
 					var _epic = _e[i];
