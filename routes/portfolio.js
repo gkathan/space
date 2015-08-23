@@ -83,6 +83,16 @@ router.get('/', function(req, res) {
 						_epic["id"] = _item[0].ID.split(":")[1];
 						_epic["name"] = _item[0].Name;
 						_epic["value"] = _item[0].Value;
+						_epic["risk"] = _item[0].Risk;
+						_epic["product"] = _item[0].Product;
+
+
+						if (_item[0].Markets){
+							_epic["markets"] = _item[0].Markets;
+						}
+						if (_item[0].Customers){
+							_epic["customers"] = _item[0].Customers;
+						}
 
 						if (_item[0].Targets){
 							_epic["targets"] = _item[0].Targets;
