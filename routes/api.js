@@ -159,7 +159,7 @@ router.get(PATH.REST_OUTCOMESFOREMPLOYEE, function(req, res, next) {getOutcomesF
 
 router.get(PATH.REST_BOARDS, function(req, res, next) {findAllByName(req,res,next);});
 router.get(PATH.REST_BOARDS+'/:_id', function(req, res, next) {findBy_id(req,res,next);});
-router.post(PATH.REST_BOARDS, function(req, res, next) {save(req,res,next); });
+router.post(PATH.REST_BOARDS, function(req, res, next) {saveBoard(req,res,next); });
 router.delete(PATH.REST_BOARDS, function(req, res, next) {remove(req,res,next); });
 
 router.get(PATH.REST_RELEASES, function(req, res, next) {findAllByName(req,res,next);});
@@ -777,6 +777,50 @@ function findTrailByNameForId(req, res , next){
 	});
 }
 
+/**
+* saves a kanban / roadmap board
+ PROTOTYPE !!!!!
+*/
+function saveBoard(req, res , next){
+		var boardService = require('../services/BoardService');
+		var context;
+		if (req.session.CONTEXT) context = req.session.CONTEXT;
+		else context = res.config.context;
+
+    //var board = JSON.parse(req.body.board);
+    var board = JSON.parse(req.body.board);
+		var _timestamp = new Date();
+    board.createDate=_timestamp;
+    // now lets iterate over the array
+		var v1Service=require('../services/V1Service');
+		if (board.roadmapInitiatives){
+			var _items =[];
+			v1Service.getRoadmapInitiatives(new Date("2014-01-01"),function(err,roadmap){
+				for (var r in roadmap){
+					var _product = roadmap[r].Product;
+					if (!_product) _product="No Product";
+					var _itemView={sublaneOffset:0,size:7,accuracy:10,lanePath:"/topline/"+_product+"/sublane"}
+					var _item ={itemRef:roadmap[r].Number,itemView:_itemView};
+					_items.push(_item);
+				}
+				board.items =_items
+    		logger.debug("*********************** save board: "+JSON.stringify(board));
+				boardService.save(board,function(err,success){
+					logger.debug("saved OK: _id: "+success._id);
+					res.send({_id:success._id});
+				})
+			})
+		}
+		else{
+			logger.debug(".....no roadmap");
+				boardService.save(board,function(err,success){
+					logger.debug("saved OK: _id: "+success._id);
+					res.send({_id:success._id});
+				})
+		}
+
+
+}
 
 /**
  * generic save handler

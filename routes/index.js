@@ -115,10 +115,10 @@ router.get('/incidentmatrix', function(req, res) {
 
 router.get('/boards', function(req, res) {
   if (ensureAuthenticated(req,res)){
-  	var boards =  db.collection('boards');
-  	boards.find({}, function (err, docs){
+  	var boardService =  require('../services/BoardService');
+  	boardService.find({}, function (err, docs){
   		res.locals.boards=docs;
-  		console.log(": "+boards[0]);
+  		//console.log(": "+boards[0]);
   		res.render('boards', { title: 's p a c e - kanbanboards' });
   	});
   }

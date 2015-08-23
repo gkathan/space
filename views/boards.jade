@@ -129,7 +129,7 @@ script(type='text/javascript').
 		_viewconfig.metrics="off";
 		_viewconfig.queues="show";
 		_viewconfig.targets="off";
-		_viewconfig.initiatives="off";
+		_viewconfig.initiatives="show";
 		_viewconfig.guides="show";
 
 
@@ -147,10 +147,10 @@ script(type='text/javascript').
 		_board.WIPWindowDays = form.wip.value;
 		_board.laneboxRightWidth = form.rightbox.value;
 		_board.viewConfig = _viewconfig;
-		var _boards = [];
-		_boards.push(_board);
-
-		var _json = JSON.stringify(_boards);
+		_board.roadmapInitiatives = form.roadmapinitiatives.checked;
+		
+		
+		var _json = JSON.stringify(_board);
 
 		var _url = "/api/space/rest/boards";
 
@@ -158,7 +158,7 @@ script(type='text/javascript').
 		$.ajax({
 			type: "POST",
 			url: _url,
-			data: { 'itemJson': _json},
+			data: { 'board': _json},
 					cache: false,
 			dataType:"json",
 			success: function(msg)

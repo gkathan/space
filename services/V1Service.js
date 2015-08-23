@@ -55,7 +55,7 @@ function _getRoadmapInitiatives(start,callback){
 		var _roadmap = [];
 		for (var i in initiatives){
 			var _in=initiatives[i];
-			if (new Date(_in.PlannedStart)>=start && _in.StrategicThemesNames!="[]" ) _roadmap.push(_in);
+			if (new Date(_in.PlannedStart)>=start) _roadmap.push(_in);
 		}
 		callback(err,_roadmap);
 	});
