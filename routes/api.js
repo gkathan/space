@@ -791,9 +791,12 @@ function saveBoard(req, res , next){
 
     //var board = JSON.parse(req.body.board);
     var board = JSON.parse(req.body.board);
+		logger.debug("board: "+JSON.stringify(board));
 		var _timestamp = new Date();
     board.createDate=_timestamp;
+		logger.debug("*** groupby: "+board.groupby)
 		var _groupby = board.groupby.split(",");
+		logger.debug("*** _groupby: "+_groupby)
 		if (_groupby.length!=3){
 			logger.error("groupby currently must be 3 levels");
 			//default
@@ -805,6 +808,7 @@ function saveBoard(req, res , next){
 			var _items =[];
 			v1Service.getRoadmapInitiatives(new Date("2014-01-01"),function(err,roadmap){
 				for (var r in roadmap){
+					//split / join needed e.g. if businessbacklog is used we need to replace "/"
 					var _group1 = roadmap[r][_groupby[0]].split("/").join("|");
 					var _group2 = roadmap[r][_groupby[1]].split("/").join("|");
 					var _group3 = roadmap[r][_groupby[2]].split("/").join("|");

@@ -261,7 +261,11 @@ function drawItems(){
 		// ----------------- startDate indicator ---------------------
 		if(d.startDate && new Date(d.startDate)>KANBAN_START){
 			console.log("____startDate: "+d.startDate+" item: "+d.name+" plan: "+d.planDate);
-			var _start = d3.select(this).append("g").attr("id","startID_"+d.id).style("visibility","hidden");
+			var _startVisibility ="hidden";
+			if (BOARD.viewConfig.start=="show"){
+				_startVisibility="visible";
+			}
+			var _start = d3.select(this).append("g").attr("id","startID_"+d.id).style("visibility",_startVisibility);
 			_drawStartDateIndicator(_start,_itemXStart,_itemXPlanned,_itemY,_size);
 
 		}

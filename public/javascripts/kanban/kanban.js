@@ -464,7 +464,7 @@ function drawAll(){
 		// kanban_items.js
 		if (BOARD.viewConfig.initiatives!="off") drawInitiatives();
 		// kanban_items.js
-		//if (BOARD.viewConfig.targets!="off") drawTargets();
+		if (BOARD.viewConfig.targets!="off") drawTargets();
 		if (BOARD.viewConfig.metrics!="off") drawMetrics();
 	}
 	//drawOverviewMetaphors(svg);
