@@ -793,17 +793,22 @@ function saveBoard(req, res , next){
     var board = JSON.parse(req.body.board);
 		var _timestamp = new Date();
     board.createDate=_timestamp;
+		var _groupby = board.groupby.split(",");
+		if (_groupby.length!=3){
+			logger.error("groupby currently must be 3 levels");
+			//default
+			_groupby=["Product","BusinessBacklog","Number"];
+		}
     // now lets iterate over the array
 		var v1Service=require('../services/V1Service');
 		if (board.roadmapInitiatives){
 			var _items =[];
 			v1Service.getRoadmapInitiatives(new Date("2014-01-01"),function(err,roadmap){
 				for (var r in roadmap){
+					var _group1 = roadmap[r][_groupby[0]].split("/").join("|");
+					var _group2 = roadmap[r][_groupby[1]].split("/").join("|");
+					var _group3 = roadmap[r][_groupby[2]].split("/").join("|");
 					var _product = roadmap[r].Product;
-					var _backlog = roadmap[r].BusinessBacklog.split("/").join("|");
-					var _status = roadmap[r].Status;
-					var _number = roadmap[r].Number;
-
 
 
 					// !!!! path needs 3 levels right now at least
@@ -811,7 +816,7 @@ function saveBoard(req, res , next){
 					//var _itemView={sublaneOffset:0,size:7,accuracy:10,lanePath:"/"+_product+"/"+_backlog+"/"+_status}
 					// distinct sublanes ;-) give one line per item for free ;-)
 					//var _itemView={sublaneOffset:0,size:7,accuracy:10,lanePath:"/"+_product+"/"+_status+"/"+_number}
-					var _itemView={sublaneOffset:0,size:7,accuracy:10,lanePath:"/"+_product+"/"+_backlog+"/"+_number}
+					var _itemView={sublaneOffset:0,size:7,accuracy:10,lanePath:"/"+_group1+"/"+_group2+"/"+_group3}
 					var _item ={itemRef:roadmap[r].Number,itemView:_itemView};
 					_items.push(_item);
 				}

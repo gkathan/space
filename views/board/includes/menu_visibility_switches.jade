@@ -16,26 +16,26 @@ style.
 				a.btn.btn-primary.btn-xs.notActive(data-toggle=name data-title="show") show
 				a.btn.btn-primary.btn-xs.notActive(data-toggle=name data-title="hide") hide
 			input(type="hidden" name=name id="_input_"+name)
-			span(style="margin-left:5px; font-size:10px; font-weight:bold")=name
+			span(style="margin-left:5px; font-size:16px; font-weight:bold")=name
 
 
 
 	// nice mixins :-)
 	+switch('initiatives')
+	+switch('Swag')
+	+switch('Start')
 	+switch('queues')
-	+switch('queues.qmetrics')
-	+switch('metrics')
 	+switch('grid')
 	+switch('vision')
-	hr.divider
 	+switch('targets')
 	+switch('lanes')
 	+switch('axes')
+	hr.divider
+	+switch('queues.qmetrics')
+	+switch('metrics')
 	+switch('releases')
 	+switch('NGR')
-	+switch('Swag')
-
-
+	
 
 
 
@@ -51,17 +51,19 @@ style.
 			if(tog=="Swag"){
 				if (sel=="show") showSwag();
 				if (sel=="hide") hideSwag();
-				
 			}
+			else if(tog=="Start"){
+				if (sel=="show") showStart();
+				if (sel=="hide") hideStart();
+			}
+
 			else{
 				if (sel=="show") show("#"+tog);
 				if (sel=="hide") hide("#"+tog);
-
 			}
-			
-
-
+	
 		})
+
 
 		function hide(group){
 			//d3.select(group).style("visibility","hidden");
@@ -74,6 +76,14 @@ style.
 			d3.select(group).transition().duration(500).style("opacity",1);
 			//d3.select(group).transition().duration(500).style("opacity","");
 			console.log("++++++++: "+group);
+		}
+
+		function hideStart(){
+			d3.selectAll("[id*=startID]").style("visibility","hidden")
+		}
+
+		function showStart(){
+			d3.selectAll("[id*=startID]").style("visibility","visible")
 		}
 
 		function hideSwag(){
