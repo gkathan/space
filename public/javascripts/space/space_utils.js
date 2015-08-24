@@ -78,7 +78,7 @@ function ajaxCall(verb,action,itemList,_type,afterHandlerCallback){
 			},
 		error: function(msg)
 			{
-				console.log("[space_utils.ajaxCall] ==== error handler...");
+				console.log("[space_utils.ajaxCall] ==== error handler..."+msg);
 				if (afterHandlerCallback !=undefined) afterHandlerCallback(_type);
 
 				$(function(){

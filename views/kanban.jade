@@ -25,22 +25,13 @@ script(src="/javascripts/wiki2html.js")
 script(src="/javascripts/components/flippant.js/flippant.min.js")
 
 block content
-	script(type="text/javascript").
-		$(document).ready(function() {
-			$('#kanban_menu').sidr({speed:300});
-		});
-
-	
 	div.notifications.top-left
 	div.row(style="margin-left:10px;margin-bottom:10px")
-		div(id="sidr" style="margin-left:10px;margin-top:10px")
-			//include board/includes/menu_svg_export.jade
-			//include board/includes/menu_visibility_switches.jade
 		
 		
 		// Button trigger modal
 		button.btn.btn-primary.btn-xs(type="button" data-toggle="modal" data-target="#myModal")
-			span demo modal
+			span board config
 		// Button trigger modal
 		button.btn.btn-success.btn-xs(type="button" data-toggle="modal" data-target="#v1EpicsModal")
 			span v1 epics
@@ -54,7 +45,7 @@ block content
 			span show kanban board
 		
 		//Modal
-		div.modal.fade(id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" )
+		div.modal.fade.draggable(id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" )
 			div.modal-dialog
 				div.modal-content(style="opacity:1")
 					div.modal-header
@@ -89,13 +80,6 @@ block content
 								li.draggable
 									img(src="/images/v1/epic.gif" height="10px")
 									span(style="font-size:10px") &nbsp; #{e.Number} - #{e.Name} 
-						
-		
-		div.btn-group-xs
-			button.btn.btn-primary.btn-xs(id="kanban_menu" type="button") 
-				span.glyphicon.glyphicon-off  
-				span  stuff..
-		
 	
 	script(type="text/javascript").
 		

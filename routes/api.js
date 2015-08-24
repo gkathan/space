@@ -40,6 +40,7 @@ var PATH = {
 						REST_OUTCOMESFOREMPLOYEE : BASE+'/space/rest/outcomesforemployee/:employeeId',
 
 						REST_BOARDS : BASE+'/space/rest/boards',
+						REST_CREATEBOARD : BASE+'/space/rest/board',
 
 						REST_RELEASES : BASE+'/space/rest/releases',
 						REST_LANETEXT : BASE+'/space/rest/lanetext',
@@ -159,7 +160,8 @@ router.get(PATH.REST_OUTCOMESFOREMPLOYEE, function(req, res, next) {getOutcomesF
 
 router.get(PATH.REST_BOARDS, function(req, res, next) {findAllByName(req,res,next);});
 router.get(PATH.REST_BOARDS+'/:_id', function(req, res, next) {findBy_id(req,res,next);});
-router.post(PATH.REST_BOARDS, function(req, res, next) {saveBoard(req,res,next); });
+router.post(PATH.REST_BOARDS, function(req, res, next) {save(req,res,next); });
+router.post(PATH.REST_CREATEBOARD, function(req, res, next) {saveBoard(req,res,next); });
 router.delete(PATH.REST_BOARDS, function(req, res, next) {remove(req,res,next); });
 
 router.get(PATH.REST_RELEASES, function(req, res, next) {findAllByName(req,res,next);});
@@ -798,8 +800,13 @@ function saveBoard(req, res , next){
 			v1Service.getRoadmapInitiatives(new Date("2014-01-01"),function(err,roadmap){
 				for (var r in roadmap){
 					var _product = roadmap[r].Product;
+					var _backlog = roadmap[r].BusinessBacklog.split("/").join("|");
+					var _status = roadmap[r].Status;
+
+
+					// !!!! path needs 3 levels right now at least
 					if (!_product) _product="No Product";
-					var _itemView={sublaneOffset:0,size:7,accuracy:10,lanePath:"/topline/"+_product+"/sublane"}
+					var _itemView={sublaneOffset:0,size:7,accuracy:10,lanePath:"/"+_product+"/"+_backlog+"/"+_status}
 					var _item ={itemRef:roadmap[r].Number,itemView:_itemView};
 					_items.push(_item);
 				}

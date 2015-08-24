@@ -8,7 +8,7 @@ style.
 	hr.divider
 	h4 switches
 
-	
+
 	mixin switch(name)
 		.input-group(style="margin-left:10px;")
 			.btn-group(id="radioBtn")
@@ -18,8 +18,8 @@ style.
 			input(type="hidden" name=name id="_input_"+name)
 			span(style="margin-left:5px; font-size:10px; font-weight:bold")=name
 
-	
-		
+
+
 	// nice mixins :-)
 	+switch('initiatives')
 	+switch('queues')
@@ -33,12 +33,12 @@ style.
 	+switch('axes')
 	+switch('releases')
 	+switch('NGR')
-	+switch('SWAG')
+	+switch('Swag')
 
-		
-		
-		
-	
+
+
+
+
 	script.
 		$('#radioBtn a').on('click', function(){
 			var sel = $(this).data('title');
@@ -48,20 +48,68 @@ style.
 			$('a[data-toggle="'+tog+'"][data-title="'+sel+'"]').removeClass('notActive').addClass('active');
 			console.log("* clicked..." +tog+" selected: "+sel);
 			
-			if (sel=="show") show("#"+tog);
-			if (sel=="hide") hide("#"+tog);
+			if(tog=="Swag"){
+				if (sel=="show") showSwag();
+				if (sel=="hide") hideSwag();
+				
+			}
+			else{
+				if (sel=="show") show("#"+tog);
+				if (sel=="hide") hide("#"+tog);
+
+			}
 			
-			
+
+
 		})
 
 		function hide(group){
 			//d3.select(group).style("visibility","hidden");
 			d3.select(group).transition().duration(500).style("opacity",0);
+			console.log("++++++++: "+group);
 		}
 
 		function show(group){
 			//d3.select(group).style("visibility","visible");
 			d3.select(group).transition().duration(500).style("opacity",1);
 			//d3.select(group).transition().duration(500).style("opacity","");
+			console.log("++++++++: "+group);
 		}
-		
+
+		function hideSwag(){
+			d3.selectAll("#initiatives,#queues,#metrics")
+				.style("visibility","visible");
+			d3.selectAll("#sizings,#labels")
+				.transition()
+				.delay(0)
+				.duration(1000)
+				.style("opacity",0);
+			d3.selectAll("#initiatives,#queues,#lanes,#axes,#metrics")
+				.transition()
+				.delay(0)
+				.duration(1000)
+				.style("opacity",1);
+
+		}
+		function showSwag(){
+			d3.selectAll("#sizings,#labels")
+			.transition()
+			.delay(0)
+			.duration(1000)
+			.style("opacity",1);
+			d3.selectAll("#initiatives,#queues,#metrics")
+			.transition()
+			.delay(0)
+			.duration(1000)
+			.style("opacity",0);
+
+			d3.selectAll("#initiatives,#queues,#metrics")
+			.transition()
+			.delay(1000)
+			.style("visibility","hidden");
+
+			d3.selectAll("#lanes,#axes")
+			.transition()
+			.duration(1000)
+			.style("opacity",0.5);
+		}

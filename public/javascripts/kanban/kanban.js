@@ -316,13 +316,29 @@ function joinBoard2Initiatives(board,initiatives){
 				// legacy attributes
 				_initiative.id=_items[i].itemRef;
 				_initiative.Type="item";
-				_initiative.state="planned";
+				if (_initiative.Status=="Done" || _initiative.Status=="Monitoring"){
+					_initiative.state="done";
+				}
+				else if (_initiative.Status=="Cancelled"){
+					_initiative.state="killed";
+				}
+				else{
+					_initiative.state="planned";
+
+				}
+
 				_initiative.name=_initiative.Name;
+				_initiative.health=_initiative.Health;
+
+				_initiative.owner=_initiative.InitiativeOwner;
+				_initiative.DoD=_initiative.Description;
+
+
 				_initiative.planDate=_initiative.PlannedEnd;
-				_initiative.actualDate=_initiative.PlannedEnd;
-
-
-
+				if (_initiative.LaunchDate){
+						_initiative.actualDate=_initiative.LaunchDate;
+				}
+				else _initiative.actualDate=_initiative.PlannedEnd;
 
 				for (ii in _items[i].itemView){
 						var _view = _items[i].itemView[ii];
@@ -334,13 +350,11 @@ function joinBoard2Initiatives(board,initiatives){
 		//set global
 		initiativeData = _join;
 		return _join;
-
 }
 
 /**generic render method for NG board handling
  */
 function renderBoard(id){
-
 		HEIGHT= parseInt(boardData.height);
 		WIDTH = parseInt(boardData.width);
 		ITEM_SCALE = parseFloat(boardData.itemScale);
@@ -370,13 +384,10 @@ function renderBoard(id){
 }
 
 
-
-
 /**
  * renders the custom postits which can be created manually
  */
 function drawCustomPostits(){
-
 	var gCustomPostits = d3.select("#kanban").append("g").attr("id","customPostits");
 	for (var i in postitData){
 		var p = new Postit(postitData[i].id,postitData[i].text,postitData[i].x,postitData[i].y,postitData[i].scale,postitData[i].size,postitData[i].color,postitData[i].textcolor);
@@ -388,11 +399,9 @@ function drawCustomPostits(){
 /**
 */
 function drawInitiatives(){
-
 	drawLanes();
 	drawWC2014();
 	drawItems();
-
 }
 
 
@@ -419,8 +428,6 @@ function joinInitiatives2LanesSort(){
 
 function drawAll(){
 	init();
-
-
 	// 1) draw static stuff
 	if (BOARD.viewConfig.queues!="off") drawGuides();
 	drawAxes();
@@ -429,11 +436,8 @@ function drawAll(){
 	if (BOARD.viewConfig.vision!="off") drawVision();
 	drawVersion();
 	drawLegend();
-
 	// 2) check if board empty
-
 	if (initiativeData.length>0){
-
 		/** multi column sort
 		 * https://github.com/Teun/thenBy.js
 		 */
@@ -445,16 +449,9 @@ function drawAll(){
 		//var s = firstBy(function (v1, v2) { return v1.lane < v2.lane ? -1 : (v1.lane > v2.lane ? 1 : 0); }).thenBy(function (v1, v2) { return v1.sublane < v2.sublane ? -1 : (v1.sublane > v2.sublane ? 1 : 0); });
 		var s = firstBy(function (v1, v2) { return v1.laneSort - v2.laneSort})
 				.thenBy(function (v1, v2) { return v1.sublaneSort - v2.sublaneSort });
-
-		//initiativeData.sort(function(a,b){return (b.lane>a.lane) ?1 :-1});
-
 		initiativeData.sort(s);
 		initiativeData.sort(s);
-
-
 		// ------------------------------------------------------------------------------------------------
-
-
 
 		var _context = {"yMin":Y_MIN,"yMax":Y_MAX,"name":CONTEXT};
 		itemTree = createLaneHierarchy(initiativeData,ITEMDATA_FILTER,ITEMDATA_NEST,_context);
@@ -465,21 +462,13 @@ function drawAll(){
 		if (BOARD.viewConfig.initiatives!="off") drawInitiatives();
 		// kanban_items.js
 		//if (BOARD.viewConfig.targets!="off") drawTargets();
-
 		if (BOARD.viewConfig.metrics!="off") drawMetrics();
-
 	}
-
-
 	//drawOverviewMetaphors(svg);
-
 
 	drawReleases();
 
-
-
 	d3.select("#whiteboard").style("visibility","hidden");
-
 // --------------------------------------------------------------------------------------------------
 }
 

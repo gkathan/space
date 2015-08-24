@@ -24,7 +24,8 @@ function drawVision(){
 	d3.select("#vision").remove();
 
 	var gVision= svg.append("g")
-		.attr("id","vision");
+		.attr("id","vision")
+		.attr("class","draggable");
 
 	// ----- vision statement ------
 	var _x = x(KANBAN_START.getTime()+(KANBAN_END.getTime()-KANBAN_START.getTime())/2);

@@ -5,8 +5,8 @@
  * @version: 2.0
  * @author: Gerold Kathan (www.kathan.at)
  * @date: 2015-01-23
- * @copyright: 
- * @license: 
+ * @copyright:
+ * @license:
  * @website: www.github.com/gkathan/kanban
  */
 
@@ -36,7 +36,7 @@ var LANE_LABELBOX_RIGHT_START;
 */
 function drawLanes(){
 	d3.select("#lanes").remove()
-	
+
 	var lanes = svg.append("g").attr("id","lanes");
 
 //experiment
@@ -44,14 +44,14 @@ function drawLanes(){
 //experiment
 
 	var lanesLeft = lanes.append("g").attr("id","lanesLeft");
-	var lanesRight = lanes.append("g").attr("id","lanesRight");	
+	var lanesRight = lanes.append("g").attr("id","lanesRight");
 	//------------ context box ----------------
 	/**
 	 * this would be level-0 in a generic view
 	 * in this concrete view this would be the "businessmodel=b2c gaming" umbrell box
 	 * */
 	_drawLaneContext(lanes,CONTEXT,-margin.left,0,LANE_LABELBOX_LEFT_WIDTH/4,height,"treemap.html")
-	
+
 	var i=0;
 	var _xRightStart = x(KANBAN_END)+TARGETS_COL_WIDTH;
 
@@ -62,6 +62,7 @@ function drawLanes(){
 	// **************** grouped item + svg block + label text
 	.append("g")
 	.attr("id",function(d){return "lane_"+d.name;})
+
 	//.style("opacity",function(d){return d.accuracy/10})
 	//.on("mouseover",animateScaleUp)
 	.each(function(d){
@@ -74,11 +75,11 @@ function drawLanes(){
 		var _laneOpacity;
 		var _metrics;
 		//left box
-		
+
 		var _leftBox = lanesLeft.append("g").attr("id",_lane);
 		var _rightBox = lanesRight.append("g").attr("id",_lane);
-		
-		
+
+
 		_metrics = _drawLaneBox(_leftBox,-LANE_LABELBOX_LEFT_WIDTH,_y,LANE_LABELBOX_LEFT_WIDTH,_height,_lane,"left");
 
 		var _yTextOffset = 10;
@@ -87,11 +88,11 @@ function drawLanes(){
 		if (BOARD.viewConfig.laneboxTextLeft!="off") _drawLaneText(_leftBox,_lane,"baseline",_yTextOffset);
 		// lane area
 		_drawLaneArea(d3.select(this),x(KANBAN_START),_y,x(KANBAN_END)+LANE_LABELBOX_RIGHT_WIDTH+280,_height,i)
-		//target box	
+		//target box
 		_metrics =_drawLaneBox(_rightBox,_xRightStart,_y,LANE_LABELBOX_RIGHT_WIDTH,_height,_lane,"right");
 		//target box text
 		if (BOARD.viewConfig.laneboxTextRight!="off") _drawLaneText(_rightBox,_lane,"target",_yTextOffset);
-		
+
 		// laneside descriptors
 		if (_.last(CONTEXT.split(FQ_DELIMITER))=="drill-in"){
 			var _laneName = _.last(_lane.split(FQ_DELIMITER))
@@ -101,13 +102,13 @@ function drawLanes(){
 		var _sublanes = getSublanesNEW(_lane);
 		for (var s in _sublanes){
 			var _y = y(_sublanes[s].yt1);
-			var _h = y(_sublanes[s].yt2-_sublanes[s].yt1); 
-			
+			var _h = y(_sublanes[s].yt2-_sublanes[s].yt1);
+
 			// strip only the sublane name if name is fully qualified like "topline.bwin.touch"
 			var _sublane = _.last((_sublanes[s].name).split(FQ_DELIMITER))
-			
+
 			_drawLaneSideText(_leftBox,_sublane,1,_y+_h/2,"4px","middle");
-		
+
 			//no lines for first and last sublane
 			if (s>0 && s<_sublanes.length){
 				_drawLine(d3.select(this),x(KANBAN_START),_y,x(KANBAN_END),_y,"sublaneLine");
@@ -115,26 +116,26 @@ function drawLanes(){
 			}
 		//experiment
 		//_leftBox.data([ {"x":0, "y":0, "lane":_lane} ]).call(drag_item);
-		
+
 		_drawThemeDemarcation(d3.select(this),"themeLine");
 		i++;
-	
+
 	});
-	
+
 	// -------------------------------------- drivers WHERE HOW STUFF -----------------------------------
 	var _pillarColumns = [{"name":"ACCESS"},{"name":"APPEAL"},{"name":"USP"}];
 
 	var _xBase = _xRightStart+2;
 	var _yBase = PILLAR_TOP;
-	var _width = LANE_LABELBOX_RIGHT_WIDTH-PILLAR_X_OFFSET;						
-							
+	var _width = LANE_LABELBOX_RIGHT_WIDTH-PILLAR_X_OFFSET;
+
 	if (_width >100 & CONTEXT=="b2c gaming") {
 		  _drawPillarColumns(lanesRight,_pillarColumns,_xBase,_yBase,_width);
-		  _drawHowPillars(lanesRight,pillarData,_xBase,_yBase,_width);							
+		  _drawHowPillars(lanesRight,pillarData,_xBase,_yBase,_width);
 	}
-	
+
 	_drawThemeBoxes(svg);
-}	
+}
 
 
 function _drawThemeBoxes(svg,css){
@@ -145,9 +146,9 @@ function _drawThemeBoxes(svg,css){
 		var _t2 = y(_theme.yt2);
 		var _height = _t2-_t1;
 		var _name = _.last(_theme.name.split("/"));
-		
+
 		_drawLaneContext(svg,_name,-margin.left+30,_t1,140,_height,"","themebox")
-		
+
 		}
 	}
 
@@ -156,28 +157,28 @@ function _drawThemeDemarcation(svg,css){
 	// => this needs first refactoring of in-memory datastructure !!!
 	// HAHAAAA :-)) [20140104] did it !!!!
 	var _y=0;
-	
+
 	for (t in getThemesNEW()){
 		var _theme = getThemesNEW()[t];
 		var _t1 = y(_theme.yt1);
 		var _t2 = y(_theme.yt2);
 		var _height = _t2-_t1;
 		var _name = _.last(_theme.name.split("/"));
-		
+
 		// no demarcation line in the end ;-)
 		if (t<getThemesNEW().length-1){
 			_drawLine(svg,x(KANBAN_START)-margin.left,_t2,x(KANBAN_END)+margin.right+margin.left,_t2,css);
-			
+
 			_y=_t2
 		}
 	}
-	
+
 	return _y;
 }
 
 
 /** helper method to render the strategical driver columns
- */	
+ */
 function _drawPillarColumns(svg,data,x,y,width){
 		var _spacer = 3;
 		var _color = COLOR_BPTY;
@@ -185,7 +186,7 @@ function _drawPillarColumns(svg,data,x,y,width){
 		var _pillarWidth = (width/_length)-_spacer;
 		var _height = height-PILLAR_TOP;
 		var _headlineSize = "8px";
-	
+
 	for (var i in data){
 		//1) pillar header
 		var _offset = (getInt(i)*_pillarWidth)+_pillarWidth/2;
@@ -244,7 +245,7 @@ function _drawLaneText(svg,lane,side,logoHeight){
 	if (side=="target") _anchor ="end";
 	var _color = "black";
 	var _yBase = y((getLaneByNameNEW(lane).yt1))+logoHeight+5;
-	
+
 	// just get the last element in a FQN
 	lane = _.last(lane.split(FQ_DELIMITER))
 	if (lane=="bwin" || lane=="premium") _color="white";
@@ -252,12 +253,12 @@ function _drawLaneText(svg,lane,side,logoHeight){
 	var _xBase;
 	if (side=="baseline") _xBase= -LANE_LABELBOX_LEFT_WIDTH+10
 	else if (side=="target") _xBase= x(KANBAN_END)+TARGETS_COL_WIDTH+LANE_LABELBOX_RIGHT_WIDTH-10;
-	
+
 	if (laneTextData){
 	var _lanetext = laneTextData.filter(function(d){return (d.lane==lane && d.side==side)});
 		if (_lanetext && CONTEXT!="holding"){
 			var gLanetext = svg.append("g").attr("id","text_"+lane);
-	
+
 			for (var i in _lanetext){
 					_drawText(gLanetext,_lanetext[i].text,_xBase,(_yBase+(i*(parseInt(_lanetext[i].size)+1))),{"size":_lanetext[i].size+"px","color":_color,"anchor":_anchor,"weight":_lanetext[i].format});
 			}
@@ -282,16 +283,16 @@ function _drawLaneText(svg,lane,side,logoHeight){
 
 /* ------------------------------------------------- drawLanes() helper functions ----------------------------------------------------------- */
 		/**
-		 
+
 		 */
 		function _drawLaneContext(svg,context,x,y,width,height,link,css){
 			var _textOffsetX = 25;
 			var _textOffsetY = 5;
-			
+
 			if (!css) var css ="contextbox";
-			
+
 			_drawText(svg,context,(x+_textOffsetX),(y+_textOffsetY),{"size":"14px","color":"#dddddd","weight":"bold","mode":"tb"});
-			
+
 			svg.append("rect")
 			.attr("x",x)
 			.attr("y",y)
@@ -308,7 +309,7 @@ function _drawLaneText(svg,lane,side,logoHeight){
 			var _x_offset=10;
 			var _y_offset=4;
 			var _metrics;
-			// if it comes in FQ format 
+			// if it comes in FQ format
 			lane = _.last(lane.split(FQ_DELIMITER));
 
 			var _lanebox=svg.append("rect")
@@ -316,20 +317,20 @@ function _drawLaneText(svg,lane,side,logoHeight){
 			.attr("y",y)
 			.attr("width",width)
 			.attr("height",height)
-			.style("cursor","pointer")		
+			.style("cursor","pointer")
 			.style("stroke","white")
 			.style("stroke-width",WIDTH_WHITESTROKE)
 			.attr("class","lanebox "+lane);
 			//.on("click",function(d){window.location.href="kanban_"+lane+".html";});
-			
+
 			// only append logo if we have declared on in external.svg
 			if (document.getElementById(lane)){
 				var _x = x+_x_offset;
 				var _y = y+_y_offset;
-				
+
 				var _logo = _drawXlink(svg,"#"+lane,0,0,{"scale":1});
 
-				
+
 				_metrics = get_metrics(_logo.node());
 				// i need to know the width of the logo....
 				if (side=="right"){
@@ -341,10 +342,10 @@ function _drawLaneText(svg,lane,side,logoHeight){
 			else {
 				_drawText(svg,lane,x,y+20,{"size":"14px","color":"grey","weight":"bold"});
 			}
-			
+
 		return _metrics;
 		}
-		
+
 		function _drawLaneArea(svg,x,y,width,height,i){
 			if (i%2 ==0) _laneOpacity=0.22;
 			else _laneOpacity=0.12;
@@ -366,9 +367,6 @@ function _drawLaneText(svg,lane,side,logoHeight){
 			_drawText(svg,text,x,y,{"size":size,"color":"grey","weight":"normal","mode":"tb","anchor":anchor});
 		}
 
-		
+
 
 /* ------------------------------------------------- END drawLanes() helper functions ----------------------------------------------------------- */
-
-
-
