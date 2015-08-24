@@ -802,11 +802,16 @@ function saveBoard(req, res , next){
 					var _product = roadmap[r].Product;
 					var _backlog = roadmap[r].BusinessBacklog.split("/").join("|");
 					var _status = roadmap[r].Status;
+					var _number = roadmap[r].Number;
+
 
 
 					// !!!! path needs 3 levels right now at least
 					if (!_product) _product="No Product";
-					var _itemView={sublaneOffset:0,size:7,accuracy:10,lanePath:"/"+_product+"/"+_backlog+"/"+_status}
+					//var _itemView={sublaneOffset:0,size:7,accuracy:10,lanePath:"/"+_product+"/"+_backlog+"/"+_status}
+					// distinct sublanes ;-) give one line per item for free ;-)
+					//var _itemView={sublaneOffset:0,size:7,accuracy:10,lanePath:"/"+_product+"/"+_status+"/"+_number}
+					var _itemView={sublaneOffset:0,size:7,accuracy:10,lanePath:"/"+_product+"/"+_backlog+"/"+_number}
 					var _item ={itemRef:roadmap[r].Number,itemView:_itemView};
 					_items.push(_item);
 				}

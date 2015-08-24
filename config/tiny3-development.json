@@ -25,6 +25,6 @@
 	},
 
      "transcoder" : {
-		"url" : "http://localhost:8585/rest/transcode"
+		"url" : "http://localhost:8080/transcode/"
      }
 }

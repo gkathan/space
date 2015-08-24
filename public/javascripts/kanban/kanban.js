@@ -329,6 +329,9 @@ function joinBoard2Initiatives(board,initiatives){
 
 				_initiative.name=_initiative.Name;
 				_initiative.health=_initiative.Health;
+				_initiative.status=_initiative.Status;
+				_initiative.ExtId=_initiative.id;
+
 
 				_initiative.owner=_initiative.InitiativeOwner;
 				_initiative.DoD=_initiative.Description;
