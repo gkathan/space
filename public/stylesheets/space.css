@@ -445,7 +445,7 @@ ul
 }
 
 .themebox{
-	fill:whitesmoke;
+	fill:#cccccc;
 	stroke:white;
 	stroke-width:5px;
 	opacity: .5;

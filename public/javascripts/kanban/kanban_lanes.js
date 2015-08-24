@@ -39,6 +39,11 @@ function drawLanes(){
 
 	var lanes = svg.append("g").attr("id","lanes");
 
+	if (BOARD.viewConfig.lanes=="hide"){
+		lanes.style("visibility","hidden");
+	}
+
+
 //experiment
 	//var drag_item = _registerDragDrop();
 //experiment
@@ -50,7 +55,7 @@ function drawLanes(){
 	 * this would be level-0 in a generic view
 	 * in this concrete view this would be the "businessmodel=b2c gaming" umbrell box
 	 * */
-	_drawLaneContext(lanes,CONTEXT,-margin.left,0,LANE_LABELBOX_LEFT_WIDTH/4,height,"treemap.html")
+	//_drawLaneContext(lanes,CONTEXT,-margin.left,0,LANE_LABELBOX_LEFT_WIDTH/4,height,"treemap.html")
 
 	var i=0;
 	var _xRightStart = x(KANBAN_END)+TARGETS_COL_WIDTH;
@@ -291,7 +296,7 @@ function _drawLaneText(svg,lane,side,logoHeight){
 
 			if (!css) var css ="contextbox";
 
-			_drawText(svg,context,(x+_textOffsetX),(y+_textOffsetY),{"size":"14px","color":"#dddddd","weight":"bold","mode":"tb"});
+			_drawText(svg,context.toUpperCase(),(x+_textOffsetX),(y+_textOffsetY),{"size":"14px","color":"grey","weight":"bold","mode":"tb"});
 
 			svg.append("rect")
 			.attr("x",x)

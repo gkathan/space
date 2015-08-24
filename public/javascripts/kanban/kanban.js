@@ -402,7 +402,7 @@ function drawCustomPostits(){
 /**
 */
 function drawInitiatives(){
-	drawLanes();
+	if (BOARD.viewConfig.lanes!="off") drawLanes();
 	drawWC2014();
 	drawItems();
 }
