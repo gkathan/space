@@ -324,7 +324,7 @@ function _handleClosedIncidents(deltaIds,type,callback){
 				}
 				else logger.warn("!!!!!!!!!!!!!!!!!! incident with sysId: "+_sysId+" cannot be found under "+_url);
 
-				done();
+				
 			})
 		},function(err){
 			if(err){
