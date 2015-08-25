@@ -3,6 +3,11 @@
 
     "env": "PRODUCTION",
 
+    "proxy" :{
+                "host":"atvt1xismt002.apz.unix",
+                "port":3128,
+                "tunnel":true
+            },
 
 	"gulp":{
 		"baseDir" : "/home/gkathan/",

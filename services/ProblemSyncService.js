@@ -47,12 +47,11 @@ function _syncProblem(url,type,callback){
 
 	var _secret = require("../config/secret.json");
 
-	var options_auth={user:_secret.snowUser,password:_secret.snowPassword};
-	logger.debug("snowUser: "+_secret.snowUser);
-
-	var Client = require('node-rest-client').Client;
-	client = new Client(options_auth);
-	// direct way
+	var _options = {user:_secret.snowUser,password:_secret.snowPassword};
+	if (config.proxy){
+		_options.proxy = config.proxy;
+	}
+	client = new Client(_options);// direct way
 	logger.debug("**** node rest client: "+client);
 	//url+="priority<=3";
 	logger.debug("*** client.get data : url = "+url);
