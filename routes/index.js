@@ -142,7 +142,6 @@ router.get('/signup', function(req, res) {
 
 
 router.get('/kanban/:id', function(req, res) {
-	if (ensureAuthenticated(req,res)){
 	var id = req.params.id;
   	var v1Service =  require('../services/V1Service');
   		v1Service.findEpics(function (err, docs){
@@ -150,7 +149,7 @@ router.get('/kanban/:id', function(req, res) {
   		res.locals.epics = docs;
   		res.render('kanban', { title: 's p a c e - kanban board' })
   	});
-  }
+
 });
 
 
