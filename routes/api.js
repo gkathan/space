@@ -1211,14 +1211,17 @@ function remove(req, res , next){
   */
 
 function transcode(req,res,next){
+	logger.debug("*********transcode request: ");
 	var Rsvg = require('rsvg').Rsvg;
 
-	var _svg_raw = req.param("data");
-	var _format = req.param("format");
-	var _width = req.param("svg_width");
-	var _height = req.param("svg_height");
-	var _context = req.param("context");
 
+	var _svg_raw = req.params.data;
+	var _format = req.params.format;
+	var _width = req.params.svg_width;
+	var _height = req.params.svg_height;
+	var _context = req.params.context;
+
+	logger.debug("*********transcode request: "+_format);
 
 
 	var svg = new Rsvg(_svg_raw);
