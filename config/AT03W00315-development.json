@@ -68,7 +68,7 @@
 
 
 	 "transcoder" : {
-		"url" : "http://tomcat.ea.bwinparty.corp/transcode/"
+		"url" : "http://localhost:8080/transcode/"
 	},
 
 

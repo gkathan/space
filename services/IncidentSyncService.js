@@ -316,6 +316,7 @@ function _handleClosedIncidents(deltaIds,type,callback){
 				if (err){
 					logger.error("error: "+err.message);
 					done();
+					return;
 				}
 				if (data && data.records && data.records.length>0){
 					var _incident = incService.filterRelevantData(data.records[0]);
@@ -323,8 +324,8 @@ function _handleClosedIncidents(deltaIds,type,callback){
 					_list.push(_incident);
 				}
 				else logger.warn("!!!!!!!!!!!!!!!!!! incident with sysId: "+_sysId+" cannot be found under "+_url);
-
 				done();
+
 			})
 		},function(err){
 			if(err){
@@ -503,7 +504,11 @@ function _getSnowData(url,type,callback){
 	var _statusSUCCESS = "[SUCCESS]";
 
 	var client = require('node-rest-client').Client;
-	client = new Client({user:_secret.snowUser,password:_secret.snowPassword});
+	var _options = {user:_secret.snowUser,password:_secret.snowPassword};
+	if (config.proxy){
+		_options.proxy = config.proxy;
+	}
+	client = new Client(_options);
 	logger.debug("*** [_getSnowData] client.get data : url = "+url);
 	client.get(url, function(data, response,done){
 		callback(null,data);
