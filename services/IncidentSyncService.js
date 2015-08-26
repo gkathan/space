@@ -503,7 +503,7 @@ function _getSnowData(url,type,callback){
 	var _statusERROR = "[ERROR]";
 	var _statusSUCCESS = "[SUCCESS]";
 
-	var client = require('node-rest-client').Client;
+	var Client = require('node-rest-client').Client;
 	var _options = {user:_secret.snowUser,password:_secret.snowPassword};
 	if (config.proxy){
 		_options.proxy = config.proxy;
