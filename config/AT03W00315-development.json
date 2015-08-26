@@ -13,7 +13,7 @@
 		"availability" : {
 			"mode": "on",
 			"intervalMinutes" :60 	,
-			"url" : ["http://avreport.bwinparty.corp/API/AvReoprtingService.svc/getYTDDatapoint","http://avreport.bwinparty.corp/API/AvReoprtingService.svc/GetAVGraphDatapoints"]
+			"url" : ["http://avreport.bwinparty.corp/API/AvReportingService.svc/getYTDDatapoint","http://avreport.bwinparty.corp/API/AvReportingService.svc/GetAVGraphDatapoints"]
 		},
 		"incidents" : {
 			"mode": "on",
