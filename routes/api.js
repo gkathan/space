@@ -809,6 +809,10 @@ function saveBoard(req, res , next){
 			v1Service.getRoadmapInitiatives(new Date("2014-01-01"),function(err,roadmap){
 				for (var r in roadmap){
 					//split / join needed e.g. if businessbacklog is used we need to replace "/"
+					if (!roadmap[r][_groupby[0]]) roadmap[r][_groupby[0]]="empty";
+					if (!roadmap[r][_groupby[1]]) roadmap[r][_groupby[1]]="empty";
+					if (!roadmap[r][_groupby[2]]) roadmap[r][_groupby[2]]="empty"; 
+
 					var _group1 = roadmap[r][_groupby[0]].split("/").join("|");
 					var _group2 = roadmap[r][_groupby[1]].split("/").join("|");
 					var _group3 = roadmap[r][_groupby[2]].split("/").join("|");
@@ -820,7 +824,7 @@ function saveBoard(req, res , next){
 					//var _itemView={sublaneOffset:0,size:7,accuracy:10,lanePath:"/"+_product+"/"+_backlog+"/"+_status}
 					// distinct sublanes ;-) give one line per item for free ;-)
 					//var _itemView={sublaneOffset:0,size:7,accuracy:10,lanePath:"/"+_product+"/"+_status+"/"+_number}
-					var _itemView={sublaneOffset:0,size:7,accuracy:10,lanePath:"/"+_group1+"/"+_group2+"/"+_group3}
+					var _itemView={sublaneOffset:0,size:7,accuracy:10,lanePath:board.name+"/"+_group1+"/"+_group2+"/"+_group3}
 					var _item ={itemRef:roadmap[r].Number,itemView:_itemView};
 					_items.push(_item);
 				}
@@ -1214,14 +1218,16 @@ function transcode(req,res,next){
 	logger.debug("*********transcode request: ");
 	var Rsvg = require('rsvg').Rsvg;
 
-
+	var _body = req.body;
 	var _svg_raw = req.params.data;
 	var _format = req.params.format;
 	var _width = req.params.svg_width;
 	var _height = req.params.svg_height;
 	var _context = req.params.context;
 
-	logger.debug("*********transcode request: "+_format);
+	logger.debug("*********transcode request: format: "+_format);
+
+	logger.debug("*********transcode request: "+JSON.stringify(_body));
 
 
 	var svg = new Rsvg(_svg_raw);

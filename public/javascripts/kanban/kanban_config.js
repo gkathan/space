@@ -68,23 +68,23 @@ var itemDataConfig = [
 					[
 						{"context":"b2c gaming", "name":"topline","value"	:60},
 						{"context":"b2c gaming","name":"enabling","value"	:40},
-						{"context":"studios", "name":"customer","value"	:50},
-						{"context":"studios","name":"product","value"	:20},
-						{"context":"studios","name":"enabling","value"		:30}
+
+						{"context":"studios", "name":"Casino","value"	:25},
+						{"context":"studios","name":"Payments","value"	:10},
+						{"context":"studios","name":"Poker","value"	:20},
+						{"context":"studios","name":"Sports Content, Trading & security","value"	:5},
+						{"context":"studios","name":"CRM Services","value"	:5},
+						{"context":"studios","name":"Sports","value"	:10},
+						{"context":"studios","name":"Core Services","value"	:10},
+						{"context":"studios","name":"Studios","value"	:5},
+						{"context":"studios","name":"Portal","value"		:5},
+						{"context":"studios","name":"Compliance","value"		:5}
+
 					]
 			},
 			{"level":"2","mode": "auto","percentages":
 
 					[
-						{"context":"studios","name":"bwin","value"		:20},
-						{"context":"studios","name":"premium","value"		:15},
-						{"context":"studios","name":"pp","value"		:15},
-						{"context":"studios","name":"danske","value"		:10},
-						{"context":"studios","name":"pmu","value"		:10},
-						{"context":"studios","name":"borgata","value"		:10},
-						{"context":"studios","name":"bwinfeed","value"		:10},
-						{"context":"studios","name":"betfred","value"		:10},
-
 						{"context":"holding","name":"bwin","value"		:30},
 						{"context":"holding","name":"studios","value"		:20},
 						{"context":"holding","name":"premium","value"		:10},

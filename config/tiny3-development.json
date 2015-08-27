@@ -25,6 +25,6 @@
 	},
 
      "transcoder" : {
-		"url" : "http://localhost:3000/api/space/transcode"
+		"url" : "http://localhost:3000/api/space/transcode/"
      }
 }
