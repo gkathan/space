@@ -51,6 +51,7 @@ function _syncProblem(url,type,callback){
 	var _options = {user:_secret.snowUser,password:_secret.snowPassword};
 	if (config.proxy){
 		_options.proxy = config.proxy;
+		_options.proxy.tunnel = true;
 	}
 	client = new Client(_options);// direct way
 	logger.debug("**** node rest client: "+client);

@@ -3,8 +3,8 @@ include ../kanban_menu
 //link(rel='stylesheet', href='/stylesheets/material.css')
 
 
-mixin statusLight(state,size,pulse)
-	div(style="margin-left:5px;width: #{size}px;height: #{size}px;-webkit-animation: pulse #{mapState2Pulse(state)}s ease-out;animation: pulse #{mapState2Pulse(state)}s ease-out;-webkit-animation-iteration-count: infinite;-moz-animation-iteration-count: infinite;	animation-iteration-count: infinite;;-moz-border-radius: 50%; -webkit-border-radius: 50%; border-radius: 50%;background-color:#{mapState2Color(state)};margin-top:3px")
+mixin statusLight(state,size,syncName,lastSyncStatus)
+	div(id="statuslight_#{syncName}" style="margin-left:5px;width: #{size}px;height: #{size}px;animation: pulse #{mapState2Pulse(state,lastSyncStatus)}s ease-out;animation-iteration-count: infinite;;-moz-border-radius: 50%; -webkit-border-radius: 50%; border-radius: 50%;background-color:#{mapState2Color(state,lastSyncStatus)};margin-top:3px")
 
 style.
 	@-webkit-keyframes "pulse" {
@@ -30,17 +30,20 @@ style.
 	 }
 	}
 
--	function mapState2Color(state){
--		if (state=="off") return "red";
--		if (state=="on") return "limegreen";
+-	function mapState2Color(state,lastSyncStatus){
+-		if (state=="off") return "lightgrey";
+-		if (state=="on" && lastSyncStatus=="[SUCCESS]") return "limegreen";
+-		if (state=="on" && lastSyncStatus=="[ERROR]") return "red";
+
 -		if (!state) return "lightgrey"
 -		// red and green are ok
 -		return state;
 -	}
 
--	function mapState2Pulse(state){
+-	function mapState2Pulse(state,lastSyncStatus){
 -		if (state=="off") return 0;
--		if (state=="on") return 2;
+-		if (state=="on" && lastSyncStatus=="[ERROR]") return .8;
+-		if (state=="on" && lastSyncStatus=="[SUCCESS]") return 2;
 -		return 0;
 -	}
 
@@ -57,8 +60,6 @@ div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;back
 		i.glyphicon.glyphicon-refresh(style="font-size:15px")
 		span(style="font-size:20px") &nbsp;SYNC PROCESSES
 	.panel-body(style="font-size:12px")
-		
-		
 		table.table.table-striped.table-hover.table-condensed
 			thead
 				tr(style="line-height:24px")
@@ -80,9 +81,10 @@ div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;back
 						|force sync
 			tbody
 				each sync in syncers
+					-if (!sync.syncInfo) sync["syncInfo"]={status:"[UNDEFINED]"}
 					tr(style="line-height:18px")
 						td 
-							+statusLight(sync.sync.mode,12)
+							+statusLight(sync.sync.mode,12,sync.name,sync.syncInfo.status)
 						td 
 							a(href="#{sync.sync.url}" target="_new")|#{sync.name}
 						td 
@@ -271,14 +273,31 @@ script.
 		var _idInfo = '#'+data.from+'_info';
 		var _idType = '#'+data.from+'_type';
 		
+		var _idStatusLight = '#statuslight_'+data.from;
+		
+		
 		$(_idTimestamp).text(moment(data.timestamp).format("YYYY-MM-DD HH:mm:ss"));
 		$(_idTimestamp).effect( "highlight", "slow" );
 		if (data.status=="[ERROR]") $(_idTimestamp).animate({color: "red"}, 1000 );
 		else if (data.status=="[SUCCESS]") $(_idTimestamp).animate({color: "green"}, 1000 );
 		$(_idStatus).text(data.status);
 		$(_idStatus).effect( "highlight", "slow" );
-		if (data.status=="[ERROR]") $(_idStatus).animate({color: "red"}, 1000 );
-		else if (data.status=="[SUCCESS]") $(_idStatus).animate({color: "green"}, 1000 );
+		if (data.status=="[ERROR]"){
+			$(_idStatus).animate({color: "red"}, 1000 );
+			
+			$(_idStatusLight).css("background-color","red");
+			$(_idStatusLight).css("animation"," pulse .8s ease-out");
+			$(_idStatusLight).css("animation-iteration-count"," infinite");
+			
+			console.log("_idStatusLight: "+_idStatusLight);
+		} 
+		else if (data.status=="[SUCCESS]"){
+			 $(_idStatus).animate({color: "green"}, 1000 );
+			 $(_idStatusLight).css("background-color","limegreen");
+			 $(_idStatusLight).css("animation","pulse 2s ease-out");
+			$(_idStatusLight).css("animation-iteration-count"," infinite");
+			 console.log("_idStatusLight: "+_idStatusLight);
+		}	
 		$(_idType).text(data.type);
 		$(_idType).effect( "highlight", "slow" );
 	
@@ -290,7 +309,7 @@ script.
 	});
 	
 	socket.on('incidentTickerUpdate', function (data) {
-		console.log("ticker update: "+JSON.stringify(data));
+		console.log("ticker update: "+data);
 		
-		$("#ticker").html(JSON.stringify(data));
+		//$("#ticker").html(JSON.stringify(data));
 	});
