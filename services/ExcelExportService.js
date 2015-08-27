@@ -748,6 +748,7 @@ function _generateAndSendExcel(collection,conf,req,res,next){
 */
 	db.collection(collection).find().sort({_id : 1} , function(err , success){
 		if(success){
+			logger.debug("excelExport: data rows: "+success.length);
 			if (collection=="domains"){
 				success = _transformDomains(success);
 			}
