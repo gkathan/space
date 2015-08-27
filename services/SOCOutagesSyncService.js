@@ -53,9 +53,14 @@ function _sync(url,type,callback){
 	var socOutages;
 	var incService = require('./IncidentService');
 
-	// call availability rest service
 	var Client = require('node-rest-client').Client;
-	client = new Client();
+	var _options = {};
+	if (config.proxy){
+		_options.proxy = config.proxy;
+		_options.proxy.tunnel=false;
+	}
+	client = new Client(_options);// direct way
+
 
 	// findAll grabs combined old and new snow incidents
 	//if we only want new snow => for now just call find()

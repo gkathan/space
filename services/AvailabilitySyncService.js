@@ -54,8 +54,16 @@ function _sync(urls,type,callback){
 
 	logger.debug("************************************** SYNC AVAILABILITY");
 	// call availability rest service
+
 	var Client = require('node-rest-client').Client;
-	client = new Client();
+	var _options = {};
+	if (config.proxy){
+		_options.proxy = config.proxy;
+		_options.proxy.tunnel=false;
+	}
+	client = new Client(_options);// direct way
+
+
 	// direct way
 	client.get(urls[0], function(data, response,done){
 		// parsed response body as js object

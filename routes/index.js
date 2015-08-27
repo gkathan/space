@@ -144,10 +144,19 @@ router.get('/signup', function(req, res) {
 router.get('/kanban/:id', function(req, res) {
 	var id = req.params.id;
   	var v1Service =  require('../services/V1Service');
-  		v1Service.findEpics(function (err, docs){
-  		res.locals.kanbanId = id;
-  		res.locals.epics = docs;
-  		res.render('kanban', { title: 's p a c e - kanban board' })
+  		v1Service.getRoadmapInitiatives(new Date("2014-01-01"),function (err, docs){
+        var _items = [];
+        for (var i in docs){
+          var _r = docs[i];
+          if (_r.Value && _r.Swag && (_r.Status=="New" || _r.Status=="Understanding" || _r.Status=="Conception" || _r.Status=="Implementation")){
+            _items.push(_r);
+          }
+        }
+
+    		res.locals.kanbanId = id;
+        res.locals.moment = require('moment');
+    		res.locals.epics = _items;
+    		res.render('kanban', { title: 's p a c e - kanban board' })
   	});
 
 });

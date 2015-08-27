@@ -72,6 +72,7 @@ function _sync(url,type,callback){
 				v1Service.getRoadmapInitiatives(new Date("2014-01-01"),function(err,roadmapinitiatives){
 					logger.debug("------------- SAVE ")
 					var roadmap =  db.collection("roadmapinitiatives");
+					roadmap.drop();
 					roadmap.insert(roadmapinitiatives);
 				})
 
