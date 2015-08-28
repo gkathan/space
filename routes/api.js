@@ -809,9 +809,9 @@ function saveBoard(req, res , next){
 			v1Service.getRoadmapInitiatives(new Date("2014-01-01"),function(err,roadmap){
 				for (var r in roadmap){
 					//split / join needed e.g. if businessbacklog is used we need to replace "/"
-					if (!roadmap[r][_groupby[0]]) roadmap[r][_groupby[0]]="empty";
+					if (!roadmap[r][_groupby[0]]) roadmap[r][_groupby[0]]=board.name;
 					if (!roadmap[r][_groupby[1]]) roadmap[r][_groupby[1]]="empty";
-					if (!roadmap[r][_groupby[2]]) roadmap[r][_groupby[2]]="empty"; 
+					if (!roadmap[r][_groupby[2]]) roadmap[r][_groupby[2]]="empty";
 
 					var _group1 = roadmap[r][_groupby[0]].split("/").join("|");
 					var _group2 = roadmap[r][_groupby[1]].split("/").join("|");
