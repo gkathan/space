@@ -101,8 +101,10 @@ function getLanesNEW(){
  */
 function getLaneByNameNEW(name){
 	var _lanes = getLanesNEW();
+	console.log("-----getLaneByName name: "+name);
 	for (var i in _lanes){
-		if ((_lanes[i].name).indexOf(name)>=0) return _lanes[i];
+		console.log("------------ lanes.name: "+_lanes[i].name)
+		if (_lanes[i].name===name) return _lanes[i];
 	}
 	return null;
 }
@@ -120,7 +122,7 @@ function getSublanesNEW(lane){
 function getSublaneByNameNEW(name){
 	var _sublanes = getSublanesNEW();
 	for (var i in _sublanes){
-		if (_sublanes[i].name.indexOf(name)>=0) return _sublanes[i];
+		if (_sublanes[i].name===name) return _sublanes[i];
 	}
 	return null;
 }
