@@ -9,32 +9,41 @@ style.
 	h4 switches
 
 
-	mixin switch(name)
+	mixin switch(name,value)
 		.input-group(style="margin-left:10px;")
 			.btn-group(id="radioBtn")
-				a.btn.btn-primary.btn-xs.active(data-toggle=name data-title="off") off
-				a.btn.btn-primary.btn-xs.notActive(data-toggle=name data-title="show") show
-				a.btn.btn-primary.btn-xs.notActive(data-toggle=name data-title="hide") hide
+				if value=="show"
+					a.btn.btn-primary.btn-xs.notActive(data-toggle=name data-title="off") off
+					a.btn.btn-primary.btn-xs.active(data-toggle=name data-title="show") show
+					a.btn.btn-primary.btn-xs.notActive(data-toggle=name data-title="hide") hide
+				else if value=="hide"
+					a.btn.btn-primary.btn-xs.notActive(data-toggle=name data-title="off") off
+					a.btn.btn-primary.btn-xs.notActive(data-toggle=name data-title="show") show
+					a.btn.btn-primary.btn-xs.active(data-toggle=name data-title="hide") hide
+				else
+					a.btn.btn-primary.btn-xs.active(data-toggle=name data-title="off") off
+					a.btn.btn-primary.btn-xs.notActive(data-toggle=name data-title="show") show
+					a.btn.btn-primary.btn-xs.notActive(data-toggle=name data-title="hide") hide
 			input(type="hidden" name=name id="_input_"+name)
 			span(style="margin-left:5px; font-size:16px; font-weight:bold")=name
 
 
 
 	// nice mixins :-)
-	+switch('initiatives')
-	+switch('Swag')
-	+switch('Start')
-	+switch('queues')
-	+switch('grid')
-	+switch('vision')
-	+switch('targets')
-	+switch('lanes')
-	+switch('axes')
+	+switch('initiatives',board.viewConfig.initiatives)
+	+switch('Swag',board.viewConfig.swag)
+	+switch('Start',board.viewConfig.start)
+	+switch('queues',board.viewConfig.queues)
+	+switch('grid',board.viewConfig.grid)
+	+switch('vision',board.viewConfig.vision)
+	+switch('targets',board.viewConfig.targets)
+	+switch('lanes',board.viewConfig.lanes)
+	+switch('axes',board.viewConfig.axes)
 	hr.divider
-	+switch('queues.qmetrics')
-	+switch('metrics')
-	+switch('releases')
-	+switch('NGR')
+	+switch('queues.qmetrics',"off")
+	+switch('metrics',board.viewConfig.metrics)
+	+switch('releases',"off")
+	+switch('NGR',"off")
 	
 
 

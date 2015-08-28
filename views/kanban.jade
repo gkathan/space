@@ -27,8 +27,6 @@ script(src="/javascripts/components/flippant.js/flippant.min.js")
 block content
 	div.notifications.top-left
 	div.row(style="margin-left:10px;margin-bottom:10px")
-		
-		
 		// Button trigger modal
 		button.btn.btn-primary.btn-xs(type="button" data-toggle="modal" data-target="#myModal")
 			span board config
@@ -45,7 +43,7 @@ block content
 			span show kanban board
 		
 		//Modal
-		div.modal.fade.draggable(id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" )
+		div.modal.fade(id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" )
 			div.modal-dialog
 				div.modal-content(style="opacity:1")
 					div.modal-header
@@ -78,7 +76,7 @@ block content
 						table.table.table-striped.table-hover.table-condensed.tablsesorter(id="table_roadmapitems")
 							thead
 								tr
-									th(style="width:80px") id
+									th(style="width:80px") V1
 									th name
 									th product
 									th(style="width:80px") start
@@ -88,9 +86,11 @@ block content
 									th(style="width:80px")  risk
 							tbody
 								each e in epics
-									tr
+									tr.draggable
 										td(style="text-align:left;vertical-align:middle;font-size:10px") 
-											a(href="http://v1.bwinparty.corp/V1-Production/Epic.mvc/Summary?oidToken=Epic%3A"+e.ID.split(":")[1] target="_new" )|#{e.Number}
+											img(src="/images/v1/epic.gif" height="10px")
+											a(href="http://v1.bwinparty.corp/V1-Production/Epic.mvc/Summary?oidToken=Epic%3A"+e.ID.split(":")[1] target="_new" )
+												|&nbsp;#{e.Number}
 										td(style="vertical-align:top;text-align:left;vertical-align:middle;font-size:10px") 
 											|#{e.Name}
 										td(style="vertical-align:top;text-align:left;font-size:11px;vertical-align:middle") #{e.Product} 
@@ -100,9 +100,6 @@ block content
 										td(style="vertical-align:top;text-align:left;vertical-align:middle;font-size:11px") #{e.Swag} 
 										td(style="vertical-align:top;text-align:left;font-size:11px;vertical-align:middle") #{e.Risk} 
 					script $("#table_roadmapitems").tablesorter();				
-								
-								
-								
 								
 	script(type="text/javascript").
 		
