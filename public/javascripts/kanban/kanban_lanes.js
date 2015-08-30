@@ -272,7 +272,6 @@ function _drawLaneText(svg,lane,side,logoHeight){
 }
 
 		function highlightLane(svg,lane){
-
 			var _highlight = svg.append("rect")
 				.attr("x",-5)
 				.attr("y",y(lane.yt1))
@@ -284,7 +283,6 @@ function _drawLaneText(svg,lane,side,logoHeight){
 			_highlight.attr("id","highlightlane");
 			return _highlight;
 		}
-
 
 /* ------------------------------------------------- drawLanes() helper functions ----------------------------------------------------------- */
 		/**
@@ -305,7 +303,18 @@ function _drawLaneText(svg,lane,side,logoHeight){
 			.attr("height",height)
 				.on("click",function(d){window.location.href=link;})
 			.attr("class",css);
+
+			if (CONFIG.initiatives.states.colors[context]){
+					svg.append("rect")
+					.attr("x",x)
+					.attr("y",y)
+					.attr("width",8)
+					.attr("height",height)
+					.attr("class",css)
+					.style("fill",CONFIG.initiatives.states.colors[context])
+			}
 		}
+
 
 		/**
 		 * returns the metrics of logo
@@ -328,14 +337,22 @@ function _drawLaneText(svg,lane,side,logoHeight){
 			.attr("class","lanebox "+lane);
 			//.on("click",function(d){window.location.href="kanban_"+lane+".html";});
 
+			if (CONFIG.initiatives.states.colors[lane]){
+					svg.append("rect")
+					.attr("x",x)
+					.attr("y",y)
+					.attr("width",2)
+					.attr("height",height)
+
+					.style("fill",CONFIG.initiatives.states.colors[lane])
+			}
+
 			// only append logo if we have declared on in external.svg
 			if (document.getElementById(lane)){
 				var _x = x+_x_offset;
 				var _y = y+_y_offset;
 
 				var _logo = _drawXlink(svg,"#"+lane,0,0,{"scale":1});
-
-
 				_metrics = get_metrics(_logo.node());
 				// i need to know the width of the logo....
 				if (side=="right"){

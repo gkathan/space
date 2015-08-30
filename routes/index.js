@@ -6,7 +6,7 @@ var mongojs = require("mongojs");
 var _ = require('lodash');
 
 var router = express.Router();
-
+var moment = require('moment');
 
 var config = require('config');
 
@@ -118,6 +118,7 @@ router.get('/boards', function(req, res) {
   	var boardService =  require('../services/BoardService');
   	boardService.find({}, function (err, docs){
   		res.locals.boards=docs;
+      res.locals.moment=moment;
   		//console.log(": "+boards[0]);
   		res.render('boards', { title: 's p a c e - kanbanboards' });
   	});

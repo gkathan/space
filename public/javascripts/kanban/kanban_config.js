@@ -17,7 +17,6 @@ var CONFIG=loadConfig();
 
 var SPACE_API = CONFIG.api.protocol+"://"+CONFIG.api.host+"/api/space/rest/"
 
-
 var TRANSCODE_URL = CONFIG.transcoder.url;
 var KANBANV2API_URL = CONFIG.api.url;
 

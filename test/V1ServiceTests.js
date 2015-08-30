@@ -75,4 +75,19 @@ describe('#getRoadmap()', function(){
 });
 
 
+describe('#findEpicsWithChildren()', function(){
+	it('should get all epics including children based on parent field ', function(done){
+		var v1Service = require('../services/V1Service');
+	this.timeout(30000);
+		v1Service.findEpicsWithChildren(function(err,epics){
+				console.log("--- all epics: "+epics.length);
+
+				var _e =_.findWhere(epics,{"Number":"E-10365"});
+				console.log("E-10365.Children: "+_e.Children);
+				done();
+		})
+		//assert.equal("E2988", employee.EmployeeNumbexr);
+	});
+});
+
 })

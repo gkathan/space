@@ -13,6 +13,7 @@ var connection_string = '127.0.0.1:27017/'+DB;
 var db = mongojs(connection_string, [DB]);
 
 exports.findEpics=_findEpics;
+exports.findEpicsWithChildren=_findEpicsWithChildren;
 exports.findInitiativeEpics=_findInitiativeEpics;
 exports.findPortfolioApprovalEpics=_findPortfolioApprovalEpics;
 exports.getRoadmapInitiatives=_getRoadmapInitiatives;
@@ -29,6 +30,23 @@ function _findEpics(callback) {
 			return;
 	});
 }
+
+function _findEpicsWithChildren(callback) {
+	var epics =  db.collection('v1epics');
+		epics.find({}, function (err, epics){
+
+			for (var e in epics){
+				if (epics[e].EpicRootNumber){
+					var _e=_.findWhere(epics,{"Number":epics[e].EpicRootNumber});
+					if (!_e.Children) _e.Children =[];
+					_e.Children.push(epics[e]);
+				}
+			}
+			callback(err,epics);
+			return;
+	});
+}
+
 
 function _findInitiativeEpics(callback) {
 	var epics =  db.collection('v1epics');

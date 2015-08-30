@@ -93,9 +93,6 @@ d3.select("#metrics_forecast1").transition().delay(300).style("visibility","hidd
 // global variables
 var CONTEXT="CONTEXT";
 
-
-
-
 var releaseData;
 
 
@@ -273,7 +270,6 @@ function render(svgFile){
 				$.getJSON(dataSourceFor("releases")),
 				$.getJSON(dataSourceFor("boards/"+_boardId)),
 				$.getJSON(dataSourceFor("targets"))
-
 				)
 
 			.done(function(initiatives,metrics,releases,board,targets){
@@ -290,28 +286,21 @@ function render(svgFile){
 					else throw new Exception("error loading postits");
 					if (targets[1]=="success") targetData=targets[0];
 					else throw new Exception("error loading targets");
-
 					console.log("kanban.js loading data done..");
 					renderBoard(_boardId);
 				});
 	}); // end xml load anonymous
 }
 
-
-
-
 function joinBoard2Initiatives(board,initiatives){
 		console.log("join: "+initiatives.length);
 		var _items = board.items;
-
 		var _join = [];
 
 		for (var i in _items){
 			var _initiative = getItemByKey(initiatives,"Number",_items[i].itemRef);
-
 			console.log("+: "+_items[i].itemRef);
 			console.log("=: "+initiatives[i].Number);
-
 			if (_initiative){
 				// legacy attributes
 				_initiative.id=_items[i].itemRef;
@@ -326,7 +315,6 @@ function joinBoard2Initiatives(board,initiatives){
 					_initiative.state="planned";
 
 				}
-
 				_initiative.name=_initiative.Name;
 				_initiative.health=_initiative.Health;
 				_initiative.status=_initiative.Status;
@@ -347,7 +335,11 @@ function joinBoard2Initiatives(board,initiatives){
 						var _view = _items[i].itemView[ii];
 						_initiative[ii]=_view;
 				}
-				_join.push(_initiative);
+
+				if (new Date(_initiative.actualDate) >= new Date(board.startDate)){
+					_join.push(_initiative);
+				}
+
 			}
 		}
 		//set global

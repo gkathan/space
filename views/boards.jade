@@ -11,8 +11,8 @@ mixin board(board)
 				img.img-thumbnail(src="/images/boards/thumbs/#{board._id}.png"  style=" height:100px"  alt="...")
 			br
 			h4
-				small #{board.vision}
-			span(style="font-size:10px; color:#999999") created by: <b>cactus</b> [2015-01-23]
+				small &nbsp; #{board.vision}
+			span(style="font-size:10px; color:#999999") created: #{moment(board.createDate).format("YYYY-MM-DD HH:mm:ss")}
 			br
 			a.btn.btn-primary.btn-xs(href="/kanban/#{board._id}" role="button") View
 			a.btn.btn-default.btn-xs(href="/admin?type=boards" role="button") Edit
@@ -22,48 +22,50 @@ mixin board(board)
 
 
 block content
-	div.panel.panel-default
-		div.panel-heading ...select a board
-		div.panel-body
+	div.container-fluid
+		div.row(style="margin: auto;max-width:1150px")
+			div.panel.panel-default
+				div.panel-heading ...select a board
+				div.panel-body
 
-			// new board
-			div.col-sm-1.col-md-3
-				div.panel(style=" position: relative;padding: 10px 10px 10px;display: block;background-color:white;;width:250px;height:320px;text-align: center;margin: 10px auto;")
-					h4 &nbsp;
-					a(data-toggle="modal" data-target="#createBoardModal")
-						img.img-thumbnail(src="/images/boards/s2t_board_new.png"  style=" height:100px"  alt="...")
-					br
-					h4
-						small &nbsp;
-					br
-					button.btn.btn-info.btn-xs(type="button" data-toggle="modal" data-target="#createBoardModal")
-						span create
-			each val in boards
-				+board(val)
+					// new board
+					div.col-md-3.col-sm-4.col-xs-9.col-lg2
+						div.panel(style=" position: relative;padding: 10px 10px 10px;display: block;background-color:white;;width:250px;height:320px;text-align: center;margin: 10px auto;")
+							h4 &nbsp;
+							a(data-toggle="modal" data-target="#createBoardModal")
+								img.img-thumbnail(src="/images/boards/s2t_board_new.png"  style=" height:100px"  alt="...")
+							br
+							h4
+								small &nbsp;
+							br
+							button.btn.btn-info.btn-xs(type="button" data-toggle="modal" data-target="#createBoardModal")
+								span create
+					each val in boards
+						+board(val)
 
 
-			// ************ remove modal  ******************
-			.modal.fade.bs-example-modal-sm(id="deleteBoard" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true")
-				.modal-dialog.modal-sm
-					.modal-content
-						.modal-header
-							button.close(type="button" data-dismiss="modal" aria-label="Close")
-								span(aria-hidden="true") &times;
-							h4.modal-title(id="myModalLabel") Are your sure ??
-							br
-							span(style="color:red; text-align:center") this will <b>permanently</b> delete
-							br
-							|board:
-							span(id="boardName" style="font-weight:bold")
-							br
-							|id:
-							span(id="boardId" style="font-size:10px;color:grey;font-style:italic")
-						.modal-body
-							div.panel(style=" position: relative;padding: 10px 10px 10px;display: block;background-color:white;;width:250px;text-align: center;margin: 10px auto;")
-								input(type="hidden" id="deleteBoardId" name="deleteBoardId" value="")
-								button.btn.btn-danger(id="removeboardsubmit" type="button" )
-									span.glyphicon.glyphicon-flash
-									span delete now
+					// ************ remove modal  ******************
+					.modal.fade.bs-example-modal-sm(id="deleteBoard" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true")
+						.modal-dialog.modal-sm
+							.modal-content
+								.modal-header
+									button.close(type="button" data-dismiss="modal" aria-label="Close")
+										span(aria-hidden="true") &times;
+									h4.modal-title(id="myModalLabel") Are your sure ??
+									br
+									span(style="color:red; text-align:center") this will <b>permanently</b> delete
+									br
+									|board:
+									span(id="boardName" style="font-weight:bold")
+									br
+									|id:
+									span(id="boardId" style="font-size:10px;color:grey;font-style:italic")
+								.modal-body
+									div.panel(style=" position: relative;padding: 10px 10px 10px;display: block;background-color:white;;width:250px;text-align: center;margin: 10px auto;")
+										input(type="hidden" id="deleteBoardId" name="deleteBoardId" value="")
+										button.btn.btn-danger(id="removeboardsubmit" type="button" )
+											span.glyphicon.glyphicon-flash
+											span delete now
 
 
 

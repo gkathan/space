@@ -36,7 +36,7 @@ var itemDataConfig;
 var ITEM_SCALE=0.8;
 var ITEM_FONTSCALE=1.5;
 // when to wrap name of item
-var ITEM_TEXT_MAX_CHARS = 30;
+var ITEM_TEXT_MAX_CHARS = 100;
 var ITEM_TEXT_SWAG_MAX_CHARS =20;
 
 // the relative scaling compared to ITEM
@@ -52,6 +52,17 @@ var ITEM_ISOLATION_MODE = false;
 // ----------------------------------------------------------------------------------------------------------------
 // ---------------------------------------------- ITEMS SECTION ---------------------------------------------------
 // ----------------------------------------------------------------------------------------------------------------
+
+function _getVisibility(element){
+		var _visibility="visible";
+		if (element=="drawItemName.end" && BOARD.viewConfig.start=="show") _visibility="hidden";
+		if (element=="drawItemName.start" && BOARD.viewConfig.start=="hide") _visibility="hidden";
+
+		if (element=="itemIcon" && BOARD.viewConfig.start=="show") _visibility="hidden";
+		if (element=="itemIcon" && BOARD.viewConfig.start=="hide") _visibility="visible";
+
+		return _visibility;
+}
 
 /** renders the items
 */
@@ -139,6 +150,36 @@ function drawItems(){
 			 _startActualBeyond=true;
 		}
 
+		var _color;
+		if (d.status) _color=CONFIG.initiatives.states.colors[d.status];
+
+		// ----------------- startDate indicator ---------------------
+		if(d.startDate){
+			console.log("____startDate: "+d.startDate+" item: "+d.name+" plan: "+d.planDate);
+			var _startVisibility ="hidden";
+			if (BOARD.viewConfig.start=="show"){
+				_startVisibility="visible";
+			}
+			var _start = d3.select(this).append("g").attr("id","startID_"+d.id).style("visibility",_startVisibility);
+			var _startX1 = _itemXStart;
+			var _startX2 = _itemXPlanned;
+
+			var _x1Beyond = false;
+			var _x2Beyond = false;
+			if (new Date(d.startDate)<=KANBAN_START){
+				_startX1=x(KANBAN_START);
+				_x1Beyond = true;
+			}
+			else if (new Date(d.actualDate)>KANBAN_END){
+				_startX2=x(KANBAN_END);
+				_x2Beyond = true;
+
+			}
+			_drawStartDateIndicator(_start,d,{x1:_startX1,x1Beyond:_x1Beyond,x2:_startX2,x2Beyond:_x2Beyond,y:_itemY},_size,_color);
+
+		}
+
+
 		if (d.state =="done" || d.state =="planned"){
 			if (d.actualDate>d.planDate) _drawItemDelayLine(d3.select(this),_lineX1,_lineX2,_itemY);
 			// ------------  line if before plan--------------
@@ -157,14 +198,16 @@ function drawItems(){
 							.attr("cx",_itemX)
 							.attr("cy",_itemY)
 							.attr("r",_size)
+							.style("visibility","visible")//_getVisibility("itemIcon"))
 							.attr("class",function(d){
 							if (d.actualDate>d.planDate &&d.state=="planned") {return "delayed"}
 							else if (new Date(d.actualDate)>WIP_END) {return "future";}
-							else {return d.state}});
+							else {return d.state}})
+
 					// ----------- circle icons -------------
 					// only append icon if we have declared on in external.svg
 					if (document.getElementById("icon_"+d.theme+"."+d.lane+"."+d.sublane)){
-						_drawXlink(d3.select(this),"#icon_"+d.theme+"."+d.lane+"."+d.sublane,(_itemX-(1.2*_size/2)),(_itemY-(1.2*_size/2)),{"scale":_size/10});
+						_drawXlink(d3.select(this),"#icon_"+d.theme+"."+d.lane+"."+d.sublane,(_itemX-(1.2*_size/2)),(_itemY-(1.2*_size/2)),{"scale":_size/10},"item_circleicon_"+d.id);
 					}
 				}
 			} //end if d.Type!="target"
@@ -187,33 +230,30 @@ function drawItems(){
 			if (d.state=="planned" && new Date (d.planDate) < new Date(d.actualDate)) _iconRef="item_red";
 			if (d.state=="killed") _iconRef="item_killed";
 
-
 			var _diff = new Date()-new Date(d.createDate);
 			// 24 hours are NEW ...
 			if ( Math.floor(_diff/(60*60*1000))< 24) _iconRef="item_new";
 
-			_drawXlink(d3.select(this),"#"+_iconRef,(_itemXPlanned-(1.2*_size)),(_itemY-(1.2*_size)),{"scale":_size/10});
+			_drawXlink(d3.select(this),"#"+_iconRef,(_itemXPlanned-(1.2*_size)),(_itemY-(1.2*_size)),{"scale":_size/10,"visibility":_getVisibility("itemIcon")},"item_icon_"+d.id);
 
 			// positioning of itemtext
-			var _textX =_itemXPlanned;
+			var _textX;
+
 			if (ITEM_TEXT_POSITION=="ACTUAL" && (d.state=="planned" || d.state=="done"))_textX=_itemXActual;
 			if (ITEM_TEXT_POSITION=="PLAN") _textX=_itemXPlanned;
-			_drawItemName(d3.select(this),d,_textX,(_itemY)+ parseInt(_size)+(5+(_size/5)*ITEM_FONTSCALE));
 
-
+			_drawItemName(d3.select(this),d,_textX,(_itemY)+ parseInt(_size)+(5+(_size/5)*ITEM_FONTSCALE),null,null,_getVisibility("drawItemName.end"),"end");
 			// kanban_postits.js
 			_drawPostit(d3.select(this),d);
-
 		} // end KANBAN_START check
 		// if plandate is beyon KANBAN_START - we have to draw the name below the circle (a bit smaller)
 		else if (new Date(d.actualDate)>KANBAN_START && (d.state =="done" || d.state =="planned")){
-			_drawItemName(d3.select(this),d,_itemXActual,(_itemY+_size+3),0.1);
+			_drawItemName(d3.select(this),d,_itemXActual,(_itemY+_size+3),0.1,null,_getVisibility("drawItemName.end"),"end");
 		}
 		// transparent circle on top for the event listener
 		if (d.state!="killed") _drawItemEventListenerCircle(d3.select(this),"event_circle_"+d.id,_itemX,_itemY,_size)
 		// and always over the planned block
 		_drawItemEventListenerCircle(d3.select(this),"event_planned_circle_"+d.id,_itemXPlanned,_itemY,_size)
-
 
 		// ------------- labels for Swag view -------------
 		_text = gLabels
@@ -258,17 +298,6 @@ function drawItems(){
 			//console.log ("check depending element: "+d3.select("#item_block_"+d.dependsOn).getBBox());
 		} // end if dependcies
 
-		// ----------------- startDate indicator ---------------------
-		if(d.startDate && new Date(d.startDate)>KANBAN_START){
-			console.log("____startDate: "+d.startDate+" item: "+d.name+" plan: "+d.planDate);
-			var _startVisibility ="hidden";
-			if (BOARD.viewConfig.start=="show"){
-				_startVisibility="visible";
-			}
-			var _start = d3.select(this).append("g").attr("id","startID_"+d.id).style("visibility",_startVisibility);
-			_drawStartDateIndicator(_start,_itemXStart,_itemXPlanned,_itemY,_size);
-
-		}
 		// ----------------- sizings --------------------------------
 
 		// sizingPD portfolio view
@@ -284,18 +313,14 @@ function drawItems(){
 		// drag & drop  test	==>  HUHUUUUU - this overrides the itemdata binding !
 		//d3.select(this).data([ {"x":0, "y":0, "lane":d.lane,"id":d._id} ]).call(drag_item);
 		//for drag&drop
-
 		if (getAUTH()=="admin"){
 			var drag_item = _registerDragDrop();
 			d.x=0;
 			d.y=0;
 			d3.select(this).call(drag_item);
 		}
-
 	}) //end each()
 } //end drawItems
-
-
 
 function _drawItemEventListenerCircle(svg,id,x,y,r){
 	svg.append("circle")
@@ -310,13 +335,14 @@ function _drawItemEventListenerCircle(svg,id,x,y,r){
 		.on("mouseout", function(d){onTooltipOutHandler(d,tooltip);})
 }
 
-
-
 /**
  * helper methode
  */
-function _drawItemName(svg,d,x,y,scale,color){
+function _drawItemName(svg,d,x,y,scale,color,visibility,context,anchor){
 	// ------------  item names --------------
+	var _anchor ="middle";
+	if (anchor) _anchor=anchor;
+
 	if (!scale) scale=1;
 	var size = d.size*ITEM_SCALE*scale;
 	var _textWeight="bold";
@@ -330,11 +356,14 @@ function _drawItemName(svg,d,x,y,scale,color){
 	var _textDecoration="";
 	//if (d.ExtId!="") _textDecoration="underline";
 
+
 	var _name = d.name.replace(/\s*\[.*?\]\s*/g, '');
 
 	var _text =svg.append("text")
+			.attr("id","text_"+context+"_"+d.id)
 	   .style("font-size",_textSize+"px")
-	   .style("text-anchor","middle")
+		.style("visibility",visibility)
+	   .style("text-anchor",_anchor)
 	   // !!!!! BOLD and anchor=MIDDLE is not correctly renderered by batik !!!!!
 	   //.style("font-weight",_textWeight)
 	   .style("font-style",_textStyle)
@@ -368,8 +397,6 @@ function _drawItemDelayLine(svg,x1,x2,y){
 	.attr("class", function(d){
 		if (d.actualDate>d.planDate &&(d.state=="planned" ||d.state=="todo") ) return "delayLine";
 		else if (d.actualDate>d.planDate &&d.state=="onhold") return "delayLineOnhold";
-
-
 		else {return "delayLineDone"}})
 
 	.attr("marker-end", function(d){
@@ -380,37 +407,71 @@ function _drawItemDelayLine(svg,x1,x2,y){
 }
 
 /**
- */
-function _drawStartDateIndicator(svg,x1,x2,y,size){
-
-	var _width = (x2-x1)-size;
+* 			_drawStartDateIndicator(_start,d,{x1:_startX1,x1Beyond:_x1Beyond,x2:_startX2,x2Beyond:_x2Beyond,y:_itemY},_size,_color);
+*/
+function _drawStartDateIndicator(svg,item,position,size,color){
+	var _color;
+	if (!color){
+		_color="url(#gradientblack)";
+	}
+	else{
+		_color=color;
+	}
+	var _width = (position.x2-position.x1);
 	if (_width<0) _width = 0;
 
 	var _height = size;
 	if (_height<0) _height = 0;
 
-
 	svg.append("rect")
-	.attr("x", x1)
-	.attr("y", y-size/2)
+	.attr("x", position.x1)
+	.attr("y", position.y-size/2)
 	.attr("width", _width)
 	.attr("height", _height)
-	.style("fill","url(#gradientblack)")
-	.style("opacity",1);
+	.style("fill",_color)
+	.style("opacity",1)
+		.on("mouseover", function(d){onTooltipOverHandler(d,tooltip);})
+		.on("mousemove", function(d){onTooltipMoveHandler(tooltip);})
+		.on("dblclick",	function(d){onTooltipDoubleClickHandler(tooltip,d3.select(this),d);})
+		.on("mouseout", function(d){onTooltipOutHandler(d,tooltip);});
 
-	svg.append("circle")
-	.attr("cx", x1)
-	.attr("cy", y)
-	.attr("r", size)
-	.style("stroke-width","0px")
-	.style("stroke","black")
-	.style("fill","#bbbbbb")
-	.style("opacity",1);
+	if (!position.x1Beyond){
+		svg.append("circle")
+		.attr("cx", position.x1)
+		.attr("cy", position.y)
+		.attr("r", size/2)
+		.style("stroke-width","0px")
+		//.style("stroke","black")
+		.style("fill",_color)
+		.style("opacity",1);
+	}
 
+	if (!position.x2Beyond){
+		svg.append("circle")
+		.attr("cx", position.x2)
+		.attr("cy", position.y)
+		.attr("r", size/2)
+		.style("stroke-width","0px")
+		//.style("stroke","black")
+		.style("fill",_color)
+		.style("opacity",1);
+	}
+	/*
 	svg.append("path").
-	attr("transform","translate("+(x1+1)+","+y+") rotate(90) scale(0.5)")
+	attr("transform","translate("+(position.x1+1)+","+position.y+") rotate(90) scale(0.5)")
 	.attr("d",d3.svg.symbol().type("triangle-up"))
 	.style("fill","white");
+	*/
+	var _textX=position.x1+((position.x2-position.x1)/2);
+	var _anchor="middle";
+	if (position.x1Beyond){
+		_textX=x(KANBAN_START)+((position.x2-x(KANBAN_START))/2);
+		_anchor="start";
+		if(_textX<x(KANBAN_START)){
+			 _textX=x(KANBAN_START);
+		}
+	}
+	_drawItemName(svg,item,_textX,(position.y+size+4), 1,null,_getVisibility("drawItemName.start"),"start",_anchor);
 }
 
 /**
@@ -421,7 +482,6 @@ function _drawStartDateIndicator(svg,x1,x2,y,size){
  */
 function onTooltipOverHandler(d,tooltip){
 	// and fadeout rest
-
 	var highlight ="#item_";
 
 	//bugfix
@@ -454,9 +514,6 @@ function onTooltipOverHandler(d,tooltip){
 	// and highlight depending metrics
 	//test hardcoded
 
-
-
-
 	d3.select(highlight+d.id)
 		.transition()
 		.delay(100)
@@ -477,9 +534,6 @@ function onTooltipOverHandler(d,tooltip){
 	tooltip.style("visibility", "visible");
 	tooltip.style("top", (d3.event.pageY-40)+"px").style("left",(d3.event.pageX+25)+"px");
 
-
-
-
 	var _dependingItems;
 	if (d.dependsOn){
 		// highlight also depending items
@@ -491,15 +545,12 @@ function onTooltipOverHandler(d,tooltip){
 		_dependingItems = d.initiatives.split(",");
 	}
 
-
-
-
-
 	if (_dependingItems) _highlightItems(_dependingItems,filteredInitiativeData,"#item_");
-
-	if (d.startDate) d3.select("#startID_"+d.id).style("visibility","visible");
-
-
+	if (d.startDate){
+		d3.select("#startID_"+d.id).style("visibility","visible");
+		d3.select("#text_end_"+d.id).style("visibility","hidden");
+		d3.select("#text_start_"+d.id).style("visibility","visible");
+	}
 }
 
 
@@ -542,7 +593,6 @@ function _itemTooltipHTML(d){
 
 	var _lanepath = d.lanePath;
 
-
 	var _htmlBase ="<table><col width=\"30\"/><col width=\"85\"/><tr><td style=\"font-size:4px;text-align:left\"><a href=\""+_v1SyncLink+"\" target=\"new\">[v1synch]</a> <a href=\""+_adminLink+"\" target=\"new\">[admin]</a></td><td style=\"font-size:4px;text-align:right\">";
 	if (d.ExtId)
 		_htmlBase+=" <a href=\""+_v1Link+d.ExtId+"\" target=\"new\">[v1: "+d.ExtId+"]</a>";
@@ -582,9 +632,7 @@ function _itemTooltipHTML(d){
 	_htmlBase = _htmlBase+"<tr> <td colspan=\"2\"  style=\"text-align:right\"><a id=\"flip\" class=\"small\" style=\"text-align:right\" >[flip it]</a></td></table>";
 
 	return _htmlBase;
-
 }
-
 
 /**
  * handler for tooltip mouse move
@@ -598,8 +646,6 @@ function onTooltipMoveHandler(tooltip){
  * handler for tooltip doubleclick handling
  */
 function onTooltipDoubleClickHandler(tooltip,svg,d){
-
-
 	console.log("doubleclick: "+d3.select(this)+" svg: "+svg);
 	if (!ITEM_ISOLATION_MODE){
 		d3.selectAll("#items,#targets").selectAll("g").selectAll("circle").on("mousemove",null);
@@ -646,9 +692,7 @@ function onTooltipDoubleClickHandler(tooltip,svg,d){
 							back.close();
 						});
 					}));
-
 				// -- experiment with diff_trail from initiatives
-
 			});
 	}
 	else {
@@ -657,6 +701,7 @@ function onTooltipDoubleClickHandler(tooltip,svg,d){
 		d3.selectAll("#items").selectAll("g").selectAll("circle").on("mousemove", function(d){onTooltipMoveHandler(tooltip);})
 		d3.selectAll("#items").selectAll("g").selectAll("circle").on("mouseout", function(d){onTooltipOutHandler(d,tooltip);})
 		d3.selectAll("#items").selectAll("g").selectAll("circle").on("mouseover", function(d){onTooltipOverHandler(d,tooltip);})
+
 
 		console.log("...EXIT ITEM_ISOLATION mode...");
 		ITEM_ISOLATION_MODE=false;
@@ -689,10 +734,8 @@ function onTooltipOutHandler(d,tooltip){
 
 	d3.select("#vision").transition().delay(0).duration(500).style("opacity",1);
 
-
 	// show metrics
 	d3.select("#metrics").selectAll("[id*=metric_]").transition().delay(0).duration(500).style("opacity",1)
-
 
 	d3.select("#depID_"+d.id)
 		.transition()
@@ -735,7 +778,11 @@ function onTooltipOutHandler(d,tooltip){
 		} // end de- check depending items
 	}
 
-	if (d.startDate) d3.select("#startID_"+d.id).style("visibility","hidden");
+	if (BOARD.viewConfig.start=="hide"){
+		if (d.startDate) d3.select("#startID_"+d.id).style("visibility","hidden");
+		d3.select("#text_end_"+d.id).style("visibility","visible");
+		d3.select("#text_start_"+d.id).style("visibility","hidden");
+	}
 
 }
 

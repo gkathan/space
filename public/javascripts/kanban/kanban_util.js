@@ -101,9 +101,9 @@ function getLanesNEW(){
  */
 function getLaneByNameNEW(name){
 	var _lanes = getLanesNEW();
-	console.log("-----getLaneByName name: "+name);
+	//console.log("-----getLaneByName name: "+name);
 	for (var i in _lanes){
-		console.log("------------ lanes.name: "+_lanes[i].name)
+		//console.log("------------ lanes.name: "+_lanes[i].name)
 		if (_lanes[i].name===name) return _lanes[i];
 	}
 	return null;

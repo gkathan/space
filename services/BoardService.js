@@ -19,7 +19,7 @@ exports.save=_save;
  */
 function _find(filter,callback) {
 	var boards =  db.collection('boards');
-		boards.find(filter, function (err, boards){
+		boards.find(filter).sort({createDate:-1}, function (err, boards){
 			callback(err,boards);
 			return;
 	});

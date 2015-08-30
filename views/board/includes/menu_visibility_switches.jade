@@ -88,11 +88,19 @@ style.
 		}
 
 		function hideStart(){
-			d3.selectAll("[id*=startID]").style("visibility","hidden")
+			d3.selectAll("[id*=startID]").style("visibility","hidden");
+			d3.selectAll("[id*=text_start]").style("visibility","hidden");
+			d3.selectAll("[id*=text_end]").style("visibility","visible");
+			d3.selectAll("[id*=item_]").style("visibility","visible");
+			BOARD.viewConfig.start="hide";
 		}
 
 		function showStart(){
-			d3.selectAll("[id*=startID]").style("visibility","visible")
+			d3.selectAll("[id*=startID]").style("visibility","visible");
+			d3.selectAll("[id*=text_start]").style("visibility","visible");
+			d3.selectAll("[id*=text_end]").style("visibility","hidden");
+			d3.selectAll("[id*=item_]").style("visibility","hidden");
+			BOARD.viewConfig.start="show";
 		}
 
 		function hideSwag(){

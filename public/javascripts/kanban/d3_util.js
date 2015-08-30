@@ -1,15 +1,17 @@
 
 // =================================== D3 helper functions ==========================================
 
-function _drawXlink(svg,href,x,y,style){
+function _drawXlink(svg,href,x,y,style,id){
 	if (!style.rotate) style.rotate=0;
 	if (!style.scale) style.scale=1;
 
 	var _xlink = svg.append("use")
+		.attr("id",id)
 		.attr("xlink:href",href)
 		.attr("transform","translate("+x+","+y+") scale("+style.scale+") rotate("+style.rotate+")");
 	if (style.cursor) _xlink.style("cursor",style.cursor);
 	if (style.opacity) _xlink.style("opacity",style.opacity);
+	if (style.visibility) _xlink.style("visibility",style.visibility);
 
 	return _xlink;
 }

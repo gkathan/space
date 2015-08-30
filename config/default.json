@@ -62,7 +62,20 @@
 		}
 	},
 
+	"initiatives":{
+		"states":{
+			"colors":{
+				"New":"#DD5362",
+				"Understanding":"#DFD46A",
+				"Conception":"#EA9764",
+				"Implementation":"#74A680",
+				"Monitoring":"limegreen",
+				"On hold":"lightgrey",
+				"Done" : "green"
 
+			}
+		}
+	},
 
 	"targets":{
 		"kpis": {
@@ -107,6 +120,7 @@
 	},
 
   "context" : "bpty.studios",
+
 
 
 
