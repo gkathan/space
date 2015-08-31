@@ -265,7 +265,7 @@ function render(svgFile){
 		//var _boardId="54bba57720f4764e7e797849";
 		_boardId = _.last(window.location.href.split("/"));
 		console.log("kanban.js render: _boardId: "+_boardId);
-		$.when($.getJSON(dataSourceFor("v1epics")),
+		$.when($.getJSON(dataSourceFor("roadmapinitiatives")),
 				$.getJSON(dataSourceFor("metrics")),
 				$.getJSON(dataSourceFor("releases")),
 				$.getJSON(dataSourceFor("boards/"+_boardId)),
@@ -449,9 +449,9 @@ function drawAll(){
 		// ------------------------------------------------------------------------------------------------
 
 		var _context = {"yMin":Y_MIN,"yMax":Y_MAX,"name":CONTEXT};
-		itemTree = createLaneHierarchy(initiativeData,ITEMDATA_FILTER,ITEMDATA_NEST,_context);
+		itemTree = createLaneHierarchy(initiativeData,ITEMDATA_FILTER,BOARD.groupby.split(","),_context);
 
-		//targetTree = createLaneHierarchy(targetData,ITEMDATA_FILTER,ITEMDATA_NEST,_context);
+		//targetTree = createLaneHierarchy(targetData,ITEMDATA_FILTER,BOARD.groupby,_context);
 
 		// kanban_items.js
 		if (BOARD.viewConfig.initiatives!="off") drawInitiatives();

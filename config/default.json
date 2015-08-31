@@ -72,8 +72,11 @@
 				"Monitoring":"limegreen",
 				"On hold":"lightgrey",
 				"Done" : "green"
-
 			}
+		},	
+		"sorting":{
+			"Product": ["Sports","Casino","Poker","Portal","Payments","Compliance","CRM Services","Core Services","Studios","Sports Content, Trading & security"],
+			"Status": ["New","Understanding","Conception","Implementation","Monitoring","Done","On hold","Cancelled"]
 		}
 	},
 

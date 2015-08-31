@@ -16,7 +16,7 @@
  * createLaneHierarchy(initiativeData,ITEMDATA_FILTER,ITEMDATA_NEST.length)
  * createLaneHierarchy(targetData,ITEMDATA_FILTER,ITEMDATA_NEST.length)
  */
-function createLaneHierarchy(data,dataFilter,nestConfig,context){
+function createLaneHierarchy(data,dataFilter,groupby,context){
 	// create hierarchical base data from list
 	// number of max levels in the lanePath
 	var _level =3;
@@ -26,12 +26,38 @@ function createLaneHierarchy(data,dataFilter,nestConfig,context){
 	// emulate legacy behavior to get the first level below the "bm"="b2c gaming" node ...
 	var _hierarchy = buildTreeFromPathArray(items)[0];
 
+	//sort !!! the children arrays
+	_hierarchy.children = _sort(_hierarchy.children,groupby[0]);
+	for (var i in _hierarchy.children){
+		_hierarchy.children[i].children = _sort(_hierarchy.children[i].children,groupby[1]);
+	}
+
+
+
 	_hierarchy = createRelativeCoordinates(_hierarchy,0,_level,context);
 
 	_hierarchy = transposeCoordinates(_hierarchy,_level);
 
 	return _hierarchy;
 }
+
+
+function _sort(list,type){
+
+	list =_.sortBy(list,function(element){
+			if (CONFIG.initiatives.sorting[type]){
+				var _index = CONFIG.initiatives.sorting[type].indexOf(_.last(element.name.split("/")));
+				// put at the very end...
+				if (_index <0) _index = 10000;
+				return _index;
+			}
+
+		});
+
+	return list;
+}
+
+
 
 /** helper
  * **/

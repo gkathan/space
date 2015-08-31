@@ -68,16 +68,16 @@ var itemDataConfig = [
 						{"context":"b2c gaming", "name":"topline","value"	:60},
 						{"context":"b2c gaming","name":"enabling","value"	:40},
 
-						{"context":"studios", "name":"Casino","value"	:25},
-						{"context":"studios","name":"Payments","value"	:10},
-						{"context":"studios","name":"Poker","value"	:20},
-						{"context":"studios","name":"Sports Content, Trading & security","value"	:5},
-						{"context":"studios","name":"CRM Services","value"	:5},
-						{"context":"studios","name":"Sports","value"	:10},
-						{"context":"studios","name":"Core Services","value"	:10},
-						{"context":"studios","name":"Studios","value"	:5},
-						{"context":"studios","name":"Portal","value"		:5},
-						{"context":"studios","name":"Compliance","value"		:5}
+						{"context":"studiosXX", "name":"Casino","value"	:25},
+						{"context":"studiosXX","name":"Payments","value"	:10},
+						{"context":"studiosXX","name":"Poker","value"	:20},
+						{"context":"studiosXX","name":"Sports Content, Trading & security","value"	:5},
+						{"context":"studiosXX","name":"CRM Services","value"	:5},
+						{"context":"studiosXX","name":"Sports","value"	:10},
+						{"context":"studiosXX","name":"Core Services","value"	:10},
+						{"context":"studiosXX","name":"Studios","value"	:5},
+						{"context":"studiosXX","name":"Portal","value"		:5},
+						{"context":"studiosXX","name":"Compliance","value"		:5}
 
 					]
 			},
