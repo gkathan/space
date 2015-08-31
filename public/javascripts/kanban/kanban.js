@@ -362,6 +362,14 @@ function renderBoard(id){
 
 		BOARD = boardData;
 		CONTEXT = boardData.name;
+
+		/*
+		initiativeData = _.filter(initiativeData,function(item){
+			if(!item.Status || item.Status=="On hold" || item.Status=="Cancelled") return false;
+			return true;
+		})
+		*/
+
 		// we have to now join boardData and initiative Data
 		boardItems =joinBoard2Initiatives(boardData,initiativeData);
 
