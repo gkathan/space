@@ -593,16 +593,18 @@ function _itemTooltipHTML(d){
 
 	var _lanepath = d.lanePath;
 
-	var _htmlBase ="<table><col width=\"30\"/><col width=\"85\"/><tr><td style=\"font-size:4px;text-align:left\"><a href=\""+_v1SyncLink+"\" target=\"new\">[v1synch]</a> <a href=\""+_adminLink+"\" target=\"new\">[admin]</a></td><td style=\"font-size:4px;text-align:right\">";
+	var _htmlBase ="<table><col width=\"30\"/><col width=\"185\"/><tr><td style=\"font-size:4px;text-align:left\"><a href=\""+_v1SyncLink+"\" target=\"new\">[v1synch]</a> <a href=\""+_adminLink+"\" target=\"new\">[admin]</a></td><td style=\"font-size:4px;text-align:right\">";
 	if (d.ExtId)
 		_htmlBase+=" <a href=\""+_v1Link+d.ExtId+"\" target=\"new\">[v1: "+d.ExtId+"]</a>";
 	_htmlBase+="</td></tr>";
 	_htmlBase+="<tr class=\"header\" style=\"height:4px\"/><td colspan=\"2\"><div class=\"indicator\" style=\"background-color:"+_indicator+"\">&nbsp;</div><b style=\"padding-left:4px;font-size:7px\">"+d.name +"</b></td></tr>"+(d.name2 ? "<tr><td class=\"tiny\">title2:</td><td  style=\"font-weight:bold\">"+d.name2+"</td></tr>" :"");
 	_htmlBase+="<tr><td class=\"tiny\"style=\"width:20%\">lane:</td><td><b>"+_lanepath+"</b></td></tr>";
-	_htmlBase+="<tr><td class=\"tiny\">owner:</td><td><b>"+d.productOwner+"</b></td></tr>";
+	_htmlBase+="<tr><td class=\"tiny\">owner:</td><td><b>"+d.owner+"</b></td></tr>";
 	_htmlBase+="<tr><td class=\"tiny\">Swag:</td><td><b>"+d.Swag+" PD</b></td></tr>";
-	_htmlBase+="<tr><td class=\"tiny\">started:</td><td><b>"+d.startDate+"</b></td></tr>";
-	_htmlBase+="<tr><td class=\"tiny\">planned:</td><td><b>"+d.planDate+"</b></td></tr>";
+	_htmlBase+="<tr><td class=\"tiny\">value:</td><td><b>"+d.Value+"</b></td></tr>";
+
+	_htmlBase+="<tr><td class=\"tiny\">started:</td><td><b>"+moment(d.startDate).format("YYYY-MM-DD")+"</b></td></tr>";
+	_htmlBase+="<tr><td class=\"tiny\">planned:</td><td><b>"+moment(d.planDate).format("YYYY-MM-DD")+"</b></td></tr>";
 	_htmlBase+="<tr><td class=\"tiny\">v1.status:</td><td class=\"bold\">"+d.status+"</td></tr>";
 	_htmlBase+="<tr><td class=\"tiny\">k.state:</td><td class=\"bold\">"+d.state+"</td></tr>";
 
@@ -610,10 +612,10 @@ function _itemTooltipHTML(d){
 		_htmlBase=_htmlBase+"<tr><td class=\"tiny\">delayed:</td><td><b>"+diffDays(d.planDate,d.actualDate)+" days</b></td></tr>";
 	}
 	else if (d.actualDate>d.planDate &&d.state=="done"){
-		_htmlBase=_htmlBase+ "<tr><td class=\"tiny\">done:</td><td><b>"+d.actualDate+"</b> </td></tr><tr><td class=\"small\">delay: </td><td><b>"+diffDays(d.planDate,d.actualDate)+" days</b></td></tr>";
+		_htmlBase=_htmlBase+ "<tr><td class=\"tiny\">done:</td><td><b>"+moment(d.actualDate).format("YYYY-MM-DD")+"</b> </td></tr><tr><td class=\"small\">delay: </td><td><b>"+diffDays(d.planDate,d.actualDate)+" days</b></td></tr>";
 	}
 	else if (d.state=="done"){
-		_htmlBase=_htmlBase+"<tr><td class=\"tiny\">done:</td><td><b>"+d.actualDate+"</b> </td></tr>";
+		_htmlBase=_htmlBase+"<tr><td class=\"tiny\">done:</td><td><b>"+moment(d.actualDate).format("YYYY-MM-DD")+"</b> </td></tr>";
 	}
 	else if (d.state=="todo"){
 		_htmlBase=_htmlBase+"<tr><td class=\"tiny\">DoR:</td><td class=\"small\" style=\"text-align:left\">"+d.DoR+"</td></tr>";
@@ -622,13 +624,7 @@ function _itemTooltipHTML(d){
 	if (d.health!=""){
 		_htmlBase=_htmlBase+"<tr><td class=\"tiny\">health:</td><td><div class=\"health\" style=\"background-color:"+_health+"\">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td></tr>";
 	}
-	if (d.healthComment!=""){
-		_htmlBase=_htmlBase+"<tr><td class=\"tiny\">comment:</td><td class=\"small\" style=\"text-align:left\">"+d.healthComment+" </td></tr>";
-	}
-	if (d.programLead!=""){
-		_htmlBase=_htmlBase+"<tr><td class=\"tiny\">lead:</td><td><b>"+d.programLead+"</b> </td></tr>";
-	}
-	_htmlBase=_htmlBase+"<tr><td class=\"tiny\">DoD:</td><td class=\"small\" style=\"text-align:left\">"+d.DoD+"</td></tr>";
+	_htmlBase=_htmlBase+"<tr><td class=\"tiny\">description:</td><td class=\"small\" style=\"text-align:left\">"+d.DoD+"</td></tr>";
 	_htmlBase = _htmlBase+"<tr> <td colspan=\"2\"  style=\"text-align:right\"><a id=\"flip\" class=\"small\" style=\"text-align:right\" >[flip it]</a></td></table>";
 
 	return _htmlBase;
