@@ -73,7 +73,7 @@
 				"On hold":"lightgrey",
 				"Done" : "green"
 			}
-		},	
+		},
 		"sorting":{
 			"Product": ["Sports","Casino","Poker","Portal","Payments","Compliance","CRM Services","Core Services","Studios","Sports Content, Trading & security"],
 			"Status": ["New","Understanding","Conception","Implementation","Monitoring","Done","On hold","Cancelled"]
@@ -87,12 +87,16 @@
 				"priorities": ["P01","P08","P16"],
 				"baseline": {
 					"openedAt" : ["2014-10-01", "2015-01-01"],
-					"categoryExclude":["Failure"]
+					"categoryExclude":["Failure","Request","Misplaced Call"],
+
+					"totalsOverride": {"P01":85,"P08":584}
+
 				},
 				"target": {
 					"openedAt" : ["NOW-90"],
 					"categoryExclude":["Failure","Request","Misplaced Call"],
-					"businessServiceExclude":["Workplace"]
+					"businessServiceExclude":"hardcoded",
+					"labelExclude":"hardcoded"
 					}
 				}
 			},
@@ -235,7 +239,7 @@
 
 		"mappings" :{
 				"snow" :{
-					"priority":[{"sys":1,"bpty":"P01 - Critical"},{"sys":2,"bpty":"P08 - High"},{"sys":3,"bpty":"P16 - Moderate"},{"sys":4,"bpty":"P40 - Low"}],
+					"priority":[{"sys":1,"bpty":"P01 - Critical"},{"sys":2,"bpty":"P08 - High"},{"sys":3,"bpty":"P16 - Moderate"},{"sys":4,"bpty":"120 - Low"}],
 					"state":[{"sys":1,"bpty":"New"},{"sys":2,"bpty":"In Progress"},{"sys":3,"bpty":"Closed"},{"sys":8,"bpty":"Awaiting"},{"sys":9,"bpty":"Resolved"}]
 				}
 		},

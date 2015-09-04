@@ -61,7 +61,7 @@ $.get( _url, function( data ) {
 
     $('#targetIncidentAbsolut').html("P01 < "+_targetP01+" P08 < "+_targetP08);
 
-
+    /*
     var chart2 = c3.generate({
         bindto : '#c3_incident_barchart',
         size: {
@@ -95,4 +95,5 @@ $.get( _url, function( data ) {
             //width: 100 // this makes bar width 100px
         }
     });
+    */
 });

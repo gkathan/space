@@ -37,7 +37,7 @@ describe('IncidentService', function(){
 			assert.equal("P16 - Moderate", _bptyCode);
 
 			var _bptyCode = incidentService.mapPriority(4);
-			assert.equal("P40 - Low", _bptyCode);
+			assert.equal("120 - Low", _bptyCode);
 
 			done();
 		});

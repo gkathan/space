@@ -55,7 +55,7 @@ exports.calculateStats = _calculateStats;
 * and saves the newly fetched
 * should only be called when really needed !!!!
 */
-function _flushAll(callback){
+function _flushAll(prio,callback){
 	var _url = config.sync["incidents"].url;
 	var _type = "manual";
 	var _secret = require("../config/secret.json");
@@ -64,7 +64,11 @@ function _flushAll(callback){
 	var Client = require('node-rest-client').Client;
 	client = new Client(options_auth);
 	// get all
-	_url+="&sysparm_record_count=50000&sysparm_query=priority<="+config.sync["incidents"].includePriority;
+	var _prio ;
+	if (!prio) _prio = "<="+config.sync["incidents"].includePriority;
+	else _prio = "="+prio;
+
+	_url+="&sysparm_record_count=50000&sysparm_query=priority"+_prio;
 	logger.debug("**** node rest client: "+_url);
 	var _incidentsNEW=[];
 
@@ -202,7 +206,7 @@ function _findChangeLog(incidentId,callback){
 */
 function _flush(data,callback){
 	var items =  db.collection(_incidentsCollection);
-	items.drop();
+	//items.drop();
 	items.insert(data, function(err , success){
 		if (err){
 			callback(err);
@@ -225,7 +229,7 @@ function _calculateStats(callback){
 		_stats.P01Open = _.where(incidents,{priority:"P01 - Critical"}).length;
 		_stats.P08Open = _.where(incidents,{priority:"P08 - High"}).length;
 		_stats.P16Open = _.where(incidents,{priority:"P16 - Moderate"}).length;
-		_stats.P120Open = _.where(incidents,{priority:"P40 - Low"}).length;
+		_stats.P120Open = _.where(incidents,{priority:"120 - Low"}).length;
 		callback(null,_stats);
 	})
 }
@@ -295,7 +299,7 @@ function _getFromTo(range){
 }
 
 
-function _calculateTotal(kpi){
+function _calculateTotal(kpi,override){
 	_.forIn(kpi,function(key,value){
 		var _total = 0;
 		_.forIn(kpi[value],function(_count,_state){
@@ -304,6 +308,11 @@ function _calculateTotal(kpi){
 		logger.debug("key. "+	key);
 		logger.debug("value. "+	value);
 		kpi[value]["Total"]=_total;
+		if (override){
+				if (override[value]) kpi[value]["Total"]=override[value];
+				logger.debug("************ OVERRIDE: "+override);
+		}
+
 	})
 }
 
@@ -333,9 +342,9 @@ function _calculateTrends(baseline,target){
  */
 function _getKPIs(baseline,target,callback){
 	_countKPI(baseline.type,baseline.range,function(err,_baseline){
-		_calculateTotal(_baseline.kpis);
+		_calculateTotal(_baseline.kpis,config.targets.kpis.incidents.baseline.totalsOverride);
 		_countKPI(target.type,target.range,function(err,_target){
-			_calculateTotal(_target.kpis);
+			_calculateTotal(_target.kpis,null);
 
 			callback(err,{baseline:_baseline,target:_target,trends:_calculateTrends(_baseline.kpis,_target.kpis)});
 		})
@@ -366,6 +375,12 @@ function _countKPI(type,range,callback){
 		// nested loop to go over all states
 		async.forEach(_states,function(_state,doneState){
 				var _filter = {priority:{$regex : _prio+".*"},openedAt:{$gte:_from,$lt:_to},state:_state,category:{$nin:_config.categoryExclude}};
+				if (_config.businessServiceExclude){
+					_filter.businessService={$not:/^Workplace/,$not:/^Kalixa/};
+				}
+				if (_config.labelExclude){
+					//_filter.label={$not:/^Kalixa/};
+				}
 				_count(type,_filter,function(err,result){
 					logger.debug("_prio: "+_prio+"...._state: "+_state+" : "+result);
 					_return.kpis[_prio][_state]=result;

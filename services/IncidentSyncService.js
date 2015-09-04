@@ -157,7 +157,7 @@ function _sync(url,type,callback){
 function _createActiveTicker(_incidentsNEW){
 		var _groupedByPrio = _.groupBy(_incidentsNEW,"priority");
 
-		var _prios =["P01 - Critical","P08 - High","P16 - Moderate","P40 - Low"];
+		var _prios =["P01 - Critical","P08 - High","P16 - Moderate","P120 - Low"];
 		var _subDimensions = ["assignmentGroup","businessService"];
 
 		var activeTicker = {};
