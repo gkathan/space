@@ -69,11 +69,13 @@ router.post('/', function(req,res,next){
 				if (err) { return next(err); }
 				console.log("[we are very close :-), req.session.ORIGINAL_URL: "+req.session.ORIGINAL_URL);
 				var sess = req.session;
+        var _redirect;
+        if (user.username=="bwin") _redirect ="/dashboard/opsreport/bwin"
 				sess.AUTH = user.role;
 				sess.USER = user.username;
 				sess.CONTEXT = user.context;
 				//return res.json({detail: info});
-				res.send({AUTH:user.role,ORIGINAL_URL:req.session.ORIGINAL_URL});
+				res.send({AUTH:user.role,ORIGINAL_URL:req.session.ORIGINAL_URL,REDIRECT_URL:_redirect});
 			});
 		})(req, res, next);
 });

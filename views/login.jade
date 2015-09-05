@@ -62,6 +62,8 @@ script(type='text/javascript').
 					else {
 						_redirect=msg.ORIGINAL_URL;
 					}
+					if (msg.REDIRECT_URL) _redirect=msg.REDIRECT_URL;
+					
 					console.log("***** and now do a client side redirect: "+_redirect);
 					redirect(_redirect);
 				},
@@ -83,4 +85,3 @@ script(type='text/javascript').
 
 include includes/material
 		
-
