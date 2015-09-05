@@ -127,9 +127,9 @@ function _findById(id,callback){
 /**
  *
  */
-function _find(callback) {
+function _find(filter,callback) {
 	var items =  db.collection(_incidentsCollection);
-	items.find({}).sort({openedAt:-1}, function (err, docs){
+	items.find(filter).sort({openedAt:-1}, function (err, docs){
 			callback(err,docs);
 			return;
 	});

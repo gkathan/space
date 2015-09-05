@@ -392,6 +392,10 @@ function findById(req, res , next){
  */
 function findIncidenttrackerByDate(req, res , next){
 	var path = req.path.split("/");
+
+	var prios = ["P01","P08","P16","P120"];
+	//var prios = ["P01","P08"];
+
 	var _date = req.params.date;//_.last(path);
 	//var _type = req.params.type;//_.last(_.initial(path));
 	var _aggregate = req.query.aggregate;
@@ -401,12 +405,12 @@ function findIncidenttrackerByDate(req, res , next){
 	}
 	var incidentTrackerService = require('../services/IncidentTrackerService');
 		logger.debug("********************* findIncidenttrackerByDate(): _aggregate= "+_aggregate+" _date = "+_date);
-	incidentTrackerService.findTrackerByDate(_aggregate,_date,function(err,data){
+	incidentTrackerService.findTrackerByDate(_aggregate,_date,prios,function(err,data){
 			if (err){
 				logger.warn("[error] incidentTrackerService.findTrackerByDate says: "+err.message);
 			}
 			else {
-				incidentTrackerService.buildStatistics(data.tracker,function(err,result){
+				incidentTrackerService.buildStatistics(data.tracker,prios,function(err,result){
 					res.send(result);
 					return;
 				})
@@ -475,7 +479,7 @@ function findIncidents(req,res,next){
 	  logger.debug("findIncidents() called");
 
 		var incService = require("../services/IncidentService");
-		incService.find(function(err,data){
+		incService.find({},function(err,data){
 				if (err){
 					logger.error("[error] findincidents says: "+err)
 					res.send(err);
@@ -506,7 +510,7 @@ function findIncidentCommTrail(req,res,next){
 	  logger.debug("findIncidentCommTrail() called");
 
 		var incService = require("../services/IncidentService");
-		/*incService.find(function(err,data){
+		/*incService.find({}function(err,data){
 				if (err){
 					logger.error("[error] findincidents says: "+err)
 					res.send(err);

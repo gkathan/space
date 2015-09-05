@@ -345,13 +345,15 @@ function _handleClosedIncidents(deltaIds,type,callback){
  insert the NEW incidents !
 */
 function _handleIncidentsNEW(incidents){
+	var prios = ["P01","P08","P16","P120"];
+
 	incService.insert(incidents,function(err,success){
 		if (err){
 			logger.error('incidents.insert failed: '+err.message);
 		}
 		else if(success){
 			logger.info("[success] incService.insert : "+incidents.length +" NEW incidents inserted");
-			incTrackerService.incrementTracker(incidents,["openedAt","resolvedAt","closedAt"],function(err,result){
+			incTrackerService.incrementTracker(incidents,["openedAt","resolvedAt","closedAt"],prios,function(err,result){
 				if (err) logger.error("[IncidentSyncService] NEW Incident - incTrackerService.incrementTracker FAILED: "+err.message);
 				else {
 					logger.info("[IncidentSyncService] NEW Incident - incTrackerService.incrementTracker SUCCESS: "+JSON.stringify(result));
@@ -373,6 +375,7 @@ function _handleIncidentsNEW(incidents){
 		"CHANGED" : [{"id" : "INC123721","sysId" : "0080c2380f8c8a4052fb0eece1050e8e","diff" : {
 */
 function _handleIncidentsCHANGED(changes,baseline,_incidentsNEW){
+	var prios = ["P01","P08","P16","P120"];
 	logger.debug("[CHANGED INCIDENT] _incidentsDIFF.CHANGED.length = "+changes.length);
 	var _updateIncidents = [];
 	for (var i in changes){
@@ -416,7 +419,7 @@ function _handleIncidentsCHANGED(changes,baseline,_incidentsNEW){
 	if (_prioChanged) _datefields.push("openedAt");
 	_datefields.push("resolvedAt","closedAt");
 
-	incTrackerService.incrementTracker(_updateIncidents,_datefields,function(err,result){
+	incTrackerService.incrementTracker(_updateIncidents,_datefields,prios,function(err,result){
 		if (err) logger.error("[IncidentSyncService] CHANGED Incident - incTrackerService.incrementTracker FAILED: "+err-message);
 		else {
 			logger.info("[IncidentSyncService] CHANGED Incident - incTrackerService.incrementTracker SUCCESS");

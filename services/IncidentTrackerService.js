@@ -48,48 +48,58 @@ function _flushTracker(data,callback){
 /**
 * iterates over a given tracker
 * and enriches by some more data
+* @param prios: array of priorities like ["P01","P08","P16","P120"]
 */
-function _buildStatistics(tracker,callback){
+function _buildStatistics(tracker,prios,callback){
 	var dateFields = ["openedAt","resolvedAt","closedAt"];
 
-	var cumP01={"openedAt":0,"resolvedAt":0,"closedAt":0,"active":0,"notResolved":0};
-	var cumP08={"openedAt":0,"resolvedAt":0,"closedAt":0,"active":0,"notResolved":0};
-	var cumP16={"openedAt":0,"resolvedAt":0,"closedAt":0,"active":0,"notResolved":0};
-	var cumP120={"openedAt":0,"resolvedAt":0,"closedAt":0,"active":0,"notResolved":0};
+	logger.debug("**** build statistics for prios: "+prios);
 
-	for (var i in tracker){
-			var _day = tracker[i];
-			for (var d in dateFields){
-				var dateField = dateFields[d];
-				if (_day[dateField]){
-					cumP01[dateField]+=_day[dateField].P01.total;
-					cumP08[dateField]+=_day[dateField].P08.total;
-					cumP16[dateField]+=_day[dateField].P16.total;
-					cumP120[dateField]+=_day[dateField].P120.total;
-					_day[dateField].P01.cumulative= cumP01[dateField];
-					_day[dateField].P08.cumulative= cumP08[dateField];
-					_day[dateField].P16.cumulative= cumP16[dateField];
-					_day[dateField].P120.cumulative= cumP120[dateField];
-				}
-			}
-			// is liek a burnrate => can be negative if i close more than i open ....
-			var activeP01=_day.openedAt.P01.total-(_day.closedAt ? _day.closedAt.P01.total : 0) ;
-			var activeP08=_day.openedAt.P08.total-(_day.closedAt ? _day.closedAt.P08.total : 0) ;
-			var activeP16=_day.openedAt.P16.total-(_day.closedAt ? _day.closedAt.P16.total : 0) ;
-			var activeP120=_day.openedAt.P120.total-(_day.closedAt ? _day.closedAt.P120.total : 0) ;
+	var statistics = {sum:{}};
+	var cumPrio ={};
 
-			if (!_day["active"]) _day["active"]={P01:0,P08:0,P16:0,P120:0};
-			_day["active"].P01=activeP01;
-			_day["active"].P08=activeP08;
-			_day["active"].P16=activeP16;
-			_day["active"].P120=activeP120;
-
-			cumP01.notResolved+=_day.openedAt.P01.total-(_day.resolvedAt ? _day.resolvedAt.P01.total : 0);
-			cumP08.notResolved+=_day.openedAt.P08.total-(_day.resolvedAt ? _day.resolvedAt.P08.total : 0);
-			cumP16.notResolved+=_day.openedAt.P16.total-(_day.resolvedAt ? _day.resolvedAt.P16.total : 0);
-			cumP120.notResolved+=_day.openedAt.P120.total-(_day.resolvedAt ? _day.resolvedAt.P120.total : 0);
+	for (var p in prios){
+		var _prio=prios[p];
+		cumPrio[_prio]={"openedAt":0,"resolvedAt":0,"closedAt":0,"active":0,"notResolved":0};
 	}
-		var statistics = {sum:{P01:cumP01,P08:cumP08,P16:cumP16,P120:cumP120}};
+
+		for (var i in tracker){
+				var _day = tracker[i];
+				for (var d in dateFields){
+					var dateField = dateFields[d];
+					if (_day[dateField]){
+						for (var p in prios){
+							var _prio = prios[p];
+							if (_day[dateField][_prio]){
+								cumPrio[_prio][dateField]+=_day[dateField][_prio].total;
+								_day[dateField][_prio].cumulative= cumPrio[_prio][dateField];
+							}
+						}
+					}
+				}
+
+				for (var p in prios){
+					var _prio = prios[p];
+
+					// is liek a burnrate => can be negative if i close more than i open ....
+					if (_day.openedAt[_prio]){
+						var activePrio=_day.openedAt[_prio].total-(_day.closedAt ? _day.closedAt[_prio].total : 0) ;
+						if (!_day["active"]){
+							_day["active"]={};
+							_day["active"][_prio]=0;
+						}
+						_day["active"][_prio]=activePrio;
+						cumPrio[_prio].notResolved+=_day.openedAt[_prio].total-(_day.resolvedAt ? _day.resolvedAt[_prio].total : 0);
+					}
+				}
+		}
+		//var statistics = {sum:{P01:cumP01,P08:cumP08,P16:cumP16,P120:cumP120}};
+		for (var p in prios){
+			var _prio = prios[p];
+			statistics.sum[_prio] = cumPrio[_prio];
+		}
+
+	//}//end prio loop
 	var result = {tracker:tracker,statistics:statistics};
 
 	callback(null,result);
@@ -100,11 +110,11 @@ function _buildStatistics(tracker,callback){
 * iterates over all Incidents
 * quite expensive call - so do that only when you really need it !!
 */
-function _rebuildTracker(trackerTypes,callback){
+function _rebuildTracker(trackerTypes,prios,callback){
 	var _context = "bpty.studios";
 	var incidentService = require('../services/IncidentService');
 	incidentService.findAll({},function(err,incidents){
-		var dailyTracker = _calculateDailyTracker(incidents,trackerTypes,_context,function(err,tracker){
+		var dailyTracker = _calculateDailyTracker(incidents,trackerTypes,prios,_context,function(err,tracker){
 			logger.debug("done tracking..."+JSON.stringify(tracker));
 			_flushTracker(tracker,function(err,result){
 				if (err){
@@ -119,25 +129,27 @@ function _rebuildTracker(trackerTypes,callback){
 }
 
 
-function _initDailyTrackerForDay(date,dateFields){
+
+function _initDailyTrackerForDay(date,dateFields,prios){
 	var context = "bpty.studios";
 	var _tracker = {"date":date,"context":context};
 
 	for (var d in dateFields){
 		//e.g. "openedAt"
 		var _t =dateFields[d];
-			_tracker[_t] = _initDailyTrackerItem();
+			_tracker[_t] = _initDailyTrackerItem(prios);
 	}
 	return _tracker;
 }
 
-function _initDailyTrackerItem(){
-	return {
-		"P01":{total:0,assignmentGroup:{},businessService:{},label:{}},
-		"P08":{total:0,assignmentGroup:{},businessService:{},label:{}},
-		"P16":{total:0,assignmentGroup:{},businessService:{},label:{}},
-		"P120":{total:0,assignmentGroup:{},businessService:{},label:{}}
-	};
+function _initDailyTrackerItem(prios){
+	var _init ={};
+	for (var p in prios){
+		var _prio = prios[p];
+		_init[_prio]={total:0,assignmentGroup:{},businessService:{},label:{}};
+	}
+
+	return _init;
 }
 
 /**
@@ -146,9 +158,11 @@ function _initDailyTrackerItem(){
 * and updates the incidentracker collection
 * param incidents: list of incident objects
 * param dateFields: array of types, sets which date field we should look at (e.g. "openedAt" to track new incidnets, "resolvedAt" track resolved incidents)
+* @param prios: priorities to be calculated eg ["P01","P08","P16","P120"]
 */
-function _calculateDailyTracker(incidents,dateFields,context,callback){
+function _calculateDailyTracker(incidents,dateFields,prios,context,callback){
 	var _dailytracker = [];
+
 	//logger.debug("********* processing datefield: "+dateField);
 
 	for (var i in incidents){
@@ -176,32 +190,17 @@ function _calculateDailyTracker(incidents,dateFields,context,callback){
 
 
 				if (!_dayTracker[dateField]){
-					_dayTracker[dateField]=_initDailyTrackerItem();
+					_dayTracker[dateField]=_initDailyTrackerItem(prios);
 				}
 
-				if (_.startsWith(_priority,"P01") || _.startsWith(_priority,"P04")){
-					_.findWhere(_dailytracker,{"date":_day})[dateField].P01.total++;
-					_handleAssignementGroup(_dailytracker,_day,dateField,"P01",_assignmentGroup);
-					_handleBusinessService(_dailytracker,_day,dateField,"P01",_businessService);
-					_handleLabel(_dailytracker,_day,dateField,"P01",_labels);
-				}
-				else if (_.startsWith(_priority,"P08")){
-					_.findWhere(_dailytracker,{"date":_day})[dateField].P08.total++;
-					_handleAssignementGroup(_dailytracker,_day,dateField,"P08",_assignmentGroup);
-					_handleBusinessService(_dailytracker,_day,dateField,"P08",_businessService);
-					_handleLabel(_dailytracker,_day,dateField,"P08",_labels);
-				}
-				else if (_.startsWith(_priority,"P16")){
-					_.findWhere(_dailytracker,{"date":_day})[dateField].P16.total++;
-					_handleAssignementGroup(_dailytracker,_day,dateField,"P16",_assignmentGroup);
-					_handleBusinessService(_dailytracker,_day,dateField,"P16",_businessService);
-					_handleLabel(_dailytracker,_day,dateField,"P16",_labels);
-				}
-				else if (_.startsWith(_priority,"P40") || _.startsWith(_priority,"P120")){
-					_.findWhere(_dailytracker,{"date":_day})[dateField].P120.total++;
-					_handleAssignementGroup(_dailytracker,_day,dateField,"P120",_assignmentGroup);
-					_handleBusinessService(_dailytracker,_day,dateField,"P120",_businessService);
-					_handleLabel(_dailytracker,_day,dateField,"P120",_labels);
+				for (var p in prios){
+					var _prio = prios[p];
+					if (_.startsWith(_priority,_prio) ){
+						_.findWhere(_dailytracker,{"date":_day})[dateField][_prio].total++;
+						_handleAssignementGroup(_dailytracker,_day,dateField,[_prio],_assignmentGroup);
+						_handleBusinessService(_dailytracker,_day,dateField,[_prio],_businessService);
+						_handleLabel(_dailytracker,_day,dateField,[_prio],_labels);
+					}
 				}
 				// in case of update
 				if (incidents[i].prioChange && dateField =="openedAt"){
@@ -254,10 +253,10 @@ function _handleLabel(dailytracker,day,dateField,priority,labels){
 * and then merges with already stored
 * param incidents: list of NEW incidents
 */
-function _incrementTracker(incidents,dateFields,callback){
+function _incrementTracker(incidents,dateFields,prios,callback){
 	//var dateFields = ["openedAt","resolvedAt","closedAt"];
 	var context = "bpty.studios";
-	_calculateDailyTracker(incidents,dateFields,context,function(err,tracker){
+	_calculateDailyTracker(incidents,dateFields,prios,context,function(err,tracker){
 		//TODO merge with existing day if exists
 		_saveDailyTracker(tracker,dateFields,function(err,result){
 			if (result) callback(null,result);
@@ -268,6 +267,7 @@ function _incrementTracker(incidents,dateFields,callback){
 
 function _saveDailyTracker(tracker,dateFields,callback){
 	//iterate over days
+	var prios =["P01","P08","P16","P120"];
 	for (i in tracker){
 		var _tracker = tracker[i];
 		logger.debug("------------ _saveDailyTracker: "+_tracker.date);
@@ -280,7 +280,7 @@ function _saveDailyTracker(tracker,dateFields,callback){
 			else{
 				logger.debug("--------------- [NOPE] no tracker for that day: "+_tracker.date+" existing... ");
 				// so lets create a new one ;-)
-				result = _initDailyTrackerForDay(_tracker.date,["openedAt","resolvedAt","closedAt"]);
+				result = _initDailyTrackerForDay(_tracker.date,["openedAt","resolvedAt","closedAt"],prios);
 				logger.debug("--------------- [CREATED] empty tracker for that day: "+JSON.stringify(result));
 			}
 			// merge
@@ -317,7 +317,7 @@ function _saveDailyTracker(tracker,dateFields,callback){
 							}
 							else{
 								logger.info("no result[_t] for _t = "+_t+" ... so lets create an initiatl one...");
-								result[_t]=_initDailyTrackerItem();
+								result[_t]=_initDailyTrackerItem(prios);
 							}
 						}
 						else{
@@ -340,7 +340,7 @@ function _saveDailyTracker(tracker,dateFields,callback){
 								else{
 									// no result[_t] yet => so lets create it
 								logger.info("no result[_t] for _t = "+_t+" ... so lets create an initiatl one...");
-									result[_t]=_initDailyTrackerItem();
+									result[_t]=_initDailyTrackerItem(prios);
 								}
 							}
 						}
@@ -367,7 +367,7 @@ function _saveDailyTracker(tracker,dateFields,callback){
 /**
 * param type: "openedAt", "resolvedAt" or "closedAt" are currently supported
 */
-function _findIncidenttrackerByDate(aggregate,period,callback){
+function _findIncidenttrackerByDate(aggregate,period,prios,callback){
   if (!aggregate) aggregate="week";
 	var collection = "incidenttracker";
 	var _date = period;
@@ -375,6 +375,7 @@ function _findIncidenttrackerByDate(aggregate,period,callback){
 	var _half = _parsePeriod(_date,"halfyear");
 	var _month = _parsePeriod(_date,"month");
 	var _week = _parsePeriod(_date,"week");
+	
 
 
 	logger.debug("------------------------ date: "+_date+" quarter: "+_quarter)
@@ -456,7 +457,7 @@ function _findIncidenttrackerByDate(aggregate,period,callback){
     logger.debug('Response success '+success);
     logger.debug('Response error '+err);
     if(success){
-			success = _aggregateByTime(success,period,aggregate);
+			success = _aggregateByTime(success,period,aggregate,prios);
 
 			logger.debug("************* callback success");
 			callback(null,success);
@@ -539,7 +540,7 @@ function getTimeName(time,dateString){
 * param period: defines whether we are looking at (aggregate by) "year",  "quarter", "month", or "week"
 * param time: a concrete instance of "week", "month", "quarter" "year"
 */
-function _aggregateByTime(data,period,time){
+function _aggregateByTime(data,period,time,prios){
 	/* we need to consider now the different types which exist in data
 	data.openedAt
 	data.resolvedAt
@@ -552,7 +553,7 @@ function _aggregateByTime(data,period,time){
 
 	var dateFields=["openedAt","resolvedAt","closedAt"];
 	var subDimensions=["assignmentGroup","label","businessService"];
-	var _prios = ["P01","P08","P16","P120"];
+
 
 	// --- following code is quite complicated - but it got developed iterativly and optimized ;-)
   for (var i in data){
@@ -563,8 +564,9 @@ function _aggregateByTime(data,period,time){
 			for (var d in dateFields){
 				// init the prios
 				var _p={};
-				for (var p in _prios){
-					_p[_prios[p]]={total:0,assignmentGroup:{},label:{},businessService:{}};
+				for (var p in prios){
+					var _prio = prios[p];
+					_p[_prio]={total:0,assignmentGroup:{},label:{},businessService:{}};
 				}
 				_item[dateFields[d]]=_p;
 			}
@@ -575,25 +577,27 @@ function _aggregateByTime(data,period,time){
 			var _dateField = dateFields[d];
 
 			if (data[i][_dateField]){
-				for (var p in _prios){
-					var _prio = _prios[p];
+				for (var p in prios){
+					var _prio = prios[p];
 					// _item is the existing openedAt
 					_item = _.findWhere(items,{"date":_timeName})[_dateField][_prio];
 					// now do the increments
-					_item.total+=parseInt(data[i][_dateField][_prio].total);
-					for (var s in subDimensions){
-						var _sub=subDimensions[s];
-						// the to be added items
-						var _a = data[i][_dateField][_prio][_sub];
-						for (var a in _.keys(_a)){
-							//_.trim removes whitespaces at begin and end
-							var _ag = _.trim(_.keys(_a)[a]);
-							//logger.debug("++++++++++ assignmentGroup: "+_ag+" count: "+_a[_ag]);
-							if (!_item[_sub][_ag]){
-								_item[_sub][_ag]=_a[_ag];
-							}
-							else{
-								_item[_sub][_ag]+=_a[_ag];
+					if (data[i][_dateField][_prio]){
+						_item.total+=parseInt(data[i][_dateField][_prio].total);
+						for (var s in subDimensions){
+							var _sub=subDimensions[s];
+							// the to be added items
+							var _a = data[i][_dateField][_prio][_sub];
+							for (var a in _.keys(_a)){
+								//_.trim removes whitespaces at begin and end
+								var _ag = _.trim(_.keys(_a)[a]);
+								//logger.debug("++++++++++ assignmentGroup: "+_ag+" count: "+_a[_ag]);
+								if (!_item[_sub][_ag]){
+									_item[_sub][_ag]=_a[_ag];
+								}
+								else{
+									_item[_sub][_ag]+=_a[_ag];
+								}
 							}
 						}
 					}

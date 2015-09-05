@@ -22,8 +22,6 @@ var assert = require("assert")
 
 describe('IncidentTrackerService', function(){
 
-
-
 describe('#calculate DailyTracker()', function(){
 	it('should calculate daily tracker with a given incident list', function(done){
 
@@ -67,7 +65,7 @@ describe('#calculate DailyTracker()', function(){
 	var _inc4 = {
 		"description" : "this is a test incident",
 		"id" : "INC100004",
-		"priority" : "P01 - High",
+		"priority" : "P01 - Critical",
 		"openedAt" : new Date("2015-05-08 11:03:00"),
 		"assignmentGroup" : "Others",
 		"businessService" : "BusinessService_C",
@@ -78,7 +76,7 @@ describe('#calculate DailyTracker()', function(){
 	var _inc5 = {
 		"description" : "this is a test incident",
 		"id" : "INC100005",
-		"priority" : "P01 - High",
+		"priority" : "P01 - Critical",
 		"openedAt" : new Date("2015-05-07 17:03:00"),
 		"assignmentGroup" : "Others",
 		"businessService" : "BusinessService_C",
@@ -88,7 +86,7 @@ describe('#calculate DailyTracker()', function(){
 	var _inc4change = {
 		"description" : "this is a test incident",
 		"id" : "INC100004",
-		"priority" : "P08 - Important",
+		"priority" : "P08 - High",
 		"openedAt" : new Date("2015-05-08 11:03:00"),
 		"assignmentGroup" : "Others",
 		"businessService" : "BusinessService_C",
@@ -106,7 +104,8 @@ describe('#calculate DailyTracker()', function(){
 
 		//_calculateDailyTracker(incidents,dateField,context,callback)
 		var _context="bpty.studios";
-		incidentTrackerService.calculateDailyTracker(_list,["openedAt","resolvedAt","closedAt"],_context,function(err,success){
+		var prios =["P01","P08","P16","P120"];
+		incidentTrackerService.calculateDailyTracker(_list,["openedAt","resolvedAt","closedAt"],prios,_context,function(err,success){
 			//logger.debug(success);
 			logger.debug(JSON.stringify(success));
 			assert.equal(2, _.findWhere(success,{date:new Date("2015-05-02")})["openedAt"].P01.total);
@@ -117,7 +116,7 @@ describe('#calculate DailyTracker()', function(){
 			//done();
 
 
-			incidentTrackerService.buildStatistics(success,function(err,result){
+			incidentTrackerService.buildStatistics(success,["P01"],function(err,result){
 					assert.equal(2, _.findWhere(result.tracker,{date:new Date("2015-05-08")})["openedAt"].P01.cumulative);
 					assert.equal(2, _.findWhere(result.tracker,{date:new Date("2015-05-08")})["closedAt"].P01.cumulative);
 					assert.equal(3, result.statistics.sum.P01.openedAt);
@@ -168,8 +167,9 @@ describe('#increment DailyTracker()', function(){
 		_list.push(_inc1);
 		_list.push(_inc2);
 
+		var prios = ["P01","P08","P16","P120"];
 		var incidentTrackerService = require('../services/IncidentTrackerService');
-		incidentTrackerService.incrementTracker(_list,["openedAt","resolvedAt","closedAt"],function(err,result){
+		incidentTrackerService.incrementTracker(_list,["openedAt","resolvedAt","closedAt"],prios,function(err,result){
 			logger.debug("incremented: "+JSON.stringify(result));
 			done();
 
@@ -181,7 +181,8 @@ describe('#increment DailyTracker()', function(){
 describe('#init DailyTracker()', function(){
 	it('should initialize a daily tracker for a given date', function(done){
 		var incidentTrackerService = require('../services/IncidentTrackerService');
-		var _tracker = incidentTrackerService.initDailyTrackerForDay(new Date("2015-06-03"),["openedAt","closedAt","resolvedAt"]);
+		var prios =["P01","P08","P16","P120"];
+		var _tracker = incidentTrackerService.initDailyTrackerForDay(new Date("2015-06-03"),["openedAt","closedAt","resolvedAt"],prios);
 		logger.debug("tracker: "+JSON.stringify(_tracker));
 		assert.equal(0,_tracker.openedAt.P01.total);
 		done();
@@ -189,5 +190,25 @@ describe('#init DailyTracker()', function(){
 		});
 	});
 
+
+describe('#calc DailyTracker() on the fly', function(){
+	it('should initialize a daily tracker for a given date', function(done){
+		var incidentService = require('../services/IncidentService');
+
+		var incidentTrackerService = require('../services/IncidentTrackerService');
+		var prios =["P01"];
+		var _context="btpy.studios";
+		incidentService.find({priority:"P01 - Critical"},function(err,incidents){
+			logger.debug("number of incidents: "+incidents.length);
+			incidentTrackerService.calculateDailyTracker(incidents,["openedAt","resolvedAt","closedAt"],prios,_context,function(err,tracker){
+				logger.debug("tracker: "+JSON.stringify(tracker));
+				//assert.equal(0,_tracker.openedAt.P01.total);
+				done();
+
+			});
+	});
+
+		})
+	});
 
 })
