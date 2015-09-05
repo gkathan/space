@@ -152,6 +152,7 @@ router.get('/itservicereport', function(req, res) {
 router.get('/opsreport/:customer', function(req, res) {
 		var avc = require ('../services/AvailabilityCalculatorService');
 		var inc = require ('../services/IncidentService');
+		var prob = require ('../services/ProblemService');
 
 		var _customer = req.params.customer;
 
@@ -172,35 +173,44 @@ router.get('/opsreport/:customer', function(req, res) {
 
 		var labelService = require('../services/LabelService');
 
-		avc.calculateOverall(_from,_to,_filter,function(avDataOverall){
-			avc.calculateExternal(_from,_to,_filter,function(avDataExternal){
-				var _incfilter={openedAt:{$gte:new Date(_from),$lte:new Date(_to)},priority:"P01 - Critical"};
+		prob.find({},function(err,problems){
 
-				inc.findFiltered(_incfilter,function(err,snowIncidents){
-					logger.debug("++++++++++++++++++++++++++ all snow incidents.length: "+snowIncidents.length);
-					labelService.filterIncidents(snowIncidents,_customer,_excludeNOLABEL,function(err,filteredIncidents){
-						logger.debug("++++++++++++++++++++++++++ filtered snow incidents.length: "+filteredIncidents.length);
-						res.locals.av = avDataOverall;
-						res.locals.labelService = labelService;
-						res.locals.customer = _customer;
-						res.locals.avExternal = avDataExternal;
-						res.locals.snowIncidents = filteredIncidents;
-						res.locals.coreDef = config.availability.coreTime
-						res.locals.moment = moment;
-						res.locals.from = _from;
-						res.locals.to = _to;
-						res.locals.excludeNOLABEL = _excludeNOLABEL;
-						res.locals.filter = _filter;
-						res.locals.accounting=accounting;
-						logger.debug("*****customer: "+_customer);
 
-						res.render('dashboard/opsreport', { title: 's p a c e - '+_customer+' opsreport' });
-					})
+			avc.calculateOverall(_from,_to,_filter,function(avDataOverall){
+				avc.calculateExternal(_from,_to,_filter,function(avDataExternal){
+					var _incfilter={openedAt:{$gte:new Date(_from),$lte:new Date(_to)},priority:"P01 - Critical",category:{$nin:config.incidents.customerImpact.categoryExclude}};
+
+					inc.findFiltered(_incfilter,function(err,snowIncidents){
+						logger.debug("++++++++++++++++++++++++++ all snow incidents.length: "+snowIncidents.length);
+						labelService.filterIncidents(snowIncidents,_customer,_excludeNOLABEL,function(err,filteredIncidents){
+							logger.debug("++++++++++++++++++++++++++ filtered snow incidents.length: "+filteredIncidents.length);
+							for (var i in snowIncidents){
+								if (_.findWhere(problems,{"id":snowIncidents[i].problemId})){
+									snowIncidents[i].problemSysId=_.findWhere(problems,{"id":snowIncidents[i].problemId}).sysId;
+								}
+							}
+							res.locals.av = avDataOverall;
+							res.locals.labelService = labelService;
+							res.locals.customer = _customer;
+							res.locals.avExternal = avDataExternal;
+							res.locals.snowIncidents = filteredIncidents;
+							res.locals.coreDef = config.availability.coreTime
+							res.locals.moment = moment;
+							res.locals.from = _from;
+							res.locals.to = _to;
+							res.locals.problems = problems;
+							res.locals.excludeNOLABEL = _excludeNOLABEL;
+							res.locals.filter = _filter;
+							res.locals.accounting=accounting;
+							logger.debug("*****customer: "+_customer);
+
+							res.render('dashboard/opsreport', { title: 's p a c e - '+_customer+' opsreport' });
+						})
+					});
 				});
 			});
 		});
 	});
-
 
 
 

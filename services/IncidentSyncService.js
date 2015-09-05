@@ -166,38 +166,25 @@ function _createActiveTicker(_incidentsNEW){
 		activeTicker.totalsResolved={ALL:_.where(_incidentsNEW,{"state":"Resolved"}).length};
 		activeTicker.totalsUnResolved={ALL:activeTicker.totals.ALL-activeTicker.totalsResolved.ALL}
 
-
-
 		activeTicker.assignmentGroup={};
 		activeTicker.assignmentGroupResolved={};
 
 		activeTicker.businessService={};
 		activeTicker.businessServiceResolved={};
 
-
 		for (var p in _prios){
 			var _prio=_prios[p].split(" - ")[0];
 			if (_prio=="P40") _prio="P120";
 			logger.debug("***** _prios[p]: "+_prios[p]);
-
-			//logger.debug("*****_groupedByPrio: "+JSON.stringify(_groupedByPrio));
-
 			if (_groupedByPrio[_prios[p]]){
-
 				activeTicker.totals[_prio]=_groupedByPrio[_prios[p]].length;
 				activeTicker.totalsResolved[_prio]=_.where(_groupedByPrio[_prios[p]],{"state":"Resolved"}).length;
 				activeTicker.totalsUnResolved[_prio]=activeTicker.totals[_prio]-activeTicker.totalsResolved[_prio];
-
 				// _processSubDimension(activeTicker,_subDimensions,_groupedByPrio,_prio);
-
-
 				var _assignmentGroup = _.groupBy(_groupedByPrio[_prios[p]],"assignmentGroup");
 				var _assignmentGroupResolved = _.groupBy(_.where(_groupedByPrio[_prios[p]],{"state":"Resolved"}),"assignmentGroup");
-
 				var _businessService = _.groupBy(_groupedByPrio[_prios[p]],"businessService");
 				var _businessServiceResolved = _.groupBy(_.where(_groupedByPrio[_prios[p]],{"state":"Resolved"}),"businessService");
-
-
 				var _ag ={};
 				var _agr ={};
 				for (var a in _assignmentGroup){
@@ -228,11 +215,8 @@ function _createActiveTicker(_incidentsNEW){
 					activeTicker.businessServiceResolved[_prio]=0;
 					activeTicker.assignmentGroup[_prio]=0;
 					activeTicker.assignmentGroupResolved[_prio]=0;
-
 			}
 		}
-
-
 		activeTicker.timestamp = new Date();
 		return activeTicker
 }

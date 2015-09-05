@@ -16,7 +16,16 @@ script(src='/javascripts/components/nvd3/build/nv.d3.min.js')
 -	function formatAVTime(time){
 - 	var d = moment.duration(time);
 -		if (d>=86400000) return d.format("d[d] h:mm:ss", { trim: false });
--		return d.format("h:mm:ss", { trim: false });
+- 	return d.format("h:mm:ss", { trim: false });
+-	}
+
+-	function formatTTR(time,prio){
+- 	var d = moment.duration(time);
+-		if (d>=86400000) return d.format("d[d] h:mm:ss", { trim: false });
+- 	var sla = parseInt(prio.split(" - ")[0].split("P")[1]);
+-		var _return ={ttrHours:d/60000/60,ttrString:d.format("h:mm:ss", { trim: false }),slaBreach:false};
+-   if (_return.ttrHours>sla) _return.slaBreach=true;
+- 	return _return;
 -	}
 
 -	function formatMoney(money){
@@ -100,31 +109,33 @@ block content
 					|	"No Label" only
 	br
 	br
-	
-	+renderIncidentList("snow reported P01 incidents",snowIncidents,excludeNOLABEL)
+	div.container-fluid
+		div.row(style="margin: auto;max-width:1000px")
 
-	div.row(style="margin:auto;max-width:1000px")
-		div.panel.panel-default
-			div.panel-heading 
-				span(style="color:black;font-size:24px;font-weight:bold") Availability - Downtime - Revenue Impact 
-				| planned | unplanned | total 
-				br
-				+renderFromTo(from,to)
-			div.panel-body
-				+renderAVServicesList("SERVICES - ALL",av)
-				hr
-				+renderAVServicesList("SERVICES - EXTERNAL ****)",avExternal)
-				+renderDisclaimer
-	div.row(style="margin: auto;max-width:1000px")
-		script(src='/javascripts/dashboards/nvd3_incidents_multi.js')
-		+chartIncident("Incidents Trend","P01","openedAt")
-		+chartIncident("Incidents Trend","P01","closedAt")
-		+chartIncident("Incidents Trend","P08","openedAt")
-		+chartIncident("Incidents Trend","P08","closedAt")
-		+chartIncident("Incidents Trend","P16","openedAt")
-		+chartIncident("Incidents Trend","P16","closedAt")
-		+chartIncident("Incidents Trend","P120","openedAt")
-		+chartIncident("Incidents Trend","P120","closedAt")
+			+renderIncidentList("snow reported P01 incidents",snowIncidents,excludeNOLABEL)
+
+		div.row(style="margin:auto;max-width:1000px")
+			div.panel.panel-default
+				div.panel-heading 
+					span(style="color:black;font-size:24px;font-weight:bold") Availability - Downtime - Revenue Impact 
+					| planned | unplanned | total 
+					br
+					+renderFromTo(from,to)
+				div.panel-body
+					+renderAVServicesList("SERVICES - ALL",av)
+					hr
+					+renderAVServicesList("SERVICES - EXTERNAL ****)",avExternal)
+					+renderDisclaimer
+		div.row(style="margin: auto;max-width:1000px")
+			script(src='/javascripts/dashboards/nvd3_incidents_multi.js')
+			+chartIncident("Incidents Trend","P01","openedAt")
+			+chartIncident("Incidents Trend","P01","closedAt")
+			+chartIncident("Incidents Trend","P08","openedAt")
+			+chartIncident("Incidents Trend","P08","closedAt")
+			+chartIncident("Incidents Trend","P16","openedAt")
+			+chartIncident("Incidents Trend","P16","closedAt")
+			+chartIncident("Incidents Trend","P120","openedAt")
+			+chartIncident("Incidents Trend","P120","closedAt")
 
 		
 	

@@ -62,6 +62,7 @@
 		}
 	},
 
+
 	"initiatives":{
 		"states":{
 			"colors":{
@@ -80,6 +81,17 @@
 		}
 	},
 
+	"incidents": {
+		"customerImpact":{
+			"categoryExclude":["Failure","Request","Misplaced Call"]
+		},
+		"SLA":{
+			"P01":1,
+			"P08":8,
+			"P16":16,
+			"P120":120
+		}
+	},
 	"targets":{
 		"kpis": {
 			"incidents":{
