@@ -29,7 +29,8 @@ var users = [
     { id: 6, username: secret.space_premium_user, password: secret.space_premium_pass, role: 'customer', context:'bpty.customer.premium'},
     { id: 7, username: secret.space_games_user, password: secret.space_games_pass, role: 'customer', context:'bpty.customer.games'},
     { id: 8, username: secret.space_partyus_user, password: secret.space_partyus_pass, role: 'customer', context:'bpty.customer.party US'},
-      { id: 8, username: secret.space_pmu_user, password: secret.space_pmu_pass, role: 'customer', context:'bpty.customer.pmu'}
+      { id: 9, username: secret.space_pmu_user, password: secret.space_pmu_pass, role: 'customer', context:'bpty.customer.pmu'},
+      { id: 10, username: secret.space_danske_user, password: secret.space_danske_pass, role: 'customer', context:'bpty.customer.danske spil'}
 ];
 
 
