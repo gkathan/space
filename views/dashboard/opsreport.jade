@@ -146,7 +146,6 @@ script.
 	// make serverside parameter accessible	to clientside JS
 	//var av=!{JSON.stringify(av)};
 	//var avExternal=!{JSON.stringify(avExternal)};
-	
 	var _from="#{from}";
 	var _to="#{to}";
 	var _customer="#{filter.customer}";
@@ -177,16 +176,16 @@ script.
 		$('#daterange').on('apply.daterangepicker', function(ev, picker) {
 			_from = picker.startDate.format('YYYY-MM-DD');
 			_to = picker.endDate.format('YYYY-MM-DD');
-			window.location.href = "/dashboard/opsreport/"+_customer+"?from="+_from+"&to="+_to+"&excludeNOLABEL="+_excludeNOLABEL;
+			window.location.href = "/dashboard/opsreport?from="+_from+"&to="+_to+"&excludeNOLABEL="+_excludeNOLABEL;
 		});	
 
 		$('#filter').on('change', function() {
 			console.log("select change event: "+this.value);
 			
 			if (_from && _to)
-				window.location.href = "/dashboard/opsreport/"+_customer+"?from="+_from+"&to="+_to+"&excludeNOLABEL="+_excludeNOLABEL;
+				window.location.href = "/dashboard/opsreport?from="+_from+"&to="+_to+"&excludeNOLABEL="+_excludeNOLABEL;
 			else
-				window.location.href = "/dashboard/opsreport/"+_customer;
+				window.location.href = "/dashboard/opsreport";
 		});
 		
 		
@@ -196,7 +195,7 @@ script.
 		$("input[name='excludeNOLABEL']").on('change', function() {
 			var _excludeNOLABEL = $("input[name='excludeNOLABEL']:checked").val();
 			console.log("!!!!!!!!!!!!!!!!!!!!"+_excludeNOLABEL);
-			window.location.href = "/dashboard/opsreport/"+_customer+"?from="+_from+"&to="+_to+"&excludeNOLABEL="+_excludeNOLABEL;
+			window.location.href = "/dashboard/opsreport?from="+_from+"&to="+_to+"&excludeNOLABEL="+_excludeNOLABEL;
 		});
 	
 	});
