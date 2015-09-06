@@ -23,12 +23,14 @@ var _oldIncidentsCollection="oldsnowincidents";
 var _incidentsDeltaCollection="incidentsdelta";
 var _incidentsActiveTickerCollection="incidentsactiveticker";
 
+var labelService = require('../services/LabelService');
 
 exports.find = _find;
 exports.findById = _findById;
 
 exports.findFiltered = _findFiltered;
 exports.findAll = _findAll;
+exports.findByCustomer = _findByCustomer;
 exports.findOld = _findOld;
 exports.findProblem = _findProblem;
 exports.findChangeLog = _findChangeLog;
@@ -117,6 +119,23 @@ function _findFiltered(filter,callback) {
 			return;
 	});
 }
+
+function _findByCustomer(customer,filter,callback) {
+	_findAll(filter, function (err, incidents){
+			if (err){
+				logger.error("error: "+err.message);
+			}
+			var _excludeNoLabel = true;
+			logger.debug("[findByCustomer] incidents total: "+incidents.length);
+			labelService.filterIncidents(incidents,customer,_excludeNoLabel,function(err,customerIncidents){
+				logger.debug("[findByCustomer] incidents for "+customer+" : "+customerIncidents.length);
+
+				callback(err,customerIncidents);
+				return;
+			});
+	});
+}
+
 
 function _findById(id,callback){
 	_findFiltered({id:id},function (err,incidents){
@@ -465,9 +484,9 @@ exports.findGroupedByPriority = function (prioritylist){
 * group by = AssignmentGroup
 */
 function _getOverdueGroupedByAssignmentGroup(callback){
-	_find(function(incidents){
+	_find({},function(err,incidents){
 		var result = _.nst.nest(incidents,("assignmentGroup"))
-		callback(result);
+		callback(err,result);
 	});
 }
 

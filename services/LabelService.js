@@ -52,7 +52,7 @@ function _checkExclusion(incident,filterLabels,excludeNOLABELS){
 			return true;
 		}
 		else{
-			if (incident.label==="No Label") return false;
+			if (incident.label.indexOf("No Label")>=0) return false;
 
 			return true;
 	}
@@ -82,7 +82,7 @@ function _filterIncidents(incidents,customer,excludeNOLABELS,callback){
 	_findLabel2Customer({customer:customer},function(err,filterLabels){
 			for (var i in incidents){
 				var _inc = incidents[i];
-				logger.debug("++ checking incident: "+_inc.id);
+				logger.debug("++ checking incident: "+_inc.id+" filterlabels: "+filterLabels);
 				if (!_checkExclusion(_inc,filterLabels,excludeNOLABELS)) filteredIncidents.push(_inc);
 			}
 			logger.debug("------------------------ number of incidents: "+incidents.length);

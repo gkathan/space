@@ -70,7 +70,7 @@ router.post('/', function(req,res,next){
 				console.log("[we are very close :-), req.session.ORIGINAL_URL: "+req.session.ORIGINAL_URL);
 				var sess = req.session;
         var _redirect;
-        if (user.username=="bwin") _redirect ="/dashboard/opsreport/bwin"
+        if (user.role=="customer") _redirect ="/dashboard/opsreport";
 				sess.AUTH = user.role;
 				sess.USER = user.username;
 				sess.CONTEXT = user.context;

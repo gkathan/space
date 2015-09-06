@@ -211,7 +211,8 @@ function _calculateDailyTracker(incidents,dateFields,prios,context,callback){
 					//P40 are handled as P120
 					var _prioOld = incidents[i].prioChange.old;
 					if (_prioOld=="P40") _prioOld="P120";
-					_track[dateField][_prioOld].total--;
+					if (_track[dateField][_prioOld])
+						_track[dateField][_prioOld].total--;
 				}
 			}
 			else{
@@ -375,7 +376,7 @@ function _findIncidenttrackerByDate(aggregate,period,prios,callback){
 	var _half = _parsePeriod(_date,"halfyear");
 	var _month = _parsePeriod(_date,"month");
 	var _week = _parsePeriod(_date,"week");
-	
+
 
 
 	logger.debug("------------------------ date: "+_date+" quarter: "+_quarter)

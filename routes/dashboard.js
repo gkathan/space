@@ -149,12 +149,16 @@ router.get('/itservicereport', function(req, res) {
 /** cloned from firerport
 * [TODO] harmoniaze the crap again after bwin report is downtime
 */
-router.get('/opsreport/:customer', function(req, res) {
+router.get('/opsreport', function(req, res) {
+		var _customer = req.session.USER;
+		ensureAuthenticated(req, res);
+
+
 		var avc = require ('../services/AvailabilityCalculatorService');
 		var inc = require ('../services/IncidentService');
 		var prob = require ('../services/ProblemService');
 
-		var _customer = req.params.customer;
+		//sess.AUTH = user.role;
 
 		//default is in config
 		var _from = moment().startOf('year').format("YYYY-MM-DD");
@@ -228,3 +232,14 @@ router.get('/corpIT', function(req, res) {
 
 
 module.exports = router;
+
+function ensureAuthenticated(req, res) {
+	logger.debug("[CHECK AUTHENTICATED]");
+  if (!req.session.AUTH){
+		  logger.debug("[*** NOT AUTHENTICATED **]");
+      req.session.ORIGINAL_URL = req.originalUrl;
+		  res.redirect("/login");
+      return false
+	}
+  return true;
+}

@@ -70,7 +70,7 @@ describe('IncidentService', function(){
   describe('#getOverdueGroupedBy()', function(){
     it('returns grouped by incdients', function(done){
       var incidentService = require('../services/IncidentService');
-			incidentService.getOverdueGroupedByAssignmentGroup(function(result){
+			incidentService.getOverdueGroupedByAssignmentGroup(function(err,result){
 					logger.debug("result: "+result.children.length);
 					done();
 			})
@@ -119,22 +119,29 @@ describe('#countIncidentKPI()', function(){
 
     var incidentService = require('../services/IncidentService');
 		//var _filter = {priority:/^P08/,"openedAt" : { $gte : new Date("2015-05-01T00:00:00Z"), $lt : new Date("2015-08-01T00:00:00Z")},category:{$nin:["Failure","Request","Misplaced Call"]},state:"Closed",businessService:{$not:/^Workplace/}};
-
 		//var _filter = {priority:/^P01/,"openedAt" : { $gte : moment().subtract(90, 'days').toDate(), $lt : new Date()},category:{$nin:["Failure","Request","Misplaced Call"]},state:"Closed",businessService:{$not:/^Workplace/}};
-
-	//	var _filter = {priority:/^P01/,"openedAt" : { $gte : new Date("2014-10-01T00:00:00Z"), $lt : new Date("2015-01-01T00:00:00Z")},category:{$ne:"Failure"},state:"Closed"}};
-
-
+		//	var _filter = {priority:/^P01/,"openedAt" : { $gte : new Date("2014-10-01T00:00:00Z"), $lt : new Date("2015-01-01T00:00:00Z")},category:{$ne:"Failure"},state:"Closed"}};
 		incidentService.getKPIs({type:"baseline",range:["2014-10-01", "2015-01-01"]},{type:"target",range:["2015-05-01", "2015-08-01"]},function(err,kpis){
 				logger.debug("KPIs: "+JSON.stringify(kpis));
-
-
-
-				done();
+		done();
 			})
-
 	});
 });
+
+
+	describe('#findByCustomer()', function(){
+    it('returns incidents filtered for cutomer', function(done){
+			this.timeout(10000);
+      var incidentService = require('../services/IncidentService');
+			incidentService.findByCustomer("pmu",{priority:"P01 - Critical"},function(err,result){
+					logger.debug("result: "+result.length);
+
+					done();
+			})
+		});
+  });
+
+
 /*
 	describe('#findOld()', function(){
     it('returns incidents from old snow', function(done){

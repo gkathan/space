@@ -194,11 +194,12 @@ describe('#init DailyTracker()', function(){
 describe('#calc DailyTracker() on the fly', function(){
 	it('should initialize a daily tracker for a given date', function(done){
 		var incidentService = require('../services/IncidentService');
+			this.timeout(30000);
 
 		var incidentTrackerService = require('../services/IncidentTrackerService');
-		var prios =["P01"];
+		var prios =["P08"];
 		var _context="btpy.studios";
-		incidentService.find({priority:"P01 - Critical"},function(err,incidents){
+		incidentService.find({priority:"P08 - High"},function(err,incidents){
 			logger.debug("number of incidents: "+incidents.length);
 			incidentTrackerService.calculateDailyTracker(incidents,["openedAt","resolvedAt","closedAt"],prios,_context,function(err,tracker){
 				logger.debug("tracker: "+JSON.stringify(tracker));
