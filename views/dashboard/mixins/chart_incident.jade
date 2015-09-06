@@ -84,6 +84,94 @@ mixin chartIncident(title,prio,dateField)
 		init("#{prio}","#{dateField}","#{chart}","#{subDimension}");
 
 
+
+mixin chartIncidentByCustomer(title,prio,dateField,customer)
+	- var chart = "chart"+prio+"-"+dateField;
+	div.row(style="margin:auto;max-width:1200px")
+		div.panel.panel-default
+			div.panel-heading 
+				img(src="/images/incidents/#{prio}.png" style="margin-top:-10px;margin-right:10px" height="30px")
+				span(style="color:black;font-size:24px;font-weight:bold") #{title} - #{customer}&nbsp;
+				span(style="color:black;font-size:14px;font-weight:normal") #{dateField}
+				|&nbsp;|&nbsp;
+				span(id="aggregate_#{chart}" style="font-weight:bold") 
+				|&nbsp;|&nbsp;for period: 
+				span(id="period_#{chart}" style="color:black;font-weight:bold")
+			div.panel-body
+				.btn-group
+					a.btn.btn-default(href='javascript:void(0)') Quarter
+					a.btn.btn-default.dropdown-toggle(href='bootstrap-elements.html', data-target='#', data-toggle='dropdown')
+						span.caret
+						ul.dropdown-menu
+							li
+								a.dropdown.incidentstrend(id="#{chart}_q1-2014") Q1-2014
+							li
+								a.dropdown.incidentstrend(id="#{chart}_q2-2014") Q2-2014
+							li
+								a.dropdown.incidentstrend(id="#{chart}_q3-2014") Q3-2014
+							li
+								a.dropdown.incidentstrend(id="#{chart}_q4-2014") Q4-2014
+							li
+								a.dropdown.incidentstrend(id="#{chart}_q1-2015") Q1-2015
+							li
+								a.dropdown.incidentstrend(id="#{chart}_q2-2015") Q2-2015
+							li
+								a.dropdown.incidentstrend(id="#{chart}_q3-2015") Q3-2015
+				.btn-group
+					a.btn.btn-default(href='javascript:void(0)') HalfYear
+					a.btn.btn-default.dropdown-toggle(href='bootstrap-elements.html', data-target='#', data-toggle='dropdown')
+						span.caret
+						ul.dropdown-menu
+							li
+								a.dropdown.incidentstrend(id="#{chart}_h1-2014") H1-2014
+							li
+								a.dropdown.incidentstrend(id="#{chart}_h2-2014") H2-2014
+							li
+								a.dropdown.incidentstrend(id="#{chart}_h1-2015") H1-2015
+				.btn-group
+					a.btn.btn-default(href='javascript:void(0)') Year
+					a.btn.btn-default.dropdown-toggle(href='bootstrap-elements.html', data-target='#', data-toggle='dropdown')
+						span.caret
+						ul.dropdown-menu
+							li
+								a.dropdown.incidentstrend(id="#{chart}_2014") 2014
+							li
+								a.dropdown.incidentstrend(id="#{chart}_2015") 2015
+
+				.btn-group
+					a.btn.btn-default(href='javascript:void(0)') Aggregation
+					a.btn.btn-default.dropdown-toggle(href='bootstrap-elements.html', data-target='#', data-toggle='dropdown')
+						span.caret
+						ul.dropdown-menu
+							li
+								a.dropdown.incidentstrend(id="#{chart}_aggregate-day") daily
+							li
+								a.dropdown.incidentstrend(id="#{chart}_aggregate-week") weekly
+							li
+								a.dropdown.incidentstrend(id="#{chart}_aggregate-month") monthly
+							li
+								a.dropdown.incidentstrend(id="#{chart}_aggregate-quarter") quarterly
+							li
+								a.dropdown.incidentstrend(id="#{chart}_aggregate-halfyear") halfyearly
+							li
+								a.dropdown.incidentstrend(id="#{chart}_aggregate-year") yearly
+
+				div(style="font-size:28px;text-align:right")
+					span(style="font-size:18px;text-align:right") total:&nbsp;
+					span(id="#{chart}_sum" style="font-size:28px;text-align:right;font-weight:bold")
+				div(style="font-size:28px;text-align:right")
+					span(style="font-size:18px;text-align:right") prev:&nbsp;
+					span(id="#{chart}_sumPrev" style="font-size:28px;text-align:right;font-weight:bold")					
+					
+				div(id="#{chart}" style="text-align:center")
+					svg
+	script.
+		init("#{prio}","#{dateField}","#{chart}","#{subDimension}");
+
+
+
+
+
 					
 mixin chartIncidentActiveTicker(title,id)
 	- var chart = "chart"+id;

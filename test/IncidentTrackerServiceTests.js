@@ -197,19 +197,41 @@ describe('#calc DailyTracker() on the fly', function(){
 			this.timeout(30000);
 
 		var incidentTrackerService = require('../services/IncidentTrackerService');
-		var prios =["P08"];
+		var prios =["P01"];
 		var _context="btpy.studios";
-		incidentService.find({priority:"P08 - High"},function(err,incidents){
+		incidentService.find({priority:"P01 - Critical"},function(err,incidents){
 			logger.debug("number of incidents: "+incidents.length);
 			incidentTrackerService.calculateDailyTracker(incidents,["openedAt","resolvedAt","closedAt"],prios,_context,function(err,tracker){
-				logger.debug("tracker: "+JSON.stringify(tracker));
-				//assert.equal(0,_tracker.openedAt.P01.total);
-				done();
-
+				incidentTrackerService.buildStatistics(tracker,prios,function(err,tracker){
+						//assert.equal(0,_tracker.openedAt.P01.total);
+						logger.debug("tracker: "+JSON.stringify(tracker));
+						done();
+				});
 			});
-	});
+		});
+	})
+});
 
-		})
-	});
+describe('#calc from to dates ', function(){
+	it('calculates from to dates ', function(done){
+
+	var incidentTrackerService = require('../services/IncidentTrackerService');
+	var _dates=incidentTrackerService.calculateFromToDates("2015");
+	logger.debug("dates: "+JSON.stringify(_dates));
+	assert.deepEqual(_dates.from, new Date("2015-01-01"));
+	assert.deepEqual(_dates.to, new Date("2015-12-31"));
+
+	var _dates=incidentTrackerService.calculateFromToDates("Q2-2015");
+	logger.debug("dates: "+JSON.stringify(_dates));
+	assert.deepEqual(_dates.from, new Date("2015-04-01"));
+	assert.deepEqual(_dates.to, new Date("2015-06-30"));
+
+
+	done();
+
+		});
+});
+
+
 
 })

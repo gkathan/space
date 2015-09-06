@@ -128,14 +128,11 @@ block content
 					+renderDisclaimer
 		div.row(style="margin: auto;max-width:1000px")
 			script(src='/javascripts/dashboards/nvd3_incidents_multi.js')
+			
+			//+chartIncidentByCustomer("Incidents Trend","P01","openedAt",customer)
+			
 			+chartIncident("Incidents Trend","P01","openedAt")
-			+chartIncident("Incidents Trend","P01","closedAt")
 			+chartIncident("Incidents Trend","P08","openedAt")
-			+chartIncident("Incidents Trend","P08","closedAt")
-			+chartIncident("Incidents Trend","P16","openedAt")
-			+chartIncident("Incidents Trend","P16","closedAt")
-			+chartIncident("Incidents Trend","P120","openedAt")
-			+chartIncident("Incidents Trend","P120","closedAt")
 
 		
 	

@@ -153,7 +153,6 @@ router.get('/opsreport', function(req, res) {
 		var _customer = req.session.USER;
 		ensureAuthenticated(req, res);
 
-
 		var avc = require ('../services/AvailabilityCalculatorService');
 		var inc = require ('../services/IncidentService');
 		var prob = require ('../services/ProblemService');
@@ -196,6 +195,8 @@ router.get('/opsreport', function(req, res) {
 							res.locals.av = avDataOverall;
 							res.locals.labelService = labelService;
 							res.locals.customer = _customer;
+
+
 							res.locals.avExternal = avDataExternal;
 							res.locals.snowIncidents = filteredIncidents;
 							res.locals.coreDef = config.availability.coreTime

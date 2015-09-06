@@ -68,6 +68,7 @@ var PATH = {
 
 						REST_INCIDENTTRACKER : BASE+'/space/rest/incidenttracker/',
 						REST_INCIDENTTRACKER_DATE : BASE+'/space/rest/incidenttracker/:date',
+						REST_INCIDENTTRACKER_CUSTOMER : BASE+'/space/rest/createincidenttracker/:customer',
 						REST_PROBLEMS : BASE+'/space/rest/problems',
 
 						REST_V1EPICS : BASE+'/space/rest/v1epics',
@@ -200,6 +201,7 @@ router.get(PATH.REST_INCIDENTSKPIS, function(req, res, next) {getIncidentKPIs(re
 //router.post(PATH.REST_INCIDENTTRACKER, function(req, res, next) {save(req,res,next);});
 //router.delete(PATH.REST_INCIDENTTRACKER, function(req, res, next) {delete(req,res,next);});
 router.get(PATH.REST_INCIDENTTRACKER_DATE, function(req, res, next) {findIncidenttrackerByDate(req,res,next);});
+router.get(PATH.REST_INCIDENTTRACKER_CUSTOMER, function(req, res, next) {createIncidenttrackerByCustomer(req,res,next);});
 
 router.get(PATH.REST_V1EPICS, function(req, res, next) {findAllByName(req,res,next);});
 router.get(PATH.REST_ROADMAPINITIATIVES, function(req, res, next) {getRoadmapInitiatives(req,res,next);});
@@ -416,6 +418,41 @@ function findIncidenttrackerByDate(req, res , next){
 				})
 			}
 	});
+}
+
+/**on the fly creation of tracker for filtered incidents
+* eg http://localhost:3000/api/space/rest/createincidenttracker/bwin?prios=P01&aggregate=month&period=NOW-90
+*/
+function createIncidenttrackerByCustomer(req, res , next){
+	var path = req.path.split("/");
+
+	var _prios = ["P01","P08","P16","P120"];
+
+	var _customer = req.params.customer;//_.last(path);
+	logger.debug("customer:"+_customer);
+	//var _type = req.params.type;//_.last(_.initial(path));
+	var _prio = req.query.prios;
+	var _from = req.query.from;
+	var _to = req.query.to;
+	var _aggregate = req.query.aggregate;
+	var _period = req.query.period;
+
+	if (!_period){
+		_period="NOW-30";
+	}
+
+	if (_from && _to) _period={from:new Date(_from),to:new Date(_to)};
+
+	if (_prio) _prios=_prio.split(",");
+	if (!_aggregate){
+		_aggregate="week";
+	}
+
+	var incidentTrackerService = require('../services/IncidentTrackerService');
+	incidentTrackerService.createIncidenttrackerByDate(_aggregate,_period,_prios,_customer,function(err,result){
+		res.send(result);
+		return;
+	})
 }
 
 

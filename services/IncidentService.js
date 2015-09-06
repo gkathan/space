@@ -121,7 +121,10 @@ function _findFiltered(filter,callback) {
 }
 
 function _findByCustomer(customer,filter,callback) {
-	_findAll(filter, function (err, incidents){
+	if (!customer ||customer==":customer") callback(null,null);
+
+
+	_find(filter, function (err, incidents){
 			if (err){
 				logger.error("error: "+err.message);
 			}
@@ -134,6 +137,7 @@ function _findByCustomer(customer,filter,callback) {
 				return;
 			});
 	});
+
 }
 
 

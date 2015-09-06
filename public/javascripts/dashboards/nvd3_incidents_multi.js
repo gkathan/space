@@ -162,6 +162,8 @@ function _prepareData(incidents,incidentsPrev,prio,period,dateField){
 
 function redraw(chartId,period,aggregate,prio,dateField) {
   var _url = "/api/space/rest/incidenttracker/"+period;
+  // for on the fly tracker creation
+  //var _url = "/api/space/rest/createincidenttracker/bwin?prios=P01,P08"
   var _urlPrev = "/api/space/rest/incidenttracker/"+_alterPeriodByYear(period,-1);
 
 

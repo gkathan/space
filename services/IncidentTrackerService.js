@@ -20,7 +20,8 @@ var _incidentTrackerCollection="incidenttracker";
 
 exports.rebuildTracker = _rebuildTracker;
 exports.incrementTracker = _incrementTracker;
-
+exports.calculateFromToDates = _calculateFromToDates;
+exports.createIncidenttrackerByDate = _createIncidenttrackerByDate;
 exports.flushTracker = _flushTracker;
 exports.findTrackerByDate = _findIncidenttrackerByDate;
 exports.calculateDailyTracker = _calculateDailyTracker;
@@ -82,7 +83,7 @@ function _buildStatistics(tracker,prios,callback){
 					var _prio = prios[p];
 
 					// is liek a burnrate => can be negative if i close more than i open ....
-					if (_day.openedAt[_prio]){
+					if (_day.openedAt && _day.openedAt[_prio]){
 						var activePrio=_day.openedAt[_prio].total-(_day.closedAt ? _day.closedAt[_prio].total : 0) ;
 						if (!_day["active"]){
 							_day["active"]={};
@@ -216,7 +217,7 @@ function _calculateDailyTracker(incidents,dateFields,prios,context,callback){
 				}
 			}
 			else{
-				logger.info("[IncidentTrackerService._calculateDailyTracker()] says: "+dateField+" is not yet set.. so we can skip ");
+				//logger.info("[IncidentTrackerService._calculateDailyTracker()] says: "+dateField+" is not yet set.. so we can skip ");
 			}
 		}//end for dateFIelds
 	}//end for incidents
@@ -372,94 +373,20 @@ function _findIncidenttrackerByDate(aggregate,period,prios,callback){
   if (!aggregate) aggregate="week";
 	var collection = "incidenttracker";
 	var _date = period;
-	var _quarter = _parsePeriod(period,"quarter");
-	var _half = _parsePeriod(_date,"halfyear");
-	var _month = _parsePeriod(_date,"month");
-	var _week = _parsePeriod(_date,"week");
 
-
-
-	logger.debug("------------------------ date: "+_date+" quarter: "+_quarter)
-	logger.debug("------------------------ date: "+_date+" half: "+_half)
-	logger.debug("------------------------ date: "+_date+" month: "+_month)
-	logger.debug("------------------------ date: "+_date+" week: "+_week)
-
-	// ok lets inspect what kind of date is specified
-	// we support currently:
-	// 1) just plain year "2015"
-	// 2) quarter of a year "q1-2015"
-	// 3) a day "2015-03-21"
-
-  var _year = parseInt(_date);
-	logger.debug("year:" +_year);
-	var _from;
-	var _to;
-
-
-
-		//2015-01-01_2015-02-01
-	if (_date.split("_").length==2){
-			_from = new Date(_date.split("_")[0]);
-			_to = new Date(_date.split("_")[1]);
-	}
-	//NOW-90 => 90 days back from now
-	else if (_date.split("-")[0]=="NOW"){
-		_from = new moment().subtract(_date.split("-")[1],'days').toDate();
-		_to = new Date();
-	}
-	else if (_date=="ALL"){
-		_from = new Date("2014-01-01");
-		_to = new Date();
-	}
-
-	else if ( _year != NaN && _year >2010){
-		_from = new Date(_date+"-01-01");
-		_to = new Date(_date+"-12-31");
-		logger.debug("[year]:" +_year+ "[from]: "+_from+" [to]: "+_to);
-	}
-	else if (_quarter){
-		_from = new Date(_quarter[0]);
-		_to = new Date(_quarter[1]);
-		logger.debug("[quarter]:" +_quarter+ "[from]: "+_from+" [to]: "+_to);
-	}
-	else if (_half){
-		_from = new Date(_half[0]);
-		_to = new Date(_half[1]);
-		logger.debug("[_half]:" +_half+ "[from]: "+_from+" [to]: "+_to);
-	}
-	else if (_month){
-		_from = new Date(_month[0]);
-		_to = new Date(_month[1]);
-		logger.debug("[_month]:" +_month+ "[from]: "+_from+" [to]: "+_to);
-	}
-	else if (_week){
-		_from = new Date(_week[0]);
-		_to = new Date(_week[1]);
-		logger.debug("[_week]:" +_week+ "[from]: "+_from+" [to]: "+_to);
-	}
-
-	else {
-		logger.error("no way - no valid date specified");
-	}
-	logger.debug("findbyDate: value: "+_date);
+	// call
+	logger.debug("findbyDate: value: "+period);
 	logger.debug("collection: "+collection);
- 	var _query = {date : { $gte : _from,$lte : _to}};
 
-	/*
-	// this would calculate dailytracker on demand =>> is at least 20xtimes slower !!!
-	var _query = {openedAt : { $gte : _from,$lte : _to}};
-	var incService = require('../services/IncidentService');
-	incService.findFiltered(_query,function(err,incidents){
-		_calculateDailyTracker(incidents,["openedAt","resolvedAt","closedAt"],"bpty.studios",function(err,success){
-	*/
+	var _dates = _calculateFromToDates(period);
+
+ 	var _query = {date : { $gte : _dates.from,$lte : _dates.to}};
 
   db.collection(collection).find( _query).sort({"date":1}, function(err , success){
-
     logger.debug('Response success '+success);
     logger.debug('Response error '+err);
     if(success){
 			success = _aggregateByTime(success,period,aggregate,prios);
-
 			logger.debug("************* callback success");
 			callback(null,success);
     }
@@ -467,8 +394,131 @@ function _findIncidenttrackerByDate(aggregate,period,prios,callback){
 			logger.warn("************* callback error: "+err.message);
 			callback(err,null);
 		}
-		//})
 	})
+}
+
+/**on the fly calculation instead of
+db read
+*/
+function _createIncidenttrackerByDate(aggregate,period,prios,customer,callback){
+  if (!aggregate) aggregate="week";
+	var _context ="bpty.studios";
+
+	var _dates;
+
+	if (!period.from && !period.to)
+		_dates = _calculateFromToDates(period);
+	else
+		_dates = period;
+
+	var _priofilter=[];
+	for (var p in prios){
+		var _prio = prios[p];
+		_priofilter.push({priority:{$regex : _prio+".*"}});
+	}
+
+	var _filter={$or:_priofilter};
+
+	var _datefilter={};
+	if (_dates.from && _dates.to){
+		_datefilter={$gte:new Date(_dates.from),$lt:new Date(_dates.to)};
+		_filter.openedAt=_datefilter;
+	}
+
+	var incidentService = require('../services/IncidentService');
+	incidentService.findByCustomer(customer,_filter,function(err,incidents){
+		if (err){
+			logger.erro("error: "+err.message);
+		}
+		logger.debug("********************* _createIncidenttrackerByDate(): customer: "+customer+" aggregate= "+aggregate);;
+		logger.debug("incidents to process: "+incidents.length);
+		_calculateDailyTracker(incidents,["openedAt","resolvedAt","closedAt"],prios,_context,function(err,tracker){
+			if (err){
+				logger.warn("[error] incidentTrackerService._createIncidenttrackerByDate says: "+err.message);
+			}
+			else {
+				_buildStatistics(tracker,prios,function(err,result){
+					result = _aggregateByTime(result.tracker,period,aggregate,prios);
+					callback(null,result);
+				})
+			}
+		});
+	})
+
+}
+
+
+
+/**
+* helper function
+*/
+function _calculateFromToDates(period){
+		var _quarter = _parsePeriod(period,"quarter");
+		var _half = _parsePeriod(period,"halfyear");
+		var _month = _parsePeriod(period,"month");
+		var _week = _parsePeriod(period,"week");
+
+		logger.debug("------------------------ date: "+period+" quarter: "+_quarter)
+		logger.debug("------------------------ date: "+period+" half: "+_half)
+		logger.debug("------------------------ date: "+period+" month: "+_month)
+		logger.debug("------------------------ date: "+period+" week: "+_week)
+
+		// ok lets inspect what kind of date is specified
+		// we support currently:
+		// 1) just plain year "2015"
+		// 2) quarter of a year "q1-2015"
+		// 3) a day "2015-03-21"
+
+	  var _year = parseInt(period);
+		logger.debug("year:" +_year);
+		var _from;
+		var _to;
+
+			//2015-01-01_2015-02-01
+		if (period.split("_").length==2){
+				_from = new Date(period.split("_")[0]);
+				_to = new Date(period.split("_")[1]);
+		}
+		//NOW-90 => 90 days back from now
+		else if (period.split("-")[0]=="NOW"){
+			_from = new moment().subtract(period.split("-")[1],'days').toDate();
+			_to = new Date();
+		}
+		else if (period=="ALL"){
+			_from = new Date("2014-01-01");
+			_to = new Date();
+		}
+		else if ( _year != NaN && _year >2010){
+			_from = new Date(period+"-01-01");
+			_to = new Date(period+"-12-31");
+			logger.debug("[year]:" +_year+ "[from]: "+_from+" [to]: "+_to);
+		}
+		else if (_quarter){
+			_from = new Date(_quarter[0]);
+			_to = new Date(_quarter[1]);
+			logger.debug("[quarter]:" +_quarter+ "[from]: "+_from+" [to]: "+_to);
+		}
+		else if (_half){
+			_from = new Date(_half[0]);
+			_to = new Date(_half[1]);
+			logger.debug("[_half]:" +_half+ "[from]: "+_from+" [to]: "+_to);
+		}
+		else if (_month){
+			_from = new Date(_month[0]);
+			_to = new Date(_month[1]);
+			logger.debug("[_month]:" +_month+ "[from]: "+_from+" [to]: "+_to);
+		}
+		else if (_week){
+			_from = new Date(_week[0]);
+			_to = new Date(_week[1]);
+			logger.debug("[_week]:" +_week+ "[from]: "+_from+" [to]: "+_to);
+		}
+		else {
+			logger.error("no way - no valid date specified");
+		}
+
+		return {from:_from,to:_to};
+
 }
 
 /**

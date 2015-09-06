@@ -82,7 +82,7 @@ function _filterIncidents(incidents,customer,excludeNOLABELS,callback){
 	_findLabel2Customer({customer:customer},function(err,filterLabels){
 			for (var i in incidents){
 				var _inc = incidents[i];
-				logger.debug("++ checking incident: "+_inc.id+" filterlabels: "+filterLabels);
+				//logger.debug("++ checking incident: "+_inc.id+" filterlabels: "+filterLabels);
 				if (!_checkExclusion(_inc,filterLabels,excludeNOLABELS)) filteredIncidents.push(_inc);
 			}
 			logger.debug("------------------------ number of incidents: "+incidents.length);
