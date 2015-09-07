@@ -425,6 +425,10 @@ function _createIncidenttrackerByDate(aggregate,period,prios,customer,callback){
 		_datefilter={$gte:new Date(_dates.from),$lt:new Date(_dates.to)};
 		_filter.openedAt=_datefilter;
 	}
+	_filter.category={$nin:config.incidents.customerImpact.categoryExclude}
+
+
+
 	var _sort = {openedAt:1};
 
 	var incidentService = require('../services/IncidentService');
