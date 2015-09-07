@@ -84,7 +84,7 @@ describe('IncidentService', function(){
     it('returns ALL incdients from both oldsnow and newsnow', function(done){
       this.timeout(10000);
 			var incidentService = require('../services/IncidentService');
-			incidentService.findAll({},function(err,result){
+			incidentService.findAll({},{openedAt:-1},function(err,result){
 					if (err) logger.error("error: "+err);
 					logger.debug("result: "+result.length);
 
@@ -133,7 +133,7 @@ describe('#countIncidentKPI()', function(){
     it('returns incidents filtered for cutomer', function(done){
 			this.timeout(10000);
       var incidentService = require('../services/IncidentService');
-			incidentService.findByCustomer("pmu",{priority:"P01 - Critical"},function(err,result){
+			incidentService.findByCustomer("pmu",{priority:"P01 - Critical"},{openedAt:-1},function(err,result){
 					logger.debug("result: "+result.length);
 
 					done();
@@ -147,7 +147,7 @@ describe('#countIncidentKPI()', function(){
     it('returns incidents from old snow', function(done){
 			this.timeout(10000);
       var incidentService = require('../services/IncidentService');
-			incidentService.findOld({active:"TRUE"},function(err,result){
+			incidentService.findOld({active:"TRUE"},{openedAt:-1},function(err,result){
 					logger.debug("result: "+result.length);
 
 					done();
@@ -197,7 +197,7 @@ describe('#countIncidentKPI()', function(){
 describe('#find single incident', function(){
 	it('should return a incident', function(done){
 		var incService = require('../services/IncidentService');
-		incService.findFiltered({active:"true"},function(err,baseline){
+		incService.findFiltered({active:"true"},{openedAt:-1},function(err,baseline){
 			var inc = _.findWhere(baseline,{"id":"INC125980"});
 			logger.debug("------------------------------"+JSON.stringify(inc));
 			logger.debug("------------------------------"+inc.id);

@@ -66,9 +66,9 @@ var PATH = {
 						REST_SOCINCIDENT2REVENUEIMPACT : BASE+'/space/rest/socincident2revenueimpact',
 						REST_SOCSERVICES : BASE+'/space/rest/soc_services',
 
-						REST_INCIDENTTRACKER : BASE+'/space/rest/incidenttracker/',
-						REST_INCIDENTTRACKER_DATE : BASE+'/space/rest/incidenttracker/:date',
-						REST_INCIDENTTRACKER_CUSTOMER : BASE+'/space/rest/createincidenttracker/:customer',
+
+						REST_INCIDENTTRACKER : BASE+'/space/rest/incidenttracker',
+						REST_INCIDENTTRACKER_CUSTOMER : BASE+'/space/rest/incidenttracker/:customer',
 						REST_PROBLEMS : BASE+'/space/rest/problems',
 
 						REST_V1EPICS : BASE+'/space/rest/v1epics',
@@ -194,14 +194,11 @@ router.post(PATH.REST_SOCSERVICES, function(req, res, next) {save(req,res,next);
 router.delete(PATH.REST_SOCSERVICES, function(req, res, next) {remove(req,res,next); });
 
 
-router.get(PATH.REST_INCIDENTTRACKER, function(req, res, next) {findAllByName(req,res,next);});
+router.get(PATH.REST_INCIDENTTRACKER, function(req, res, next) {findIncidentTracker(req,res,next);});
+router.get(PATH.REST_INCIDENTTRACKER_CUSTOMER, function(req, res, next) {findIncidentTracker(req,res,next);});
 router.get(PATH.REST_INCIDENTSACTIVETICKER, function(req, res, next) {findAllByName(req,res,next);});
 router.get(PATH.REST_INCIDENTSKPIS, function(req, res, next) {getIncidentKPIs(req,res,next);});
 
-//router.post(PATH.REST_INCIDENTTRACKER, function(req, res, next) {save(req,res,next);});
-//router.delete(PATH.REST_INCIDENTTRACKER, function(req, res, next) {delete(req,res,next);});
-router.get(PATH.REST_INCIDENTTRACKER_DATE, function(req, res, next) {findIncidenttrackerByDate(req,res,next);});
-router.get(PATH.REST_INCIDENTTRACKER_CUSTOMER, function(req, res, next) {createIncidenttrackerByCustomer(req,res,next);});
 
 router.get(PATH.REST_V1EPICS, function(req, res, next) {findAllByName(req,res,next);});
 router.get(PATH.REST_ROADMAPINITIATIVES, function(req, res, next) {getRoadmapInitiatives(req,res,next);});
@@ -392,69 +389,53 @@ function findById(req, res , next){
 * uri looks like /api/space/rest/incidenttracker/<type>/q2-2015
 * enhanced by also sending start and end of period by dates e.g. 2015-01-01_2015-02-01
  */
-function findIncidenttrackerByDate(req, res , next){
-	var path = req.path.split("/");
+function findIncidentTracker(req, res , next){
+	var _prios = ["P01","P08","P16","P120"];
+	var _customer = req.params.customer;//_.last(path);
 
-	var prios = ["P01","P08","P16","P120"];
-	//var prios = ["P01","P08"];
-
-	var _date = req.params.date;//_.last(path);
-	//var _type = req.params.type;//_.last(_.initial(path));
 	var _aggregate = req.query.aggregate;
+	var _prio = req.query.prios;
+	var _from = req.query.from;
+	var _to = req.query.to;
+	var _period = req.query.period;
+
 	//default grouping
-	if (!_aggregate){
-		_aggregate="week";
-	}
+	if (!_aggregate) _aggregate="week";
+	//default period
+	if (!_period) _period="NOW-30";
+	if (_prio) _prios=_prio.split(",");
+	if (_from && _to) _period={from:new Date(_from),to:new Date(_to)};
+
 	var incidentTrackerService = require('../services/IncidentTrackerService');
-		logger.debug("********************* findIncidenttrackerByDate(): _aggregate= "+_aggregate+" _date = "+_date);
-	incidentTrackerService.findTrackerByDate(_aggregate,_date,prios,function(err,data){
+	// just read from DB
+	if (!_customer || _customer==":customer"){
+		logger.debug("**********!! NO CUSTOMER !!*********** findIncidentTracker(): _aggregate= "+_aggregate+" _period = "+_period);
+		incidentTrackerService.findTrackerByDate(_aggregate,_period,_prios,function(err,data){
 			if (err){
-				logger.warn("[error] incidentTrackerService.findTrackerByDate says: "+err.message);
+				logger.error("[error] incidentTrackerService.findTrackerByDate says: "+err.message);
 			}
 			else {
-				incidentTrackerService.buildStatistics(data.tracker,prios,function(err,result){
+				incidentTrackerService.buildStatistics(data.tracker,_prios,function(err,result){
 					res.send(result);
 					return;
 				})
 			}
-	});
-}
-
-/**on the fly creation of tracker for filtered incidents
-* eg http://localhost:3000/api/space/rest/createincidenttracker/bwin?prios=P01&aggregate=month&period=NOW-90
-*/
-function createIncidenttrackerByCustomer(req, res , next){
-	var path = req.path.split("/");
-
-	var _prios = ["P01","P08","P16","P120"];
-
-	var _customer = req.params.customer;//_.last(path);
-	logger.debug("customer:"+_customer);
-	//var _type = req.params.type;//_.last(_.initial(path));
-	var _prio = req.query.prios;
-	var _from = req.query.from;
-	var _to = req.query.to;
-	var _aggregate = req.query.aggregate;
-	var _period = req.query.period;
-
-	if (!_period){
-		_period="NOW-30";
+		});
 	}
-
-	if (_from && _to) _period={from:new Date(_from),to:new Date(_to)};
-
-	if (_prio) _prios=_prio.split(",");
-	if (!_aggregate){
-		_aggregate="week";
+	//on the fly creation for customer
+	else{
+		logger.debug("**********CUSTOMER = "+_customer+" !!*********** findIncidentTracker(): _aggregate= "+_aggregate+" _period = "+_period);
+		incidentTrackerService.createIncidenttrackerByDate(_aggregate,_period,_prios,_customer,function(err,result){
+			if (err){
+				logger.error("[error] incidentTrackerService.createIncidenttrackerByDate says: "+err.message);
+			}
+			else {
+				res.send(result);
+				return;
+			}
+		})
 	}
-
-	var incidentTrackerService = require('../services/IncidentTrackerService');
-	incidentTrackerService.createIncidenttrackerByDate(_aggregate,_period,_prios,_customer,function(err,result){
-		res.send(result);
-		return;
-	})
 }
-
 
 /**
  * find by generic key
@@ -516,7 +497,7 @@ function findIncidents(req,res,next){
 	  logger.debug("findIncidents() called");
 
 		var incService = require("../services/IncidentService");
-		incService.find({},function(err,data){
+		incService.find({},{openedAt:-1},function(err,data){
 				if (err){
 					logger.error("[error] findincidents says: "+err)
 					res.send(err);
@@ -530,7 +511,7 @@ function findIncidentsOldSnow(req,res,next){
 	  logger.debug("findIncidents() called");
 
 		var incService = require("../services/IncidentService");
-		incService.findOld({},function(err,data){
+		incService.findOld({},{openedAt:-1},function(err,data){
 				if (err){
 					logger.error("[error] findincidentsOldSnow says: "+err)
 					res.send(err);
@@ -547,7 +528,7 @@ function findIncidentCommTrail(req,res,next){
 	  logger.debug("findIncidentCommTrail() called");
 
 		var incService = require("../services/IncidentService");
-		/*incService.find({}function(err,data){
+		/*incService.find({},{openedAt:-1},function(err,data){
 				if (err){
 					logger.error("[error] findincidents says: "+err)
 					res.send(err);

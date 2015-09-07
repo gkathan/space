@@ -71,7 +71,7 @@ function _syncIncident(url,done){
     var _incidentsOLD;
 
 		// lets first get what we have had
-		incService.findOld({},function(err,baseline){
+		incService.findOld({},{openedAt:-1},function(err,baseline){
 			incService.findRevenueImpactMapping(function(err,impactMapping){
 				_incidentsOLD = baseline;
 

@@ -138,9 +138,9 @@ describe('#calculate DailyTracker()', function(){
 
 
 
-describe('#increment DailyTracker()', function(){
-	it('should increment daily tracker with a given incident', function(done){
-
+describe('#calculate DailyTracker()', function(){
+	it('should calculate daily tracker with a given incident', function(done){
+		var _context="bpty.studios";
 		var _inc1 = {
 	    "description" : "this is a test incident",
 	    "id" : "INC100001",
@@ -169,11 +169,17 @@ describe('#increment DailyTracker()', function(){
 
 		var prios = ["P01","P08","P16","P120"];
 		var incidentTrackerService = require('../services/IncidentTrackerService');
-		incidentTrackerService.incrementTracker(_list,["openedAt","resolvedAt","closedAt"],prios,function(err,result){
-			logger.debug("incremented: "+JSON.stringify(result));
-			done();
+		incidentTrackerService.calculateDailyTracker(_list,["openedAt","resolvedAt","closedAt"],prios,_context,function(err,tracker){
+			incidentTrackerService.buildStatistics(tracker,prios,function(err,tracker){
+					assert.equal(2	,tracker.statistics.sum.P01.openedAt);
+					//assert.equal(1,tracker.statistics.sum.P01.openedAt);
+					logger.debug("tracker: "+JSON.stringify(tracker));
 
+					done();
+			});
 		});
+
+
 	});
 });
 
@@ -199,11 +205,11 @@ describe('#calc DailyTracker() on the fly', function(){
 		var incidentTrackerService = require('../services/IncidentTrackerService');
 		var prios =["P01"];
 		var _context="btpy.studios";
-		incidentService.find({priority:"P01 - Critical"},function(err,incidents){
+		incidentService.find({priority:"P01 - Critical"},{openedAt:-1},function(err,incidents){
 			logger.debug("number of incidents: "+incidents.length);
 			incidentTrackerService.calculateDailyTracker(incidents,["openedAt","resolvedAt","closedAt"],prios,_context,function(err,tracker){
 				incidentTrackerService.buildStatistics(tracker,prios,function(err,tracker){
-						//assert.equal(0,_tracker.openedAt.P01.total);
+
 						logger.debug("tracker: "+JSON.stringify(tracker));
 						done();
 				});

@@ -33,8 +33,8 @@ function _alterPeriodByYear(period,yearDelta){
 
 
 
-function init(prio,dateField,chartId){
-  console.log("******** init");
+function init(prio,dateField,chartId,subDimension,customer){
+  console.log("******** init: customer: "+customer);
 
   _dateField = dateField;
   nv.addGraph(function() {
@@ -79,7 +79,7 @@ function init(prio,dateField,chartId){
     chart.reduceXTicks(_reduceXTicks).staggerLabels(true);
     chart.yAxis
         .tickFormat(d3.format(',d'));
-    redraw(_chartId,_period,_aggregate,_prio,dateField);
+    redraw(_chartId,_period,_aggregate,_prio,dateField,customer);
 
     //function pointer
     charts[chartId]=chart;
@@ -160,17 +160,24 @@ function _prepareData(incidents,incidentsPrev,prio,period,dateField){
   return incData
 }
 
-function redraw(chartId,period,aggregate,prio,dateField) {
-  var _url = "/api/space/rest/incidenttracker/"+period;
-  // for on the fly tracker creation
-  //var _url = "/api/space/rest/createincidenttracker/bwin?prios=P01,P08"
-  var _urlPrev = "/api/space/rest/incidenttracker/"+_alterPeriodByYear(period,-1);
+function redraw(chartId,period,aggregate,prio,dateField,customer) {
+  var _baseUrl = "/api/space/rest/incidenttracker";
+  if (customer) _baseUrl+="/"+customer;
+  _baseUrl+="?true=true";
 
+  var _url;
+  var _urlPrev;
 
   if (aggregate){
-    _url+="?aggregate="+aggregate;
-    _urlPrev+="?aggregate="+aggregate;
+    _url=_baseUrl+"&aggregate="+aggregate;
+    _urlPrev=_baseUrl+"&aggregate="+aggregate;
   }
+  if (period){
+    _url+="&period="+period;
+    _urlPrev+="&period="+_alterPeriodByYear(period,-1);
+  }
+
+
   console.log("_url: "+_url);
 
 

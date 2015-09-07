@@ -29,6 +29,7 @@ function init(prio,dateField,chartId,subDimension){
       .staggerLabels(true)
       .tooltips(true)
       .showLegend(true)
+      .stacked(true)
       .groupSpacing(0.2)
       .rotateLabels(45)
       .showControls(true)
@@ -102,7 +103,8 @@ function _prepareData(tracker,prio,period,dateField,subDimension){
       dates.push(_date);
     }
     console.log("--- date: "+_date);
-    console.log("--- tracker: "+JSON.stringify(tracker[d]));
+    //console.log("--- tracker: "+JSON.stringify(tracker[d]));
+    if (tracker[d][dateField][prio]){
       for (var a in _.keys(tracker[d][dateField][prio][subDimension])){
         var _ag = _.keys(tracker[d][dateField][prio][subDimension])[a];
         // track all distinc assignment groups
@@ -117,6 +119,7 @@ function _prepareData(tracker,prio,period,dateField,subDimension){
         }
         _.findWhere(agData,{"key":_ag}).values.push({date:_date,y:tracker[d][dateField][prio][subDimension][_ag]})
       }
+    }
   }
 
   var agSorted = [];
@@ -152,10 +155,11 @@ function _prepareData(tracker,prio,period,dateField,subDimension){
 }
 
 function redraw(chartId,period,aggregate,prio,dateField,subDimension) {
-  var _url = "/api/space/rest/incidenttracker/"+period;
+  var _url = "/api/space/rest/incidenttracker?period="+period;
+
 
   if (aggregate){
-    _url+="?aggregate="+aggregate;
+    _url+="&aggregate="+aggregate;
   }
   console.log("_url: "+_url);
 
@@ -165,7 +169,8 @@ function redraw(chartId,period,aggregate,prio,dateField,subDimension) {
         .transition().duration(500)
         .call(charts[chartId]);
 
-        $("#"+chartId+"_sum").text(data.statistics.sum[prio][dateField]);
+        if (data.statistics && data.statistics.sum[prio])
+            $("#"+chartId+"_sum").text(data.statistics.sum[prio][dateField]);
 
       nv.utils.windowResize(charts[chartId].update);
   });

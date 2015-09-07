@@ -27,7 +27,6 @@ var labelService = require('../services/LabelService');
 
 exports.find = _find;
 exports.findById = _findById;
-
 exports.findFiltered = _findFiltered;
 exports.findAll = _findAll;
 exports.findByCustomer = _findByCustomer;
@@ -76,7 +75,6 @@ function _flushAll(prio,callback){
 
 	client.get(_url, function(data, response,done){
 		logger.debug("-------------------------- in fetching....");
-
 		_findRevenueImpactMapping(function(err,impactMapping){
 			for (var i in data.records){
 				var _incident = _filterRelevantData(data.records[i]);
@@ -86,7 +84,6 @@ function _flushAll(prio,callback){
 				}
 				_incidentsNEW.push(_incident);
 			}
-
 			_flush(_incidentsNEW,function(err,result){
 				if (err) logger.error("error: "+err.message);
 				else logger.info("ok: "+result);
@@ -95,7 +92,6 @@ function _flushAll(prio,callback){
 		})
 	});
 }
-
 /**
  *
  */
@@ -108,9 +104,9 @@ function _findRevenueImpactMapping(callback) {
 }
 
 
-function _findFiltered(filter,callback) {
+function _findFiltered(filter,sort,callback) {
 	logger.debug("filter: "+JSON.stringify(filter));
-	_findAll(filter, function (err, docs){
+	_findAll(filter,sort,function (err, docs){
 			if (err){
 				logger.error("error: "+err.message);
 			}
@@ -120,11 +116,9 @@ function _findFiltered(filter,callback) {
 	});
 }
 
-function _findByCustomer(customer,filter,callback) {
+function _findByCustomer(customer,filter,sort,callback) {
 	if (!customer ||customer==":customer") callback(null,null);
-
-
-	_find(filter, function (err, incidents){
+	_find(filter, sort,function (err, incidents){
 			if (err){
 				logger.error("error: "+err.message);
 			}
@@ -132,35 +126,32 @@ function _findByCustomer(customer,filter,callback) {
 			logger.debug("[findByCustomer] incidents total: "+incidents.length);
 			labelService.filterIncidents(incidents,customer,_excludeNoLabel,function(err,customerIncidents){
 				logger.debug("[findByCustomer] incidents for "+customer+" : "+customerIncidents.length);
-
 				callback(err,customerIncidents);
 				return;
 			});
 	});
-
 }
 
-
 function _findById(id,callback){
-	_findFiltered({id:id},function (err,incidents){
+	_findFiltered({id:id},{},function (err,incidents){
 		callback(err,incidents[0]);
 	});
 }
-
 /**
  *
  */
-function _find(filter,callback) {
+function _find(filter,sort,callback) {
 	var items =  db.collection(_incidentsCollection);
-	items.find(filter).sort({openedAt:-1}, function (err, docs){
+	items.find(filter).sort(sort, function (err, docs){
 			callback(err,docs);
 			return;
 	});
 }
 
-function _findOld(filter,callback) {
+function _findOld(filter,sort,callback) {
 	var items =  db.collection(_oldIncidentsCollection);
-	items.find(filter).sort({openedAt:-1}, function (err, docs){
+	if (!sort) sort = {openedAt:-1};
+	items.find(filter).sort(sort, function (err, docs){
 			callback(err,docs);
 			return;
 	});
@@ -185,9 +176,10 @@ function _findProblem(incident,callback) {
 /**
  * test find method which gets incidents transparently for caller from old and new snow repo
  */
-function _findAll(filter,callback) {
+function _findAll(filter,sort,callback) {
 	var items =  db.collection(_incidentsCollection);
-	items.find(filter).sort({openedAt:-1}, function (err, incidents){
+	if (!sort) sort = {openedAt:-1};
+	items.find(filter).sort(sort, function (err, incidents){
 		var olditems =  db.collection('oldsnowincidents');
 		if (err){
 			callback(err);
@@ -195,7 +187,7 @@ function _findAll(filter,callback) {
 		}
 		logger.debug(".....findAll....incidents: "+incidents.length);
 		//callback(err,incidents);
-		olditems.find(filter).sort({openedAt:-1}, function (err, oldincidents){
+		olditems.find(filter).sort(sort, function (err, oldincidents){
 			if (err) callback(err);
 			logger.debug(".....findAll....oldincidents: "+oldincidents.length);
 			var _all = _.union(incidents,oldincidents);
@@ -488,7 +480,7 @@ exports.findGroupedByPriority = function (prioritylist){
 * group by = AssignmentGroup
 */
 function _getOverdueGroupedByAssignmentGroup(callback){
-	_find({},function(err,incidents){
+	_find({},{},function(err,incidents){
 		var result = _.nst.nest(incidents,("assignmentGroup"))
 		callback(err,result);
 	});

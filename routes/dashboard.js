@@ -124,7 +124,7 @@ router.get('/itservicereport', function(req, res) {
 				// var _prio  = "P16 - Moderate";
 				var _incfilter={openedAt:{$gte:new Date(_from),$lte:new Date(_to)},priority:_prio};
 
-				inc.findFiltered(_incfilter,function(err,snowIncidents){
+				inc.findFiltered(_incfilter,{openedAt:-1},function(err,snowIncidents){
 
 
 					res.locals.av = avDataOverall;
@@ -162,7 +162,7 @@ router.get('/opsreport', function(req, res) {
 		//default is in config
 		var _from = moment().startOf('year').format("YYYY-MM-DD");
 		var _to = moment().format("YYYY-MM-DD");
-		var _customer;
+
 		var _filter = {customer:_customer};;
 
 		// 0 ... do NOT exclude "No Labels"
@@ -183,7 +183,7 @@ router.get('/opsreport', function(req, res) {
 				avc.calculateExternal(_from,_to,_filter,function(avDataExternal){
 					var _incfilter={openedAt:{$gte:new Date(_from),$lte:new Date(_to)},priority:"P01 - Critical",category:{$nin:config.incidents.customerImpact.categoryExclude}};
 
-					inc.findFiltered(_incfilter,function(err,snowIncidents){
+					inc.findFiltered(_incfilter,{openedAt:-1},function(err,snowIncidents){
 						logger.debug("++++++++++++++++++++++++++ all snow incidents.length: "+snowIncidents.length);
 						labelService.filterIncidents(snowIncidents,_customer,_excludeNOLABEL,function(err,filteredIncidents){
 							logger.debug("++++++++++++++++++++++++++ filtered snow incidents.length: "+filteredIncidents.length);

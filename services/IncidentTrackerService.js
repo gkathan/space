@@ -102,7 +102,7 @@ function _buildStatistics(tracker,prios,callback){
 
 	//}//end prio loop
 	var result = {tracker:tracker,statistics:statistics};
-
+	logger.debug("statistics: "+JSON.stringify(result.statistics));
 	callback(null,result);
 }
 
@@ -114,7 +114,7 @@ function _buildStatistics(tracker,prios,callback){
 function _rebuildTracker(trackerTypes,prios,callback){
 	var _context = "bpty.studios";
 	var incidentService = require('../services/IncidentService');
-	incidentService.findAll({},function(err,incidents){
+	incidentService.findAll({},{openedAt:-1},function(err,incidents){
 		var dailyTracker = _calculateDailyTracker(incidents,trackerTypes,prios,_context,function(err,tracker){
 			logger.debug("done tracking..."+JSON.stringify(tracker));
 			_flushTracker(tracker,function(err,result){
@@ -363,9 +363,6 @@ function _saveDailyTracker(tracker,dateFields,callback){
 	}
 }
 
-
-
-
 /**
 * param type: "openedAt", "resolvedAt" or "closedAt" are currently supported
 */
@@ -378,7 +375,11 @@ function _findIncidenttrackerByDate(aggregate,period,prios,callback){
 	logger.debug("findbyDate: value: "+period);
 	logger.debug("collection: "+collection);
 
-	var _dates = _calculateFromToDates(period);
+	var _dates;
+	if (!period.from && !period.to)
+		_dates =_calculateFromToDates(period);
+	else
+		_dates=period;
 
  	var _query = {date : { $gte : _dates.from,$lte : _dates.to}};
 
@@ -424,9 +425,10 @@ function _createIncidenttrackerByDate(aggregate,period,prios,customer,callback){
 		_datefilter={$gte:new Date(_dates.from),$lt:new Date(_dates.to)};
 		_filter.openedAt=_datefilter;
 	}
+	var _sort = {openedAt:1};
 
 	var incidentService = require('../services/IncidentService');
-	incidentService.findByCustomer(customer,_filter,function(err,incidents){
+	incidentService.findByCustomer(customer,_filter,_sort,function(err,incidents){
 		if (err){
 			logger.erro("error: "+err.message);
 		}
@@ -437,8 +439,9 @@ function _createIncidenttrackerByDate(aggregate,period,prios,customer,callback){
 				logger.warn("[error] incidentTrackerService._createIncidenttrackerByDate says: "+err.message);
 			}
 			else {
-				_buildStatistics(tracker,prios,function(err,result){
-					result = _aggregateByTime(result.tracker,period,aggregate,prios);
+				tracker = _aggregateByTime(tracker,period,aggregate,prios);
+				_buildStatistics(tracker.tracker,prios,function(err,result){
+
 					callback(null,result);
 				})
 			}

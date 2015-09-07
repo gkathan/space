@@ -64,7 +64,7 @@ function _sync(url,type,callback){
 
 	// findAll grabs combined old and new snow incidents
 	//if we only want new snow => for now just call find()
-	incService.findAll({},function(err,snowIncidents){
+	incService.findAll({},{openedAt:-1},function(err,snowIncidents){
 		// direct way
 		client.get(url, function(data, response,done){
 			//logger.debug(data);

@@ -56,7 +56,7 @@ function _sync(url,type,callback){
 		var _incidentsDELTA_CHANGED = [];
     var _incidentsOLD;
 		// lets first get what we have had
-		incService.findFiltered({active:"true"},function(err,baseline){
+		incService.findFiltered({active:"true"},{openedAt:-1},function(err,baseline){
 			_incidentsOLD = _.clone(baseline,true);
 			logger.debug("---------------------- incService.findFiltered({active:true} baseline: "+baseline.length+" incidents")
 			incService.findRevenueImpactMapping(function(err,impactMapping){
