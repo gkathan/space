@@ -73,6 +73,8 @@ function init(prio,dateField,chartId,subDimension,customer){
     if (_period=="") _period ="All";
     $("#period_"+_chartId).text(_period);
     $("#aggregate_"+_chartId).text(_aggregate);
+    $("#fromto_"+_chartId).text(" » from: "+_from+" to: "+_to);
+
     var _reduceXTicks = false;
     //if (_aggregate=="day" || _aggregate=="week") _reduceXTicks = true;
     _reduceXTicks = true;
@@ -86,16 +88,15 @@ function init(prio,dateField,chartId,subDimension,customer){
     return chart;
   });
 
-
-
   // clickhandler for
 	$('a.dropdown.incidentstrend').click( function(event) {
     var _prio =event.target.id.split("_")[0].split("chart")[1].split("-")[0];
     var _chart=event.target.id.split("_")[0];
+    var _customer=event.target.id.split("_")[1];
     var _dateField = _chart.split("-")[1];
 
-		if (_.startsWith(event.target.id.split("_")[1],"aggregate")){
-			_aggregate =event.target.id.split("_")[1].split("-")[1];
+		if (_.startsWith(event.target.id.split("_")[2],"aggregate")){
+			_aggregate =event.target.id.split("_")[2].split("-")[1];
 		}
 		else
 		{
@@ -104,25 +105,20 @@ function init(prio,dateField,chartId,subDimension,customer){
     console.log("######################### ____id: "+event.target.id);
     console.log("######################### chart: "+_chart);
     console.log("######################### _dateField: "+_dateField);
+    console.log("######################### _customer: "+_customer);
+    console.log("######################### _aggregate: "+_aggregate);
 
 		$("#period_"+_chart).text(_period);
 		$("#aggregate_"+_chart).text(_aggregate);
-		redraw(_chart,_period,_aggregate,_prio,_dateField);
+    $("#fromto_"+_chart).text(_from+" - "+_to);
+		redraw(_chart,_period,_aggregate,_prio,_dateField,_customer);
 	});
-
-
 }
 
 /**
 * prepares data to be consumable by NVd3
 */
 function _prepareData(incidents,incidentsPrev,prio,period,dateField){
-  /*
-  console.log("----------------- _prepareData: prio= "+prio);
-  console.log("----------------- _prepareData: period= "+period);
-  console.log("----------------- _prepareData: dateField= "+dateField);
-  console.log("----------------- _prepareData: incidents[0]="+JSON.stringify(incidents[0]));
-*/
   var _P=[];
   var _PBase=[];
   var _PSum=0;
@@ -137,33 +133,26 @@ function _prepareData(incidents,incidentsPrev,prio,period,dateField){
   var _yearPrev = _getYear(_alterPeriodByYear(period,-1));
 
   for (var day in incidents){
-      /*
-      console.log(JSON.stringify(incidents[day]));
-      console.log("++ dateField: "+dateField);
-      console.log("++ prio: "+prio);
-      console.log("date: "+incidents[day].date+" "+prio+": "+incidents[day][dateField][prio].total);
-      */
       _P.push({"date":incidents[day].date,"y":parseInt(incidents[day][dateField][prio].total)});
       _PSum+=parseInt(incidents[day][dateField][prio].total);
   }
-  //console.log(prio+"Sum = "+_PSum+" "+prio+"BaseSum = "+_PBaseSum);
-
   for (var day in incidentsPrev){
       //console.log("date: "+incidentsPrev[day].date+" "+prio+": "+incidentsPrev[day][dateField][prio].total);
       //date of previous year must be "normalized" to this year ....
       _PPrev.push({"date":_alterPeriodByYear(incidentsPrev[day].date,1),"y":parseInt(incidentsPrev[day][dateField][prio].total)});
       _PSumPrev+=parseInt(incidentsPrev[day][dateField][prio]);
-
   }
   var incData = [{key:_year,values:_P},{key:_yearPrev,values:_PPrev}]
-
   return incData
 }
 
 function redraw(chartId,period,aggregate,prio,dateField,customer) {
   var _baseUrl = "/api/space/rest/incidenttracker";
+
   if (customer) _baseUrl+="/"+customer;
   _baseUrl+="?true=true";
+  _baseUrl+="&prios="+prio;
+
 
   var _url;
   var _urlPrev;
@@ -176,10 +165,13 @@ function redraw(chartId,period,aggregate,prio,dateField,customer) {
     _url+="&period="+period;
     _urlPrev+="&period="+_alterPeriodByYear(period,-1);
   }
+  // are set globally in opsreport.jade
+  if (_from && _to){
+    _url+="&from="+_from;
+    _url+="&to="+_to;
 
-
+  }
   console.log("_url: "+_url);
-
 
   d3.json(_url, function(data) {
     d3.json(_urlPrev, function(dataPrev) {
@@ -187,12 +179,8 @@ function redraw(chartId,period,aggregate,prio,dateField,customer) {
         .datum(_prepareData(data.tracker,dataPrev.tracker,prio,period,dateField))
         .transition().duration(500)
         .call(charts[chartId]);
-
-
         $("#"+chartId+"_sum").text(data.statistics.sum[prio][dateField]);
         $("#"+chartId+"_sumPrev").text(dataPrev.statistics.sum[prio][dateField]);
-
-
       nv.utils.windowResize(charts[chartId].update);
     });
   });

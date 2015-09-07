@@ -118,7 +118,7 @@ function _findFiltered(filter,sort,callback) {
 
 function _findByCustomer(customer,filter,sort,callback) {
 	if (!customer ||customer==":customer") callback(null,null);
-	_find(filter, sort,function (err, incidents){
+	_findAll(filter, sort,function (err, incidents){
 			if (err){
 				logger.error("error: "+err.message);
 			}
@@ -190,7 +190,14 @@ function _findAll(filter,sort,callback) {
 		olditems.find(filter).sort(sort, function (err, oldincidents){
 			if (err) callback(err);
 			logger.debug(".....findAll....oldincidents: "+oldincidents.length);
-			var _all = _.union(incidents,oldincidents);
+
+			var _all;
+			if (sort && sort.openedAt ==1)  _all =_.union(oldincidents,incidents);
+			else if (sort && sort.openedAt ==-1)  _all =_.union(incidents,oldincidents);
+			else _all =_.union(incidents,oldincidents);
+
+
+
 			callback(err,_all);
 		});
 	});
