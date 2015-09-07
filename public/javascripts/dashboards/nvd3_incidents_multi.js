@@ -73,7 +73,7 @@ function init(prio,dateField,chartId,subDimension,customer){
     if (_period=="") _period ="All";
     $("#period_"+_chartId).text(_period);
     $("#aggregate_"+_chartId).text(_aggregate);
-    $("#fromto_"+_chartId).text(" » from: "+_from+" to: "+_to);
+    $("#fromto_"+_chartId).text(" from: "+_from+" to: "+_to);
 
     var _reduceXTicks = false;
     //if (_aggregate=="day" || _aggregate=="week") _reduceXTicks = true;
@@ -149,6 +149,8 @@ function _prepareData(incidents,incidentsPrev,prio,period,dateField){
 function redraw(chartId,period,aggregate,prio,dateField,customer) {
   var _baseUrl = "/api/space/rest/incidenttracker";
 
+  console.log("---- period: "+period);
+
   if (customer) _baseUrl+="/"+customer;
   _baseUrl+="?true=true";
   _baseUrl+="&prios="+prio;
@@ -161,17 +163,18 @@ function redraw(chartId,period,aggregate,prio,dateField,customer) {
     _url=_baseUrl+"&aggregate="+aggregate;
     _urlPrev=_baseUrl+"&aggregate="+aggregate;
   }
-  if (period){
-    _url+="&period="+period;
-    _urlPrev+="&period="+_alterPeriodByYear(period,-1);
-  }
   // are set globally in opsreport.jade
   if (_from && _to){
     _url+="&from="+_from;
     _url+="&to="+_to;
-
+    _urlPrev+="&period="+_alterPeriodByYear(period,-1);
+  }
+  else if (period){
+    _url+="&period="+period;
+    _urlPrev+="&period="+_alterPeriodByYear(period,-1);
   }
   console.log("_url: "+_url);
+  console.log("_urlPrev: "+_urlPrev);
 
   d3.json(_url, function(data) {
     d3.json(_urlPrev, function(dataPrev) {
