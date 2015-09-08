@@ -6,6 +6,9 @@ var _period;
 var _aggregate;
 var _dateField;//="openedAt";
 
+var _from;
+var _to;
+
 function _getYear(period){
   //console.log("**** getYear() called: period: "+period);
   var _split = period.split("-");
@@ -73,7 +76,8 @@ function init(prio,dateField,chartId,subDimension,customer){
     if (_period=="") _period ="All";
     $("#period_"+_chartId).text(_period);
     $("#aggregate_"+_chartId).text(_aggregate);
-    $("#fromto_"+_chartId).text(" from: "+_from+" to: "+_to);
+    if (_from && _to)
+      $("#fromto_"+_chartId).text(" from: "+_from+" to: "+_to);
 
     var _reduceXTicks = false;
     //if (_aggregate=="day" || _aggregate=="week") _reduceXTicks = true;
