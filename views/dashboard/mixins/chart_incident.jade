@@ -12,9 +12,9 @@ mixin chartIncident(title,prio,dateField,customer)
 				span(style="color:black;font-size:14px;font-weight:normal") #{dateField}
 				|&nbsp;|&nbsp;
 				span(id="aggregate_#{chart}" style="font-weight:bold") 
-				|&nbsp;|&nbsp;for period: 
-				span(id="period_#{chart}" style="color:black;font-weight:bold")
-				span(id="fromto_#{chart}" style="color:black;font-weight:bold")
+				|&nbsp;|&nbsp;for period: #{moment(to).year()}
+				//span(id="period_#{chart}" style="color:black;font-weight:bold")
+				//span(id="fromto_#{chart}" style="color:black;font-weight:bold")
 			div.panel-body
 				.btn-group
 					a.btn.btn-default(href='javascript:void(0)') Aggregation

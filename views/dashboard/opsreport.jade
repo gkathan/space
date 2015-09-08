@@ -83,13 +83,14 @@ block content
 	h3(style="text-align:center;font-weight:bold") OPSREPORT
 	
 	
-	div(style="margin:0px auto;width:500px;text-align:left")
+	div.well(style="margin:0px auto;width:500px;text-align:left")
+		
 		span(style="font-weight:bold;font-size:12px") Date Range Filter:	
 		br
 		br
 		div.selectbox.pull-left(id="daterange")
 			i.fa.fa-calendar &nbsp;
-			span(id="enter_date" style=";font-size:12px") #{moment(from).format('dddd, Do of MMMM YYYY')} - #{moment(to).format('dddd, Do of MMMM YYYY')}
+			span(id="enter_date" style=";font-size:12px") #{moment(from).format('Do of MMMM YYYY')} - #{moment(to).format('Do of MMMM YYYY')}
 			b.caret
 		br
 		br

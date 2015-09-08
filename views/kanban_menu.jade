@@ -45,21 +45,6 @@ block content
 					if !session.AUTH 
 						li
 							a( href="/targets/overview") targets overview
-					if session.AUTH && (session.CONTEXT=="bpty.customer.bwin" || session.CONTEXT=="bpty.customer.premium" || session.CONTEXT=="bpty.customer.games" || session.CONTEXT=="bpty.customer.party US" || session.CONTEXT=="bpty.customer.pmu")
-						ul.nav.navbar-nav
-							li.dropdown(id="fat-menu")
-								a.dropdown-toggle(id="import" href="#" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false") reports
-									span.caret
-								ul.dropdown-menu(role="menu" aria-labelledby="reports")
-									li(role="presentation")
-										a(role="menuitem" tabindex="-1" href='/dashboard/opsreport/#{_.last(session.CONTEXT.split("."))}') opsreport	
-						ul.nav.navbar-nav
-							li.dropdown(id="fat-menu")
-								a.dropdown-toggle(id="import" href="#" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false") targets
-									span.caret
-								ul.dropdown-menu(role="menu" aria-labelledby="targets")
-									li(role="presentation")
-											a(role="menuitem" tabindex="-1" href="/targets/overview") targets overview
 					
 					if session.AUTH=="studios"
 						ul.nav.navbar-nav

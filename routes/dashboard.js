@@ -217,6 +217,7 @@ router.get('/opsreport', function(req, res) {
 							res.locals.moment = moment;
 							res.locals.from = _from;
 							res.locals.to = _to;
+
 							res.locals.problems = problems;
 							res.locals.sla_incidents = config.customers.sla.incidents;
 							res.locals.excludeNOLABEL = _excludeNOLABEL;

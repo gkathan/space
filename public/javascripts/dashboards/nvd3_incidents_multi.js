@@ -168,6 +168,7 @@ function redraw(chartId,period,aggregate,prio,dateField,customer) {
     _urlPrev=_baseUrl+"&aggregate="+aggregate;
   }
   // are set globally in opsreport.jade
+  /*
   if (_from && _to){
     _url+="&from="+_from;
     _url+="&to="+_to;
@@ -177,6 +178,11 @@ function redraw(chartId,period,aggregate,prio,dateField,customer) {
     _url+="&period="+period;
     _urlPrev+="&period="+_alterPeriodByYear(period,-1);
   }
+  */
+    _url+="&period="+period;
+    _urlPrev+="&period="+_alterPeriodByYear(period,-1);
+
+
   console.log("_url: "+_url);
   console.log("_urlPrev: "+_urlPrev);
 
