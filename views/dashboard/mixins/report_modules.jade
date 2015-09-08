@@ -224,24 +224,42 @@ mixin renderExcludeNOLABELFilter(filter)
 			|"No Labels" only
 	br
 			
-mixin renderIncidentList(title,incidents,excludeNOLABEL)
+mixin renderIncidentList(title,incidents,prio,excludeNOLABEL)
 	div.panel.panel-default
 		div.panel-heading 
-			span(style="color:black;font-size:24px;font-weight:bold") #{incidents.length} #{title}
-			+renderExcludeNOLABELFilter(excludeNOLABEL)
-			br
-			+renderFromTo(from,to)
+			table
+				tr
+					td
+						img(src="/images/incidents/#{prio}.png" height="60px") 
+					td
+						span(style="color:black;font-size:20px;font-weight:normal") &nbsp;#{customer} customer impacting incidents: <b>#{moment(from).format('MMMM Do YYYY')}</b> - <b>#{moment(to).format('MMMM Do YYYY')}</b>
+				tr
+					td(style="color:black;font-size:14px;font-weight:normal")
+						|number:  
+					td(style="color:black;font-size:24px;font-weight:bold")
+						|#{incidents.length}
+				tr
+					td(style="color:black;font-size:14px;font-weight:normal")
+						|SLA:
+					td(style="color:black;font-size:18px;font-weight:bold")
+						|#{sla_incidents[prio]}h
+				tr
+					td
+						+renderExcludeNOLABELFilter(excludeNOLABEL)
+					td
+			//br
+			//+renderFromTo(from,to)
 		div.panel-body
 			table.table-responsive.table-striped.table-hover.table-condensed(id="snow_incidents" style="max-width:1000px")
 				thead
 					tr(style="line-height:20px;font-weight:bold")
-						th(style="max-width:100px;text-align:center;border-bottom:1px solid black")
+						th(style="width:100px;text-align:center;border-bottom:1px solid black")
 							|Opened
-						th(style="max-width:50px;text-align:right;border-bottom:1px solid black")
+						th(style="width:50px;text-align:right;border-bottom:1px solid black")
 							|Prio
-						th(style="max-width:80px;text-align:center;border-bottom:1px solid black")
+						th(style="width:80px;text-align:center;border-bottom:1px solid black")
 							|Id
-						th(style="max-width:100px;text-align:center;background:#efefef;font-weight:bold;border-bottom:1px solid black")
+						th(style="width:100px;text-align:center;background:#efefef;font-weight:bold;border-bottom:1px solid black")
 							|Rev Impact
 						th(style="width:200px;text-align:left;border-bottom:1px solid black")
 							|Short Description
@@ -277,7 +295,7 @@ mixin renderIncidentList(title,incidents,excludeNOLABEL)
 									- _rev+=parseFloat(inc.revenueImpact);
 								else
 									|n/a
-							td(style="text-align:left;font-size:10px")
+							td(style="max-width:200px;text-align:left;font-size:10px")
 								|#{inc.shortDescription}
 							td(style="text-align:left;font-size:10px")
 								|#{inc.businessService}

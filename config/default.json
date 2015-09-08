@@ -61,7 +61,16 @@
 			"date" : "2015-03-20"
 		}
 	},
-
+	"customers":{
+		"sla":{
+			"incidents":{
+				"P01":48,
+				"P08":72,
+				"P16":144,
+				"P120":720
+			}
+		}
+	},
 
 	"initiatives":{
 		"states":{

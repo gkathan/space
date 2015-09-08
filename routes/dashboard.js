@@ -170,6 +170,14 @@ router.get('/opsreport', function(req, res) {
 		// 2 ... just show "No Labels"
 		var _excludeNOLABEL = 0;
 
+		var _prio = "P01";
+
+
+
+		if (req.query.prio && (req.query.prio=="P01"||req.query.prio=="P08"||req.query.prio=="P16"||req.query.prio=="P120")){
+			_prio = req.query.prio;
+		}
+
 		if (req.query.from)	 _from = req.query.from;//"2015-01-01";
 		if (req.query.to) _to = req.query.to;//"2015-01-10";
 		if (req.query.excludeNOLABEL) _excludeNOLABEL = req.query.excludeNOLABEL;
@@ -179,11 +187,16 @@ router.get('/opsreport', function(req, res) {
 		prob.find({},function(err,problems){
 
 
+
 			avc.calculateOverall(_from,_to,_filter,function(avDataOverall){
 				avc.calculateExternal(_from,_to,_filter,function(avDataExternal){
-					var _incfilter={openedAt:{$gte:new Date(_from),$lte:new Date(_to)},priority:"P01 - Critical",category:{$nin:config.incidents.customerImpact.categoryExclude}};
+					var _incfilter={
+								P01:{openedAt:{$gte:new Date(_from),$lte:new Date(_to)},priority:"P01 - Critical",category:{$nin:config.incidents.customerImpact.categoryExclude}},
+								P08:{openedAt:{$gte:new Date(_from),$lte:new Date(_to)},priority:"P08 - High",category:{$nin:config.incidents.customerImpact.categoryExclude}},
+								P16:{openedAt:{$gte:new Date(_from),$lte:new Date(_to)},priority:"P16 - Moderate",category:{$nin:config.incidents.customerImpact.categoryExclude}}
+					};
 
-					inc.findFiltered(_incfilter,{openedAt:-1},function(err,snowIncidents){
+					inc.findFiltered(_incfilter[_prio],{openedAt:-1},function(err,snowIncidents){
 						logger.debug("++++++++++++++++++++++++++ all snow incidents.length: "+snowIncidents.length);
 						labelService.filterIncidents(snowIncidents,_customer,_excludeNOLABEL,function(err,filteredIncidents){
 							logger.debug("++++++++++++++++++++++++++ filtered snow incidents.length: "+filteredIncidents.length);
@@ -195,6 +208,7 @@ router.get('/opsreport', function(req, res) {
 							res.locals.av = avDataOverall;
 							res.locals.labelService = labelService;
 							res.locals.customer = _customer;
+							res.locals.prio = _prio;
 
 
 							res.locals.avExternal = avDataExternal;
@@ -204,6 +218,7 @@ router.get('/opsreport', function(req, res) {
 							res.locals.from = _from;
 							res.locals.to = _to;
 							res.locals.problems = problems;
+							res.locals.sla_incidents = config.customers.sla.incidents;
 							res.locals.excludeNOLABEL = _excludeNOLABEL;
 							res.locals.filter = _filter;
 							res.locals.accounting=accounting;
