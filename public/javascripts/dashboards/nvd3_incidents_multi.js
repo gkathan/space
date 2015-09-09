@@ -87,20 +87,24 @@ function init(prio,dateField,chartId,subDimension,customer){
         .tickFormat(d3.format(',d'));
     redraw(_chartId,_period,_aggregate,_prio,dateField,customer);
 
+    _clickHandler(chartId);
+
     //function pointer
     charts[chartId]=chart;
     return chart;
   });
+}
 
-  // clickhandler for
-	$('a.dropdown.incidentstrend').click( function(event) {
+function _clickHandler(chartId){
 
-    var _prio =event.target.id.split("_")[0].split("chart")[1].split("-")[0];
-    var _chart=event.target.id.split("_")[0];
-    var _customer=event.target.id.split("_")[1];
-    var _dateField = _chart.split("-")[1];
+	$('a.dropdown.incidentstrend.'+chartId).click( function(event) {
+		console.log("*******************CLIKC");
+		event.preventDefault();
+		var _prio =event.target.id.split("_")[0].split("chart")[1].split("-")[0];
+		var _chart=event.target.id.split("_")[0];
+		var _customer=event.target.id.split("_")[1];
+		var _dateField = _chart.split("-")[1];
 
-    d3.select("#"+_chart+"_svg").style("visibility","hidden");
 
 		if (_.startsWith(event.target.id.split("_")[2],"aggregate")){
 			_aggregate =event.target.id.split("_")[2].split("-")[1];
@@ -109,18 +113,19 @@ function init(prio,dateField,chartId,subDimension,customer){
 		{
 			_period = event.target.id.split("_")[1];
 		}
-    console.log("######################### ____id: "+event.target.id);
-    console.log("######################### chart: "+_chart);
-    console.log("######################### _dateField: "+_dateField);
-    console.log("######################### _customer: "+_customer);
-    console.log("######################### _aggregate: "+_aggregate);
+		console.log("######################### ____id: "+event.target.id);
+		console.log("######################### chart: "+_chart);
+		console.log("######################### _dateField: "+_dateField);
+		console.log("######################### _customer: "+_customer);
+		console.log("######################### _aggregate: "+_aggregate);
 
 		$("#period_"+_chart).text(_period);
 		$("#aggregate_"+_chart).text(_aggregate);
-    $("#fromto_"+_chart).text(_from+" - "+_to);
+		$("#fromto_"+_chart).text(_from+" - "+_to);
 
-    redraw(_chart,_period,_aggregate,_prio,_dateField,_customer);
+		redraw(_chart,_period,_aggregate,_prio,_dateField,_customer);
 	});
+
 }
 
 /**
@@ -156,6 +161,8 @@ function _prepareData(incidents,incidentsPrev,prio,period,dateField){
 
 function redraw(chartId,period,aggregate,prio,dateField,customer) {
   var _baseUrl = "/api/space/rest/incidenttracker";
+  d3.select("#"+chartId+"_svg").style("visibility","hidden");
+
 
   console.log("---- period: "+period);
 
@@ -198,14 +205,14 @@ function redraw(chartId,period,aggregate,prio,dateField,customer) {
     d3.json(_urlPrev, function(dataPrev) {
       stopAnimate(c);
       d3.select("#"+chartId+"_svg").style("visibility","visible");
-      d3.select('#'+chartId+' svg')
+      d3.select('#'+chartId+'_svg')
         .datum(_prepareData(data.tracker,dataPrev.tracker,prio,period,dateField))
-        .transition().duration(500)
+        .call(charts[chartId])
+        .transition().duration(1000);
 
-        .call(charts[chartId]);
         $("#"+chartId+"_sum").text(data.statistics.sum[prio][dateField]);
         $("#"+chartId+"_sumPrev").text(dataPrev.statistics.sum[prio][dateField]);
-      nv.utils.windowResize(charts[chartId].update);
+      //nv.utils.windowResize(charts[chartId].update);
     });
   });
 }
@@ -224,6 +231,7 @@ function startAnimate(target){
 }
 
 function stopAnimate(target){
+  console.log("stopAnimate:"+target);
   target.stop();
   target.destroy();
 }

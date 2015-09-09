@@ -22,17 +22,17 @@ mixin chartIncident(title,prio,dateField,customer)
 						span.caret
 						ul.dropdown-menu
 							li
-								a.dropdown.incidentstrend(id="#{chart}_#{customer}_aggregate-day") daily
+								a.dropdown.incidentstrend(id="#{chart}_#{customer}_aggregate-day" class="#{chart}") daily
 							li
-								a.dropdown.incidentstrend(id="#{chart}_#{customer}_aggregate-week") weekly
+								a.dropdown.incidentstrend(id="#{chart}_#{customer}_aggregate-week" class="#{chart}") weekly
 							li
-								a.dropdown.incidentstrend(id="#{chart}_#{customer}_aggregate-month") monthly
+								a.dropdown.incidentstrend(id="#{chart}_#{customer}_aggregate-month" class="#{chart}") monthly
 							li
-								a.dropdown.incidentstrend(id="#{chart}_#{customer}_aggregate-quarter") quarterly
+								a.dropdown.incidentstrend(id="#{chart}_#{customer}_aggregate-quarter" class="#{chart}") quarterly
 							li
-								a.dropdown.incidentstrend(id="#{chart}_#{customer}_aggregate-halfyear") halfyearly
+								a.dropdown.incidentstrend(id="#{chart}_#{customer}_aggregate-halfyear" class="#{chart}") halfyearly
 							li
-								a.dropdown.incidentstrend(id="#{chart}_#{customer}_aggregate-year") yearly
+								a.dropdown.incidentstrend(id="#{chart}_#{customer}_aggregate-year" class="#{chart}") yearly
 
 				div(style="font-size:28px;text-align:right")
 					span(style="font-size:18px;text-align:right") total:&nbsp;
@@ -47,7 +47,8 @@ mixin chartIncident(title,prio,dateField,customer)
 					svg(id="#{chart}_svg")
 	script.
 		init("#{prio}","#{dateField}","#{chart}","#{subDimension}","#{customer}");
-
+		
+		
 
 
 mixin chartIncidentOLD(title,prio,dateField,customer)
@@ -175,6 +176,8 @@ mixin chartIncidentActiveTicker(title,id)
 				div(id="ticker" style="font-size:7px")
 	script.
 		init("#{prio}","#{dateField}","#{chart}","#{subDimension}");
+		// clickhandler for
+		
 		
 		
 
