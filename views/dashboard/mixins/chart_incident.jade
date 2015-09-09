@@ -41,8 +41,10 @@ mixin chartIncident(title,prio,dateField,customer)
 					span(style="font-size:18px;text-align:right") prev:&nbsp;
 					span(id="#{chart}_sumPrev" style="font-size:28px;text-align:right;font-weight:bold")					
 					
+				
 				div(id="#{chart}" style="text-align:center")
-					svg
+					div.pogress(id="#{chart}_progress" style="text-align:center;margin:auto;width:200px;height:0px")
+					svg(id="#{chart}_svg")
 	script.
 		init("#{prio}","#{dateField}","#{chart}","#{subDimension}","#{customer}");
 
@@ -173,6 +175,10 @@ mixin chartIncidentActiveTicker(title,id)
 				div(id="ticker" style="font-size:7px")
 	script.
 		init("#{prio}","#{dateField}","#{chart}","#{subDimension}");
+		
+		
+
+
 
 
 

@@ -23,6 +23,12 @@ router.get('/', function(req, res) {
 	{
 		_context = config.context;
 	}
+
+	var target_context;
+	if (_context=="gvc.studios") target_context = "bpty.studios";
+	else target_context = _context;
+
+
 	  //if (!req.session.AUTH){
 	if (!req.session.AUTH){
 			req.session.ORIGINAL_URL = req.originalUrl;
@@ -41,7 +47,7 @@ router.get('/', function(req, res) {
 
 			res.locals.moment = moment;
 
-			targetService.getL1(_context,function(err,l1targets){
+			targetService.getL1(target_context,function(err,l1targets){
 					res.locals.l1targets=l1targets;
 					logger.debug("l1 targets: "+ l1targets);
 					res.render('dashboard', { title: 's p a c e - dashboards' });

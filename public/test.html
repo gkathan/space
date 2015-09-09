@@ -17,7 +17,7 @@
     .progress > svg {
         height: 100%;
         display: block;
-
+        background-color:white;
     }
   </style>
 
@@ -29,13 +29,14 @@
 
   window.onload = function onLoad() {
     var circle = new ProgressBar.Circle('#progress', {
-        color: '#FCB03C',
+        color: 'red',
         duration: 20000,
+        strokeWidth:15,
         easing: 'easeInOut'
     });
-
     circle.animate(20);
-};
+  };
+
   </script>
 
 

@@ -21,7 +21,7 @@ var logger = winston.loggers.get('space_log');
 
 
 var users = [
-    { id: 1, username: secret.space_admin_user, password: secret.space_admin_pass, role: 'admin', context:'bpty.studios' },
+    { id: 1, username: secret.space_admin_user, password: secret.space_admin_pass, role: 'admin', context:'gvc.studios' },
     { id: 2, username: secret.space_exec_user, password: secret.space_exec_pass, role: 'exec', context:'bpty.studios' },
     { id: 3, username: secret.space_bpty_user, password: secret.space_bpty_pass, role: 'bpty', context:'bpty.studios' },
     { id: 4, username: secret.space_bwin_user, password: secret.space_bwin_pass, role: 'customer', context:'bpty.customer.bwin'},

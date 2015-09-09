@@ -94,10 +94,13 @@ function init(prio,dateField,chartId,subDimension,customer){
 
   // clickhandler for
 	$('a.dropdown.incidentstrend').click( function(event) {
+
     var _prio =event.target.id.split("_")[0].split("chart")[1].split("-")[0];
     var _chart=event.target.id.split("_")[0];
     var _customer=event.target.id.split("_")[1];
     var _dateField = _chart.split("-")[1];
+
+    d3.select("#"+_chart+"_svg").style("visibility","hidden");
 
 		if (_.startsWith(event.target.id.split("_")[2],"aggregate")){
 			_aggregate =event.target.id.split("_")[2].split("-")[1];
@@ -115,7 +118,8 @@ function init(prio,dateField,chartId,subDimension,customer){
 		$("#period_"+_chart).text(_period);
 		$("#aggregate_"+_chart).text(_aggregate);
     $("#fromto_"+_chart).text(_from+" - "+_to);
-		redraw(_chart,_period,_aggregate,_prio,_dateField,_customer);
+
+    redraw(_chart,_period,_aggregate,_prio,_dateField,_customer);
 	});
 }
 
@@ -186,15 +190,40 @@ function redraw(chartId,period,aggregate,prio,dateField,customer) {
   console.log("_url: "+_url);
   console.log("_urlPrev: "+_urlPrev);
 
+  var c = startAnimate(chartId+"_progress");
+
+
   d3.json(_url, function(data) {
+
     d3.json(_urlPrev, function(dataPrev) {
+      stopAnimate(c);
+      d3.select("#"+chartId+"_svg").style("visibility","visible");
       d3.select('#'+chartId+' svg')
         .datum(_prepareData(data.tracker,dataPrev.tracker,prio,period,dateField))
         .transition().duration(500)
+
         .call(charts[chartId]);
         $("#"+chartId+"_sum").text(data.statistics.sum[prio][dateField]);
         $("#"+chartId+"_sumPrev").text(dataPrev.statistics.sum[prio][dateField]);
       nv.utils.windowResize(charts[chartId].update);
     });
   });
+}
+
+
+function startAnimate(target){
+    console.log("startAnimate: "+target);
+      circle = new ProgressBar.Circle('#'+target, {
+					color: 'lightgrey',
+					duration: 20000,
+					strokeWidth:10,
+					easing: 'easeInOut'
+			});
+			circle.animate(20);
+      return circle;
+}
+
+function stopAnimate(target){
+  target.stop();
+  target.destroy();
 }

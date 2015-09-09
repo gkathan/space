@@ -177,10 +177,16 @@ function _handleTargetOverview(req,res,next,view){
 	{
 		_context = config.context;
 	}
+	logger.debug("-------------------------: "+_context);
 	var viewContext = req.query.context;
 	if (viewContext) _context = viewContext;
-	logger.debug("-------------------------");
-	targetService.getAll(_context,function(err,data){
+	logger.debug("-------------------------: "+_context);
+
+	var target_context;
+	if (_context=="gvc.studios") target_context = "bpty.studios";
+	else target_context = _context;
+
+	targetService.getAll(target_context,function(err,data){
 		var _L2targets = [];
 		var _L1targets = [];
 

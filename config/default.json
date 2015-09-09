@@ -279,6 +279,36 @@
 			}
 		},
 		{
+			"name": "gvc",
+			"skin": {
+				"colors" : {
+					"primary" : "#5E5D5F",
+					"secondary" : "#00b8e4",
+					"secondary2" : "#82cec1",
+					"secondary3" : "#f99d1c",
+					"secondary4" : "#b0acd5",
+					"secondary5" : "#ffcd03",
+					"tints" : ["#F89838","#F9A24C","#FAAC60","#FBB674","#FCC088","#FDCA9C","#FED4B0","#FFDEC4","#FFE8D8","#FFF2EC","#FFFFFF"],
+					"shades" : ["#F89838","#DF8932","#C67A2C","#AD6B26","#945C20","#7B4D1A","#623E14","#492F0E","#302008","#171102","#000000"]
+				}
+			}
+		},
+		{
+			"name": "gvc.studios",
+			"skin": {
+				"colors" : {
+					"primary" : "#5E5D5F",
+					"secondary" : "#00b8e4",
+					"secondary2" : "#82cec1",
+					"secondary3" : "#f99d1c",
+					"secondary4" : "#b0acd5",
+					"secondary5" : "#ffcd03",
+					"tints" : ["#F89838","#F9A24C","#FAAC60","#FBB674","#FCC088","#FDCA9C","#FED4B0","#FFDEC4","#FFE8D8","#FFF2EC","#FFFFFF"],
+					"shades" : ["#F89838","#DF8932","#C67A2C","#AD6B26","#945C20","#7B4D1A","#623E14","#492F0E","#302008","#171102","#000000"]
+				}
+			}
+		},
+		{
 			"name": "bpty",
 			"skin": {
 				"colors" : {

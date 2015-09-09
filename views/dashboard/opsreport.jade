@@ -8,6 +8,7 @@ include mixins/report_modules
 script(src='/javascripts/components/c3/c3.min.js')
 // Load nv3d
 script(src='/javascripts/components/nvd3/build/nv.d3.min.js')
+script(src="/javascripts/components/progressbar.js/dist/progressbar.min.js")
 
 -	function formatAV(av){
 -		return (av*100).toFixed(2)+ "%";
@@ -31,9 +32,6 @@ script(src='/javascripts/components/nvd3/build/nv.d3.min.js')
 -	function formatMoney(money){
 -		return accounting.formatMoney(money, "€", 2, ".", ",")
 -	}
-
-
-
 
 style.
 	#chart svg {
@@ -76,6 +74,17 @@ style.
 		height: 400px;
 		width:1000px;
 	}
+	
+	.progress {
+			height: 50px;
+			width:50px;
+			background-color:white
+	}
+	.progress > svg {
+			height: 100%;
+			display: block;
+		}
+
 
 block content
 	div(style="text-align:center;font-weight:bold")
@@ -174,6 +183,9 @@ script.
 	})*/
 	$(document).ready(function() {
 		$("#filter").val(_customer);
+		
+		
+	  
 
 		$('#daterange').daterangepicker({ 
 			format: 'YYYY-MM-DD',
