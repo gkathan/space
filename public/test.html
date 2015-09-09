@@ -2,60 +2,43 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>JS Bin</title>
+  <title>space test page</title>
 </head>
 <body>
 
   <!-- Latest compiled and minified CSS -->
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css"/>
-  
-  
-  <!-- Latest Sortable -->
-  <script src="/javascripts/components/Sortable/Sortable.min.js"></script>
-  
-  
-  <!-- Simple List -->
-  <div id="simpleList" class="list-group">
-    <div class="list-group-item">This is <a href="http://rubaxa.github.io/Sortable/">Sortable</a></div>
-    <div class="list-group-item">It works with Bootstrap...</div>
-    <div class="list-group-item">...out of the box.</div>
-    <div class="list-group-item">It has support for touch devices.</div>
-    <div class="list-group-item">Just drag some elements around.</div>
-  </div>
-  
-  
-  <!-- List with handle -->
-  <div id="listWithHandle" class="list-group">
-    <div class="list-group-item">
-      <span class="badge">14</span>
-      <span class="glyphicon glyphicon-move" aria-hidden="true"></span>
-      Drag me by the handle
-    </div>
-    <div class="list-group-item">
-      <span class="badge">2</span>
-      <span class="glyphicon glyphicon-move" aria-hidden="true"></span>
-      You can also select text
-    </div>
-    <div class="list-group-item">
-      <span class="badge">1</span>
-      <span class="glyphicon glyphicon-move" aria-hidden="true"></span>
-      Best of both worlds!
-    </div>
-  
-  
-  
-    <script>
-  // Simple list
-Sortable.create(simpleList, { /* options */ });
 
-// List with handle
-Sortable.create(listWithHandle, {
-  handle: '.glyphicon-move',
-  animation: 150
-});
+  <style>
+    .progress {
+        height: 80px;
+        width:100px;
+    }
+    .progress > svg {
+        height: 100%;
+        display: block;
+
+    }
+  </style>
+
+  <script src="/javascripts/components/progressbar.js/dist/progressbar.min.js"></script>
+
+  <div class="progress" id="progress"></div>
+
+    <script>
+
+  window.onload = function onLoad() {
+    var circle = new ProgressBar.Circle('#progress', {
+        color: '#FCB03C',
+        duration: 20000,
+        easing: 'easeInOut'
+    });
+
+    circle.animate(20);
+};
   </script>
-  
-  
+
+
 
 </body>
 </html>

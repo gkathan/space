@@ -33,7 +33,8 @@
     "bootstrap-daterangepicker": "~1.3.21",
     "accountingjs": "~0.3.2",
     "jqueryui": "~1.11.4",
-    "interact": "~1.2.4"
+    "interact": "~1.2.4",
+    "progressbar.js": "~0.9.0"
   },
   "authors": [
     "cactus <gerold.kathan@gmail.com>"
