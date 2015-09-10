@@ -88,15 +88,6 @@ router.get('/sync', function(req, res) {
   }
 });
 
-/* GET the admin page. */
-router.get('/changelog', function(req, res) {
-	  var changelog=require('../changelog.json');
-		res.locals.changelog=changelog;
-
-		res.render('admin/changelog', { title: 's p a c e - admin.changelog' });
-
-});
-
 router.get('/config', function(req, res) {
 	if (ensureAuthenticated(req,res)){
     var os = require('os');

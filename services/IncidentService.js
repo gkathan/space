@@ -66,8 +66,14 @@ function _flushAll(prio,callback){
 	client = new Client(options_auth);
 	// get all
 	var _prio ;
+	var _dropOnFlush = true;
+
 	if (!prio) _prio = "<="+config.sync["incidents"].includePriority;
-	else _prio = "="+prio;
+	else {
+		_prio = "="+prio;
+		_dropOnFlush = false;
+
+	}
 
 	_url+="&sysparm_record_count=50000&sysparm_query=priority"+_prio;
 	logger.debug("**** node rest client: "+_url);
@@ -84,12 +90,31 @@ function _flushAll(prio,callback){
 				}
 				_incidentsNEW.push(_incident);
 			}
-			_flush(_incidentsNEW,function(err,result){
+			_flush(_incidentsNEW,true,function(err,result){
 				if (err) logger.error("error: "+err.message);
 				else logger.info("ok: "+result);
 				callback(err,result);
 			});
 		})
+	});
+}
+
+/**
+* drops and saves
+*/
+function _flush(data,drop,callback){
+	var items =  db.collection(_incidentsCollection);
+	if (drop)
+		items.drop();
+	items.insert(data, function(err , success){
+		if (err){
+			callback(err);
+			return;
+		}
+		else{
+			callback(null,success);
+			return;
+		}
 	});
 }
 /**
@@ -223,23 +248,7 @@ function _findChangeLog(incidentId,callback){
 	})
 }
 
-/**
-* drops and saves
-*/
-function _flush(data,callback){
-	var items =  db.collection(_incidentsCollection);
-	//items.drop();
-	items.insert(data, function(err , success){
-		if (err){
-			callback(err);
-			return;
-		}
-		else{
-			callback(null,success);
-			return;
-		}
-	});
-}
+
 
 
 function _calculateStats(callback){

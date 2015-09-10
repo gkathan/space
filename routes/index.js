@@ -49,6 +49,13 @@ router.get('/test/partition', function(req, res) {
 });
 
 
+/* GET the admin page. */
+router.get('/changelog', function(req, res) {
+	  var changelog=require('../changelog.json');
+		res.locals.changelog=changelog;
+		res.render('changelog', { title: 's p a c e - changelog' });
+});
+
 
 
 //unsupported browser landing page
