@@ -26,9 +26,13 @@ block content
 				if !session.AUTH
 					a.navbar-brand(href='/')
 						img(src="/images/space_long_white.png" height="30px")
-				else
+				else if (session.AUTH=="admin" || session.AUTH=="exec" || session.AUTH=="studios")
 					a.navbar-brand(href='/dashboard')
 						img(src="/images/space_long_white.png" height="30px")
+				else 
+					a.navbar-brand
+						img(src="/images/space_long_white.png" height="30px")
+						
 			.collapse.navbar-collapse
 				ul.nav.navbar-nav
 					if !session.AUTH

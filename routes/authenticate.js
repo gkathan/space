@@ -1,5 +1,7 @@
 var express = require('express');
 var router = express.Router();
+
+
 //underscore
 var _ = require('lodash');
 
@@ -15,27 +17,19 @@ var user = require('../services/UserService');
 passport.use('local-signin', new LocalStrategy(
 	{passReqToCallback : true}, // allows us to pass back the request to the callback
 	function(req,username, password, done) {
-
 		console.log("....trying to authenticate");
-		debugger;
-
-		user.findByUsername(username, function (err, user) {
-			console.log("...in find");
+		user.authenticate(username, password,function (err, user) {
+			console.log("...in authenticate");
 			if (err) {
 				console.log("...error");
 				return done(err);
 			}
 			if (!user) {
-				console.log("...invalid user");
+				console.log("...invalid user / or wrong password");
 				return done(null, false, { message: 'Unknown user ' + username });
-			}
-			if (user.password != password) {
-				 console.log("...wrong password");
-				 return done(null, false, { message: 'Invalid password' });
 			}
 			console.log("...[OK]");
 			return done(null, user);
-
 		});
 
   }
