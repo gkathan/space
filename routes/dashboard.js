@@ -37,16 +37,13 @@ router.get('/', function(req, res) {
 	}
 	else{
 		avService.getLatest(function(av){
-
 			if (av){
 				res.locals.availability = av;
 				res.locals.downtime = avService.getDowntimeYTD(av.unplannedYTD,av.week);
 				res.locals.targetdowntime = avService.getDowntimeYTD(av,52);
 				res.locals.leftdowntime = avService.getDowntimeYTD(av,52);
 			}
-
 			res.locals.moment = moment;
-
 			targetService.getL1(target_context,function(err,l1targets){
 					res.locals.l1targets=l1targets;
 					logger.debug("l1 targets: "+ l1targets);
@@ -85,16 +82,12 @@ router.get('/incidents_subdimension', function(req, res) {
 
 router.get('/incidents_activeticker', function(req, res) {
 		var _period = req.query.period;
-
 		incService.getLatestTicker(function(err,ticker){
 			res.locals.period = _period;
 			res.locals.moment = moment;
 			res.locals.ticker=ticker;
-
 			res.render('dashboard/incidents_activeticker', { title: 's p a c e - incidents activeticker ' });
-
 		})
-
 });
 
 
@@ -131,8 +124,6 @@ router.get('/itservicereport', function(req, res) {
 				var _incfilter={openedAt:{$gte:new Date(_from),$lte:new Date(_to)},priority:_prio};
 
 				inc.findFiltered(_incfilter,{openedAt:-1},function(err,snowIncidents){
-
-
 					res.locals.av = avDataOverall;
 					res.locals.avExternal = avDataExternal;
 					res.locals.snowIncidents = snowIncidents;
@@ -141,9 +132,10 @@ router.get('/itservicereport', function(req, res) {
 					res.locals.from = _from;
 					res.locals.to = _to;
 					res.locals.filter = _filter;
+					res.locals.sla_incidents = config.customers.sla.incidents;
 					res.locals.accounting=accounting;
 					logger.debug("*****customer: "+_customer);
-
+					logger.debug("*****incidents: "+snowIncidents.length);
 					res.render('dashboard/itservicereport', { title: 's p a c e - IT service report prototype' });
 				});
 			});
