@@ -116,6 +116,22 @@ describe('OrganizationService', function(){
   })
 
 
+	describe('#_getOrgTrend', function(){
+		it('should return trend data how org evolves over history', function(done){
+			this.timeout(30000);
+
+			var orgService = require('../services/OrganizationService');
+			orgService.getOrganizationTrend(function(err,trend){
+
+				console.log(": "+trend.length);
+				console.log(JSON.stringify(trend));
+
+				//assert.equal("E2988", employee["Employee Number"]);
+				done();
+			});
+		})
+	})
+
 
 
 })

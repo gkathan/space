@@ -1164,7 +1164,7 @@ function getOrganizationSnapshotDates(req,res,next){
 	// ** this should go somewhere else ;-)
 	logger.debug("getsnapshot dates....");
 	orgService = require('../services/OrganizationService');
-	orgService.getOrganizationHistoryDates(function(data){
+	orgService.getOrganizationHistoryDates(function(err,data){
 		logger.debug("data: "+data);
 		res.send(data);
 	});

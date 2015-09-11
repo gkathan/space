@@ -35,7 +35,7 @@ exports.findTarget2EmployeeMapping = _findTarget2EmployeeMapping;
 exports.findTarget2EmployeeMappingClustered = _findTarget2EmployeeMappingClustered;
 exports.getTarget2EmployeeMappingByL2Target = _getTarget2EmployeeMappingByL2Target;
 exports.findOutcomesForEmployee = _findOutcomesForEmployee;
-
+exports.getOrganizationTrend = _getOrganizationTrend;
 
 /**
  *
@@ -371,6 +371,29 @@ function _getOrganizationHistoryDates(callback){
 				callback(err);
 			}
 
-			else callback(data);
+			else callback(null,data);
+	});
+}
+
+function _getOrganizationTrend(callback){
+
+	db.collection("organizationhistory").find({}).sort({oDate:1},function(err,data){
+			if (err) {
+				logger.warn("error: "+err);
+				callback(err);
+			}
+			var _trend=[];
+
+			logger.debug("org data items: "+data.length);
+			for (var o in data){
+				var _org =data[o];
+				var _orgmetric={};
+				_orgmetric.total=_org.oItems.length;
+				_orgmetric.date=_org.oDate;
+
+				_trend.push(_orgmetric);
+			}
+
+			callback(null,_trend);
 	});
 }

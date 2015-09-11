@@ -105,7 +105,7 @@ exports.convertXlsx2Json = function convertXlsx2Json (filename,req,done) {
 									db.collection(_collection).insert(_orghistory,function(){
 										// and update the app.locals.organizationhistoryDates for the menu
 										orgService = require('../services/OrganizationService');
-										orgService.getOrganizationHistoryDates(function(data){
+										orgService.getOrganizationHistoryDates(function(err,data){
 											req.app.locals.organizationhistoryDates=data;
 											callback();
 										 });

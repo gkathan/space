@@ -62,7 +62,7 @@ app.set('view engine', 'jade');
 app.locals.title="s p a c e ";
 
 orgService = require('./services/OrganizationService');
-orgService.getOrganizationHistoryDates(function(data){
+orgService.getOrganizationHistoryDates(function(err,data){
 	app.locals.organizationhistoryDates=data;
  });
 
