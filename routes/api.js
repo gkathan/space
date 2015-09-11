@@ -54,22 +54,18 @@ var PATH = {
 						REST_INCIDENTS : BASE+'/space/rest/incidents',
 						REST_INCIDENTSACTIVETICKER : BASE+'/space/rest/incidentsactiveticker',
 						REST_INCIDENTSKPIS : BASE+'/space/rest/incidentskpis',
-
 						REST_INCIDENTSOLDSNOW : BASE+'/space/rest/incidentsoldsnow',
-
 						REST_INCIDENTCOMMUNICATIONTRAIL : BASE+'/space/rest/incidents/commtrail/:sysid',
 						REST_INCIDENTCHANGELOG : BASE+'/space/rest/incidents/changelog/:id',
-
-
+						REST_INCIDENTTRACKER : BASE+'/space/rest/incidenttracker',
+						REST_INCIDENTTRACKER_CUSTOMER : BASE+'/space/rest/incidenttracker/:customer',
+						REST_PROBLEMS : BASE+'/space/rest/problems',
 
 						REST_SOCOUTAGES : BASE+'/space/rest/soc_outages',
 						REST_SOCINCIDENT2REVENUEIMPACT : BASE+'/space/rest/socincident2revenueimpact',
 						REST_SOCSERVICES : BASE+'/space/rest/soc_services',
 
 
-						REST_INCIDENTTRACKER : BASE+'/space/rest/incidenttracker',
-						REST_INCIDENTTRACKER_CUSTOMER : BASE+'/space/rest/incidenttracker/:customer',
-						REST_PROBLEMS : BASE+'/space/rest/problems',
 
 						REST_V1EPICS : BASE+'/space/rest/v1epics',
 						REST_ROADMAPINITIATIVES_DATE : BASE+'/space/rest/roadmapinitiatives/:start',
@@ -93,6 +89,7 @@ var PATH = {
 						REST_SYNCPROBLEMS : BASE+'/space/rest/sync/problems',
 						REST_SYNCAPM_LOGIN : BASE+'/space/rest/sync/apm/login',
 						REST_SYNCV1EPICS : BASE+'/space/rest/sync/v1epics',
+						REST_SYNCV1DATA : BASE+'/space/rest/sync/v1data',
 
 						REST_APM_LOGIN : BASE+'/space/rest/apm/login',
 
@@ -102,6 +99,7 @@ var PATH = {
 						REST_ORGANIZATION_EMPLOYEEBYID : BASE+'/space/rest/organization/employeeById/:employeeId',
 						REST_ORGANIZATIONHISTORY : BASE+'/space/rest/organization/history/:date',
 						REST_ORGANIZATIONSNAPSHOTDATES : BASE+'/space/rest/organization/snapshotdates',
+						REST_ORGANIZATIONTREND : BASE+'/space/rest/organization/trend',
 
 						REST_MAIL : BASE+'/space/rest/mail',
 						REST_SWITCHCONTEXT : BASE+'/space/rest/switchcontext',
@@ -262,6 +260,9 @@ router.get(PATH.REST_SYNCSOCSERVICES, function(req, res, next) {syncSOCServices(
 router.post(PATH.REST_SYNCV1EPICS, function(req, res, next) {syncV1Epics(req,res,next); });
 router.get(PATH.REST_SYNCV1EPICS, function(req, res, next) {syncV1Epics(req,res,next); });
 
+router.post(PATH.REST_SYNCV1DATA, function(req, res, next) {syncV1Data(req,res,next); });
+router.get(PATH.REST_SYNCV1DATA, function(req, res, next) {syncV1Data(req,res,next); });
+
 router.post(PATH.REST_SYNCPROBLEMS, function(req, res, next) {syncProblems(req,res,next); });
 router.get(PATH.REST_SYNCPROBLEMS, function(req, res, next) {syncProblems(req,res,next); });
 
@@ -279,7 +280,7 @@ router.get(PATH.REST_ORGANIZATION, function(req, res, next) {findAllByName(req,r
 router.get(PATH.REST_ORGANIZATION_EMPLOYEE, function(req, res, next) {findEmployeeByName(req,res,next); });
 router.get(PATH.REST_ORGANIZATION_EMPLOYEEBYID, function(req, res, next) {findEmployeeById(req,res,next); });
 router.get(PATH.REST_ORGANIZATIONSNAPSHOTDATES, function(req, res, next) {getOrganizationSnapshotDates(req,res,next); });
-
+router.get(PATH.REST_ORGANIZATIONTREND, function(req, res, next) {getOrganizationTrend(req,res,next); });
 router.get(PATH.REST_ORGANIZATIONHISTORY, function(req, res, next) {
 	db.collection("organizationhistory").findOne({oDate:req.params.date} , function(err , success){
         if(success){
@@ -1045,11 +1046,11 @@ function syncAvailability(req,res,next){
 }
 
 function syncV1Epics(req,res,next){
-    var v1SyncService = require ('../services/V1SyncService');
+    var v1EpicSyncService = require ('../services/V1EpicSyncService');
 		var _url = config.sync.v1epics.url;
 		var _type = "API - manual";
 		logger.debug("*********************** lets sync v1 epics...: "+_url);
-	  v1SyncService.sync(_url,_type,function(err,result){
+	  v1EpicSyncService.sync(_url,_type,function(err,result){
 			if (err){
 				res.send("syncV1Epics says: "+err.message);
 				return;
@@ -1057,6 +1058,23 @@ function syncV1Epics(req,res,next){
 			res.send("syncV1Epics says: "+result);
 	});
 }
+
+
+function syncV1Data(req,res,next){
+	logger.debug("*********************** ");
+		var v1DataSyncService = require ('../services/V1DataSyncService');
+		var _url = config.sync.v1data.url;
+		var _type = "API - manual";
+		logger.debug("*********************** lets sync v1 data...: "+_url);
+	  v1DataSyncService.sync(_url,_type,function(err,result){
+			if (err){
+				res.send("syncV1Data says: "+err.message);
+				return;
+			}
+			res.send("syncV1Data says: "+result);
+	});
+}
+
 
 
 function syncIncidents(req,res,next){
@@ -1156,7 +1174,13 @@ function calculateAvailability(req,res,next){
 
 }
 
-
+function getOrganizationTrend(req,res,next){
+		orgService = require('../services/OrganizationService');
+		orgService.getOrganizationTrend({},function(err,data){
+			logger.debug("data: "+data);
+			res.send(data);
+		});
+}
 
 
 function getOrganizationSnapshotDates(req,res,next){

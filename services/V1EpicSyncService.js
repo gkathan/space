@@ -23,7 +23,7 @@ exports.init = function(callback){
 	var rule = new schedule.RecurrenceRule();
 	// every 10 minutes
 	rule.minute = new schedule.Range(0, 59, config.sync[_syncName].intervalMinutes);
-	logger.info("[s p a c e] V1SyncService init(): "+config.sync[_syncName].intervalMinutes+" minutes - mode: "+config.sync[_syncName].mode);
+	logger.info("[s p a c e] V1EpicSyncService init(): "+config.sync[_syncName].intervalMinutes+" minutes - mode: "+config.sync[_syncName].mode);
 	if (config.sync[_syncName].mode!="off"){
 		var j = schedule.scheduleJob(rule, function(){
 			logger.debug('...going to sync V1 ....');
@@ -84,7 +84,7 @@ function _sync(url,type,callback){
 		})
 	}).on('error',function(err){
 			var _message = err.message;
-			logger.warn('[V1SyncService] says: something went wrong on the request', err.request.options,err.message);
+			logger.warn('[V1EpicSyncService] says: something went wrong on the request', err.request.options,err.message);
 			app.io.emit('syncUpdate', {status:"[ERROR]",from:_syncName,timestamp:_timestamp,info:err.message,type:type});
 			_syncStatus.saveLastSync(_syncName,_timestamp,_message,_statusERROR,type);
 			callback(err);

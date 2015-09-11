@@ -36,8 +36,12 @@ function _findByUsername(username,callback) {
 function _authenticate(username,password,callback){
   var _hashedpw = crypto.createHash("sha256").update(password).digest("hex");
   _findByUsername(username,function(err,user){
-    if (_hashedpw === user.password){
+		if (!user){
+			callback(null,null);
+		}
+		else if (user && _hashedpw === user.password){
       callback(null,user)
+			return;
     }
     else {
       callback(null,null);

@@ -106,6 +106,16 @@ router.get("/simple", function(req, res, next) {
 	//res.sendfile("org.html");
 });
 
+router.get("/trend", function(req, res, next) {
+	if (ensureAuthenticated(req,res)){
+		var orgService = require('../services/OrganizationService');
+		orgService.getOrganizationTrend({},function(err,trend){
+			res.locals.trend = trend;
+				res.render("organization/trend");
+		})
+
+	}
+});
 
 
 

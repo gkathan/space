@@ -141,18 +141,6 @@ block content
 
 			+renderIncidentList("snow reported P01 incidents",snowIncidents,prio,excludeNOLABEL)
 
-		div.row(style="margin:auto;max-width:1000px")
-			div.panel.panel-default
-				div.panel-heading 
-					span(style="color:black;font-size:24px;font-weight:bold") Availability - Downtime - Revenue Impact 
-					| planned | unplanned | total 
-					br
-					+renderFromTo(from,to)
-				div.panel-body
-					+renderAVServicesList("SERVICES - ALL",av)
-					hr
-					//+renderAVServicesList("SERVICES - EXTERNAL ****)",avExternal)
-					+renderDisclaimer
 		div.row(style="margin: auto;max-width:1000px")
 			script(src='/javascripts/dashboards/nvd3_incidents_multi.js')
 			//script(src='/javascripts/dashboards/nvd3_incidents_subdimension.js')
@@ -162,10 +150,30 @@ block content
 			+chartIncident("Incidents Trend","P01","openedAt",customer)
 			+chartIncident("Incidents Trend","P08","openedAt",customer)
 
-		
-	
-include ../includes/material
+		div.row(style="margin:auto;max-width:1000px")
+			div.panel.panel-default
+				div.panel-heading 
+					span(style="color:black;font-size:24px;font-weight:bold") #{customer} affecting Availability - Downtime - Revenue Impact 
+					| planned | unplanned | total (***experimental)
+					br
+					+renderFromTo(from,to)
+				div.panel-body
+					+renderAVServicesList("SERVICES - ALL",av)
+					hr
+					//+renderAVServicesList("SERVICES - EXTERNAL ****)",avExternal)
+					+renderDisclaimer
 
+	script(src='/javascripts/dashboards/nvd3_availability.js')
+	div.row(style="margin: auto;max-width:1000px")
+		div.panel.panel-default
+			div.panel-heading 
+				span(style="color:black;font-size:24px;font-weight:bold") OVERALL availability trend: 
+				b unplanned
+			div.panel-body
+				div(id="chart" style="text-align:center")
+					svg
+
+include ../includes/material
 
 script.
 	// make serverside parameter accessible	to clientside JS

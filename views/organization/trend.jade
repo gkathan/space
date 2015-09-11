@@ -1,0 +1,65 @@
+include ../kanban_menu
+
+
+block content
+
+	div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;background-color:white;;width:1200px;text-align: center;margin: 10px auto;")
+		.panel-heading
+			h3.panel-title Organization Trend
+		.panel-body
+		table.table.table-striped.table-hover.table-condensed.table-responsive(style="max-width:1200px")
+			thead
+				tr
+					th 
+					th date
+					th total
+					th function
+					th location
+					th vertical
+					th costcenter
+					
+					
+			
+			tbody
+				each t in trend
+					tr
+					td(style="text-align:left;vertical-align:middle;width:20px") 
+					td(style="vertical-align:top;font-size:12px;;text-align:left;font-weight:bold;vertical-align:top;width:70px") #{t.date}
+					td(style="vertical-align:top;font-size:12px;;text-align:left;font-weight:bold;vertical-align:top;width:60px") #{t.total} 
+						if t.delta 
+							|(#{t.delta})
+					td(style="vertical-align:top;text-align:left;font-size:11px;vertical-align:top;width:200px")
+						table.table-responsive
+							each f in _.sortBy(t.function,function(n){return -n.sum;})
+								tr
+									td(style="vertical-align:top;text-align:left;font-size:11px;vertical-align:top;width:150px") #{f.name} 
+									td(style="vertical-align:top;text-align:left;font-size:11px;vertical-align:top;width:50px") #{f.sum}
+										if f.delta 
+											|(#{f.delta}) 
+									
+					td(style="vertical-align:top;text-align:left;font-size:11px;vertical-align:top;width:200px")
+						table.table-responsive
+							each l in _.sortBy(t.location,function(n){return -n.sum;})
+								tr
+									td(style="vertical-align:top;text-align:left;font-size:11px;vertical-align:top;width:150px") #{l.name} 
+									td(style="vertical-align:top;text-align:left;font-size:11px;vertical-align:top;width:50px") #{l.sum} 
+										if l.delta 
+											|(#{l.delta}) 
+					td(style="vertical-align:top;text-align:left;font-size:11px;vertical-align:top;width:200px")
+						table.table-responsive
+							each v in _.sortBy(t.vertical,function(n){return -n.sum;})
+								tr
+									td(style="vertical-align:top;text-align:left;font-size:11px;vertical-align:top;width:150px") #{v.name} 
+									td(style="vertical-align:top;text-align:left;font-size:11px;vertical-align:top;width:50px") #{v.sum} 
+										if v.delta 
+											|(#{v.delta}) 
+									
+					td(style="vertical-align:top;text-align:left;font-size:11px;vertical-align:top;width:200px")
+						table.table-responsive
+							each c in _.sortBy(t.costcenter,function(n){return -n.sum;})
+								tr
+									td(style="vertical-align:top;text-align:left;font-size:11px;vertical-align:top;width:150px") #{c.name} 
+									td(style="vertical-align:top;text-align:left;font-size:11px;vertical-align:top;width:50px") #{c.sum} 
+										if c.delta 
+											|(#{c.delta}) 
+	

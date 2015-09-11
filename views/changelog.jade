@@ -1,0 +1,28 @@
+include kanban_menu
+
+
+block content
+
+	
+div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;background-color:white;;width:600px;margin: 10px auto;")
+	div(style="margin: 10px auto;")
+	
+	h3 CHANGELOG
+	table.table-striped.table-hover.table-condensed(style="width=500px")
+		thead
+			tr(style="line-height:12px")
+				th(style="width:70px;font-size:12px")
+					|date
+				th(style="width:400px;font-size:12px")
+					|change
+		tbody
+			each change in changelog
+				tr(style="line-height:10px")
+					td(style="width:70px;font-size:10px")
+						|#{change.date}
+					td(style="width:400px;font-size:10px;text-align:left")
+						|#{change.change}
+				
+	
+
+include includes/material

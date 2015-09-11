@@ -171,8 +171,14 @@
 			"mode": "off",
 			"intervalMinutes" :60,
 			"url" : "http://knbnprxy.ea.bwinparty.corp/rest/epics"
-
 		},
+
+		"v1data" : {
+			"mode": "on",
+			"intervalMinutes" :3600,
+			"url" : ["http://knbnprxy.ea.bwinparty.corp/rest/backlogs","http://knbnprxy.ea.bwinparty.corp/rest/teams","http://knbnprxy.ea.bwinparty.corp/rest/members","http://knbnprxy.ea.bwinparty.corp/rest/programs"]
+		},
+
 		"availability" : {
 			"mode": "off",
 			"intervalMinutes" :1440,

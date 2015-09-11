@@ -152,16 +152,18 @@ app.io.sockets.on('connection', function (socket) {
 
 // services
 
-var v1SyncService = require('./services/V1SyncService');
-v1SyncService.init(function(err,result){
-    if (err){
-      logger.error("error: "+err.message);
-    }
-    else
-    {
-      logger.info("init ok: "+result);
-    }
+var v1EpicSyncService = require('./services/V1EpicSyncService');
+v1EpicSyncService.init(function(err,result){
+    if (err) logger.error("error: "+err.message);
+    else logger.info("init ok: "+result);
 });
+
+var v1DataSyncService = require('./services/V1DataSyncService');
+v1DataSyncService.init(function(err,result){
+    if (err) logger.error("error: "+err.message);
+    else logger.info("init ok: "+result);
+});
+
 
 var avSyncService = require('./services/AvailabilitySyncService');
 avSyncService.init(function(err,av){

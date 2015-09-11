@@ -1,8 +1,6 @@
 /**
  * organization service
  */
-
-
 var config = require('config');
 
 var mongojs = require('mongojs');
@@ -15,13 +13,8 @@ var HOST = config.database.host;
 var connection_string = HOST+'/'+DB;
 var db = mongojs(connection_string, [DB]);
 
-
-
 var winston=require('winston');
 var logger = winston.loggers.get('space_log');
-
-
-
 
 exports.findEmployeeByFirstLastName = _findEmployeeByFirstLastName;
 exports.findEmployeeById = _findEmployeeById;
@@ -375,11 +368,10 @@ function _getOrganizationHistoryDates(callback){
 	});
 }
 
-function _getOrganizationTrend(callback){
-
-	db.collection("organizationhistory").find({}).sort({oDate:1},function(err,data){
+function _getOrganizationTrend(filter,callback){
+	db.collection("organizationhistory").find(filter).sort({oDate:1},function(err,data){
 			if (err) {
-				logger.warn("error: "+err);
+				logger.error("error: "+err);
 				callback(err);
 			}
 			var _trend=[];
@@ -387,13 +379,49 @@ function _getOrganizationTrend(callback){
 			logger.debug("org data items: "+data.length);
 			for (var o in data){
 				var _org =data[o];
+				logger.debug("*** oDate:"+_org.oDate);
 				var _orgmetric={};
 				_orgmetric.total=_org.oItems.length;
+
+				if (data[o-1]) _orgmetric.delta=_orgmetric.total-_trend[o-1].total;
 				_orgmetric.date=_org.oDate;
+
+				var _tfunction;
+				var _tvertical;
+				var _tlocation;
+				var _tcostcenter;
+				if (_trend[o-1]) {
+					_tfunction = _trend[o-1].function;
+					_tvertical = _trend[o-1].vertical;
+					_tlocation = _trend[o-1].location;
+					_tcostcenter = _trend[o-1].costcenter;
+				}
+				_orgmetric.function=_groupByAttribute(_org.oItems,"Function",_tfunction);
+				_orgmetric.vertical=_groupByAttribute(_org.oItems,"Vertical",_tvertical);
+				_orgmetric.location=_groupByAttribute(_org.oItems,"Location",_tlocation);
+				_orgmetric.costcenter=_groupByAttribute(_org.oItems,"Cost Centre",_tcostcenter);
 
 				_trend.push(_orgmetric);
 			}
-
-			callback(null,_trend);
+			callback(null,_trend.reverse());
 	});
+}
+
+function _groupByAttribute(list,attribute,previous){
+	//logger.debug("---------------- "+o);
+
+	var _attributes = _.groupBy(list,function(n){return n[attribute];})
+	var _attributelist=[]
+	var _sum = 0;
+	_.forEach(_attributes,function(value,key){
+		var _a ={};
+		_a.name=key;
+		_a.sum = value.length;
+		_sum+=value.length;
+		if (previous && _.findWhere(previous,{"name":key})){
+			_a.delta=_a.sum-_.findWhere(previous,{"name":key}).sum;
+		}
+		_attributelist.push(_a);
+	})
+	return _attributelist;
 }

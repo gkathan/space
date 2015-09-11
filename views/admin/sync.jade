@@ -228,6 +228,23 @@ script.
 			}
 		});
 	});
+	
+		$('#sync_v1data').on('click', function () {
+			console.log("v1DataSync request called...");
+			$.ajax({
+				url: '/api/space/rest/sync/v1data',
+				type: 'POST',
+				data: {
+	
+					},
+				success: function(data){
+					console.log("[SUCCESS] synced:"+JSON.stringify(data));
+				},
+				error: function(err){
+					console.log("[ERROR] :"+err.message);
+				}
+			});
+		});
 
 	$('#sync_apm_login').on('click', function () {
 		console.log("sync_apm_betplacement request called...");

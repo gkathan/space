@@ -121,7 +121,7 @@ describe('OrganizationService', function(){
 			this.timeout(30000);
 
 			var orgService = require('../services/OrganizationService');
-			orgService.getOrganizationTrend(function(err,trend){
+			orgService.getOrganizationTrend({},function(err,trend){
 
 				console.log(": "+trend.length);
 				console.log(JSON.stringify(trend));
