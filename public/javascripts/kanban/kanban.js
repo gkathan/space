@@ -94,6 +94,7 @@ d3.select("#metrics_forecast1").transition().delay(300).style("visibility","hidd
 var CONTEXT="CONTEXT";
 
 var releaseData;
+var initiativeData;
 
 
 var boardData;
@@ -274,8 +275,9 @@ function render(svgFile){
 
 			.done(function(initiatives,metrics,releases,board,targets){
 					if (initiatives[1]=="success"){
-						console.log("************************"+initiatives[0]);
+
 						initiativeData=initiatives[0];
+						console.log("======= initiatives.length: "+initiativeData.length);
 					}
 					else throw new Exception("error loading initiatives");
 					if (metrics[1]=="success") metricData=metrics[0];
@@ -294,13 +296,16 @@ function render(svgFile){
 
 function joinBoard2Initiatives(board,initiatives){
 		console.log("join: "+initiatives.length);
+		console.log("board: "+board.items.length);
+
 		var _items = board.items;
 		var _join = [];
 
 		for (var i in _items){
 			var _initiative = getItemByKey(initiatives,"Number",_items[i].itemRef);
-			console.log("+: "+_items[i].itemRef);
-			console.log("=: "+initiatives[i].Number);
+
+			//console.log("+: "+_items[i].itemRef);
+			//console.log("=: "+initiatives[i].Number);
 			if (_initiative){
 				// legacy attributes
 				_initiative.id=_items[i].itemRef;
@@ -335,8 +340,7 @@ function joinBoard2Initiatives(board,initiatives){
 						var _view = _items[i].itemView[ii];
 						_initiative[ii]=_view;
 				}
-
-				if (new Date(_initiative.actualDate) >= new Date(board.startDate)){
+				if (moment(_initiative.actualDate) >= moment(board.startDate)){
 					_join.push(_initiative);
 				}
 
@@ -372,12 +376,13 @@ function renderBoard(id){
 
 		// we have to now join boardData and initiative Data
 		boardItems =joinBoard2Initiatives(boardData,initiativeData);
-
 		// with drawAll() refresh without postback possible ;-)
 
 		enableAllMetrics();
 
-		q1_2014_reviewMetrics();
+		console.log("---- lets draw ALL");
+		//q1_2014_reviewMetrics();
+		console.log("======= initiatives.length: "+initiativeData.length);
 
 		drawAll();
 		//drawCustomPostits();
@@ -430,6 +435,8 @@ function joinInitiatives2LanesSort(){
 
 
 function drawAll(){
+	console.log("======= initiatives.length: "+initiativeData.length);
+
 	init();
 	// 1) draw static stuff
 	if (BOARD.viewConfig.queues!="off") drawGuides();
@@ -440,7 +447,10 @@ function drawAll(){
 	drawVersion();
 	drawLegend();
 	// 2) check if board empty
+	console.log("======= initiatives.length: "+initiativeData.length);
+
 	if (initiativeData.length>0){
+
 		/** multi column sort
 		 * https://github.com/Teun/thenBy.js
 		 */
@@ -460,7 +470,6 @@ function drawAll(){
 		itemTree = createLaneHierarchy(initiativeData,ITEMDATA_FILTER,BOARD.groupby.split(","),_context);
 
 		//targetTree = createLaneHierarchy(targetData,ITEMDATA_FILTER,BOARD.groupby,_context);
-
 		// kanban_items.js
 		if (BOARD.viewConfig.initiatives!="off") drawInitiatives();
 		// kanban_items.js

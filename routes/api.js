@@ -855,7 +855,14 @@ function saveBoard(req, res , next){
     		logger.debug("*********************** save board: "+JSON.stringify(board));
 				boardService.save(board,function(err,success){
 					logger.debug("saved OK: _id: "+success._id);
-					res.send({_id:success._id});
+
+					// and create a thumbnail
+					_generateBoardThumbnail(success._id,req.getBaseUrl(),function(err,result){
+							logger.debug("result: "+result);
+							res.send({_id:success._id});
+					})
+
+
 				})
 			})
 		}
@@ -866,7 +873,26 @@ function saveBoard(req, res , next){
 					res.send({_id:success._id});
 				})
 		}
+}
 
+function _generateBoardThumbnail(boardId,baseUrl,callback){
+	var phantom = require('phantom');
+	logger.debug("============"+baseUrl);
+	var _url=baseUrl+"/kanban/"+boardId;
+	phantom.create("--ignore-ssl-errors=yes", "--ssl-protocol=any",function (ph) {
+	  ph.createPage(function (page) {
+	    page.open(_url, function (status) {
+        setTimeout(function() {
+	        page.set("zoomFactor",0.2);
+	        var _name = 'public/images/boards/thumbs/'+boardId+'.png';
+					page.render(_name, {format: 'png', quality: '100'},function(){
+           	ph.exit();
+						callback(null,"OK: "+_name);
+	        });
+	      },1000);
+	      });
+	    });
+ });
 
 }
 
@@ -1263,26 +1289,23 @@ function remove(req, res , next){
 function transcode(req,res,next){
 	logger.debug("*********transcode request: ");
 	var Rsvg = require('rsvg').Rsvg;
+	var fs = require('fs');
 
 	var _body = req.body;
 	var _svg_raw = req.params.data;
-	var _format = req.params.format;
-	var _width = req.params.svg_width;
-	var _height = req.params.svg_height;
-	var _context = req.params.context;
+	var _format = req.query.format;
+	var _width = req.query.width;
+	var _height = req.query.height;
+	var _scale = req.query.scale;
+	var _context = req.query.context;
 
-	logger.debug("*********transcode request: format: "+_format);
+	//logger.debug("*********transcode request: format: "+JSON.stringify(_body));
 
-	logger.debug("*********transcode request: "+JSON.stringify(_body));
+	//logger.debug("*********transcode request: "+JSON.stringify(_body));
+	logger.debug("*********transcode request: width,height:"+_width+" , "+_height);
 
 
-	var svg = new Rsvg(_svg_raw);
-
-	var _s = svg.render({
-		format: _format,
-		width: _width,
-		height: _height
-	});
+//	data ='<svg  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"> <rect x="10" y="10" height="100" width="100" style="stroke:#ff0000; fill: #0000ff"/></svg>';
 
 
 	var moment = require('moment');
@@ -1291,11 +1314,49 @@ function transcode(req,res,next){
 
 	var fileName=_context+"_space_transcoded_"+timestamp_string;
 
+	if (_format=="svg"){
+		  fs.writeFile(fileName+".svg",_body.svg);
+	}
+	else{
+
+
+		var svg = new Rsvg(_body.svg);
+		  console.log('SVG width: ' + svg.width);
+		  console.log('SVG height: ' + svg.height);
+
+
+
+		  fs.writeFile(fileName, svg.render({
+		    format: 'png',
+		    width: 600,
+		    height: 400
+		  }));
+	}
+// Stream SVG file into render instance.
+//fs.createReadStream('/tmp/tiger.svg').pipe(svg);
+
+
+/*
+	logger.debug("svg: "+svg);
+
+	var _s = svg.render({
+		format: _format,
+		width: _width,
+		height: _height
+	});
+
+	logger.debug("--------------: "+svg);
+
+
+
 	res.set("Content-Disposition","attachment; filename=\"" + fileName + "\"");
 	res.set("Cache-Control", "no-cache");
 	res.type(_format);
 
+
 	res.send(_s.data);
+	*/
+
 }
 
 

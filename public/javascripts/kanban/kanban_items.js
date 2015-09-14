@@ -84,8 +84,8 @@ function drawItems(){
 		.style("opacity",0);
 
 	filteredInitiativeData = initiativeData.filter(function(d){
-	var _filterStart=(new Date(d.planDate)>=KANBAN_START ||new Date(d.actualDate)>=KANBAN_START);
-	var _filterEnd=new Date(d.planDate)<=KANBAN_END;
+	var _filterStart=(moment(d.planDate).toDate()>=KANBAN_START ||moment(d.actualDate).toDate()>=KANBAN_START);
+	var _filterEnd=moment(d.planDate).toDate()<=KANBAN_END;
 	return _filterStart && _filterEnd;
 	});
 
@@ -107,15 +107,15 @@ function drawItems(){
 		var _itemXStart;
 		var _itemX;
 
-		if (d.state=="planned" && new Date(d.actualDate)<=TODAY){
+		if (d.state=="planned" && moment(d.actualDate).toDate()<=TODAY){
 			_itemX = x(TODAY);
 			//_itemXActual = x(TODAY);
 			//d.state="delayed";
 			d.actualDate = yearFormat(TODAY);
 		}
-		_itemXPlanned = x(new Date(d.planDate));
-		_itemXActual = x(new Date(d.actualDate));
-		_itemXStart = x(new Date(d.startDate));
+		_itemXPlanned = x(moment(d.planDate).toDate());
+		_itemXActual = x(moment(d.actualDate).toDate());
+		_itemXStart = x(moment(d.startDate).toDate());
 
 
 		if (!d.actualDate) _itemX =_itemXPlanned;
@@ -134,19 +134,19 @@ function drawItems(){
 		var _endActualBeyond=false;
 		var _startActualBeyond=false;
 
-		if (new Date(d.planDate) < KANBAN_START){
+		if (moment(d.planDate).toDate() < KANBAN_START){
 			 _lineX1 = x(KANBAN_START)+3;
 			 _startBeyond=true;
 		 }
-		if (new Date(d.actualDate) < KANBAN_START){
+		if (moment(d.actualDate).toDate() < KANBAN_START){
 			 _startBeyond=true;
 		}
 
-		if (new Date(d.actualDate) > KANBAN_END){
+		if (moment(d.actualDate).toDate() > KANBAN_END){
 			 _lineX2 = x(KANBAN_END)-3;
 			 _endActualBeyond=true;
 		}
-		if (new Date(d.actualDate) > KANBAN_END){
+		if (moment(d.actualDate).toDate() > KANBAN_END){
 			 _startActualBeyond=true;
 		}
 
@@ -166,11 +166,11 @@ function drawItems(){
 
 			var _x1Beyond = false;
 			var _x2Beyond = false;
-			if (new Date(d.startDate)<=KANBAN_START){
+			if (moment(d.startDate).toDate()<=KANBAN_START){
 				_startX1=x(KANBAN_START);
 				_x1Beyond = true;
 			}
-			else if (new Date(d.actualDate)>KANBAN_END){
+			else if (moment(d.actualDate).toDate()>KANBAN_END){
 				_startX2=x(KANBAN_END);
 				_x2Beyond = true;
 
@@ -201,7 +201,7 @@ function drawItems(){
 							.style("visibility","visible")//_getVisibility("itemIcon"))
 							.attr("class",function(d){
 							if (d.actualDate>d.planDate &&d.state=="planned") {return "delayed"}
-							else if (new Date(d.actualDate)>WIP_END) {return "future";}
+							else if (moment(d.actualDate).toDate()>WIP_END) {return "future";}
 							else {return d.state}})
 
 					// ----------- circle icons -------------
@@ -216,7 +216,7 @@ function drawItems(){
 
 		// ------------  item blocks & names & postits --------------
 		// if isCorporate flag is not set use "tactic" icon
-		if (new Date(d.planDate) >KANBAN_START){
+		if (moment(d.planDate).toDate() >KANBAN_START){
 			var _iconRef=d.Type;
 			if (!d.isCorporate) {
 				_iconRef = "tactic";
@@ -227,10 +227,10 @@ function drawItems(){
 			if (d.state=="onhold") _iconRef="item_grey";
 
 			if (d.state=="done") _iconRef="item_green";
-			if (d.state=="planned" && new Date (d.planDate) < new Date(d.actualDate)) _iconRef="item_red";
+			if (d.state=="planned" && new Date (d.planDate) < moment(d.actualDate).toDate()) _iconRef="item_red";
 			if (d.state=="killed") _iconRef="item_killed";
 
-			var _diff = new Date()-new Date(d.createDate);
+			var _diff = new Date()-moment(d.createDate).toDate();
 			// 24 hours are NEW ...
 			if ( Math.floor(_diff/(60*60*1000))< 24) _iconRef="item_new";
 
@@ -247,7 +247,7 @@ function drawItems(){
 			_drawPostit(d3.select(this),d);
 		} // end KANBAN_START check
 		// if plandate is beyon KANBAN_START - we have to draw the name below the circle (a bit smaller)
-		else if (new Date(d.actualDate)>KANBAN_START && (d.state =="done" || d.state =="planned")){
+		else if (moment(d.actualDate).toDate()>KANBAN_START && (d.state =="done" || d.state =="planned")){
 			_drawItemName(d3.select(this),d,_itemXActual,(_itemY+_size+3),0.1,null,_getVisibility("drawItemName.end"),"end");
 		}
 		// transparent circle on top for the event listener
@@ -288,7 +288,7 @@ function drawItems(){
 				if (_dependingItem){
 					var _depYOffset = getSublaneCenterOffset(getFQName(_dependingItem));
 					//console.log("found depending item id: "+_dependingItem.id+ " "+_dependingItem.name);
-					var _toX = x(new Date(_dependingItem.planDate))
+					var _toX = x(moment(_dependingItem.planDate).toDate())
 					var _toY = y(getSublaneByNameNEW(getFQName(_dependingItem)).yt1-_depYOffset)+getInt(_dependingItem.sublaneOffset);
 
 					// put lines in one layer to turn on off globally
