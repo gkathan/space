@@ -29,11 +29,11 @@ body {
           box-sizing: border-box;
 }
 
-
+/*
 .container-fluid > .row {
     margin-left: 0;
 }
-
+*/
 /* borderless table */
 .table.table-borderless td, .table.table-borderless th {
     border: 0 !important;
@@ -60,7 +60,6 @@ body {
     min-height: 100%;
     font-size: 100px;
     text-align: right;
-    filter: alpha(opacity=0);
     opacity: 0;
     outline: none;
     background: white;
@@ -73,9 +72,11 @@ body {
 -------------------------------------------------- */
 /* Not required for template or sticky footer method. */
 
+/*
 body > .container {
   padding: 60px 15px 0;
 }
+*/
 
 code {
   font-size: 80%;

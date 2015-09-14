@@ -875,9 +875,11 @@ function saveBoard(req, res , next){
 		}
 }
 
+/**experimental dynamic thumbnail creation
+* if that works - can be moved to a more generic service
+*/
 function _generateBoardThumbnail(boardId,baseUrl,callback){
 	var phantom = require('phantom');
-	logger.debug("============"+baseUrl);
 	var _url=baseUrl+"/kanban/"+boardId;
 	phantom.create("--ignore-ssl-errors=yes", "--ssl-protocol=any",function (ph) {
 	  ph.createPage(function (page) {
@@ -1292,7 +1294,7 @@ function transcode(req,res,next){
 	var fs = require('fs');
 
 	var _body = req.body;
-	var _svg_raw = req.params.data;
+	var _svg = _body.svg;
 	var _format = req.query.format;
 	var _width = req.query.width;
 	var _height = req.query.height;
@@ -1303,60 +1305,45 @@ function transcode(req,res,next){
 
 	//logger.debug("*********transcode request: "+JSON.stringify(_body));
 	logger.debug("*********transcode request: width,height:"+_width+" , "+_height);
+	logger.debug("*********transcode request: body:"+_svg);
 
 
-//	data ='<svg  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"> <rect x="10" y="10" height="100" width="100" style="stroke:#ff0000; fill: #0000ff"/></svg>';
+	//data ='<svg  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"> <rect x="10" y="10" height="100" width="100" style="stroke:#ff0000; fill: #0000ff"/></svg>';
 
 
 	var moment = require('moment');
 	var timestamp = moment(new Date());
 	var timestamp_string = timestamp.format("YYYY-MM-DD HH_mm_ss");
 
-	var fileName=_context+"_space_transcoded_"+timestamp_string;
+	var fileName="files/boards/"+_context+"_space_transcoded_"+timestamp_string;
 
 	if (_format=="svg"){
-		  fs.writeFile(fileName+".svg",_body.svg);
+		  fs.writeFile("public/"+fileName+".svg",_body.svg);
 	}
 	else{
 
 
-		var svg = new Rsvg(_body.svg);
+		var svg = new Rsvg(_svg);
 		  console.log('SVG width: ' + svg.width);
 		  console.log('SVG height: ' + svg.height);
+			//console.log('SVG : ' + _svg);
 
 
 
-		  fs.writeFile(fileName, svg.render({
-		    format: 'png',
-		    width: 600,
-		    height: 400
-		  }));
+		  fs.writeFile("public/"+fileName+"."+_format, svg.render({
+		    format: _format,
+		    width: svg.width,
+		    height: svg.height
+		  }).data);
 	}
-// Stream SVG file into render instance.
-//fs.createReadStream('/tmp/tiger.svg').pipe(svg);
+
+	//res.set("Content-Disposition","attachment; filename=\"" + fileName + "\"");
+	//res.set("Cache-Control", "no-cache");
+	//res.type(_format);
 
 
-/*
-	logger.debug("svg: "+svg);
-
-	var _s = svg.render({
-		format: _format,
-		width: _width,
-		height: _height
-	});
-
-	logger.debug("--------------: "+svg);
-
-
-
-	res.set("Content-Disposition","attachment; filename=\"" + fileName + "\"");
-	res.set("Cache-Control", "no-cache");
-	res.type(_format);
-
-
-	res.send(_s.data);
-	*/
-
+	res.send(req.getBaseUrl()+"/"+fileName+"."+_format);
+	return;
 }
 
 

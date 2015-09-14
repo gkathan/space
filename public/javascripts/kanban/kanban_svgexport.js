@@ -36,14 +36,16 @@ function submit_download_form(output_format,css)
 		'success':function(data){
 
 		// 2) wrap into CDATA
-		var _injectCSS ="<style type=\"text/css\"><![CDATA["+data+"]]></style>";
+		var _injectCSS ='<style type="text/css"> <![CDATA['+data+']]> </style>';
 		//console.log("_injectCSS = "+_injectCSS);
 
 		// 3) and inject via jquery
 
 		//_clone.append("style").attr("type","text/css").append(_injectCSS);
 		//d3.select("svg").append("style").attr("type","text/css").append(_injectCSS);
-		$( _injectCSS).insertAfter( "defs" );
+
+    $('svg').prepend( _injectCSS );
+    //$(_injectCSS).insertAfter( "defs" );
 
 		console.log("submit downloadform called: format = "+output_format);
 
@@ -61,18 +63,29 @@ function submit_download_form(output_format,css)
 
 		// Extract the data as SVG text string
 		var svg_xml = (new XMLSerializer).serializeToString(svg);
-		//console.log("**********"+svg_xml);
+		svg_xml = svg_xml.replace('&lt;!', '<!', 'gm').replace(']&gt;', ']>', 'gm');
+    //svg_xml = svg_xml.replace('&lt;', '<', 'gm').replace('&gt;', '>', 'gm');
+  //  console.log("**********"+svg_xml);
+
 
 		//var svg_xml="<svg xmlns=\"http://www.w3.org/2000/svg\"  height=\"210\" width=\"500\"><line x1=\"0\" y1=\"0\" x2=\"200\" y2=\"200\" style=\"stroke:rgb(255,0,0);stroke-width:2\" /> </svg>";
+    var _data =	data ='<svg  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"> <rect x="10" y="10" height="100" width="100" style="stroke:#ff0000; fill: #0000ff"/></svg>';
+
 
 		$.ajax({
 			type: 'POST',
 			data: {svg:svg_xml},
 			dataType: "json",
       //contentType: 'text/plain',
-			crossDomain:true,
-			url: TRANSCODE_URL+"?context="+CONTEXT+"&format="+output_format+"&width=1000&height=1000&scale=1"
-
+			//crossDomain:true,
+			url: TRANSCODE_URL+"?context="+CONTEXT+"&format="+output_format+"&width=1000&height=1000&scale=1",
+      success: function(data){
+        console.log("DONE: "+data);
+      },
+      error: function(err){
+        console.log("ERROR:"+JSON.stringify(err));
+        window.location = err.responseText;
+      }
 		});
 
 		}
