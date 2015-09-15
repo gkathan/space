@@ -199,6 +199,11 @@ router.get('/opsreport', function(req, res) {
 						labelService.filterIncidents(snowIncidents,_customer,_excludeNOLABEL,function(err,filteredIncidents){
 							logger.debug("++++++++++++++++++++++++++ filtered snow incidents.length: "+filteredIncidents.length);
 							for (var i in snowIncidents){
+								// enrich with configured SLA times
+								var _prio = snowIncidents[i].priority.split(" - ")[0];
+								var _sla = config.customers.sla.incidents[_prio];
+								snowIncidents[i].slaConfig = _sla;
+			
 								if (_.findWhere(problems,{"id":snowIncidents[i].problemId})){
 									snowIncidents[i].problemSysId=_.findWhere(problems,{"id":snowIncidents[i].problemId}).sysId;
 								}

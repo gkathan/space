@@ -224,7 +224,7 @@ mixin renderExcludeNOLABELFilter(filter)
 			|"No Labels" only
 	br
 			
-mixin renderIncidentList(title,incidents,prio,excludeNOLABEL)
+mixin renderIncidentList(title,incidents,prio,excludeNOLABEL,showRevenueImpact)
 	div.panel.panel-default
 		div.panel-heading 
 			table
@@ -250,27 +250,30 @@ mixin renderIncidentList(title,incidents,prio,excludeNOLABEL)
 			//br
 			//+renderFromTo(from,to)
 		div.panel-body
-			table.table-responsive.table-striped.table-hover.table-condensed(id="snow_incidents" style="max-width:1000px")
+			table.table.table-responsive.table-striped.table-hover.table-condensed(id="snow_incidents" style="max-width:1000px")
 				thead
 					tr(style="line-height:20px;font-weight:bold")
-						th(style="width:100px;text-align:center;border-bottom:1px solid black")
+						th(style="text-align:center;border-bottom:1px solid black")
 							|Opened
-						th(style="width:50px;text-align:right;border-bottom:1px solid black")
+						th(style="text-align:right;border-bottom:1px solid black")
 							|Prio
-						th(style="width:80px;text-align:center;border-bottom:1px solid black")
+						th(style="text-align:center;border-bottom:1px solid black")
 							|Id
-						th(style="width:100px;text-align:center;background:#efefef;font-weight:bold;border-bottom:1px solid black")
-							|Rev Impact
-						th(style="width:200px;text-align:left;border-bottom:1px solid black")
+						th(style="text-align:center;border-bottom:1px solid black")
+							|Status
+						if showRevenueImpact
+							th(style="text-align:center;background:#efefef;font-weight:bold;border-bottom:1px solid black")
+								|Rev Impact
+						th(style="text-align:left;border-bottom:1px solid black")
 							|Short Description
-						th(style="width:100px;text-align:left;border-bottom:1px solid black")
+						th(style="text-align:left;border-bottom:1px solid black")
 							|Business Service
-						th(style="width:100px;text-align:right;border-bottom:1px solid black")
+						th(style="text-align:right;border-bottom:1px solid black")
 							|TTR 
 							span(style="font-size:10px;font-weight:normal") *space 
-						th(style="width:200px;text-align:left;border-bottom:1px solid black")
+						th(style="text-align:left;border-bottom:1px solid black")
 							|Label
-						th(style="width:60px;text-align:left;border-bottom:1px solid black")
+						th(style="text-align:left;border-bottom:1px solid black")
 							|Problem
 
 				tbody
@@ -289,22 +292,27 @@ mixin renderIncidentList(title,incidents,prio,excludeNOLABEL)
 							td(style="text-align:center;font-size:10px")
 								a(href="https://bwinparty.service-now.com/ess/incident.do?sys_id=#{inc.sysId}" target="_new")
 									|#{inc.id}
-							td(style="text-align:right;background:#efefef;font-weight:bold;font-size:12px")
-								if inc.revenueImpact
-									|#{formatMoney(inc.revenueImpact)}
-									- _rev+=parseFloat(inc.revenueImpact);
-								else
-									|n/a
+							td(style="text-align:center;font-size:10px")
+								|#{inc.state}
+							if showRevenueImpact
+								td(style="text-align:right;background:#efefef;font-weight:bold;font-size:10px")
+									if inc.revenueImpact
+										|#{formatMoney(inc.revenueImpact)}
+										- _rev+=parseFloat(inc.revenueImpact);
+									else
+										|n/a
 							td(style="max-width:200px;text-align:left;font-size:10px")
 								|#{inc.shortDescription}
 							td(style="text-align:left;font-size:10px")
 								|#{inc.businessService}
 							td(style="text-align:right")
-								if (moment(inc.resolvedAt) > moment(inc.openedAt)) 
-									-var _ttr = formatTTR(moment(inc.resolvedAt).diff(moment(inc.openedAt)),inc.priority);
-									-var _color="limegreen";
+								if (inc.resolvedAt && moment(inc.resolvedAt) > moment(inc.openedAt)) 
+									-var _ttr = formatTTR(moment(inc.resolvedAt).diff(moment(inc.openedAt)),inc.slaConfig);
+									-var _color="black";
 									- if (_ttr.slaBreach) _color="red"
+									- else if (_ttr.slaBreach==false) _color="limegreen"
 									span(style="color:"+_color) #{_ttr.ttrString}
+								
 							td(style="text-align:left;font-size:10px")
 									|#{inc.label}
 							td(style="text-align:left;font-size:10px")
@@ -315,31 +323,33 @@ mixin renderIncidentList(title,incidents,prio,excludeNOLABEL)
 			table.table-condensed(style="max-width:1000px")
 				//sum row
 				tr(style="line-height:32px;font-size:12px")
-					td(colspan="2" style="text-align:right;border-top:1px solid black;border-bottom:1px solid black;width:150px")
+					td(colspan="2" style="text-align:right;border-top:1px solid black;border-bottom:1px solid black;max-width:150px")
 						b(style="font-size:24px") #{_sum} 
 						|Incidents
-					td(style="text-align:right;background:#efefef;font-weight:bold;font-size:14px;border-top:1px solid black;border-bottom:1px solid black;width:100px")
-						if _rev
-							|#{formatMoney(_rev)}
-						else
-							|n/a
-					td(colspan="2" style="text-align:rightt;border-top:1px solid black;border-bottom:1px solid black;width:280px")
-						|Total Revenue Impact	
-					td(colspan="2" style="text-align:right;border-top:1px solid black;border-bottom:1px solid black;width:200px")
+					if showRevenueImpact
+						td(style="text-align:right;background:#efefef;font-weight:bold;font-size:14px;border-top:1px solid black;border-bottom:1px solid black;max-width:100px")
+							if _rev
+								|#{formatMoney(_rev)}
+							else
+								|n/a
+						td(colspan="2" style="text-align:rightt;border-top:1px solid black;border-bottom:1px solid black;max-width:280px")
+							|Total Revenue Impact	
+					td(colspan="2" style="text-align:right;border-top:1px solid black;border-bottom:1px solid black;max-width:200px")
 						b(style="font-size:14px;margin-top:15px") #{(formatAVTime(_sumTTR))}
-					td(colspan="2" style="text-align:left;border-top:1px solid black;border-bottom:1px solid black;width:260px")
+					td(colspan="2" style="text-align:left;border-top:1px solid black;border-bottom:1px solid black;max-width:260px")
 						|Total Time to Resolve
 				//average row
 				tr(style="line-height:32px;font-size:12px")
 					td(colspan="2" style="text-align:right;border-top:1px solid black;border-bottom:2px solid black;")
 						
-					td(style="text-align:right;background:#efefef;font-weight:bold;font-size:14px;border-top:1px solid black;border-bottom:2px solid black")
-						if _rev
-							|#{formatMoney(_rev/_sum)}
-						else
-							|n/a
-					td(colspan="2" style="text-align:rightt;border-top:1px solid black;border-bottom:2px solid black;")
-						|Average Revenue Impact	
+					if showRevenueImpact
+						td(style="text-align:right;background:#efefef;font-weight:bold;font-size:14px;border-top:1px solid black;border-bottom:2px solid black")
+							if _rev
+								|#{formatMoney(_rev/_sum)}
+							else
+								|n/a
+						td(colspan="2" style="text-align:rightt;border-top:1px solid black;border-bottom:2px solid black;")
+							|Average Revenue Impact	
 					td(colspan="2" style="text-align:right;border-top:1px solid black;border-bottom:2px solid black")
 						b(style="font-size:14px;margin-top:15px") #{(formatAVTime(_sumTTR/_sum))}
 					td(colspan="2" style="text-align:left;border-top:1px solid black;border-bottom:2px solid black")

@@ -69,7 +69,7 @@
 
 
 	 "transcoder" : {
-		"url" : "http://localhost:8080/transcode/"
+		"url" : "http://localhost:3000/transcode/"
 	},
 
 
