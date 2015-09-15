@@ -98,6 +98,7 @@ router.get('/qos', function(req, res) {
 router.get('/itservicereport', function(req, res) {
 		var avc = require ('../services/AvailabilityCalculatorService');
 		var inc = require ('../services/IncidentService');
+		var prob = require ('../services/ProblemService');
 
 		//default is in config
 		var _from = moment().startOf('year').format("YYYY-MM-DD");
@@ -116,27 +117,32 @@ router.get('/itservicereport', function(req, res) {
 		}
 		else _filter = {customer:"* ALL *"};
 
-		avc.calculateOverall(_from,_to,_filter,function(avDataOverall){
-			avc.calculateExternal(_from,_to,_filter,function(avDataExternal){
-				var _prio = "P01 - Critical";
-				// var _prio  = "P08 - High";
-				// var _prio  = "P16 - Moderate";
-				var _incfilter={openedAt:{$gte:new Date(_from),$lte:new Date(_to)},priority:_prio};
+		prob.find({},function(err,problems){
+			avc.calculateOverall(_from,_to,_filter,function(avDataOverall){
+				avc.calculateExternal(_from,_to,_filter,function(avDataExternal){
+					var _prio = "P01 - Critical";
+					// var _prio  = "P08 - High";
+					// var _prio  = "P16 - Moderate";
+					var _incfilter={openedAt:{$gte:new Date(_from),$lte:new Date(_to)},priority:_prio};
 
-				inc.findFiltered(_incfilter,{openedAt:-1},function(err,snowIncidents){
-					res.locals.av = avDataOverall;
-					res.locals.avExternal = avDataExternal;
-					res.locals.snowIncidents = snowIncidents;
-					res.locals.coreDef = config.availability.coreTime
-					res.locals.moment = moment;
-					res.locals.from = _from;
-					res.locals.to = _to;
-					res.locals.filter = _filter;
-					res.locals.sla_incidents = config.customers.sla.incidents;
-					res.locals.accounting=accounting;
-					logger.debug("*****customer: "+_customer);
-					logger.debug("*****incidents: "+snowIncidents.length);
-					res.render('dashboard/itservicereport', { title: 's p a c e - IT service report prototype' });
+					inc.findFiltered(_incfilter,{openedAt:-1},function(err,snowIncidents){
+
+						res.locals.slaMetrics=_enrichIncidents(snowIncidents,problems);
+
+						res.locals.av = avDataOverall;
+						res.locals.avExternal = avDataExternal;
+						res.locals.snowIncidents = snowIncidents;
+						res.locals.coreDef = config.availability.coreTime
+						res.locals.moment = moment;
+						res.locals.from = _from;
+						res.locals.to = _to;
+						res.locals.filter = _filter;
+						res.locals.sla_incidents = config.customers.sla.incidents;
+						res.locals.accounting=accounting;
+						logger.debug("*****customer: "+_customer);
+						logger.debug("*****incidents: "+snowIncidents.length);
+						res.render('dashboard/itservicereport', { title: 's p a c e - IT service report prototype' });
+					});
 				});
 			});
 		});
@@ -167,15 +173,11 @@ router.get('/opsreport', function(req, res) {
 		// 1 ... do exclude "No Labels"
 		// 2 ... just show "No Labels"
 		var _excludeNOLABEL = 0;
-
 		var _prio = "P01";
-
-
 
 		if (req.query.prio && (req.query.prio=="P01"||req.query.prio=="P08"||req.query.prio=="P16"||req.query.prio=="P120")){
 			_prio = req.query.prio;
 		}
-
 		if (req.query.from)	 _from = req.query.from;//"2015-01-01";
 		if (req.query.to) _to = req.query.to;//"2015-01-10";
 		if (req.query.excludeNOLABEL) _excludeNOLABEL = req.query.excludeNOLABEL;
@@ -183,9 +185,6 @@ router.get('/opsreport', function(req, res) {
 		var labelService = require('../services/LabelService');
 
 		prob.find({},function(err,problems){
-
-
-
 			avc.calculateOverall(_from,_to,_filter,function(avDataOverall){
 				avc.calculateExternal(_from,_to,_filter,function(avDataExternal){
 					var _incfilter={
@@ -198,16 +197,9 @@ router.get('/opsreport', function(req, res) {
 						logger.debug("++++++++++++++++++++++++++ all snow incidents.length: "+snowIncidents.length);
 						labelService.filterIncidents(snowIncidents,_customer,_excludeNOLABEL,function(err,filteredIncidents){
 							logger.debug("++++++++++++++++++++++++++ filtered snow incidents.length: "+filteredIncidents.length);
-							for (var i in snowIncidents){
-								// enrich with configured SLA times
-								var _prio = snowIncidents[i].priority.split(" - ")[0];
-								var _sla = config.customers.sla.incidents[_prio];
-								snowIncidents[i].slaConfig = _sla;
-			
-								if (_.findWhere(problems,{"id":snowIncidents[i].problemId})){
-									snowIncidents[i].problemSysId=_.findWhere(problems,{"id":snowIncidents[i].problemId}).sysId;
-								}
-							}
+
+							res.locals.slaMetrics=_enrichIncidents(filteredIncidents,problems);
+
 							res.locals.av = avDataOverall;
 							res.locals.labelService = labelService;
 							res.locals.customer = _customer;
@@ -236,6 +228,42 @@ router.get('/opsreport', function(req, res) {
 		});
 	});
 
+/**
+* enriches and returns some metrics
+*/
+function _enrichIncidents(incidents,problems){
+	var _sumBreach = 0;
+	for (var i in incidents){
+		// enrich with configured SLA times
+		var _inc = incidents[i];
+		var _prio = _inc.priority.split(" - ")[0];
+		var _sla = config.customers.sla.incidents[_prio];
+		_inc.slaConfig = _sla;
+
+		if (_inc.resolvedAt){
+			var _ttr = moment(_inc.resolvedAt).diff(moment(_inc.openedAt));
+			_inc.ttr = _createTTR(_ttr,_sla);
+			if (_inc.ttr.slaBreach) _sumBreach++;
+		}
+
+		if (_.findWhere(problems,{"id":_inc.problemId})){
+			_inc.problemSysId=_.findWhere(problems,{"id":_inc.problemId}).sysId;
+		}
+	}
+	var _slaPercentage = 100-((_sumBreach/incidents.length)*100);
+	var _slaMetrics = {totalBreached:_sumBreach,totalAchieved:incidents.length-_sumBreach,percentage:parseFloat(_slaPercentage).toFixed(2)}
+	return _slaMetrics;
+}
+
+
+function _createTTR(time,sla){
+ 	var d = moment.duration(time);
+   var _ttrString =  d.format("h:mm:ss", { trim: false })
+		if (d>=86400000) _ttrString = d.format("d[d] h:mm:ss", { trim: false });
+		var _return ={ttrHours:d/60000/60,ttrString:_ttrString,slaBreach:false};
+   if (_return.ttrHours>sla) _return.slaBreach=true;
+ 	return _return;
+}
 
 
 

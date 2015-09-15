@@ -14,14 +14,7 @@ script(src="/javascripts/components/progressbar.js/dist/progressbar.min.js")
 -		return (av*100).toFixed(2)+ "%";
 -	}
 
--	function formatTTR(time,prio){
-- 	var d = moment.duration(time);
--		if (d>=86400000) return d.format("d[d] h:mm:ss", { trim: false });
-- 	var sla = parseInt(prio.split(" - ")[0].split("P")[1]);
--		var _return ={ttrHours:d/60000/60,ttrString:d.format("h:mm:ss", { trim: false }),slaBreach:false};
--   if (_return.ttrHours>sla) _return.slaBreach=true;
-- 	return _return;
--	}
+
 
 
 -	function formatAVTime(time){

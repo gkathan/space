@@ -244,6 +244,12 @@ mixin renderIncidentList(title,incidents,prio,excludeNOLABEL,showRevenueImpact)
 					td(style="color:black;font-size:18px;font-weight:bold")
 						|#{sla_incidents[prio]}h
 				tr
+					td(style="color:black;font-size:14px;font-weight:normal")
+						|SLA achieved:
+					td(style="color:black;font-size:18px;font-weight:normal")
+						|<b>#{slaMetrics.percentage}%</b> 
+						span(style="font-size:12px") (breaches: #{slaMetrics.totalBreached} | achieved: #{slaMetrics.totalAchieved})
+				tr
 					td
 						+renderExcludeNOLABELFilter(excludeNOLABEL)
 					td
@@ -306,12 +312,11 @@ mixin renderIncidentList(title,incidents,prio,excludeNOLABEL,showRevenueImpact)
 							td(style="text-align:left;font-size:10px")
 								|#{inc.businessService}
 							td(style="text-align:right")
-								if (inc.resolvedAt && moment(inc.resolvedAt) > moment(inc.openedAt)) 
-									-var _ttr = formatTTR(moment(inc.resolvedAt).diff(moment(inc.openedAt)),inc.slaConfig);
+								if (inc.ttr) 
 									-var _color="black";
-									- if (_ttr.slaBreach) _color="red"
-									- else if (_ttr.slaBreach==false) _color="limegreen"
-									span(style="color:"+_color) #{_ttr.ttrString}
+									- if (inc.ttr.slaBreach) _color="red"
+									- else if (inc.ttr.slaBreach==false) _color="limegreen"
+									span(style="color:"+_color) #{inc.ttr.ttrString}
 								
 							td(style="text-align:left;font-size:10px")
 									|#{inc.label}
