@@ -232,14 +232,16 @@ function _processServices(type,services,injectedServices,from,to,filter,endUserA
 
 			var average = _calculateAverages(services);
 
+			var _numberOfServices=_.where(services,{filterExclude:false}).length;
+
 			var _avResult={};
 			_avResult.from=from;
 			_avResult.to=to;
 			//time of downtime in millisceonds
 			_avResult.downtime={};
-			_avResult.downtime.planned={all:downtime.planned.all,core:downtime.planned.core,nonCore:downtime.planned.nonCore};
-			_avResult.downtime.unplanned={all:downtime.unplanned.all,core:downtime.unplanned.core,nonCore:downtime.unplanned.nonCore};
-			_avResult.downtime.total={all:downtime.total.all,core:downtime.total.core,nonCore:downtime.total.nonCore};
+			_avResult.downtime.planned={all:downtime.planned.all/_numberOfServices,core:downtime.planned.core/_numberOfServices,nonCore:downtime.planned.nonCore/_numberOfServices};
+			_avResult.downtime.unplanned={all:downtime.unplanned.all/_numberOfServices,core:downtime.unplanned.core/_numberOfServices,nonCore:downtime.unplanned.nonCore/_numberOfServices};
+			_avResult.downtime.total={all:downtime.total.all/_numberOfServices,core:downtime.total.core/_numberOfServices,nonCore:downtime.total.nonCore/_numberOfServices};
 			_avResult.av={};
 			_avResult.av.planned={all:average.planned.all,core:average.planned.core,nonCore:average.planned.nonCore};
 			_avResult.av.unplanned={all:average.unplanned.all,core:average.unplanned.core,nonCore:average.unplanned.nonCore};

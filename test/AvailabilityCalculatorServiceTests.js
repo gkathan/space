@@ -531,13 +531,13 @@ describe('AvailabilityCalculatorService', function(){
 				assert.equal(25000,result.revenueImpact.unplanned);
 				assert.equal(10000,result.revenueImpact.planned);
 
-				assert.equal(120000, result.downtime.unplanned.all);
-				assert.equal(120000, result.downtime.unplanned.nonCore);
+				assert.equal(60000, result.downtime.unplanned.all);
+				assert.equal(60000, result.downtime.unplanned.nonCore);
 				assert.equal(0, result.downtime.unplanned.core);
 
-				assert.equal(30000, result.downtime.planned.all);
+				assert.equal(15000, result.downtime.planned.all);
 				assert.equal(0, result.downtime.planned.nonCore);
-				assert.equal(30000, result.downtime.planned.core);
+				assert.equal(15000, result.downtime.planned.core);
 
 
 				assert.equal(0.999132065007716, result.av.total.all);
