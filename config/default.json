@@ -102,6 +102,8 @@
 		}
 	},
 	"targets":{
+		"active":2015,
+		"planned":2016,
 		"kpis": {
 			"incidents":{
 				"states":["New","In progress","Awaiting","Resolved","Closed"],
@@ -144,7 +146,7 @@
 	},
 
 	"import":{
-		"plainTypes" : ["productportfolio","productcatalog","targets","incidents","labels","customers","competitors","roadmaps","availability","v1teams","scrumteams","incidenttracker","content","incidenttrackeroldsnow","socservices","soclabel2customer","oldsnowincidents","socincident2revenueimpact","label2customer","datacenters","users"]
+		"plainTypes" : ["productportfolio","productcatalog","targets","incidents","labels","customers","competitors","roadmaps","availability","v1teams","scrumteams","incidenttracker","content","incidenttrackeroldsnow","socservices","soclabel2customer","oldsnowincidents","socincident2revenueimpact","label2customer","datacenters","users","targets2015","targets2016"]
 	},
 
   "context" : "bpty.studios",

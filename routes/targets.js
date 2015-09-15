@@ -14,6 +14,8 @@ var logger = winston.loggers.get('space_log');
 
 var avService = require('../services/AvailabilityService');
 var targetService = require('../services/TargetService');
+var moment = require('moment');
+var config = require('config');
 
 var _targets;
 
@@ -23,7 +25,15 @@ _.nst = require('underscore.nest');
 
 /* GET targets . */
 router.get('/overview', function(req, res, next) {
-	_handleTargetOverview(req,res,next,"./targets/overview");
+	var _period = targetService.getPeriod();
+	_handleTargetOverview(req,res,next,"./targets/overview",_period);
+});
+
+
+router.get('/overview/:period', function(req, res, next) {
+	var _period = req.params.period;
+	if (_period != targetService.getPeriod()) ensureAuthenticated(req,res)
+	_handleTargetOverview(req,res,next,"./targets/overview",_period);
 });
 
 /* GET targets . */
@@ -167,7 +177,7 @@ router.get('/overview/old', function(req, res, next) {
 });
 
 
-function _handleTargetOverview(req,res,next,view){
+function _handleTargetOverview(req,res,next,view,period){
 	res.locals._=require('lodash');
 	var _context;
 	if (req.session.CONTEXT){
@@ -186,7 +196,7 @@ function _handleTargetOverview(req,res,next,view){
 	if (_context=="gvc.studios") target_context = "bpty.studios";
 	else target_context = _context;
 
-	targetService.getAll(target_context,function(err,data){
+	targetService.getAllByPeriod(target_context,period,function(err,data){
 		var _L2targets = [];
 		var _L1targets = [];
 
@@ -217,6 +227,7 @@ function _handleTargetOverview(req,res,next,view){
 				res.locals.end=moment(_target.end).format();
 				res.locals.period = new moment(_target.end).format('YYYY').toLowerCase();
 				res.locals.lastUpdate = moment(_target.lastUpdate).format('MMMM Do YYYY');
+				res.locals.state = _target.state;
 			}
 			var _colors = _.findWhere(config.entities,{'name':_context}).skin.colors;
 			logger.debug("colors: "+_colors.secondary);
@@ -307,3 +318,14 @@ function _handleTargetRollup(req,res,next,view,context){
 }
 
 module.exports = router;
+
+function ensureAuthenticated(req, res) {
+	logger.debug("[CHECK AUTHENTICATED]");
+  if (!req.session.AUTH){
+		  logger.debug("[*** NOT AUTHENTICATED **]");
+      req.session.ORIGINAL_URL = req.originalUrl;
+		  res.redirect("/login");
+      return false
+	}
+  return true;
+}

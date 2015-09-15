@@ -30,8 +30,8 @@ var PATH = {
 						ROOT : PATH_ROOT,
 						REST_INITIATIVES : BASE+'/space/rest/initiatives',
 						REST_METRICS : BASE+'/space/rest/metrics',
-						REST_TARGETS : BASE+'/space/rest/targets',
-						REST_TARGETS_TYPE : BASE+'/space/rest/targets/:type',
+						REST_TARGETS : BASE+'/space/rest/targets/:period',
+						REST_TARGETS_L1 : BASE+'/space/rest/targets/L1/:period',
 						REST_TARGETSTREE : BASE+'/space/rest/targetstree',
 
 						REST_TARGET2EMPLOYEE : BASE+'/space/rest/target2employee',
@@ -146,10 +146,10 @@ router.post(PATH.REST_METRICS, function(req, res, next) {save(req,res,next); });
 router.delete(PATH.REST_METRICS, function(req, res, next) {remove(req,res,next); });
 
 
-router.get(PATH.REST_TARGETS, function(req, res, next) {findAllByName(req,res,next);});
+router.get(PATH.REST_TARGETS, function(req, res, next) {findTargets(req,res,next);});
 router.post(PATH.REST_TARGETS, function(req, res, next) {save(req,res,next); });
 router.delete(PATH.REST_TARGETS, function(req, res, next) {remove(req,res,next); });
-router.get(PATH.REST_TARGETS_TYPE, function(req, res, next) {findByKey("type",req,res,next);});
+router.get(PATH.REST_TARGETS_L1, function(req, res, next) {findTargetsByType("L1",req,res,next);});
 router.get(PATH.REST_TARGETSTREE, function(req, res, next) {getTargetsTree(req,res,next);});
 router.get(PATH.REST_TARGET2EMPLOYEE, function(req, res, next) {findAllByName(req,res,next);});
 router.get(PATH.REST_TARGET2EMPLOYEECLUSTERED, function(req, res, next) {getTarget2EmployeeClustered(req,res,next);});
@@ -620,6 +620,52 @@ function getIncidentKPIs(req,res,next){
 
 }
 
+
+function findTargetsByType(type,req,res,next){
+	var targetService = require('../services/TargetService');
+	var context = config.context;
+	if (req.query.context) context=req.query.context;
+	var _period;
+	if (req.params.period) _period = req.params.period;
+	else _period = targetService.getPeriod();
+
+	var _function;
+	if (type=="L1") _function = "getL1ByPeriod";
+	else if (type=="L2") _function = "getL2ByPeriod";
+
+	targetService[_function](context,_period,function(err,targets){
+		if(err){
+			logger.error("error: "+err.message);
+			res.send("error: "+err.message);
+		}
+		else{
+			res.send(targets);
+			return;
+		}
+	})
+}
+
+
+function findTargets(req,res,next){
+	var targetService = require('../services/TargetService');
+	var context = config.context;
+	if (req.query.context) context=req.query.context;
+	var _period;
+	if (req.params.period) _period = req.params.period;
+	else _period = targetService.getPeriod();
+
+	targetService.getAllByPeriod(context,_period,function(err,targets){
+		if(err){
+			logger.error("error: "+err.message);
+			res.send("error: "+err.message);
+		}
+		else{
+			res.send(targets);
+			return;
+		}
+	})
+}
+
 /**
 */
 function getTargetsTree(req,res,next){
@@ -640,36 +686,6 @@ function getTargetsTree(req,res,next){
 			return;
 		}
 	})
-		/*
-		db.collection("targets").find().sort({id : 1} , function(err , success){
-        //console.log("[DEBUG] findAllByName() for: "+_name+", Response success: "+JSON.stringify(success));
-        //console.log('Response error '+err);
-        if(success){
-
-						for (var s in success){
-							console.log("name: "+success[s].name);
-							if (success[s].name ===undefined) success[s].name=success[s].id;
-							console.log("** name: "+success[s].name);
-						}
-
-						var us = require('underscore');
-						us.nst = require('underscore.nest');
-						//var tree = _.nest(success);
-
-						var nestLevels = ["context","theme","group"];
-
-						var tree = us.nst.nest(success,nestLevels);
-
-						//logger.debug("******************* success: "+tree);
-
-            res.send(tree.children);
-            return ;//next();
-        }else{
-            return next(err);
-        }
-    });
-		*/
-
 }
 
 /**
@@ -857,11 +873,13 @@ function saveBoard(req, res , next){
 					logger.debug("saved OK: _id: "+success._id);
 
 					// and create a thumbnail
+					/*
 					_generateBoardThumbnail(success._id,req.getBaseUrl(),function(err,result){
 							logger.debug("result: "+result);
 							res.send({_id:success._id});
 					})
-
+					*/
+						res.send({_id:success._id});
 
 				})
 			})
@@ -880,6 +898,7 @@ function saveBoard(req, res , next){
 */
 function _generateBoardThumbnail(boardId,baseUrl,callback){
 	var phantom = require('phantom');
+
 	var _url=baseUrl+"/kanban/"+boardId;
 	phantom.create("--ignore-ssl-errors=yes", "--ssl-protocol=any",function (ph) {
 	  ph.createPage(function (page) {
