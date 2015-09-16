@@ -1,0 +1,64 @@
+include ../kanban_menu
+
+block content
+	div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;background-color:white;;width:1600px;text-align: center;margin: 10px auto;")
+		.panel-heading
+			h3.panel-title(style="font-size:24px;font-weight:bold") Planning Epics per Initiatives Overview
+			|#{initiatives.length} initiatives
+		.panel-body
+		table.table.table-striped.table-hover.table-condensed.table-responsive.tablsesorter(id="planningepics" style="max-width:1600px")
+			thead
+				tr
+					th id
+					th name
+					th root?
+					th status
+					th category
+					th SWAG
+					th(style="text-align:right") #
+					th children
+					th sum SWAG
+					
+			tbody
+				each i in initiatives
+					tr
+					td(style="vertical-align:top;font-size:11px;;text-align:left;font-weight:normal;vertical-align:top;width:50px") 
+						a(href="http://v1.bwinparty.corp/V1-Production/Epic.mvc/Summary?oidToken=Epic%3A"+i.ID.split(":")[1] target="_new")
+							|#{i.Number}
+					td(style="vertical-align:top;font-size:11px;;text-align:left;font-weight:normal;vertical-align:top;width:60px") #{i.Name} 
+					if i.EpicRootNumber
+						td(style="vertical-align:top;font-size:11px;;text-align:left;font-weight:normal;vertical-align:top;width:60px") #{i.EpicRootNumber} 
+					else
+						td(style="vertical-align:top;font-size:11px;;text-align:left;font-weight:normal;vertical-align:top;width:60px") -
+					td(style="vertical-align:top;font-size:11px;;text-align:left;font-weight:normal;vertical-align:top;width:60px") #{i.Status} 
+					
+					td(style="vertical-align:top;font-size:11px;;text-align:left;font-weight:normal;vertical-align:top;width:60px") #{i.CategoryName} 
+					td(style="vertical-align:top;font-size:11px;;text-align:left;font-weight:normal;vertical-align:top;width:60px") #{i.Swag} 
+					td(style="vertical-align:top;text-align:right;font-size:11px;vertical-align:top;width:50px")
+						if i.Children
+							|#{i.PlanningEpics.length}
+						else
+							|0
+					td(style="vertical-align:top;text-align:left;font-size:10px;vertical-align:top;width:800px")
+						if i.PlanningEpics
+							table.table-responsive.table-striped(style="width:800px")
+								- var _sum = 0; 
+								each p in i.PlanningEpics
+									- _sum+=p.Swag
+									tr
+										td(style="width:20px;vertical-align:top")
+											|+ 
+										td(style="vertical-align:top;text-align:left;font-size:10px;vertical-align:top;width:60px") 
+											a(href="http://v1.bwinparty.corp/V1-Production/Epic.mvc/Summary?oidToken=Epic%3A"+p.ID.split(":")[1] target="_new")
+												|#{p.Number} 
+										td(style="vertical-align:top;text-align:left;font-size:10px;vertical-align:top;width:200px") #{p.Name}
+										td(style="vertical-align:top;text-align:center;font-size:10px;vertical-align:top;width:60px") #{p.CategoryName}
+										td(style="vertical-align:top;text-align:center;font-size:10px;vertical-align:top;width:30px") #{p.Swag}
+										td(style="vertical-align:top;text-align:left;font-size:10px;vertical-align:top;width:70px") #{moment(p.PlannedStart).format('YYYY-MM-DD')}
+										td(style="vertical-align:top;text-align:left;font-size:10px;vertical-align:top;width:70px") #{moment(p.PlannedEnd).format('YYYY-MM-DD')}
+										td(style="vertical-align:top;text-align:left;font-size:10px;vertical-align:top;width:200px") #{p.BusinessBacklog}
+										
+						else
+					td(style="vertical-align:top;text-align:left;font-size:10px;vertical-align:top;width:100px")
+						|#{_sum}
+	script $("#planningepics").tablesorter();

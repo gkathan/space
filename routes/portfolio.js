@@ -17,6 +17,16 @@ var logger = winston.loggers.get('space_log');
 
 module.exports = router;
 
+router.get('/planningepics', function(req, res) {
+	var v1Service = require('../services/V1Service');
+	var _filter = {};
+	v1Service.findInitiativesWithPlanningEpics(_filter,function(err,epics){
+		res.locals.initiatives = epics;
+		res.locals.moment=moment;
+		res.render('portfolio/planningepics'), { title: 's p a c e - planning epics overview ' }
+	});
+});
+
 router.get('/', function(req, res) {
 	// join pgates with epics
 	var pgates =  db.collection('portfoliogate');
@@ -164,7 +174,7 @@ router.get('/', function(req, res) {
 			res.locals.states=_states;
 			res.locals.colors=_color;
 			res.locals.v1LastUpdate=_V1lastUpdate;
-			res.render('portfoliogate'), { title: 's p a c e - portfoliogate' }
+			res.render('portfolio/portfoliogate'), { title: 's p a c e - portfoliogate' }
 			});
 		});
 	});

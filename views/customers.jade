@@ -5,9 +5,9 @@ block content
 
 	div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;background-color:white;;width:1400px;text-align: center;margin: 10px auto;")
 		.panel-heading
-			h3.panel-title CUSTOMERS
+			h3.panel-title(style="font-size:24px;font-weight:bold") CUSTOMERS
 		.panel-body
-		table.table.table-striped.table-hover.table-condensed
+		table.table.table-striped.table-hover.table-condensed(id="customers")
 			thead
 				tr
 					th(style="width:150px") 
@@ -35,4 +35,4 @@ block content
 					td(style="vertical-align:top;text-align:left;font-size:11px;vertical-align:middle") #{c.contact} 
 					td(style="vertical-align:top;text-align:left;font-size:11px;vertical-align:middle") #{c.keyaccounter} 
 
-
+	script $("#customers").tablesorter();

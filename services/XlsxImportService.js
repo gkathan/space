@@ -53,7 +53,7 @@ exports.convertXlsx2Json = function convertXlsx2Json (filename,req,done) {
 			else if (_collection=="organization"){
 				_handlers = [_handleOrganization];
 			}
-			else if (_collection=="target2employee"){
+			else if (_collection.indexOf("target2employee")>-1){
 				_handlers = [_handleTarget2Employee];
 			}
 			else if (_.indexOf(_plainElements,_collection) >-1){

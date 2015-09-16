@@ -1,15 +1,13 @@
 var _excelExportURL = '/api/space/export/xlsx/';
 
 var admingrid;
-
 var columnFilters={};
-
 var _type=getUrlVars()["type"];
+var _period=getUrlVars()["period"];
 var _filter=getUrlVars()["setfilter"];
 // subquerystring ist in format name1^value1,name2^value2...
 // e.g. http://localhost:3000/admin?type=incidents&setfilter=priority^P01,state^Closed
 var _subfilter=[];
-
 if (_filter){
 	var _split=_filter.split(",");
 	for (var i in _split){
@@ -29,10 +27,9 @@ $("#admintype").text(_type);
 initShortcuts();
 refresh(_type);
 
-
 function refresh(collection){
-
 	var _url = dataSourceFor(collection);
+	if (_period ) _url+="/"+_period;
 	console.log("---------------------- dataSourceFor(collection): "+_url);
 	$.ajax({
 		type: "GET",
@@ -94,7 +91,6 @@ function renderAdminGrid(data,conf){
   admingrid = new Slick.Grid("#adminGrid", dataView, columns, options);
 
 	var pager = new Slick.Controls.Pager(dataView, admingrid, $("#pager"));
-
 
 	admingrid.onAddNewRow.subscribe(function (e, args) {
       console.log("[DEBUG] onAddNewRow() fired");
@@ -170,12 +166,9 @@ function renderAdminGrid(data,conf){
 	dataView.setItems(data,"_id");
   dataView.endUpdate();
 	dataView.syncGridSelection(admingrid, true);
-
-
 	//dataView.refresh();
 
 	$(".slick-pager-settings-expanded").toggle();
-
 	$('#countitems').html(admingrid.getDataLength());
 
 	admingrid.init();
@@ -236,13 +229,11 @@ function filter(item) {
 	return true;
 }
 
-
 // Define some sorting functions
 function NumericSorter(a, b) {
   var x = a[sortcol], y = b[sortcol];
   return sortdir * (x == y ? 0 : (x > y ? 1 : -1));
 }
-
 
 var syncList;
 var itemInsertList;
@@ -268,7 +259,6 @@ $("#bsave").click(function(){
 		//kanban_utils.js
 		ajaxCall("POST","save",saveList,_type,refresh);
 	});
-
 
   function requiredFieldValidator(value) {
     if (value == null || value == undefined || !value.length) {
