@@ -17,7 +17,9 @@ var targetService = require('../services/TargetService');
 var moment = require('moment');
 var config = require('config');
 
+
 var _targets;
+
 
 //https://github.com/iros/underscore.nest/issues/2
 _ = require('underscore');
@@ -32,13 +34,14 @@ router.get('/overview', function(req, res, next) {
 
 router.get('/overview/:period', function(req, res, next) {
 	var _period = req.params.period;
-	if (_period != targetService.getPeriod()) ensureAuthenticated(req,res)
+	if (_period != targetService.getPeriod()) ensureAuthenticated(req,res);
 	_handleTargetOverview(req,res,next,"./targets/overview",_period);
 });
 
 /* GET targets . */
-router.get('/rollup', function(req, res, next) {
-	_handleTargetRollup(req,res,next,"./targets/rollup","bpty");
+router.get('/rollup/:period', function(req, res, next) {
+	var _period = req.params.period;
+	_handleTargetRollup(req,res,next,"./targets/rollup","bpty",_period);
 });
 
 /* GET targets . */
@@ -47,15 +50,18 @@ router.get('/sunburst', function(req, res, next) {
 });
 
 /* GET targets by targetID . */
-router.get('/employee2target', function(req, res, next) {
+router.get('/employee2target/:period', function(req, res, next) {
+	var period =req.params.period;
 	var pickL2 = req.query.pickL2;
 	var showTargetTree = req.query.showTargetTree;
 	var showEmployeeTree = req.query.showEmployeeTree;
 
-	var targetService = require('../services/TargetService');
+	if (period != targetService.getPeriod()) ensureAuthenticated(req,res);
+
+
 	var orgService = require('../services/OrganizationService');
 
-	targetService.getL2ById(config.context,pickL2,function(err,L2Target){
+	targetService.getL2ByIdByPeriod(config.context,pickL2,period,function(err,L2Target){
 		var _first = L2Target.sponsor.split(" ")[0];
 		var _last = _.rest(L2Target.sponsor.split(" ")).join(" ");
 		logger.debug("L2Target.sponsor: "+L2Target.sponsor);
@@ -64,6 +70,7 @@ router.get('/employee2target', function(req, res, next) {
 			logger.debug("--------- showEmployeeTree: "+showEmployeeTree);
 			logger.debug("--------- showTargetTree: "+showTargetTree);
 			res.locals.sponsor = sponsor;
+			res.locals.period=period;
 			res.locals.pickL2=pickL2;
 			res.locals.target = L2Target;
 			res.locals.showTargetTree=showTargetTree;
@@ -74,26 +81,33 @@ router.get('/employee2target', function(req, res, next) {
 });
 
 /* GET ALL full broccoli targets by targetID . */
-router.get('/employee2targetall', function(req, res, next) {
+router.get('/employee2targetall/:period', function(req, res, next) {
 	var pickL2 = req.query.pickL2;
+	var period =req.params.period;
 	var showTargetTree = req.query.showTargetTree;
 	var showEmployeeTree = req.query.showEmployeeTree;
+
+	if (period != targetService.getPeriod()) ensureAuthenticated(req,res);
+
 	logger.debug("--------- showEmployeeTree: "+showEmployeeTree);
 	logger.debug("--------- showTargetTree: "+showTargetTree);
 	res.locals.pickL2=pickL2;
 	res.locals.showTargetTree=showTargetTree;
 	res.locals.showEmployeeTree=showEmployeeTree;
+	res.locals.period=period;
 	res.render('targets/employee2targetall')
 });
 
 
-router.get('/target2outcomes/:L2TargetId', function(req, res, next) {
+router.get('/target2outcomes/:period/:L2TargetId', function(req, res, next) {
 	var L2TargetId = req.params.L2TargetId;
+	var period =req.params.period;
 	var orgService = require('../services/OrganizationService');
 
+	if (period != targetService.getPeriod()) ensureAuthenticated(req,res);
+
 	logger.debug("--------- L2TargetId: "+L2TargetId);
-	var targetService = require('../services/TargetService');
-	targetService.getL2ById(config.context,L2TargetId,function(err,L2Target){
+	targetService.getL2ByIdByPeriod(config.context,L2TargetId,period,function(err,L2Target){
 
 		if (L2Target){
 			var _first = L2Target.sponsor.split(" ")[0];
@@ -104,7 +118,7 @@ router.get('/target2outcomes/:L2TargetId', function(req, res, next) {
 			orgService.findEmployeeByFirstLastName(_first, _last,function(err,sponsor){
 				logger.debug("***** sponsor: "+sponsor);
 				res.locals.target = L2Target;
-				orgService.getTarget2EmployeeMappingByL2Target(L2TargetId,function(err,employees){
+				orgService.getTarget2EmployeeMappingByL2TargetByPeriod(L2TargetId,period,function(err,employees){
 					// some statistics
 					var _empCount=0;
 					var _outCount=0;
@@ -121,6 +135,7 @@ router.get('/target2outcomes/:L2TargetId', function(req, res, next) {
 
 					res.locals.statistics = {"numberOfEmployees":_e.length,"numberOfOutcomes":_outCount,"numberOfLocations":_.uniq(_.pluck(_e,"unit")).length};
 					res.locals.sponsor = sponsor;
+					res.locals.period=period;
 					res.locals.employees = employees;
 					res.render('targets/target2outcomes');
 				})
@@ -134,15 +149,19 @@ router.get('/target2outcomes/:L2TargetId', function(req, res, next) {
 	})
 });
 
-router.get('/employeeoutcomes/:employeeId', function(req, res, next) {
+router.get('/employeeoutcomes/:period/:employeeId', function(req, res, next) {
 	var employeeId = req.params.employeeId;
+	var period =req.params.period;
 	var _employee;
+
+	if (period != targetService.getPeriod()) ensureAuthenticated(req,res);
+
 	var orgService = require('../services/OrganizationService');
 	orgService.findEmployeeById(employeeId,function(err,employee){
 		_employee= employee;
 		logger.debug("--------------------------------------------------");
 
-		orgService.findOutcomesForEmployee(employeeId,function(err,outcomes){
+		orgService.findOutcomesForEmployeeByPeriod(employeeId,period,function(err,outcomes){
 			if (outcomes){
 				// UKR employees currently not in PI ;-)
 				if (!_employee){
@@ -157,13 +176,14 @@ router.get('/employeeoutcomes/:employeeId', function(req, res, next) {
 				_employee.role = outcomes[0].role;
 
 				res.locals.employee=_employee;
-
+				res.locals.period=period;
 				res.render('targets/employeeoutcomes');
 			}
 			else{
 				logger.debug("--------------- NOPE NO OUTCOMES found !!!!!!!!!!!!!!!!!!");
 				res.locals.outcomes=[];
 				res.locals.employee=_employee;
+				res.locals.period=period;
 				res.render('targets/employeeoutcomes');
 			}
 		})
@@ -171,10 +191,6 @@ router.get('/employeeoutcomes/:employeeId', function(req, res, next) {
 });
 
 
-
-router.get('/overview/old', function(req, res, next) {
-	_handleTargetOverview(req,res,next,"targets/overview_old");
-});
 
 
 function _handleTargetOverview(req,res,next,view,period){
@@ -254,6 +270,7 @@ function _handleTargetOverview(req,res,next,view,period){
 			res.locals.start="undefined";
 			res.locals.end="undefined";
 			res.locals.period = "undefined";
+			res.locals.context=_context;
 			res.locals.availability = {};
 			res.render(view, { title: 's p a c e - targets overview' });
 		}
@@ -261,7 +278,7 @@ function _handleTargetOverview(req,res,next,view,period){
 }
 
 
-function _handleTargetRollup(req,res,next,view,context){
+function _handleTargetRollup(req,res,next,view,context,period){
 	res.locals._=require('lodash');
 	var _context;
 	if (req.session.CONTEXT){
@@ -275,7 +292,7 @@ function _handleTargetRollup(req,res,next,view,context){
 	// eg for the corporate rollup
 	if (context) _context=context;
 	logger.debug("-------------------------");
-	targetService.getAll(_context,function(err,data){
+	targetService.getAllByPeriod(_context,period,function(err,data){
 		var _L2targets = [];
 		var _L1targets = [];
 		if (data.length>0){
@@ -313,6 +330,7 @@ function _handleTargetRollup(req,res,next,view,context){
 			res.locals.period = "undefined";
 			res.locals.availability = {};
 			res.render(view, { title: 's p a c e - targets overview' });
+			res.locals.context=_context;
 		}
 	});
 }

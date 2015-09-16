@@ -34,10 +34,10 @@ var PATH = {
 						REST_TARGETS_L1 : BASE+'/space/rest/targets/L1/:period',
 						REST_TARGETSTREE : BASE+'/space/rest/targetstree',
 
-						REST_TARGET2EMPLOYEE : BASE+'/space/rest/target2employee',
-						REST_TARGET2EMPLOYEECLUSTERED : BASE+'/space/rest/target2employeeclustered',
-						REST_EMPLOYEEBYTARGETS : BASE+'/space/rest/employeebytargets',
-						REST_OUTCOMESFOREMPLOYEE : BASE+'/space/rest/outcomesforemployee/:employeeId',
+						REST_TARGET2EMPLOYEE : BASE+'/space/rest/target2employee/:period',
+						REST_TARGET2EMPLOYEECLUSTERED : BASE+'/space/rest/target2employeeclustered/:period',
+						REST_EMPLOYEEBYTARGETS : BASE+'/space/rest/employeebytargets/:period',
+						REST_OUTCOMESFOREMPLOYEE : BASE+'/space/rest/outcomesforemployee/:period/:employeeId',
 
 						REST_BOARDS : BASE+'/space/rest/boards',
 						REST_CREATEBOARD : BASE+'/space/rest/board',
@@ -751,17 +751,18 @@ function findEmployeeById(req, res , next){
 }
 
 function getTarget2EmployeeClustered(req, res , next){
-  var orgService = require('../services/OrganizationService');
-	orgService.findTarget2EmployeeMappingClustered(function(err,result){
-
+  var period = req.params.period;
+	var orgService = require('../services/OrganizationService');
+	orgService.findTarget2EmployeeMappingClusteredByPeriod(period,function(err,result){
 		res.send(result);
 	})
 }
 
 function getOutcomesForEmployee(req,res,next){
 	var orgService = require('../services/OrganizationService');
+	var period = req.params.period;
 	var _employeeId = req.params.employeeId;
-	orgService.findOutcomesForEmployee(_employeeId,function(err,result){
+	orgService.findOutcomesForEmployeeByPeriod(_employeeId,period,function(err,result){
 
 		res.send(result);
 	})
@@ -770,15 +771,16 @@ function getOutcomesForEmployee(req,res,next){
 
 function getEmployeesByTarget(req, res , next){
   var orgService = require('../services/OrganizationService');
+	var period = req.params.period;
 
 	// to just pick a specific L2 target pass it via query
 	var pickL2 = req.query.pickL2;
 	var showTargetTree = req.query.showTargetTree;
 	var showEmployeeTree = req.query.showEmployeeTree;
 
-	orgService.findTarget2EmployeeMapping(function(err,mapping){
+	orgService.findTarget2EmployeeMappingByPeriod(period,function(err,mapping){
 		//logger.debug("...all good: "+JSON.stringify(mapping));
-		orgService.getEmployeesByTargets(mapping,pickL2,showTargetTree,showEmployeeTree, function(err,success){
+		orgService.getEmployeesByTargetsByPeriod(mapping,pickL2,showTargetTree,showEmployeeTree,period,function(err,success){
 			if(success){
 				//logger.debug('[success]: '+success);
 				res.send(success);
@@ -794,10 +796,6 @@ function getEmployeesByTarget(req, res , next){
 	})
 
 }
-
-
-
-
 
 /**
  * gets all change trail documents

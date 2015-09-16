@@ -17,9 +17,9 @@ mixin renderEmployee(employee,nameSize,imageSize)
 block content
 	div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;background-color:white;;width:1000px;text-align: center;margin: 10px auto;")
 		.panel-heading
-			h3.panel-title(style="font-size:24px;font-weight:bold") L2 TARGET "BROCCOLI"
+			h3.panel-title(style="font-size:24px;font-weight:bold") L2 TARGET "BROCCOLI" - #{period}
 			br
-			a(href="/targets/target2outcomes/#{target.id}") &rarr; employee outcome list &nbsp;
+			a(href="/targets/target2outcomes/#{period}/#{target.id}") &rarr; employee outcome list &nbsp;
 			i.glyphicon.glyphicon-list-alt &nbsp;
 		.panel-body
 		div(style="text-align:center")
@@ -48,5 +48,6 @@ script(type="text/javascript").
 	var _pickL2 = '#{pickL2}';
 	var _showEmployeeTree = '#{showEmployeeTree}';
 	var _showTargetTree = '#{showTargetTree}';
+	var _period = '#{period}';
 
 script(src="/javascripts/organization/target2employee_force.js")

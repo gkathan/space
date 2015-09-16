@@ -4,7 +4,7 @@ block content
 
 	div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;background-color:white;;max-width:1400px;text-align: center;margin: 10px auto;")
 		.panel-heading
-			h3.panel-title(style="font-size:24px;font-weight:bold") EMPLOYEE OUTCOMES
+			h3.panel-title(style="font-size:24px;font-weight:bold") EMPLOYEE OUTCOMES - #{period}
 		.panel-body
 		
 		div(style="text-align:center")
@@ -28,7 +28,7 @@ block content
 				tr
 					td(style="text-align:right") Manager: 
 					td(style="text-align:left;font-weight:bold;padding-left:10px") 
-						a(href='/targets/employeeoutcomes/#{employee["Supervisor Employee Number"]}') #{employee["Supervisor Full Name"]}
+						a(href='/targets/employeeoutcomes/#{period}/#{employee["Supervisor Employee Number"]}') #{employee["Supervisor Full Name"]}
 				if employee.unit
 					tr
 						td(style="text-align:right") Unit: 
@@ -61,7 +61,7 @@ block content
 					tr
 						td(style="text-align:left;vertical-align:middle") 
 							each t in o.L2Targets
-								a(href='/targets/target2outcomes/#{t}') #{t}
+								a(href='/targets/target2outcomes/#{period}/#{t}') #{t}
 								|&nbsp;
 						td(style="vertical-align:top;text-align:left;font-size:11px;vertical-align:middle") #{o.title} 
 						td(style="vertical-align:top;text-align:left;font-size:11px;vertical-align:middle") #{o.description} 

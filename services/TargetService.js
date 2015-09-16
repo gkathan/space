@@ -21,10 +21,12 @@ exports.getL1ByPeriod = _getL1ByPeriod;
 exports.getL2ByPeriod = _getL2ByPeriod;
 exports.getL2Groups = _getL2Groups;
 exports.getL2ById = _getL2ById;
+exports.getL2ByIdByPeriod = _getL2ByIdByPeriod;
 
 exports.getAll = _getAll;
 exports.getAllByPeriod = _getAllByPeriod;
 exports.getL2Tree = _getL2Tree;
+exports.getL2TreeByPeriod = _getL2TreeByPeriod;
 exports.getPeriod = _getPeriod;
 
 /**
@@ -48,7 +50,7 @@ function _getL2(context,callback) {
 	_getL2ByPeriod(context,_getPeriod(),callback);
 }
 
-function _getL2ByPeriod(context,callback,period) {
+function _getL2ByPeriod(context,period,callback) {
 	var targets =  db.collection('targets'+period);
 	targets.find({context:context,"type":"L2"}).sort({id:1}, function (err, docs){
 		callback(err,docs);

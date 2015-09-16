@@ -391,7 +391,7 @@ div.container-fluid(style="max-width:1600px")
 
 
 script.
-
+	var _period ="#{period}";
 	$(document).ready(function(){
 		// set up flip form link
 		$('.fliptarget .turnback').click(function(e){
@@ -428,7 +428,7 @@ script.
 		var __id = _self.data('_id');
 
 		var _id = _self.data('id');
-		var _name = _self.data('name');
+				var _name = _self.data('name');
 		var _rag = _self.data('rag');
 		//var _ragComment = _self.data('ragComment');
 		var _ragcomment = _self.data('ragcomment');
@@ -494,10 +494,10 @@ script.
 		$(".modal-body #targetTarget").text(_directMetric+" "+_directMetricScale);
 		
 		$(".modal-body #targetContributorTree").html("&rarr; show outcome2employee 'broccoli'");
-		$(".modal-body #targetContributorTree").attr("href","/targets/employee2target?pickL2="+_id+"&showEmployeeTree=costCenter");
+		$(".modal-body #targetContributorTree").attr("href","/targets/employee2target/"+_period+"?pickL2="+_id+"&showEmployeeTree=costCenter");
 		
 		$(".modal-body #targetContributorList").html("&rarr; show target2employee list");
-		$(".modal-body #targetContributorList").attr("href","/targets/target2outcomes/"+_id);
+		$(".modal-body #targetContributorList").attr("href","/targets/target2outcomes/"+_period+"/"+_id);
 		
 		$(".modal-body #targetTime").text(_time);
 		$(".modal-body #targetRAGComment").text(_ragcomment);

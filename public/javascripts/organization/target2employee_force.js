@@ -18,9 +18,9 @@
 
 	var nodes,links;
 
-	var _dataUri = "/api/space/rest/employeebytargets?pickL2="+_pickL2+"&showEmployeeTree="+_showEmployeeTree+"&showTargetTree="+_showTargetTree;
+	var _dataUri = "/api/space/rest/employeebytargets/"+_period+"?pickL2="+_pickL2+"&showEmployeeTree="+_showEmployeeTree+"&showTargetTree="+_showTargetTree;
 	var _orgUri = "/api/space/rest/organization";
-	var _targetUri = "/api/space/rest/targets";
+	var _targetUri = "/api/space/rest/targets/"+_period;
 
 	console.log("...uri: "+_dataUri);
 

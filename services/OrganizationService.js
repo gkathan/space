@@ -16,18 +16,20 @@ var db = mongojs(connection_string, [DB]);
 var winston=require('winston');
 var logger = winston.loggers.get('space_log');
 
+var targetService = require('./TargetService');
+
 exports.findEmployeeByFirstLastName = _findEmployeeByFirstLastName;
 exports.findEmployeeById = _findEmployeeById;
 exports.findEmployeesByFilter = _findEmployeesByFilter;
 exports.findEmployeesByFunction = _findEmployeesByFunction;
 exports.findEmployees = _findEmployees;
-exports.getEmployeesByTargets = _getEmployeesByTargets;
+exports.getEmployeesByTargetsByPeriod = _getEmployeesByTargetsByPeriod;
 exports.syncEmployeeImages = _syncEmployeeImages;
 exports.getOrganizationHistoryDates = _getOrganizationHistoryDates;
-exports.findTarget2EmployeeMapping = _findTarget2EmployeeMapping;
-exports.findTarget2EmployeeMappingClustered = _findTarget2EmployeeMappingClustered;
-exports.getTarget2EmployeeMappingByL2Target = _getTarget2EmployeeMappingByL2Target;
-exports.findOutcomesForEmployee = _findOutcomesForEmployee;
+exports.findTarget2EmployeeMappingByPeriod = _findTarget2EmployeeMappingByPeriod;
+exports.findTarget2EmployeeMappingClusteredByPeriod = _findTarget2EmployeeMappingClusteredByPeriod;
+exports.getTarget2EmployeeMappingByL2TargetByPeriod = _getTarget2EmployeeMappingByL2TargetByPeriod;
+exports.findOutcomesForEmployeeByPeriod = _findOutcomesForEmployeeByPeriod;
 exports.getOrganizationTrend = _getOrganizationTrend;
 
 /**
@@ -90,8 +92,12 @@ function _findEmployees(callback) {
 
 
 function _findTarget2EmployeeMapping(callback) {
-	logger.debug("findTarget2EmployeeMapping");
-	var mapping =  db.collection('target2employee');
+	_findTarget2EmployeeMappingByPeriod(targetService.getPeriod(),callback);
+}
+
+function _findTarget2EmployeeMappingByPeriod(period,callback) {
+	logger.debug("findTarget2EmployeeMappingByPeriod: "+period);
+	var mapping =  db.collection('target2employee'+period);
 		mapping.find({}).sort({$natural:1}, function (err, docs){
 			//if (docs) logger.debug("[ok] found some shit ... : "+docs);
 			callback(err,docs);
@@ -103,9 +109,13 @@ function _findTarget2EmployeeMapping(callback) {
 gets the targets per clustered employee
 */
 function _findTarget2EmployeeMappingClustered(callback) {
+	_findTarget2EmployeeMappingClusteredByPeriod(targetService.getPeriod(),callback);
+}
+
+function _findTarget2EmployeeMappingClusteredByPeriod(period,callback) {
 	logger.debug("findTarget2EmployeeMappingClustered");
 
-	_findTarget2EmployeeMapping(function(err,docs){
+	_findTarget2EmployeeMappingByPeriod(period,function(err,docs){
 			//if (docs) logger.debug("[ok] found some shit ... : "+docs);
 			docs = _.nst.nest(docs,["employeeId"])
 			callback(err,docs);
@@ -118,9 +128,13 @@ function _findTarget2EmployeeMappingClustered(callback) {
 gets the targets per clustered employee
 */
 function _getTarget2EmployeeMappingByL2Target(L2TargetId,callback) {
+	_getTarget2EmployeeMappingByL2TargetByPeriod(L2TargetId,targetService.getPeriod(),callback);
+}
+
+function _getTarget2EmployeeMappingByL2TargetByPeriod(L2TargetId,period,callback) {
 	logger.debug("_getTarget2EmployeeMappingByL2Target for L2TargetId: "+L2TargetId);
 
-	_findTarget2EmployeeMappingClustered(function(err,docs){
+	_findTarget2EmployeeMappingClusteredByPeriod(period,function(err,docs){
 		_findEmployees(function(err,allEmployees){
 				logger.debug("allEmployees.length: "+allEmployees.length);
 				var _employees=[];
@@ -151,12 +165,15 @@ function _getTarget2EmployeeMappingByL2Target(L2TargetId,callback) {
 	})
 }
 
-
 function _findOutcomesForEmployee(employeeId,callback) {
-	logger.debug("_findOutcomesForEmployee: "+employeeId);
+	_findOutcomesForEmployeeByPeriod(employeeId,targetService.getPeriod(),callback);
+}
+
+function _findOutcomesForEmployeeByPeriod(employeeId,period,callback) {
+	logger.debug("_findOutcomesForEmployee: "+employeeId+" period: "+period);
 
 	var _outcomes =[];
-	_findTarget2EmployeeMappingClustered(function(err,employees){
+	_findTarget2EmployeeMappingClusteredByPeriod(period,function(err,employees){
 			var _targets=_.findWhere(employees.children,{name:employeeId});
 			if (_targets && _targets.children){
 				logger.debug("_targets.children: "+_targets.children.length);
@@ -192,18 +209,21 @@ function _findOutcomesForEmployee(employeeId,callback) {
 param showEmployeeTree supported values are "costcenter,location,function,organization,vertical"
 param showZTargetTree supported values are "theme,group,cluster"
 */
-function _getEmployeesByTargets(target2employeeMapping,pickL2,showTargetTree,showEmployeeTree,callback) {
+function _getEmployeesByTargets(target2employeeMapping,pickL2,showTargetTree,showEmployeeTree,callback){
+	_getEmployeesByTargetsByPeriod(target2employeeMapping,pickL2,showTargetTree,showEmployeeTree,targetService.getPeriod(),callback);
+}
+function _getEmployeesByTargetsByPeriod(target2employeeMapping,pickL2,showTargetTree,showEmployeeTree,period,callback) {
 	logger.debug("getEmployeesByTargets for mapping");
 	var _showTargetTree;
 	var _showEmployeeTree;
 	if (showTargetTree) _showTargetTree=showTargetTree.split(",");
 	if (showEmployeeTree) _showEmployeeTree=showEmployeeTree.split(",");
 
-	var targetService = require('./TargetService');
+
 
 	var _context="bpty.studios";
 	_findEmployees(function(err,employees){
-		targetService.getL2(_context,function(err,targets){
+		targetService.getL2ByPeriod(_context,period,function(err,targets){
 			logger.debug("************ L2Targets: "+targets.length);
 			var _targets=[];
 			for (var i in target2employeeMapping){

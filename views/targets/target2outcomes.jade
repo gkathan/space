@@ -7,24 +7,22 @@ mixin renderEmployee(employee,nameSize,imageSize)
 				td(rowspan="2")
 					img.img-circle(src='/images/employees/squared/#{employee["Employee Number"]}_square.png' height="#{imageSize}px") 
 				td(style="padding-left:5px;font-size:#{nameSize}px")
-					a(href='/targets/employeeoutcomes/#{employee["Employee Number"]}') #{employee["First Name"]} #{employee["Last Name"]}
+					a(href='/targets/employeeoutcomes/#{period}/#{employee["Employee Number"]}') #{employee["First Name"]} #{employee["Last Name"]}
 			tr
 				td(style="padding-left:5px")
 					span(style="font-size:10px;font-weight:normal;") #{employee["Organization"]}
 	else if employee["name"]
 		span(style="font-size:10px;font-weight:normal;color:red;text-align:center") -- no employee data found in PI for  #{employee["name"]} --
 		span(style="font-size:10px;font-weight:normal;color:red;text-align:center") -- based on target2outcome import it should be: 
-		a(href='/targets/employeeoutcomes/#{employee.name}')	#{employee.children[0].employeeName} 
+		a(href='/targets/employeeoutcomes/#{period}/#{employee.name}')	#{employee.children[0].employeeName} 
 				
 
 block content
-
 	div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;background-color:white;;max-width:1400px;text-align: center;margin: 10px auto;")
 		.panel-heading
-			h3.panel-title(style="font-size:24px;font-weight:bold") L2 TARGET &rarr; EMPLOYEES &rarr; OUTCOMES 
+			h3.panel-title(style="font-size:24px;font-weight:bold") L2 TARGET &rarr; EMPLOYEES &rarr; OUTCOMES - #{period}
 			br
-		
-			a(href="/targets/employee2target?pickL2=#{target.id}&showEmployeeTree=#{showEmployeeTree}") &rarr; broccoli chart | clustered by #{showEmployeeTree}&nbsp;
+			a(href="/targets/employee2target/#{period}?pickL2=#{target.id}&showEmployeeTree=#{showEmployeeTree}") &rarr; broccoli chart | clustered by #{showEmployeeTree}&nbsp;
 				i.glyphicon.glyphicon-stats &nbsp;
 		.panel-body
 		
