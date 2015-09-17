@@ -60,7 +60,7 @@ function _findEpicsWithChildren(filter,callback) {
 function _findInitiativesWithPlanningEpics(filter,callback){
 	//var _prefilter = {$and:[{$or:[{CategoryName:"Initiative"},{CategoryName:"Planning"}]},{$or:[{Status:"Conception"},{Status:"Understanding"},{Status:"Implementation"}]},{"PortfolioApproval":"Yes"}]};
 	//var _prefilter = {$and:[{$or:[{CategoryName:"Initiative"},{CategoryName:"Planning"},{CategoryName:"Product Contribution"}]},{$or:[{Status:"Conception"},{Status:"Understanding"},{Status:"Implementation"}]}]};
-	var _prefilter = {$and:[{$or:[{CategoryName:"Initiative"},{CategoryName:"Planning"},{CategoryName:"Product Contribution"}]}]};
+	var _prefilter = {$and:[{$or:[{CategoryName:"Initiative"},{CategoryName:"Planning"},{CategoryName:"Product Contribution"}]},{IsClosed:false}]};
 	//var _prefilter={};
 	_findEpicsWithChildren(_prefilter,function(err,epics){
 

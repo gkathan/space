@@ -11,31 +11,31 @@ block content
 		table.table.table-striped.table-hover.table-condensed.table-responsive.tablsesorter(id="planningepics" style="max-width:1600px")
 			thead
 				tr
-					th id
-					th name
+					th(style="min-width:60px") id
+					th(style="min-width:150px") initiative
 					th status
-					th category
-					th SWAG
+					th(style="min-width:40px;text-align:right") value
+					th(style="min-width:40px;text-align:right") risk
+					th swag
+					th planning epics
 					th(style="text-align:right") n
-					th children
 					th sum SWAG
 					
 			tbody
 				each i in initiatives
 					tr
-						td(style="vertical-align:top;font-size:11px;;text-align:left;font-weight:normal;vertical-align:top;width:60px") 
-							a(href="http://v1.bwinparty.corp/V1-Production/Epic.mvc/Summary?oidToken=Epic%3A"+i.ID.split(":")[1] target="_new")
+						td(style="vertical-align:top;font-size:11px;;text-align:left;font-weight:normal;vertical-align:top") 
+							a(href="http://v1.bwinparty.corp/V1-Production/Epic.mvc/Summary?oidToken=Epic%3A"+i.ID.split(":")[1] target="_new" title="see epic in V1")
 								|#{i.Number}
-						td(style="vertical-align:top;font-size:11px;;text-align:left;font-weight:normal;vertical-align:top;width:60px") #{i.Name} 
+						td(style="vertical-align:top;font-size:11px;;text-align:left;font-weight:normal;vertical-align:top") 
+							b
+								a(href="http://v1.bwinparty.corp/V1-Production/Epic.mvc/Summary?oidToken=Epic%3A"+i.ID.split(":")[1] target="_new" title="#{i.ElevatorPitch}")
+									|#{i.Name} 
 						td(style="vertical-align:top;font-size:11px;;text-align:left;font-weight:normal;vertical-align:top;width:60px") #{i.Status} 
 						
-						td(style="vertical-align:top;font-size:11px;;text-align:left;font-weight:normal;vertical-align:top;width:60px") #{i.CategoryName} 
-						td(style="vertical-align:top;font-size:11px;;text-align:left;font-weight:normal;vertical-align:top;width:60px") #{i.Swag} 
-						td(style="vertical-align:top;text-align:right;font-size:11px;vertical-align:top;width:50px")
-							if i.Children
-								|#{i.PlanningEpics.length}
-							else
-								|0
+						td(style="vertical-align:top;font-size:11px;;text-align:right;font-weight:normal;vertical-align:top") #{i.Value}
+						td(style="vertical-align:top;font-size:11px;;text-align:right;font-weight:normal;vertical-align:top") #{i.Risk}
+						td(style="vertical-align:top;font-size:11px;;text-align:right;font-weight:normal;vertical-align:top;width:60px") #{i.Swag} 
 						td(style="vertical-align:top;text-align:left;font-size:10px;vertical-align:top;width:800px")
 							if i.PlanningEpics
 								table.table-responsive.table-striped(style="width:800px")
@@ -43,12 +43,14 @@ block content
 									each p in i.PlanningEpics
 										- _sum+=p.Swag
 										tr
-											td(style="width:20px;vertical-align:top")
+											td(style="width:10px;vertical-align:top")
 												|+ 
-											td(style="vertical-align:top;text-align:left;font-size:10px;vertical-align:top;width:60px") 
+											td(style="vertical-align:top;text-align:left;font-size:10px;vertical-align:top;width:40px") 
 												a(href="http://v1.bwinparty.corp/V1-Production/Epic.mvc/Summary?oidToken=Epic%3A"+p.ID.split(":")[1] target="_new")
 													|#{p.Number} 
-											td(style="vertical-align:top;text-align:left;font-size:10px;vertical-align:top;width:200px") #{p.Name}
+											td(style="vertical-align:top;text-align:left;font-size:10px;vertical-align:top;width:200px")
+												a(href="http://v1.bwinparty.corp/V1-Production/Epic.mvc/Summary?oidToken=Epic%3A"+p.ID.split(":")[1] target="_new") 
+													|#{p.Name}
 											td(style="vertical-align:top;text-align:center;font-size:10px;vertical-align:top;width:60px") #{p.CategoryName}
 											td(style="vertical-align:top;text-align:center;font-size:10px;vertical-align:top;width:30px") #{p.Swag}
 											td(style="vertical-align:top;text-align:left;font-size:10px;vertical-align:top;width:70px") #{moment(p.PlannedStart).format('YYYY-MM-DD')}
@@ -56,6 +58,11 @@ block content
 											td(style="vertical-align:top;text-align:left;font-size:10px;vertical-align:top;width:200px") #{p.BusinessBacklog}
 											
 							else
+						td(style="vertical-align:top;text-align:right;font-size:11px;vertical-align:top;width:50px")
+							if i.Children
+								|#{i.PlanningEpics.length}
+							else
+								|0
 						td(style="vertical-align:top;text-align:left;font-size:10px;vertical-align:top;width:100px")
 							|#{_sum}
 			script $("#planningepics").tablesorter();
