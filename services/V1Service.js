@@ -121,7 +121,8 @@ function _getPlanningEpics(epic){
 			var _child = epic.Children[c];
 			if (_child.CategoryName==="Planning" && !_child.Children){
 				logger.debug("--------------pushing to planning epics !" +_child.CategoryName);
-				_planningepics.push(_child);
+				if (_child.BusinessBacklog.indexOf("#cpb")>-1)
+					_planningepics.push(_child);
 			}
 			else if (_child.Children){
 				logger.debug("*********** OK child has children ;-)..."+_child.Children.length);
@@ -129,13 +130,14 @@ function _getPlanningEpics(epic){
 					var _ccchild = _child.Children[cc];
 					if (_ccchild.CategoryName==="Planning"){
 						logger.debug("----------____________________________----pushing to planning epics !"+_ccchild.CategoryName);
-						_planningepics.push(_ccchild);
+						if (_ccchild.BusinessBacklog.indexOf("#cpb")>-1)
+							_planningepics.push(_ccchild);
 					}
 				}
 			}
 		}
 	}
-	return _planningepics;
+	return _.sortBy(_planningepics,'BusinessBacklog');
 }
 
 
