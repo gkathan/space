@@ -21,6 +21,18 @@ router.get('/planningepics', function(req, res) {
 	var v1Service = require('../services/V1Service');
 	var _filter = {};
 	v1Service.findInitiativesWithPlanningEpics(_filter,function(err,epics){
+		var _swagSum=0;;
+		var _valueSum=0;;
+		var _riskSum=0;;
+		for (var e in epics){
+			_swagSum+=parseInt(epics[e].Swag);
+			_valueSum+=parseInt(epics[e].Value);
+			_riskSum+=parseInt(epics[e].Risk);
+		}
+		var _grouped = _.groupBy(epics,'Status');
+
+		res.locals.grouped = _grouped;
+		res.locals.statistics={swagSum:_swagSum,averageSwag:_swagSum/epics.length,valueSum:_valueSum,averageValue:_valueSum/epics.length,riskSum:_riskSum,averageRisk:_riskSum/epics.length}
 		res.locals.initiatives = epics;
 		res.locals.moment=moment;
 		res.render('portfolio/planningepics'), { title: 's p a c e - planning epics overview ' }

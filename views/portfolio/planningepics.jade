@@ -6,7 +6,15 @@ block content
 	div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;background-color:white;;width:1600px;text-align: center;margin: 10px auto;")
 		.panel-heading
 			h3.panel-title(style="font-size:24px;font-weight:bold") Planning Epics per Initiatives Overview
-			|#{initiatives.length} initiatives
+			div(style="text-align:left")
+				|#{initiatives.length} initiatives (Understanding: #{grouped.Understanding.length} Conception: #{grouped.Conception.length} Implementation: #{grouped.Implementation.length})
+				br
+				|total swag: #{statistics.swagSum} (average: #{statistics.averageSwag})
+				br
+				|total value: #{statistics.valueSum} (average: #{statistics.averageValue})
+				br
+				|total risk: #{statistics.riskSum} (average: #{statistics.averageRisk})
+			
 		.panel-body
 		table.table.table-striped.table-hover.table-condensed.table-responsive.tablsesorter(id="planningepics" style="max-width:1600px")
 			thead
