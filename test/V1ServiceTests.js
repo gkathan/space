@@ -126,23 +126,24 @@ describe('#findInitiativesWithPlanningEpics()', function(){
 describe('#getPlanningEpics()', function(){
 	it('find Planning Epics an epic ', function(done){
 		var v1Service = require('../services/V1Service');
-	this.timeout(30000);
-
+		this.timeout(30000);
 		v1Service.findInitiativesWithPlanningEpics({},function(err,epics){
 				console.log("--- all epics: "+epics.length);
-
-				//var _e =_.findWhere(epics,{"Number":"E-10652"});
 				var _e =_.findWhere(epics,{"Number":"E-10618"});
 
 				var _planningepics = v1Service.getPlanningEpics(_e);
-
-				//console.log("root: "+JSON.stringify(_root));
 
 				if (_e.Children) console.log("children: "+_e.Children.length);
 				console.log("Category: "+_e.CategoryName);
 
 				console.log("planning epics: "+_planningepics.length);
 
+				var _backlogs = v1Service.getBacklogsFromInitiativesWithPlanningEpics(epics);
+				console.log("number of distinct backlogs: "+_backlogs.length)
+				for (var b in _backlogs){
+					var _b = _backlogs[b];
+					console.log("** "+_b.Name+ " - "+_b.Initiatives.length+ " initiatives");
+				}
 				done();
 		})
 		//assert.equal("E2988", employee.EmployeeNumbexr);
@@ -171,8 +172,6 @@ describe('#getRoot()', function(){
 
 				var _planningepics = v1Service.getPlanningEpics(_root);
 				console.log("planning epics: "+_planningepics.length);
-
-
 				done();
 		})
 		//assert.equal("E2988", employee.EmployeeNumbexr);

@@ -6,14 +6,16 @@ block content
 	div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;background-color:white;;width:1600px;text-align: center;margin: 10px auto;")
 		.panel-heading
 			h3.panel-title(style="font-size:24px;font-weight:bold") Planning Epics per Initiatives Overview
+			br
+			a(href="/portfolio/planningbacklogs") view planning backlogs
 			div(style="text-align:left")
-				|#{initiatives.length} initiatives (Understanding: #{grouped.Understanding.length} Conception: #{grouped.Conception.length} Implementation: #{grouped.Implementation.length})
+				|total initiatives: <b>#{initiatives.length}</b>  (Understanding: #{grouped.Understanding.length} Conception: #{grouped.Conception.length} Implementation: #{grouped.Implementation.length})
 				br
-				|total swag: #{statistics.swagSum} (average: #{statistics.averageSwag})
+				|total swag: #{statistics.swagSum} (average: #{statistics.averageSwag.toFixed(2)})
 				br
-				|total value: #{statistics.valueSum} (average: #{statistics.averageValue})
+				|total value: #{statistics.valueSum} (average: #{statistics.averageValue.toFixed(2)})
 				br
-				|total risk: #{statistics.riskSum} (average: #{statistics.averageRisk})
+				|total risk: #{statistics.riskSum} (average: #{statistics.averageRisk.toFixed(2)})
 			
 		.panel-body
 		table.table.table-striped.table-hover.table-condensed.table-responsive.tablsesorter(id="planningepics" style="max-width:1600px")
@@ -27,7 +29,7 @@ block content
 					th swag
 					th planning epics
 					th(style="text-align:right") n
-					th sum SWAG
+					th total swag
 					
 			tbody
 				each i in initiatives
@@ -57,12 +59,12 @@ block content
 												a(href="http://v1.bwinparty.corp/V1-Production/Epic.mvc/Summary?oidToken=Epic%3A"+p.ID.split(":")[1] target="_new")
 													|#{p.Number} 
 											td(style="vertical-align:top;text-align:left;font-size:10px;vertical-align:top;width:200px")
-												a(href="http://v1.bwinparty.corp/V1-Production/Epic.mvc/Summary?oidToken=Epic%3A"+p.ID.split(":")[1] target="_new") 
+												a(href="http://v1.bwinparty.corp/V1-Production/Epic.mvc/Summary?oidToken=Epic%3A"+p.ID.split(":")[1] target="_new" title="#{p.ElevatorPitch}") 
 													|#{p.Name}
 											td(style="vertical-align:top;text-align:center;font-size:10px;vertical-align:top;width:60px") #{p.CategoryName}
-											td(style="vertical-align:top;text-align:center;font-size:10px;vertical-align:top;width:30px") #{p.Swag}
-											td(style="vertical-align:top;text-align:left;font-size:10px;vertical-align:top;width:70px") #{moment(p.PlannedStart).format('YYYY-MM-DD')}
-											td(style="vertical-align:top;text-align:left;font-size:10px;vertical-align:top;width:70px") #{moment(p.PlannedEnd).format('YYYY-MM-DD')}
+											td(style="vertical-align:top;text-align:right;font-size:10px;vertical-align:top;width:30px") #{p.Swag}
+											td(style="vertical-align:top;text-align:center;font-size:10px;vertical-align:top;width:70px") #{moment(p.PlannedStart).format('YYYY-MM-DD')}
+											td(style="vertical-align:top;text-align:center;font-size:10px;vertical-align:top;width:70px") #{moment(p.PlannedEnd).format('YYYY-MM-DD')}
 											td(style="vertical-align:top;text-align:left;font-size:10px;vertical-align:top;width:200px") #{p.BusinessBacklog}
 											
 							else
@@ -71,6 +73,6 @@ block content
 								|#{i.PlanningEpics.length}
 							else
 								|0
-						td(style="vertical-align:top;text-align:left;font-size:10px;vertical-align:top;width:100px")
+						td(style="vertical-align:top;text-right:left;font-size:10px;vertical-align:top;width:100px")
 							|#{_sum}
 			script $("#planningepics").tablesorter();

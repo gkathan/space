@@ -22,6 +22,8 @@ exports.findPortfolioApprovalEpics=_findPortfolioApprovalEpics;
 exports.getRoadmapInitiatives=_getRoadmapInitiatives;
 exports.getRoot=_getRoot;
 exports.getPlanningEpics=_getPlanningEpics;
+exports.getBacklogsFromInitiativesWithPlanningEpics=_getBacklogsFromInitiativesWithPlanningEpics;
+
 
 /**
  * find all Epics
@@ -66,12 +68,10 @@ function _findInitiativesWithPlanningEpics(filter,callback){
 
 		var _initiatives = [];
 
-
 		for (var e in epics){
 			var _e = epics[e];
 			if (_e.EpicRootNumber){
 				// needs to be recusrsive.....
-				logger.debug("okokok: epic.root= "+_e.EpicRootNumber+" Number = "+_e.Number)
 				var _root = _getRoot(epics,_e.Number)
 				if (_root && !_.findWhere(_initiatives,{Number:_root.Number})){
 					_initiatives.push(_root);
@@ -81,7 +81,6 @@ function _findInitiativesWithPlanningEpics(filter,callback){
 				_initiatives.push(_e);
 			}
 		}
-
 		var _cleaned = [];
 		// and now we flatten to "Planning Epics" as children only
 		for (var i in _initiatives){
@@ -90,13 +89,49 @@ function _findInitiativesWithPlanningEpics(filter,callback){
 				_cleaned.push(_initiatives[i]);
 			}
 		}
-
-
-
 		callback(err,_.where(_cleaned,{PortfolioApproval:"Yes"}));
-		//callback(err,_.where(epics,{CategoryName:"Initiative"}));
 	})
 }
+
+/** extracts the backlog field and groups around this
+*/
+function _getBacklogsFromInitiativesWithPlanningEpics(initiativesWithPlanningEpics){
+	var _backlogs = [];
+
+	// first lets build up the distinct backlog collection
+	for (var i in initiativesWithPlanningEpics){
+		var _i = initiativesWithPlanningEpics[i];
+		if (_i.PlanningEpics){
+			for (var p in _i.PlanningEpics){
+				var _p = _i.PlanningEpics[p];
+				if (!_.findWhere(_backlogs,{Name:_p.BusinessBacklog})){
+					_backlogs.push({Name:_p.BusinessBacklog,Initiatives:[]})
+				}
+			}
+		}
+	}
+
+	// now put the initiatives back in
+	for (var b in _backlogs){
+		var _b = _backlogs[b];
+		for (var i in initiativesWithPlanningEpics){
+			var _i = initiativesWithPlanningEpics[i];
+			if (_i.PlanningEpics){
+				for (var p in _i.PlanningEpics){
+					var _p = _i.PlanningEpics[p];
+					if (_p.BusinessBacklog==_b.Name){
+						if (!_.findWhere(_b.Initiatives,{Name:_i.Name})){
+							_b.Initiatives.push(_i);
+						}
+					}
+				}
+			}
+		}
+	}
+
+	return _backlogs;
+}
+
 
 function _getRoot(epics,number){
 	var _e = _.findWhere(epics,{Number:number});
@@ -105,7 +140,6 @@ function _getRoot(epics,number){
 		return _getRoot(epics,_e.EpicRootNumber)
 	}
 	else{
-		logger.debug("...no more root found - so this seems to be the real root :-)  "+number)
 		return _e;
 	}
 }
@@ -113,23 +147,18 @@ function _getRoot(epics,number){
 /** collects all epics type Planning in a parent child three
 */
 function _getPlanningEpics(epic){
-	logger.debug("--------------------------------- get planning epics for: "+epic.Name+" ---------------------------------------------------------");
 	var _planningepics=[];
 	if (epic.Children){
-		logger.debug("---------------"+epic.Children.length+" children!")
 		for (var c in epic.Children){
 			var _child = epic.Children[c];
 			if (_child.CategoryName==="Planning" && !_child.Children){
-				logger.debug("--------------pushing to planning epics !" +_child.CategoryName);
 				if (_child.BusinessBacklog.indexOf("#cpb")>-1)
 					_planningepics.push(_child);
 			}
 			else if (_child.Children){
-				logger.debug("*********** OK child has children ;-)..."+_child.Children.length);
 				for (var cc in _child.Children){
 					var _ccchild = _child.Children[cc];
 					if (_ccchild.CategoryName==="Planning"){
-						logger.debug("----------____________________________----pushing to planning epics !"+_ccchild.CategoryName);
 						if (_ccchild.BusinessBacklog.indexOf("#cpb")>-1)
 							_planningepics.push(_ccchild);
 					}
@@ -139,9 +168,6 @@ function _getPlanningEpics(epic){
 	}
 	return _.sortBy(_planningepics,'BusinessBacklog');
 }
-
-
-
 
 
 
