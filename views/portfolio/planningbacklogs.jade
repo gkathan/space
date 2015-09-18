@@ -1,0 +1,81 @@
+include ../kanban_menu
+
+//link(rel='stylesheet', href='/stylesheets/tables.css')
+
+block content
+	div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;background-color:white;;width:1400px;text-align: center;margin: 10px auto;")
+		.panel-heading
+			h3.panel-title(style="font-size:24px;font-weight:bold") Planning Backlogs Overview
+			br
+			a(href="/portfolio/planningepics") view planning epics
+			
+			div(style="text-align:left")
+				|total backlogs: <b>#{backlogs.length}</b> 
+				
+				
+		.panel-body
+		table.table.table-striped.table-hover.table-condensed.table-responsive.tablsesorter(id="planningbacklogs" style="max-width:1400px")
+			thead
+				tr
+					th(style="min-width:60px") 
+					th(style="min-width:100px") backlog
+					th(style="min-width:800px") initiatives 
+						span(style="font-size:11px;font-weight:normal") (name | status | value | risk | cumulated planned swag | earlist plan start | latest plan end | # planning epics )
+					th(style="text-align:right") #
+					th(style="text-align:right") #p
+					th(style="text-align:right") swag sum
+					th(style="text-align:right") #people
+					
+			tbody
+				each b in backlogs
+					tr
+						td(style="vertical-align:top;font-size:11px;;text-align:left;font-weight:normal;vertical-align:top") 
+							//a(href="http://v1.bwinparty.corp/V1-Production/Epic.mvc/Summary?oidToken=Epic%3A"+b.ID.split(":")[1] target="_new" title="see epic in V1")
+							|#{b.Number}
+						td(style="vertical-align:top;font-size:11px;;text-align:left;font-weight:normal;vertical-align:top") 
+							b
+								a(href="/portfolio/planningbacklogdetail/"+b.Name title="show details")
+									|#{b.Name} 
+						td(style="vertical-align:top;text-align:left;font-size:10px;vertical-align:top")
+							if b.Initiatives
+								table.table-responsive.table-striped(style="width:800px")
+									- var _sum = 0; 
+									- var _sumPlanningEpics = 0;
+									each i in b.Initiatives
+										- _sum+=i.SwagPlanned
+										- _sumPlanningEpics+=i.PlanningEpics.length;
+										tr
+											td(style="width:10px;vertical-align:top")
+												|+ 
+											td(style="vertical-align:top;text-align:left;font-size:10px;vertical-align:top;width:50px") 
+												a(href="http://v1.bwinparty.corp/V1-Production/Epic.mvc/Summary?oidToken=Epic%3A"+i.ID.split(":")[1] target="_new"  title="go to V1 Epic Details")
+													|#{i.Number} 
+											td(style="vertical-align:top;text-align:left;font-size:10px;vertical-align:top;width:300px")
+												a(href="http://v1.bwinparty.corp/V1-Production/Epic.mvc/Scorecard?oidToken=Epic%3A"+i.ID.split(":")[1] target="_new" title="go to V1 Scorecard") 
+													|#{i.Name}
+											td(style="vertical-align:top;text-align:left;font-size:10px;vertical-align:top;width:70px") #{i.Status}
+											td(style="vertical-align:top;text-align:right;font-size:10px;vertical-align:top;width:30px") #{i.Value}
+											td(style="vertical-align:top;text-align:right;font-size:10px;vertical-align:top;width:30px") #{i.Risk}
+											
+											td(style="vertical-align:top;text-align:right;font-size:10px;vertical-align:top;width:50px") #{i.SwagPlanned}
+											td(style="vertical-align:top;text-align:center;font-size:10px;vertical-align:top;width:80px") #{moment(i.EarliestStartPlanned).format('YYYY-MM-DD')}
+											td(style="vertical-align:top;text-align:center;font-size:10px;vertical-align:top;width:80px") #{moment(i.LatestEndPlanned).format('YYYY-MM-DD')}
+											td(style="vertical-align:top;text-align:right;font-size:10px;vertical-align:top;width:50px") #{i.PlanningEpics.length}
+											
+							else
+						td(style="vertical-align:top;text-align:right;font-size:10px;vertical-align:bottom;width:30px")
+							if b.Initiatives
+								|#{b.Initiatives.length}
+							else
+								|0
+						td(style="vertical-align:top;text-align:right;font-size:10px;vertical-align:bottom;width:30px")
+							|#{_sumPlanningEpics}
+						td(style="vertical-align:top;text-right:left;font-size:10px;vertical-align:bottom;width:30px")
+							b
+								|#{_sum}
+						td(style="vertical-align:top;text-right:left;font-size:10px;vertical-align:bottom;width:30px")
+							b
+								a(href="#"  title="#{JSON.stringify(b.Members)}")
+									|#{b.Members.length}
+
+			script $("#planningbacklogs").tablesorter();

@@ -176,8 +176,8 @@
 		},
 
 		"v1data" : {
-			"mode": "off",
-			"intervalMinutes" :3600,
+			"mode": "on",
+			"intervalMinutes" :30,
 			"url" : ["http://knbnprxy.ea.bwinparty.corp/rest/backlogs","http://knbnprxy.ea.bwinparty.corp/rest/teams","http://knbnprxy.ea.bwinparty.corp/rest/members","http://knbnprxy.ea.bwinparty.corp/rest/programs"]
 		},
 

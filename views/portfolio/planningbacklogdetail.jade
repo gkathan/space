@@ -1,0 +1,71 @@
+include ../kanban_menu
+
+//link(rel='stylesheet', href='/stylesheets/tables.css')
+
+block content
+	div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;background-color:white;;width:1600px;text-align: center;margin: 10px auto;")
+		.panel-heading
+			h3.panel-title(style="font-size:24px;font-weight:bold") Planning Backlogs Detail for: #{backlog.Name}
+			br
+			a(href="/portfolio/planningepics") view planning epics
+			br
+			a(href="/portfolio/planningbacklogs") view planning backlogs
+			
+		.panel-body
+			table.table.table-striped.table-hover.table-condensed.table-responsive.tablsesorter(id="planningbacklogdetail" style="max-width:1600px")
+				thead
+					tr
+						th(style="min-width:60px") id
+						th(style="min-width:300px") initiative
+						th(style="min-width:70px") status 
+						th(style="min-width:30px;text-align:right") value 
+						th(style="min-width:30px;text-align:right") risk 
+						th(style="min-width:50px;text-align:right") swag 
+						th(style="min-width:70px;text-align:center") start
+						th(style="min-width:70px;text-align:center") end 
+						th(style="min-width:700px;text-align:left") planning epics
+						th(style="text-align:right") #p
+
+				tbody
+					- var _sum = 0; 
+					- var _sumPlanningEpics = 0;
+					each i in backlog.Initiatives
+						- _sum+=i.SwagPlanned
+						- _sumPlanningEpics+=i.PlanningEpics.length;
+						tr
+							td(style="vertical-align:top;text-align:left;font-size:10px;vertical-align:top;width:50px") 
+								a(href="http://v1.bwinparty.corp/V1-Production/Epic.mvc/Summary?oidToken=Epic%3A"+i.ID.split(":")[1] target="_new"  title="see details in V1")
+									|#{i.Number} 
+							td(style="vertical-align:top;text-align:left;font-size:10px;vertical-align:top")
+								a(href="http://v1.bwinparty.corp/V1-Production/Epic.mvc/Summary?oidToken=Epic%3A"+i.ID.split(":")[1] target="_new" title="#{i.ElevatorPitch}") 
+									|#{i.Name}
+							td(style="vertical-align:top;text-align:left;font-size:10px;vertical-align:top") #{i.Status}
+							td(style="vertical-align:top;text-align:right;font-size:10px;vertical-align:top") #{i.Value}
+							td(style="vertical-align:top;text-align:right;font-size:10px;vertical-align:top") #{i.Risk}
+							
+							td(style="vertical-align:top;text-align:right;font-size:10px;vertical-align:top") #{i.SwagPlanned}
+							td(style="vertical-align:top;text-align:center;font-size:10px;vertical-align:top") #{moment(i.EarliestStartPlanned).format('YYYY-MM-DD')}
+							td(style="vertical-align:top;text-align:center;font-size:10px;vertical-align:top") #{moment(i.LatestEndPlanned).format('YYYY-MM-DD')}
+							td(style="vertical-align:top;text-align:left;font-size:10px;vertical-align:top")
+								if i.PlanningEpics
+									table.table-responsive.table-striped(style="width:700px")
+										- var _sum = 0; 
+										each p in i.PlanningEpics
+											- _sum+=p.Swag
+											tr
+												td(style="width:10px;vertical-align:top")
+													|+ 
+												td(style="vertical-align:top;text-align:left;font-size:10px;vertical-align:top;width:40px") 
+													a(href="http://v1.bwinparty.corp/V1-Production/Epic.mvc/Summary?oidToken=Epic%3A"+p.ID.split(":")[1] target="_new" title="go to V1 Epic Details")
+														|#{p.Number} 
+												td(style="vertical-align:top;text-align:left;font-size:10px;vertical-align:top;width:250px")
+													a(href="http://v1.bwinparty.corp/V1-Production/Epic.mvc/Scorecard?oidToken=Epic%3A"+p.ID.split(":")[1] target="_new" title="go to V1 Scorecard") 
+														|#{p.Name}
+												td(style="vertical-align:top;text-align:right;font-size:10px;vertical-align:top;width:40px") #{p.Swag}
+												td(style="vertical-align:top;text-align:center;font-size:10px;vertical-align:top;width:50px") #{moment(p.PlannedStart).format('YYYY-MM-DD')}
+												td(style="vertical-align:top;text-align:center;font-size:10px;vertical-align:top;width:50px") #{moment(p.PlannedEnd).format('YYYY-MM-DD')}
+												td(style="vertical-align:top;text-align:left;font-size:10px;vertical-align:top;width:150px") 
+													a(href="/portfolio/planningbacklogdetail/"+p.BusinessBacklog title="show details")
+														|#{p.BusinessBacklog}
+							td(style="vertical-align:top;text-align:right;font-size:10px;vertical-align:top;width:50px") #{i.PlanningEpics.length}
+				script $("#planningbacklogdetail").tablesorter();
