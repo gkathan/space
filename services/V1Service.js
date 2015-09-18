@@ -144,11 +144,20 @@ function _findInitiativesWithPlanningEpics(filter,callback){
 	})
 }
 
+
+
 /** extracts the backlog field and groups around this
 */
 function _getBacklogsFromInitiativesWithPlanningEpics(initiativesWithPlanningEpics){
 	var _backlogs = [];
+	_backlogs = _extractBacklogs(initiativesWithPlanningEpics);
+	_backlogs = _repopulateBacklogs(_backlogs,initiativesWithPlanningEpics);
+	_backlogs = _filterPlanningEpics(_backlogs);
+	return _backlogs;
+}
 
+function _extractBacklogs(initiativesWithPlanningEpics){
+	var _backlogs = [];
 	// first lets build up the distinct backlog collection
 	for (var i in initiativesWithPlanningEpics){
 		var _i = initiativesWithPlanningEpics[i];
@@ -161,13 +170,13 @@ function _getBacklogsFromInitiativesWithPlanningEpics(initiativesWithPlanningEpi
 			}
 		}
 	}
+	return _backlogs;
+}
 
-
-
-
+function _repopulateBacklogs(backlogs,initiativesWithPlanningEpics){
 	// now put the initiatives back in
-	for (var b in _backlogs){
-		var _b = _backlogs[b];
+	for (var b in backlogs){
+		var _b = backlogs[b];
 		for (var i in initiativesWithPlanningEpics){
 			var _i = initiativesWithPlanningEpics[i];
 			if (_i.PlanningEpics){
@@ -184,10 +193,13 @@ function _getBacklogsFromInitiativesWithPlanningEpics(initiativesWithPlanningEpi
 			}
 		}
 	}
+	return backlogs;
+}
 
+function _filterPlanningEpics(backlogs){
 	// and filter planning epics
-	for (var b in _backlogs){
-		var _b = _backlogs[b];
+	for (var b in backlogs){
+		var _b = backlogs[b];
 		for (var i in _b.Initiatives){
 			var _i = _b.Initiatives[i];
 			var _filtered=[];
@@ -204,7 +216,7 @@ function _getBacklogsFromInitiativesWithPlanningEpics(initiativesWithPlanningEpi
 			}
 		}
 	}
-	return _backlogs;
+	return backlogs;
 }
 
 
@@ -220,6 +232,7 @@ function _getRoot(epics,number){
 }
 
 /** collects all epics type Planning in a parent child three
+*  TODO recursive
 */
 function _getPlanningEpics(epic){
 	var _planningepics=[];
@@ -241,11 +254,8 @@ function _getPlanningEpics(epic){
 			}
 		}
 	}
-
-
 	return _.sortBy(_planningepics,'BusinessBacklog');
 }
-
 
 
 function _findInitiativeEpics(callback) {
@@ -257,6 +267,7 @@ function _findInitiativeEpics(callback) {
 			return;
 	});
 }
+
 
 function _findPortfolioApprovalEpics(callback) {
 	var epics =  db.collection('v1epics');
@@ -281,13 +292,8 @@ function _getRoadmapInitiatives(start,callback){
 
 
 function _getMembersPerPlanningBacklog(backlog,teams,members){
-	logger.debug("----------------------- --------------------------------");
-
 	var _membersPerBacklog=[];
-
-
 	var _teams = _.where(teams,{Backlog:backlog});
-	logger.debug("----------------------- _teams.length: "+_teams.length);
 
 	for (var t in _teams){
 		var _t = _teams[t];

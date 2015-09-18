@@ -76,7 +76,6 @@ function _sync(url,type,callback){
 				app.io.emit('syncUpdate', {status:"[SUCCESS]",from:_syncName,timestamp:_timestamp,info:_message,type:type});
 				_syncStatus.saveLastSync(_syncName,_timestamp,_message,_statusSUCCESS,type);
 				callback(null,_message)
-
 		});
 }
 
