@@ -15,6 +15,10 @@ var winston=require('winston');
 var logger = winston.loggers.get('space_log');
 
 exports.findEpics=_findEpics;
+exports.findTeams=_findTeams;
+exports.findBacklogs=_findBacklogs;
+exports.findMembers=_findMembers;
+
 exports.findEpicsWithChildren=_findEpicsWithChildren;
 exports.findInitiativesWithPlanningEpics = _findInitiativesWithPlanningEpics;
 exports.findInitiativeEpics=_findInitiativeEpics;
@@ -23,6 +27,7 @@ exports.getRoadmapInitiatives=_getRoadmapInitiatives;
 exports.getRoot=_getRoot;
 exports.getPlanningEpics=_getPlanningEpics;
 exports.getBacklogsFromInitiativesWithPlanningEpics=_getBacklogsFromInitiativesWithPlanningEpics;
+exports.getMembersPerPlanningBacklog = _getMembersPerPlanningBacklog;
 
 
 /**
@@ -37,6 +42,52 @@ function _findEpics(callback) {
 			return;
 	});
 }
+/**
+ * find all Teams
+ */
+function _findTeams(filter,callback) {
+	var teams =  db.collection('v1teams');
+		teams.find(filter, function (err, result){
+			callback(err,result);
+			return;
+	});
+}
+
+/**
+ * find all Members
+ */
+function _findMembers(filter,callback) {
+	var members =  db.collection('v1members');
+		members.find(filter, function (err, result){
+			callback(err,result);
+			return;
+	});
+}
+
+
+/**
+ * find all Backlogs
+ */
+function _findBacklogs(filter,callback) {
+	var backlogs =  db.collection('v1backlogs');
+		backlogs.find(filter, function (err, result){
+			callback(err,result);
+			return;
+	});
+}
+
+/**
+ * find all Programs
+ */
+function _findPrograms(filter,callback) {
+	var programs =  db.collection('v1programs');
+		backlogs.find(filter, function (err, result){
+			callback(err,result);
+			return;
+	});
+}
+
+
 
 function _findEpicsWithChildren(filter,callback) {
 	var epics =  db.collection('v1epics');
@@ -111,17 +162,22 @@ function _getBacklogsFromInitiativesWithPlanningEpics(initiativesWithPlanningEpi
 		}
 	}
 
+
+
+
 	// now put the initiatives back in
 	for (var b in _backlogs){
 		var _b = _backlogs[b];
 		for (var i in initiativesWithPlanningEpics){
 			var _i = initiativesWithPlanningEpics[i];
 			if (_i.PlanningEpics){
+
 				for (var p in _i.PlanningEpics){
 					var _p = _i.PlanningEpics[p];
 					if (_p.BusinessBacklog==_b.Name){
 						if (!_.findWhere(_b.Initiatives,{Name:_i.Name})){
-							_b.Initiatives.push(_i);
+
+							_b.Initiatives.push(_.cloneDeep(_i));
 						}
 					}
 				}
@@ -129,6 +185,25 @@ function _getBacklogsFromInitiativesWithPlanningEpics(initiativesWithPlanningEpi
 		}
 	}
 
+	// and filter planning epics
+	for (var b in _backlogs){
+		var _b = _backlogs[b];
+		for (var i in _b.Initiatives){
+			var _i = _b.Initiatives[i];
+			var _filtered=[];
+			if (_i.PlanningEpics){
+				for (var p in _i.PlanningEpics){
+					var _p = _i.PlanningEpics[p];
+					if (_p.BusinessBacklog == _b.Name){
+						_filtered.push(_p);
+					}
+				}
+				if (_filtered.length>0){
+					_i.PlanningEpics=_filtered;
+				}
+			}
+		}
+	}
 	return _backlogs;
 }
 
@@ -166,6 +241,8 @@ function _getPlanningEpics(epic){
 			}
 		}
 	}
+
+
 	return _.sortBy(_planningepics,'BusinessBacklog');
 }
 
@@ -202,6 +279,46 @@ function _getRoadmapInitiatives(start,callback){
 	});
 }
 
+
+function _getMembersPerPlanningBacklog(backlog,teams,members){
+	logger.debug("----------------------- --------------------------------");
+
+	var _membersPerBacklog=[];
+
+
+	var _teams = _.where(teams,{Backlog:backlog});
+	logger.debug("----------------------- _teams.length: "+_teams.length);
+
+	for (var t in _teams){
+		var _t = _teams[t];
+		var _participants=_parseParticipants(_t.Participants,members);
+		for (var p in _participants){
+			_participants[p].Team=_t.Name;
+			var _p = _.findWhere(_membersPerBacklog,{ID:_participants[p].ID});
+			if (!_p) _membersPerBacklog.push(_participants[p]);
+		}
+	}
+	return _membersPerBacklog;
+}
+
+/**
+parse from V1 participant string
+[{_oid\u003dMember:66587}, {_oid\u003dMember:461706}, {_oid\u003dMember:860049}, {_oid\u003dMember:2797134}, {_oid\u003dMember:2829866}
+*/
+function _parseParticipants(participantString,members){
+	var _participants = [];
+	// omit starting and ending bracket
+	var _slices = _.initial(_.rest(participantString).join("")).join("").split(", ");
+	for (var s in _slices){
+		// the oid
+		var _oid = _.initial(_slices[s].split(":")[1]).join("");
+		var _member = _.findWhere(members,{ID:"Member:"+_oid});
+		if (_member){
+			_participants.push(_member);
+		}
+	}
+	return _participants;
+}
 
 /**
  * @param epicRef E-08383 format

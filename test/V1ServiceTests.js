@@ -177,4 +177,26 @@ describe('#getRoot()', function(){
 		//assert.equal("E2988", employee.EmployeeNumbexr);
 	});
 });
+
+
+describe('#getMembersPerPlanningBacklog()', function(){
+	it('find members of team per backlog ', function(done){
+		var v1Service = require('../services/V1Service');
+
+	v1Service.findTeams({},function(err,teams){
+		v1Service.findMembers({IsDisabled:false},function(err,members){
+
+			var _members = v1Service.getMembersPerPlanningBacklog("[CAS-APP-DT] Casino Desktop #cpb",teams,members);
+
+					console.log("members: "+_members.length);
+					done();
+			})
+			//assert.equal("E2988", employee.EmployeeNumbexr);
+		});
+	});
+});
+
+
+
+
 })

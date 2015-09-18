@@ -42,25 +42,82 @@ router.get('/planningepics', function(req, res) {
 router.get('/planningbacklogs', function(req, res) {
 	var v1Service = require('../services/V1Service');
 	var _filter = {};
-	v1Service.findInitiativesWithPlanningEpics(_filter,function(err,epics){
-		var _swagSum=0;;
-		var _valueSum=0;;
-		var _riskSum=0;;
-		for (var e in epics){
-			_swagSum+=parseInt(epics[e].Swag);
-			_valueSum+=parseInt(epics[e].Value);
-			_riskSum+=parseInt(epics[e].Risk);
-		}
 
-		var _backlogs = v1Service.getBacklogsFromInitiativesWithPlanningEpics(epics);
-		res.locals.backlogs = _.sortBy(_backlogs,'Name');
+	var _statussorting = ["Implementation","Conception","Understanding"];
+	v1Service.findTeams({},function(err,teams){
+		v1Service.findMembers({IsDisabled:false},function(err,members){
+			v1Service.findInitiativesWithPlanningEpics(_filter,function(err,epics){
+				var _backlogs = v1Service.getBacklogsFromInitiativesWithPlanningEpics(epics);
+				// and sort the initiatives
+				for (var b in _backlogs){
+					for (var i in _backlogs[b].Initiatives){
+						var _i = _backlogs[b].Initiatives[i]
+						var _swagSum=0;
+						var _startDates = [];
+						var _endDates = [];
+						for (var p in _i.PlanningEpics){
+							var _p = _i.PlanningEpics[p];
+							_swagSum+=parseInt(_p.Swag);
+							if (_.PlannedStart) _startDates.push(_p.PlannedStart);
+							if (_p.PlannedEnd) _endDates.push(_p.PlannedEnd);
+						}
 
-		res.locals.statistics={swagSum:_swagSum,averageSwag:_swagSum/epics.length,valueSum:_valueSum,averageValue:_valueSum/epics.length,riskSum:_riskSum,averageRisk:_riskSum/epics.length}
-		res.locals.initiatives = epics;
-		res.locals.moment=moment;
-		res.render('portfolio/planningbacklogs'), { title: 's p a c e - planning epics overview ' }
+						_i.EarliestStartPlanned = _.first(_startDates.sort());
+						_i.LatestEndPlanned = _.last(_endDates.sort());
+						_i.SwagPlanned = _swagSum;
+					}
+
+					_backlogs[b].Initiatives=_.sortBy(_backlogs[b].Initiatives,function(i){return _statussorting.indexOf(i.Status)});
+					_backlogs[b].Members = v1Service.getMembersPerPlanningBacklog(_backlogs[b].Name,teams,members)
+				}
+
+				res.locals.backlogs = _.sortBy(_backlogs,'Name');
+
+				//res.locals.statistics={swagSum:_swagSum,averageSwag:_swagSum/epics.length,valueSum:_valueSum,averageValue:_valueSum/epics.length,riskSum:_riskSum,averageRisk:_riskSum/epics.length}
+
+				res.locals.moment=moment;
+				res.render('portfolio/planningbacklogs'), { title: 's p a c e - planning backlogs overview ' }
+
+			})
+		})
 	});
 });
+
+router.get('/planningbacklogdetail/:name', function(req, res) {
+	var _backlogname = req.params.name+"#cpb";
+	var v1Service = require('../services/V1Service');
+	var _filter = {};
+	v1Service.findInitiativesWithPlanningEpics(_filter,function(err,epics){
+
+		var _backlogs = v1Service.getBacklogsFromInitiativesWithPlanningEpics(epics);
+
+
+
+		var _backlog = _.findWhere(_backlogs,{Name:_backlogname});
+
+		for (var e in _backlog.Initiatives){
+			var _i = _backlog.Initiatives[e];
+			var _swagSum=0;
+			for (var p in _i.PlanningEpics){
+				var _p = _i.PlanningEpics[p];
+				_swagSum+=parseInt(_p.Swag);
+			}
+
+			_i.SwagPlanned = _swagSum;
+		}
+
+		res.locals.backlog = _backlog;
+
+		//res.locals.statistics={swagSum:_swagSum,averageSwag:_swagSum/epics.length,valueSum:_valueSum,averageValue:_valueSum/epics.length,riskSum:_riskSum,averageRisk:_riskSum/epics.length}
+
+		res.locals.moment=moment;
+		res.render('portfolio/planningbacklogdetail'), { title: 's p a c e - planning backlog detail' }
+	});
+});
+
+
+
+
 
 
 router.get('/', function(req, res) {

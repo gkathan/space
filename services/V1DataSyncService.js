@@ -16,6 +16,7 @@ var logger = winston.loggers.get('space_log');
 var _syncName = "v1data";
 
 var v1Service = require("../services/V1Service");
+var async = require('async');
 
 exports.sync = _sync;
 
@@ -44,34 +45,39 @@ function _sync(url,type,callback){
 
   var Client = require('node-rest-client').Client;
 	client = new Client();
-	var _url = url[0];
-	client.get(_url, function(data, response){
-		var _data = JSON.parse(data);
-		var _collection = "v1"+_.last(_url.split("/"));
-		var v1data =  db.collection(_collection);
-		v1data.drop();
-		//_enrichEpics(_epics);
-		v1data.insert(_data, function(err , success){
-			//console.log('Response success '+success);
-			if (err) {
-				logger.error('Response error '+err.message);
-			}
-			if(success){
-				var _message = "sync "+_collection+" [DONE]: "+_data.length+" items";
+
+	async.each(url,function(_url,done){
+		//var _url = url[0];
+		client.get(_url, function(data, response){
+			logger.debug(">>>> calling "+_url);
+			var _data = JSON.parse(data);
+			var _collection = "v1"+_.last(_url.split("/"));
+			var v1data =  db.collection(_collection);
+			v1data.drop();
+			//_enrichEpics(_epics);
+			v1data.insert(_data, function(err , success){
+				//console.log('Response success '+success);
+				if (err) callback(err);
+				logger.debug(">>>> DONE ???? "+_collection);
+				done();
+			});
+		})},function(err,result){
+				//
+				if (err) {
+					logger.error('Response error '+err.message);
+					var _message = err.message;
+					logger.warn('[V1DataSyncService] says: something went wrong on the request', err.request.options,err.message);
+					app.io.emit('syncUpdate', {status:"[ERROR]",from:_syncName,timestamp:_timestamp,info:err.message,type:type});
+					_syncStatus.saveLastSync(_syncName,_timestamp,_message,_statusERROR,type);
+					callback(err);
+				}
+				var _message = "v1Data sync "+url.join(", ")+" [DONE]: ";
 				logger.info(_message);
 				app.io.emit('syncUpdate', {status:"[SUCCESS]",from:_syncName,timestamp:_timestamp,info:_message,type:type});
 				_syncStatus.saveLastSync(_syncName,_timestamp,_message,_statusSUCCESS,type);
-				callback(null,"syncv1 [DONE]: "+_data.length+ " items synced")
-			}
-		})
-	}).on('error',function(err){
-			var _message = err.message;
-			logger.warn('[V1DataSyncService] says: something went wrong on the request', err.request.options,err.message);
-			app.io.emit('syncUpdate', {status:"[ERROR]",from:_syncName,timestamp:_timestamp,info:err.message,type:type});
-			_syncStatus.saveLastSync(_syncName,_timestamp,_message,_statusERROR,type);
-			callback(err);
-	});
+				callback(null,_message)
 
+		});
 }
 
 

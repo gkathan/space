@@ -62,8 +62,6 @@ function _sync(urls,type,callback){
 		_options.proxy.tunnel=false;
 	}
 	client = new Client(_options);// direct way
-
-
 	// direct way
 	client.get(urls[0], function(data, response,done){
 		// parsed response body as js object

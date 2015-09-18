@@ -127,16 +127,17 @@ function _parseStrategicThemes(strategicThemeString){
 function _deriveProduct(backlog){
 	var _product = "";
 	// map the "Product"
-	if (backlog.indexOf("Studios")>-1) _product="Studios";
-	else if(backlog.indexOf("Casino")>-1) _product="Casino";
-	else if(backlog.indexOf("Compliance")>-1) _product="Compliance";
-	else if(backlog.indexOf("Core Services")>-1) _product="Core Services";
-	else if(backlog.indexOf("CRM Services")>-1) _product="CRM Services";
-	else if(backlog.indexOf("[DTP")>-1) _product="Portal";
-	else if(backlog.indexOf("Payments")>-1) _product="Payments";
-	else if(backlog.indexOf("Poker")>-1) _product="Poker";
-	else if(backlog.indexOf("Sports POS")>-1) _product="Sports";
-	else if(backlog.indexOf("[TCS")>-1) _product="Sports Content, Trading & security";
-
+	if (backlog){
+		if (backlog.indexOf("Studios")>-1) _product="Studios";
+		else if(backlog.indexOf("Casino")>-1) _product="Casino";
+		else if(backlog.indexOf("Compliance")>-1) _product="Compliance";
+		else if(backlog.indexOf("Core Services")>-1) _product="Core Services";
+		else if(backlog.indexOf("CRM Services")>-1) _product="CRM Services";
+		else if(backlog.indexOf("[DTP")>-1) _product="Portal";
+		else if(backlog.indexOf("Payments")>-1) _product="Payments";
+		else if(backlog.indexOf("Poker")>-1) _product="Poker";
+		else if(backlog.indexOf("Sports POS")>-1) _product="Sports";
+		else if(backlog.indexOf("[TCS")>-1) _product="Sports Content, Trading & security";
+	}
 	return _product
 }

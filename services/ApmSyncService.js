@@ -57,13 +57,9 @@ function _syncLogin(done){
 	client.get(url, function(data, response,callback){
 		// parsed response body as js object
 		logger.debug("======== syncLogin data:"+JSON.stringify(data));
-
-
 		// and store it
 		var apm_login =  db.collection('apm_login');
-
 		if (data[0]) data[0].snapshotTime=new Date();
-
 		apm_login.insert(data	 , function(err , success){
 			//console.log('Response success '+success);
 			if(err){
