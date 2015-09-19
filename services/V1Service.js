@@ -155,28 +155,14 @@ function _getPlanningBacklogs(filter,callback){
 
 }
 
-
-
-
-
-
-
-
-
-
 /** this is for peter :-)
 * collects all initiatives and puts planning epics as children*
 */
 // ,{"PortfolioApproval":"Yes"}
 function _findInitiativesWithPlanningEpics(filter,callback){
-	//var _prefilter = {$and:[{$or:[{CategoryName:"Initiative"},{CategoryName:"Planning"}]},{$or:[{Status:"Conception"},{Status:"Understanding"},{Status:"Implementation"}]},{"PortfolioApproval":"Yes"}]};
-	//var _prefilter = {$and:[{$or:[{CategoryName:"Initiative"},{CategoryName:"Planning"},{CategoryName:"Product Contribution"}]},{$or:[{Status:"Conception"},{Status:"Understanding"},{Status:"Implementation"}]}]};
 	var _prefilter = {$and:[{$or:[{CategoryName:"Initiative"},{CategoryName:"Planning"},{CategoryName:"Product Contribution"}]},{IsClosed:false}]};
-	//var _prefilter={};
 	_findEpicsWithChildren(_prefilter,function(err,epics){
-
 		var _initiatives = [];
-
 		for (var e in epics){
 			var _e = epics[e];
 			if (_e.EpicRootNumber){
@@ -201,8 +187,6 @@ function _findInitiativesWithPlanningEpics(filter,callback){
 		callback(err,_.where(_cleaned,{PortfolioApproval:"Yes"}));
 	})
 }
-
-
 
 /** extracts the backlog field and groups around this
 */
@@ -291,15 +275,14 @@ function _getRoot(epics,number){
 
 
 /** collects all epics type Planning in a parent child three
-*  TODO recursive
 */
 function _getPlanningEpics(epic,planningepics){
 	if (!planningepics){
 		var _planningepics=[];
-	}else{
+	}
+	else{
 		_planningepics = planningepics;
 	}
-
 	if (epic.Children){
 		for (var c in epic.Children){
 			var _child = epic.Children[c];
@@ -313,35 +296,8 @@ function _getPlanningEpics(epic,planningepics){
 		}
 		return _planningepics;
 	}
-
 }
 
-
-/** collects all epics type Planning in a parent child three
-*  TODO recursive
-*/
-function _getPlanningEpics_(epic){
-	var _planningepics=[];
-	if (epic.Children){
-		for (var c in epic.Children){
-			var _child = epic.Children[c];
-			if (_child.CategoryName==="Planning" && !_child.Children){
-				if (_child.BusinessBacklog.indexOf("#cpb")>-1)
-					_planningepics.push(_child);
-			}
-			else if (_child.Children){
-				for (var cc in _child.Children){
-					var _ccchild = _child.Children[cc];
-					if (_ccchild.CategoryName==="Planning"){
-						if (_ccchild.BusinessBacklog.indexOf("#cpb")>-1)
-							_planningepics.push(_ccchild);
-					}
-				}
-			}
-		}
-	}
-	return _.sortBy(_planningepics,'BusinessBacklog');
-}
 
 
 function _findInitiativeEpics(callback) {
@@ -377,39 +333,19 @@ function _getRoadmapInitiatives(start,callback){
 }
 
 
-function _getMembersPerPlanningBacklog(backlog,teams,members){
+function _getMembersPerPlanningBacklog(backlog,teams){
 	var _membersPerBacklog=[];
 	var _teams = _.where(teams,{Backlog:backlog});
 
 	for (var t in _teams){
 		var _t = _teams[t];
-		var _participants=_parseParticipants(_t.Participants,members);
+		var _participants=_t.Participants;
 		for (var p in _participants){
 			_participants[p].Team=_t.Name;
-			var _p = _.findWhere(_membersPerBacklog,{ID:_participants[p].ID});
-			if (!_p) _membersPerBacklog.push(_participants[p]);
+			_membersPerBacklog.push(_participants[p]);
 		}
 	}
 	return _membersPerBacklog;
-}
-
-/**
-parse from V1 participant string
-[{_oid\u003dMember:66587}, {_oid\u003dMember:461706}, {_oid\u003dMember:860049}, {_oid\u003dMember:2797134}, {_oid\u003dMember:2829866}
-*/
-function _parseParticipants(participantString,members){
-	var _participants = [];
-	// omit starting and ending bracket
-	var _slices = _.initial(_.rest(participantString).join("")).join("").split(", ");
-	for (var s in _slices){
-		// the oid
-		var _oid = _.initial(_slices[s].split(":")[1]).join("");
-		var _member = _.findWhere(members,{ID:"Member:"+_oid});
-		if (_member){
-			_participants.push(_member);
-		}
-	}
-	return _participants;
 }
 
 /**

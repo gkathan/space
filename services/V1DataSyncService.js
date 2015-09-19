@@ -46,15 +46,25 @@ function _sync(url,type,callback){
   var Client = require('node-rest-client').Client;
 	client = new Client();
 
-	async.each(url,function(_url,done){
+	var _cache ={};
+
+	async.eachSeries(url,function(_url,done){
 		//var _url = url[0];
 		client.get(_url, function(data, response){
 			logger.debug(">>>> calling "+_url);
 			var _data = JSON.parse(data);
 			var _collection = "v1"+_.last(_url.split("/"));
+			_cache[_collection]=_data;
+
 			var v1data =  db.collection(_collection);
+			if (_collection=="v1teams"){
+				_data = _enrichTeamData(_data,_cache.v1members);
+			}
+			if (_collection=="v1members"){
+				_data = _enrichMemberData(_data);
+			}
+
 			v1data.drop();
-			//_enrichEpics(_epics);
 			v1data.insert(_data, function(err , success){
 				//console.log('Response success '+success);
 				if (err) callback(err);
@@ -80,14 +90,50 @@ function _sync(url,type,callback){
 }
 
 
-function _enrichEpics(epics){
-	for (var e in epics){
-		var _strategicThemes = _parseStrategicThemes(epics[e].StrategicThemesNames);
-		epics[e].Markets = _strategicThemes.markets;
-		epics[e].Targets = _strategicThemes.targets;
-		epics[e].Customers = _strategicThemes.customers;
 
-		epics[e].Product = _deriveProduct(epics[e].BusinessBacklog);
+function _enrichTeamData(teams,members){
+	for (var i in teams){
+		var _team =teams[i];
+		_team.Participants = _parseParticipants(_team.Participants,members);
 	}
+	return teams;
+}
 
+function _enrichMemberData(members){
+	for (var i in members){
+		var _member =members[i];
+		_member.ParticipatesIn= _parseParticipatesIn(_member.ParticipatesIn);
+	}
+	return members;
+}
+
+/**
+parse from V1 participant string
+[{_oid\u003dMember:66587}, {_oid\u003dMember:461706}, {_oid\u003dMember:860049}, {_oid\u003dMember:2797134}, {_oid\u003dMember:2829866}
+*/
+function _parseParticipants(participantString,members){
+	var _participants = [];
+	// omit starting and ending bracket
+	var _slices = _.initial(_.rest(participantString).join("")).join("").split(", ");
+	for (var s in _slices){
+		// the oid
+		var _oid = _.initial(_slices[s].split(":")[1]).join("");
+		var _member = _.findWhere(members,{ID:"Member:"+_oid});
+		if (_member){
+			_participants.push({ID:_member.ID,Name:_member.Name,Email:_member.Email});
+		}
+	}
+	return _participants;
+}
+
+function _parseParticipatesIn(participatesInString){
+	var _teams = [];
+	// omit starting and ending bracket
+	var _slices = _.initial(_.rest(participatesInString).join("")).join("").split(", ");
+	for (var s in _slices){
+		// the oid
+		var _oid = _.initial(_slices[s].split(":")[1]).join("");
+		_teams.push({ID:_oid,Type:_slices[s].split(":")[0].split("=")[1]});
+	}
+	return _teams;
 }
