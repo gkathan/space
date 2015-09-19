@@ -14,33 +14,55 @@ block content
 				|total backlogs: <b>#{backlogs.length}</b> 
 				br
 				|total swag: <b>#{totalSwag}</b> 
-					
-				
 		.panel-body
 		table.table.table-striped.table-hover.table-condensed.table-responsive.tablsesorter(id="planningbacklogs" style="max-width:1400px")
 			thead
 				tr
-					th(style="min-width:60px") 
-					th(style="min-width:100px") backlog
-					th(style="min-width:800px") initiatives 
-						span(style="font-size:11px;font-weight:normal") (name | status | value | risk | cumulated planned swag | earlist plan start | latest plan end | # planning epics )
-					th(style="text-align:right") #
-					th(style="text-align:right") #p
-					th(style="text-align:right") swag sum
-					th(style="text-align:right") 
+					th(style="min-width:100px;vertical-align:top") backlog
+					th(style="text-align:right;vertical-align:top") #
+					th(style="text-align:right;vertical-align:top") #p
+					th(style="text-align:right;vertical-align:top") swag
+					th(style="text-align:right;vertical-align:top") 
 						img(src="/images/iconexp/user.png" width="20px" height="20px")
+					th(style="text-align:right;vertical-align:top") ratio	
+					th(style="min-width:800px") 
+						|initiatives 
+						div(style="font-weight:normal;font-size:12px")
+							span(style="margin-left:20px;text-align:left") id
+							span(style="margin-left:40px;text-align:left") name
+							span(style="margin-left:300px;text-align:left") status
+							span(style="margin-left:30px;text-align:left") value
+							span(style="margin-left:20px;text-align:left") risk
+							span(style="margin-left:20px;text-align:left") swag
+							span(style="margin-left:20px;text-align:left") start
+							span(style="margin-left:70px;text-align:left") end
+							span(style="margin-left:70px;text-align:left") #
+						
 					
 			tbody
 				each b in backlogs
 					tr
-						td(style="vertical-align:top;font-size:11px;;text-align:left;font-weight:normal;vertical-align:top") 
-							//a(href="http://v1.bwinparty.corp/V1-Production/Epic.mvc/Summary?oidToken=Epic%3A"+b.ID.split(":")[1] target="_new" title="see epic in V1")
-							|#{b.Number}
-						td(style="vertical-align:top;font-size:11px;;text-align:left;font-weight:normal;vertical-align:top") 
+						td(style="vertical-align:top;font-size:11px;;text-align:left;font-weight:normal") 
 							b
 								a(href="/portfolio/planningbacklogdetail/"+b.Name title="show details")
 									|#{b.Name} 
-						td(style="vertical-align:top;text-align:left;font-size:10px;vertical-align:top")
+						td(style="vertical-align:top;text-align:right;font-size:11px;width:30px")
+							if b.Initiatives
+								|#{b.Initiatives.length}
+							else
+								|0
+						td(style="vertical-align:top;text-align:right;font-size:10px;width:30px")
+							|#{b.TotalPlanningEpics}
+						td(style="vertical-align:top;text-right:left;font-size:10px;width:30px")
+							b
+								|#{b.TotalSwag}
+						td(style="vertical-align:top;text-right:left;font-size:10px;width:30px")
+							b
+								a(href="#"  title="#{_.uniq(_.map(b.Members,'Name')).join(', ')}")
+									|#{b.Members.length}
+						td(style="vertical-align:top;text-right:left;font-size:10px;width:50px")
+							|#{(b.TotalSwag/b.Members.length).toFixed(2)}
+						td(style="vertical-align:top;text-align:left;font-size:10px")
 							if b.Initiatives
 								table.table-responsive.table-striped(style="width:800px")
 									- var _sum = 0; 
@@ -65,21 +87,5 @@ block content
 											td(style="vertical-align:top;text-align:center;font-size:10px;vertical-align:top;width:80px") #{moment(i.EarliestStartPlanned).format('YYYY-MM-DD')}
 											td(style="vertical-align:top;text-align:center;font-size:10px;vertical-align:top;width:80px") #{moment(i.LatestEndPlanned).format('YYYY-MM-DD')}
 											td(style="vertical-align:top;text-align:right;font-size:10px;vertical-align:top;width:50px") #{i.PlanningEpics.length}
-											
-							else
-						td(style="vertical-align:top;text-align:right;font-size:10px;vertical-align:bottom;width:30px")
-							if b.Initiatives
-								|#{b.Initiatives.length}
-							else
-								|0
-						td(style="vertical-align:top;text-align:right;font-size:10px;vertical-align:bottom;width:30px")
-							|#{_sumPlanningEpics}
-						td(style="vertical-align:top;text-right:left;font-size:10px;vertical-align:bottom;width:30px")
-							b
-								|#{_sum}
-						td(style="vertical-align:top;text-right:left;font-size:10px;vertical-align:bottom;width:30px")
-							b
-								a(href="#"  title="#{_.uniq(_.map(b.Members,'Name')).join(', ')}")
-									|#{b.Members.length}
 
 			script $("#planningbacklogs").tablesorter();

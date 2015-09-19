@@ -19,11 +19,7 @@ var logger = winston.loggers.get('test_log');
 var assert = require("assert")
 var _ = require("lodash");
 
-
-
 describe('V1Service', function(){
-
-/*
   describe('#getEpics()', function(){
     it('should get all epics in DB', function(done){
       var v1Service = require('../services/V1Service');
@@ -172,7 +168,7 @@ describe('#getMembersPerPlanningBacklog()', function(){
 	});
 });
 
-*/
+
 
 describe('#getPlanningEpics()', function(){
 	it('find Planning Epics an epic ', function(done){

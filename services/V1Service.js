@@ -28,7 +28,7 @@ exports.getRoot=_getRoot;
 exports.getPlanningEpics=_getPlanningEpics;
 exports.getBacklogsFromInitiativesWithPlanningEpics=_getBacklogsFromInitiativesWithPlanningEpics;
 exports.getMembersPerPlanningBacklog = _getMembersPerPlanningBacklog;
-
+exports.getPlanningBacklogs = _getPlanningBacklogs;
 
 /**
  * find all Epics
@@ -104,6 +104,64 @@ function _findEpicsWithChildren(filter,callback) {
 			return;
 	});
 }
+
+
+function _getPlanningBacklogs(filter,callback){
+	var _statussorting = ["Implementation","Conception","Understanding"];
+	_findTeams({},function(err,teams){
+		_findMembers({IsDisabled:false},function(err,members){
+			_findInitiativesWithPlanningEpics(filter,function(err,epics){
+				var _backlogs = _getBacklogsFromInitiativesWithPlanningEpics(epics);
+				// and sort the initiatives
+
+				var _totalSwag =0;
+				var _totalPlanningEpics =0;
+				for (var b in _backlogs){
+					var _backlogSwag=0;
+					var _backlogPlanningEpics=0;
+
+					for (var i in _backlogs[b].Initiatives){
+						var _i = _backlogs[b].Initiatives[i]
+						var _swagSum=0;
+						var _startDates = [];
+						var _endDates = [];
+						for (var p in _i.PlanningEpics){
+							var _p = _i.PlanningEpics[p];
+							_swagSum+=parseInt(_p.Swag);
+							_backlogPlanningEpics++;
+							if (_.PlannedStart) _startDates.push(_p.PlannedStart);
+							if (_p.PlannedEnd) _endDates.push(_p.PlannedEnd);
+						}
+
+						_i.EarliestStartPlanned = _.first(_startDates.sort());
+						_i.LatestEndPlanned = _.last(_endDates.sort());
+						_i.SwagPlanned = _swagSum;
+						_backlogSwag+=_swagSum;
+					}
+
+					_totalSwag+=_swagSum;
+
+					_totalPlanningEpics+=_backlogPlanningEpics;
+
+					_backlogs[b].Initiatives=_.sortBy(_backlogs[b].Initiatives,function(i){return _statussorting.indexOf(i.Status)});
+					_backlogs[b].Members = _getMembersPerPlanningBacklog(_backlogs[b].Name,teams,members)
+					_backlogs[b].TotalSwag = _backlogSwag;
+					_backlogs[b].TotalPlanningEpics = _backlogPlanningEpics;
+				}
+				callback(null,{backlogs:_backlogs,statistics:{totalSwag:_totalSwag,totalPlanningEpics:_totalPlanningEpics}});
+			});
+		});
+	});
+
+}
+
+
+
+
+
+
+
+
 
 
 /** this is for peter :-)
