@@ -10,6 +10,49 @@ block content
 			a(href="/portfolio/planningepics") view planning epics
 			br
 			a(href="/portfolio/planningbacklogs") view planning backlogs
+			br
+			table(style="max-width:250px;font-size:12px")
+				tr
+					td(style="text-align:left;width:150px") 
+						|#initiatives:
+					td(style="text-align:right")
+						b
+							|#{backlog.Initiatives.length}
+				tr
+					td(style="text-align:left")
+						|# plannig epics:
+					td(style="text-align:right")
+						b
+							|#{backlog.TotalPlanningEpics}
+				tr
+					td(style="text-align:left") 
+						|total swag:
+					td(style="text-align:right")
+						b
+							|#{backlog.TotalSwag}
+
+				tr
+					td(style="text-align:left") 
+						|teams
+					td(style="text-align:right")
+						b
+							a(href="#" title="#{_.uniq(_.map(members,'Team')).join(', ')}")
+								|#{_.uniq(_.map(members,'Team')).length}
+				tr
+					td(style="text-align:left") 
+						|team members:
+					td(style="text-align:right")
+						b
+							a(href="#" title="#{_.uniq(_.map(members,'Name')).join(', ')}")
+								|#{members.length}
+
+				tr
+					td(style="text-align:left") 
+						|swag / person
+					td(style="text-align:right")
+						b
+							|#{(backlog.TotalSwag/members.length).toFixed(2)}
+							
 			
 		.panel-body
 			table.table.table-striped.table-hover.table-condensed.table-responsive.tablsesorter(id="planningbacklogdetail" style="max-width:1600px")

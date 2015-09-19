@@ -22,6 +22,8 @@ var _ = require("lodash");
 
 
 describe('V1Service', function(){
+
+/*
   describe('#getEpics()', function(){
     it('should get all epics in DB', function(done){
       var v1Service = require('../services/V1Service');
@@ -123,32 +125,6 @@ describe('#findInitiativesWithPlanningEpics()', function(){
 
 
 
-describe('#getPlanningEpics()', function(){
-	it('find Planning Epics an epic ', function(done){
-		var v1Service = require('../services/V1Service');
-		this.timeout(30000);
-		v1Service.findInitiativesWithPlanningEpics({},function(err,epics){
-				console.log("--- all epics: "+epics.length);
-				var _e =_.findWhere(epics,{"Number":"E-10618"});
-
-				var _planningepics = v1Service.getPlanningEpics(_e);
-
-				if (_e.Children) console.log("children: "+_e.Children.length);
-				console.log("Category: "+_e.CategoryName);
-
-				console.log("planning epics: "+_planningepics.length);
-
-				var _backlogs = v1Service.getBacklogsFromInitiativesWithPlanningEpics(epics);
-				console.log("number of distinct backlogs: "+_backlogs.length)
-				for (var b in _backlogs){
-					var _b = _backlogs[b];
-					console.log("** "+_b.Name+ " - "+_b.Initiatives.length+ " initiatives");
-				}
-				done();
-		})
-		//assert.equal("E2988", employee.EmployeeNumbexr);
-	});
-});
 
 
 describe('#getRoot()', function(){
@@ -196,6 +172,42 @@ describe('#getMembersPerPlanningBacklog()', function(){
 	});
 });
 
+*/
+
+describe('#getPlanningEpics()', function(){
+	it('find Planning Epics an epic ', function(done){
+		var v1Service = require('../services/V1Service');
+		this.timeout(30000);
+		v1Service.findInitiativesWithPlanningEpics({},function(err,epics){
+		//v1Service.findEpicsWithChildren({},function(err,epics){
+				console.log("--- all epics: "+epics.length);
+				var _e =_.findWhere(epics,{"Number":"E-10618"});
+
+				var _planningepics = v1Service.getPlanningEpics(_e);
+
+				if (_e.Children) console.log("children: "+_e.Children.length);
+				console.log("Category: "+_e.CategoryName);
+
+				console.log("-----planning epics: "+_planningepics.length);
+				for (var p in _planningepics){
+					var _p = _planningepics[p];
+					console.log("planning epic: "+_p.Number+" backlog: "+_p.BusinessBacklog);
+					//console.log("planning epic: "+JSON.stringify(_p));
+				}
+
+
+				var _backlogs = v1Service.getBacklogsFromInitiativesWithPlanningEpics(epics);
+				console.log("number of distinct backlogs: "+_backlogs.length)
+				for (var b in _backlogs){
+					var _b = _backlogs[b];
+					console.log("** "+_b.Name+ " - "+_b.Initiatives.length+ " initiatives");
+				}
+
+				done();
+		})
+		//assert.equal("E2988", employee.EmployeeNumbexr);
+	});
+});
 
 
 

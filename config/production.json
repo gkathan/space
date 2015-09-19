@@ -54,7 +54,12 @@
   			"intervalMinutes" :10,
   			"url" : "http://knbnprxy.ea.bwinparty.corp/rest/epics"
   		},
-  		"availability" : {
+			"v1data" : {
+  			"mode": "on",
+  			"intervalMinutes" :30,
+  			"url" : ["http://knbnprxy.ea.bwinparty.corp/rest/backlogs","http://knbnprxy.ea.bwinparty.corp/rest/teams","http://knbnprxy.ea.bwinparty.corp/rest/members","http://knbnprxy.ea.bwinparty.corp/rest/programs"]
+  		},
+      "availability" : {
   			"mode": "on",
   			"intervalMinutes" :1440,
   			"url" : ["http://avreport.bwinparty.corp/API/AvReportingService.svc/getYTDDatapoint","http://avreport.bwinparty.corp/API/AvReportingService.svc/GetAVGraphDatapoints"]

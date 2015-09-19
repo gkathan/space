@@ -231,10 +231,38 @@ function _getRoot(epics,number){
 	}
 }
 
+
 /** collects all epics type Planning in a parent child three
 *  TODO recursive
 */
-function _getPlanningEpics(epic){
+function _getPlanningEpics(epic,planningepics){
+	if (!planningepics){
+		var _planningepics=[];
+	}else{
+		_planningepics = planningepics;
+	}
+
+	if (epic.Children){
+		for (var c in epic.Children){
+			var _child = epic.Children[c];
+		 	_getPlanningEpics(_child,_planningepics);
+		}
+		return _planningepics;
+	}
+	else{
+		if (epic.CategoryName==="Planning" && !epic.Children && epic.BusinessBacklog.indexOf("#cpb")>-1){
+				_planningepics.push(epic);
+		}
+		return _planningepics;
+	}
+
+}
+
+
+/** collects all epics type Planning in a parent child three
+*  TODO recursive
+*/
+function _getPlanningEpics_(epic){
 	var _planningepics=[];
 	if (epic.Children){
 		for (var c in epic.Children){
