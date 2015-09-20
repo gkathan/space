@@ -46,13 +46,20 @@ router.get('/planningepics', function(req, res) {
 
 router.get('/planningbacklogs', function(req, res) {
 	var v1Service = require('../services/V1Service');
+	var boardService= require('../services/BoardService');
 	var _filter = {};
 
 	v1Service.getPlanningBacklogs(_filter,function(err,result){
-		res.locals.backlogs = _.sortBy(result.backlogs,'Name');
-		res.locals.statistics = result.statistics;
-		res.locals.moment=moment;
-		res.render('portfolio/planningbacklogs'), { title: 's p a c e - planning backlogs overview ' }
+		boardService.find({name:"Planning Backlogs"},function(err,boards){
+			var _boardId;
+			if (boards[0]) _boardId = boards[0]._id;
+			res.locals.backlogs = _.sortBy(result.backlogs,'Name');
+			res.locals.statistics = result.statistics;
+			res.locals.moment=moment;
+			res.locals.boardId = _boardId;
+			res.render('portfolio/planningbacklogs'), { title: 's p a c e - planning backlogs overview ' }
+
+		})
 	})
 });
 
