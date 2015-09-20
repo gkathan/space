@@ -46,6 +46,7 @@ var dashboard = require('./routes/dashboard');
 var authenticate = require('./routes/authenticate');
 var content = require('./routes/content');
 var admin = require('./routes/admin');
+var boards = require('./routes/boards');
 
 
 
@@ -135,6 +136,7 @@ app.use('/dashboard', dashboard);
 app.use('/authenticate', authenticate);
 app.use('/content', content);
 app.use('/admin', admin);
+app.use('/boards', boards);
 
 
 var sockets=[];

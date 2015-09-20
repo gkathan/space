@@ -55,8 +55,8 @@ router.get('/planningbacklogs', function(req, res) {
 			var _planningEpicsBoardId;
 			var _initiativesBoardId;
 			if (boards){
-				_planningEpicsBoardId = _.findWhere(boards,{name:"Backlogs PlanningEpics"})._id;
-				_initiativesBoardId = _.findWhere(boards,{name:"Backlogs Initiatives"})._id;
+				if (_.findWhere(boards,{ref:"bpe"})) _planningEpicsBoardId = _.findWhere(boards,{ref:"bpe"})._id;
+				if (_.findWhere(boards,{ref:"bi"})) _initiativesBoardId = _.findWhere(boards,{ref:"bi"})._id;
 			}
 			res.locals.backlogs = _.sortBy(result.backlogs,'Name');
 			res.locals.statistics = result.statistics;

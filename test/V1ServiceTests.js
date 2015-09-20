@@ -191,7 +191,6 @@ describe('#getPlanningEpics()', function(){
 					//console.log("planning epic: "+JSON.stringify(_p));
 				}
 
-
 				var _backlogs = v1Service.getBacklogsFromInitiativesWithPlanningEpics(epics);
 				console.log("number of distinct backlogs: "+_backlogs.length)
 				for (var b in _backlogs){
@@ -209,12 +208,12 @@ describe('#getPlanningBacklogs()', function(){
 	it('find alls plnning backlogs ', function(done){
 		var v1Service = require('../services/V1Service');
 
-		var _backlogs = v1Service.getPlanningBacklogsByInitiatives({},function(err,epics){
+		var _backlogs = v1Service.getPlanningBacklogsByInitiatives({},function(err,initiatives){
 
-					console.log("planning epics: "+epics.length);
-				for (var e in epics){
-					var _e=epics[e];
-					console.log("++ "+_e.Number+" - "+_e.PlanningBacklog);
+					console.log("planning epics: "+initiatives.length);
+				for (var i in initiatives){
+					var _i=initiatives[i];
+					console.log("++ "+_i.Number+" - "+_i.Name+" - "+_i.PlanningBacklog+" - "+_i.Product);
 				}
 
 					done();

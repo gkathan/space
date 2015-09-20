@@ -14,8 +14,11 @@ var db = mongojs(connection_string, [DB]);
 var winston=require('winston');
 var logger = winston.loggers.get('space_log');
 
-exports.findEpics=_findEpics;
+
+exports.deriveProductFromBacklog=_deriveProductFromBacklog;
+
 exports.findTeams=_findTeams;
+exports.findEpics=_findEpics;
 exports.findBacklogs=_findBacklogs;
 exports.findMembers=_findMembers;
 
@@ -31,6 +34,28 @@ exports.getMembersPerPlanningBacklog = _getMembersPerPlanningBacklog;
 exports.getPlanningBacklogs = _getPlanningBacklogs;
 exports.getPlanningBacklogsByEpics = _getPlanningBacklogsByEpics;
 exports.getPlanningBacklogsByInitiatives = _getPlanningBacklogsByInitiatives;
+
+
+
+
+
+function _deriveProductFromBacklog(backlog){
+	var _product = "";
+	// map the "Product"
+	if (backlog){
+		if (backlog.indexOf("Studios")>-1) _product="Studios";
+		else if(backlog.indexOf("Casino")>-1 || _.startsWith("[CAS")) _product="Casino";
+		else if(backlog.indexOf("Compliance")>-1 || _.startsWith("[COM")) _product="Compliance";
+		else if(backlog.indexOf("Core Services")>-1 || _.startsWith("[COR")) _product="Core Services";
+		else if(backlog.indexOf("CRM Services")>-1 || _.startsWith("[CRM")) _product="CRM Services";
+		else if(backlog.indexOf("[DTP")>-1) _product="Portal";
+		else if(backlog.indexOf("Payments")>-1 || _.startsWith("[PAY")) _product="Payments";
+		else if(backlog.indexOf("Poker")>-1 || _.startsWith("[POK")) _product="Poker";
+		else if(backlog.indexOf("Sports POS")>- 1 || _.startsWith("[SPO")) _product="Sports";
+		else if(backlog.indexOf("[TCS")>-1) _product="Sports Content, Trading & security";
+	}
+	return _product
+}
 
 /**
  * find all Epics
@@ -133,12 +158,14 @@ function _getPlanningBacklogs(filter,callback){
 						var _p = _i.PlanningEpics[p];
 						_swagSum+=parseInt(_p.Swag);
 						_backlogPlanningEpics++;
-						if (_.PlannedStart) _startDates.push(_p.PlannedStart);
+						if (_p.PlannedStart) _startDates.push(_p.PlannedStart);
 						if (_p.PlannedEnd) _endDates.push(_p.PlannedEnd);
 					}
-
-					_i.EarliestStartPlanned = _.first(_startDates.sort());
-					_i.LatestEndPlanned = _.last(_endDates.sort());
+					//overwrite initiative attributes with planned from below epics
+					_i.PlannedStartInitiative = _i.PlannedStart;
+					_i.PlannedEndInitiative = _i.PlannedEnd
+					_i.PlannedStart = _.first(_startDates.sort());
+					_i.PlannedEnd = _.last(_endDates.sort());
 					_i.SwagPlanned = _swagSum;
 					_backlogSwag+=_swagSum;
 				}
@@ -264,6 +291,7 @@ function _repopulateBacklogs(backlogs,initiativesWithPlanningEpics){
 			var _i = initiativesWithPlanningEpics[i];
 			if (_i.PlanningEpics){
 				_i.PlanningBacklog=_b.Name;
+				_i.Product = _deriveProductFromBacklog(_b.Name);
 				for (var p in _i.PlanningEpics){
 					var _p = _i.PlanningEpics[p];
 					if (_p.BusinessBacklog==_b.Name){

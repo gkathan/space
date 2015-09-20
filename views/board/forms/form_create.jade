@@ -35,6 +35,11 @@ div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;back
 					td(colspan="2" style="margin-left:5px;width:240px;height:50px;vertical-align:bottom")
 						input.form-control.floating-label(id="groupby" name="groupby" type="text" placeholder="groupby" autocomplete="off" value="Product,BusinessBacklog,Number")
 				tr
+					td(colspan="2" style="margin-left:5px;width:160px;height:50px;vertical-align:bottom")
+						input.form-control.floating-label(id="ref" name="ref" type="text" placeholder="reference" autocomplete="off" value="")
+					td(colspan="2" style="margin-left:5px;width:160px;height:50px;vertical-align:bottom")
+						
+				tr
 					td(colspan="3" style="height:100px;text-align:left")
 						div.radio.radio-primary
 							label 
@@ -42,12 +47,12 @@ div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;back
 								|link to V1 roadmap data
 						div.radio.radio-primary
 							label 
-								input(id="datalink_backlogplanningepics" type="radio" name="datalink" value="backlogplanningepics")
-								|link to V1 backlogs - planning epics
-						div.radio.radio-primary
-							label 
 								input(id="datalink_backloginitiatives" type="radio" name="datalink" value="backloginitiatives")
 								|link to V1 backlogs - initiatives
+						div.radio.radio-primary
+							label 
+								input(id="datalink_backlogplanningepics" type="radio" name="datalink" value="backlogplanningepics")
+								|link to V1 backlogs - planning epics
 						div.radio.radio-primary
 							label 
 								input(id="datalink_empty" type="radio" name="datalink" value="empty" )

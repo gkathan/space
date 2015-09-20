@@ -1,4 +1,4 @@
-include kanban_menu
+include ../kanban_menu
 
 script(src="/javascripts/components/mousetrap/mousetrap.min.js")
 
@@ -52,9 +52,9 @@ block content
 						h3.modal-title(id="myModalLabel")
 							| admin menu .....
 					div.modal-body
-						//include board/includes/menu_metrics_multiselects.jade
-						include board/includes/menu_visibility_switches.jade
-						include board/includes/menu_svg_export.jade
+						//include includes/menu_metrics_multiselects.jade
+						include includes/menu_visibility_switches.jade
+						include includes/menu_svg_export.jade
 						
 					div.modal-footer
 						button.btn.btn-default.btn-xs(type="button" data-dismiss="modal")
@@ -73,33 +73,34 @@ block content
 							
 							|  roadmap items (Swag and Value fields filled)
 					div.modal-body
-						table.table.table-striped.table-hover.table-condensed.tablsesorter(id="table_roadmapitems")
-							thead
-								tr
-									th(style="width:80px") V1
-									th name
-									th product
-									th(style="width:80px") start
-									th(style="width:80px") end
-									th value
-									th(style="width:80px")  swag
-									th(style="width:80px")  risk
-							tbody
-								each e in epics
-									tr.draggable
-										td(style="text-align:left;vertical-align:middle;font-size:10px") 
-											img(src="/images/v1/epic.gif" height="10px")
-											a(href="http://v1.bwinparty.corp/V1-Production/Epic.mvc/Summary?oidToken=Epic%3A"+e.ID.split(":")[1] target="_new" )
-												|&nbsp;#{e.Number}
-										td(style="vertical-align:top;text-align:left;vertical-align:middle;font-size:10px") 
-											|#{e.Name}
-										td(style="vertical-align:top;text-align:left;font-size:11px;vertical-align:middle") #{e.Product} 
-										td(style="vertical-align:top;text-align:left;font-size:11px;vertical-align:middle") #{moment(e.PlannedStart).format('YYYY-MM-DD')} 
-										td(style="vertical-align:top;text-align:left;font-size:11px;vertical-align:middle") #{moment(e.PlannedEnd).format('YYYY-MM-DD')} 
-										td(style="vertical-align:top;text-align:left;font-size:11px;vertical-align:middle") #{e.Value} 
-										td(style="vertical-align:top;text-align:left;vertical-align:middle;font-size:11px") #{e.Swag} 
-										td(style="vertical-align:top;text-align:left;font-size:11px;vertical-align:middle") #{e.Risk} 
-					script $("#table_roadmapitems").tablesorter();				
+						if epics
+							table.table.table-striped.table-hover.table-condensed.tablsesorter(id="table_roadmapitems")
+								thead
+									tr
+										th(style="width:80px") V1
+										th name
+										th product
+										th(style="width:80px") start
+										th(style="width:80px") end
+										th value
+										th(style="width:80px")  swag
+										th(style="width:80px")  risk
+								tbody
+									each e in epics
+										tr.draggable
+											td(style="text-align:left;vertical-align:middle;font-size:10px") 
+												img(src="/images/v1/epic.gif" height="10px")
+												a(href="http://v1.bwinparty.corp/V1-Production/Epic.mvc/Summary?oidToken=Epic%3A"+e.ID.split(":")[1] target="_new" )
+													|&nbsp;#{e.Number}
+											td(style="vertical-align:top;text-align:left;vertical-align:middle;font-size:10px") 
+												|#{e.Name}
+											td(style="vertical-align:top;text-align:left;font-size:11px;vertical-align:middle") #{e.Product} 
+											td(style="vertical-align:top;text-align:left;font-size:11px;vertical-align:middle") #{moment(e.PlannedStart).format('YYYY-MM-DD')} 
+											td(style="vertical-align:top;text-align:left;font-size:11px;vertical-align:middle") #{moment(e.PlannedEnd).format('YYYY-MM-DD')} 
+											td(style="vertical-align:top;text-align:left;font-size:11px;vertical-align:middle") #{e.Value} 
+											td(style="vertical-align:top;text-align:left;vertical-align:middle;font-size:11px") #{e.Swag} 
+											td(style="vertical-align:top;text-align:left;font-size:11px;vertical-align:middle") #{e.Risk} 
+						script $("#table_roadmapitems").tablesorter();				
 									
 	script(type="text/javascript").
 		

@@ -33,6 +33,7 @@ var PATH = {
 						REST_ITEMSBACKLOGPLANNINGEPICS : BASE+'/space/rest/itemsbacklogplanningepics',
 						REST_ITEMSBACKLOGINITIATIVES : BASE+'/space/rest/itemsbackloginitiatives',
 						REST_ITEMSROADMAPINITIATIVES : BASE+'/space/rest/itemsroadmapinitiatives',
+						REST_ITEMSEMPTY : BASE+'/space/rest/itemsempty',
 
 
 						REST_METRICS : BASE+'/space/rest/metrics',
@@ -147,6 +148,7 @@ router.get(PATH.REST_INITIATIVES, function(req, res, next) {findAllByName(req,re
 router.get(PATH.REST_ITEMSBACKLOGPLANNINGEPICS, function(req, res, next) {getItemsBacklogPlanningEpics(req,res,next); });
 router.get(PATH.REST_ITEMSBACKLOGINITIATIVES, function(req, res, next) {getItemsBacklogInitiatives(req,res,next); });
 router.get(PATH.REST_ITEMSROADMAPINITIATIVES, function(req, res, next) {getItemsRoadmapInitiatives(req,res,next); });
+router.get(PATH.REST_ITEMSEMPTY, function(req, res, next) {empty(req,res,next); });
 
 router.post(PATH.REST_INITIATIVES, function(req, res, next) {save(req,res,next); });
 router.delete(PATH.REST_INITIATIVES, function(req, res, next) {remove(req,res,next); });
@@ -334,6 +336,11 @@ router.get(PATH.CONFIG, function(req, res, next) {getConfig(req,res,next);});
 
 
 module.exports = router;
+
+
+function empty(req, res , next){
+	res.send([]);
+}
 
 
 /**
@@ -1005,6 +1012,23 @@ function saveBoard(req, res , next){
 					res.send({_id:success._id});
 			})
 		})
+	}
+	else if (board.dataLink=="empty"){
+		var _items =[];
+		board.items =_items
+
+		boardService.save(board,function(err,success){
+			logger.debug("saved OK: _id: "+success._id);
+			// and create a thumbnail
+			/*
+			_generateBoardThumbnail(success._id,req.getBaseUrl(),function(err,result){
+					logger.debug("result: "+result);
+					res.send({_id:success._id});
+			})
+			*/
+				res.send({_id:success._id});
+		})
+		
 	}
 	else{
 		logger.debug(".....no roadmap");

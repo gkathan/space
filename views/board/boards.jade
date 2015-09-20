@@ -1,4 +1,4 @@
-include kanban_menu
+include ../kanban_menu
 
 link(rel='stylesheet', href='/stylesheets/login.css')
 
@@ -7,14 +7,14 @@ mixin board(board)
 	div.col-sm-1.col-md-3
 		div.panel(style=" position: relative;padding: 10px 10px 10px;display: block;background-color:white;;width:250px;height:320px;text-align: center;margin: 10px auto;")
 			h4 #{board.name}
-			a(href="/kanban/#{board._id}")
+			a(href="/boards/kanban/#{board._id}")
 				img.img-thumbnail(src="/images/boards/thumbs/#{board._id}.png"  style=" height:100px"  alt="...")
 			br
 			h4
 				small &nbsp; #{board.vision}
 			span(style="font-size:10px; color:#999999") created: #{moment(board.createDate).format("YYYY-MM-DD HH:mm:ss")}
 			br
-			a.btn.btn-primary.btn-xs(href="/kanban/#{board._id}" role="button") View
+			a.btn.btn-primary.btn-xs(href="/boards/kanban/#{board._id}" role="button") View
 			a.btn.btn-default.btn-xs(href="/admin?type=boards" role="button") Edit
 			a.delete_board.btn.btn-link(id="delete_modal" data-id="#{board._id}" data-name="#{board.name}" href="#deleteBoard" role="button")
 
@@ -79,9 +79,9 @@ block content
 						span(aria-hidden="true") &times
 					img.img-thumbnail(src="/images/boards/s2t_board_new.png"  style=" height:60px" )
 				div.modal-body
-					include ./board/forms/form_create
+					include forms/form_create
 
-include includes/material
+include ../includes/material
 
 // some code ;-)
 script(type='text/javascript').
@@ -106,20 +106,13 @@ script(type='text/javascript').
 		e.preventDefault();
 
 		var _self = $(this);
-
 		var _id = _self.data('id');
 		var _name = _self.data('name');
-
-
-		console.log("**************** id: "+_id+" *************************");
-
 		$(".modal-header #boardId").text(_id);
 		$(".modal-header #boardName").text(_name);
 		$(".modal-body #removeboardsubmit").val(_id);
-
 		console.log("+++++"+_self.attr('href'));
 		console.log("+++++"+$(_self.attr('href')).modal);
-
 		$(_self.attr('href')).modal('show');
 	});
 
@@ -127,15 +120,12 @@ script(type='text/javascript').
 	function submitCreate() {
 		var form = document.getElementById("createboardform");
 
-
 		var _board = {};
-
 		_board.name = form.name.value;
 		_board.vision = form.vision.value;
 		_board.subvision = form.subvision.value;
 		_board.mission = form.mission.value;
 		_board.startDate = form.startdate.value;
-		
 		_board.endDate = form.enddate.value;
 		_board.width = form.width.value;
 		_board.height = form.height.value;
@@ -145,6 +135,7 @@ script(type='text/javascript').
 		_board.laneboxRightWidth = form.rightbox.value;
 		_board.dataLink = form.datalink.value;
 		_board.groupby = form.groupby.value;
+		_board.ref = form.ref.value;
 		
 		// default viewconfig
 		var _viewconfig ={};
@@ -189,7 +180,7 @@ script(type='text/javascript').
 				{
 					console.log("***** and now do a client side redirect: "+msg._id);
 					console.log("_board.datalink: "+_board.dataLink);
-					window.location="/kanban/"+msg._id;
+					window.location="/boards/kanban/"+msg._id;
 
 				},
 			error: function(msg)
