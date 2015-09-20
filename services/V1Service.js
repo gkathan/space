@@ -263,12 +263,11 @@ function _repopulateBacklogs(backlogs,initiativesWithPlanningEpics){
 		for (var i in initiativesWithPlanningEpics){
 			var _i = initiativesWithPlanningEpics[i];
 			if (_i.PlanningEpics){
-
+				_i.PlanningBacklog=_b.Name;
 				for (var p in _i.PlanningEpics){
 					var _p = _i.PlanningEpics[p];
 					if (_p.BusinessBacklog==_b.Name){
 						if (!_.findWhere(_b.Initiatives,{Name:_i.Name})){
-
 							_b.Initiatives.push(_.cloneDeep(_i));
 						}
 					}
@@ -290,6 +289,7 @@ function _filterPlanningEpics(backlogs){
 				for (var p in _i.PlanningEpics){
 					var _p = _i.PlanningEpics[p];
 					if (_p.BusinessBacklog == _b.Name){
+						_p.PlanningBacklog=_b.Name;
 						_filtered.push(_p);
 					}
 				}

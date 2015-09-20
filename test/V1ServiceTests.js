@@ -209,12 +209,12 @@ describe('#getPlanningBacklogs()', function(){
 	it('find alls plnning backlogs ', function(done){
 		var v1Service = require('../services/V1Service');
 
-		var _backlogs = v1Service.getPlanningBacklogsByEpics({},function(err,epics){
+		var _backlogs = v1Service.getPlanningBacklogsByInitiatives({},function(err,epics){
 
 					console.log("planning epics: "+epics.length);
 				for (var e in epics){
 					var _e=epics[e];
-					console.log("++ "+_e.Number+" - "+_e.BusinessBacklog+" - "+_e.EpicRootName+" - "+_e._id);
+					console.log("++ "+_e.Number+" - "+_e.PlanningBacklog);
 				}
 
 					done();
