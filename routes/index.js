@@ -154,22 +154,37 @@ router.get('/kanban/:id', function(req, res) {
   	var v1Service =  require('../services/V1Service');
     var boardService = require('../services/BoardService');
   		boardService.findById(id,function(err,board){
-        logger.debug("----board loaded: "+JSON.stringify(board.viewConfig));
-        v1Service.getRoadmapInitiatives(new Date("2014-01-01"),function (err, docs){
-          var _items = [];
-          for (var i in docs){
-            var _r = docs[i];
-            if (_r.Value && _r.Swag && (_r.Status=="New" || _r.Status=="Understanding" || _r.Status=="Conception" || _r.Status=="Implementation")){
-              _items.push(_r);
-            }
-          }
 
-      		res.locals.kanbanId = id;
-          res.locals.board=board;
-          res.locals.moment = require('moment');
-      		res.locals.epics = _items;
-      		res.render('kanban', { title: 's p a c e - kanban board' })
-  	});
+        logger.debug("loading board... board type ="+board.dataLink);
+        if (board.dataLink=="roadmapinitiatives"){
+          v1Service.getRoadmapInitiatives(new Date("2014-01-01"),function (err, docs){
+            var _items = [];
+            for (var i in docs){
+              var _r = docs[i];
+              if (_r.Value && _r.Swag && (_r.Status=="New" || _r.Status=="Understanding" || _r.Status=="Conception" || _r.Status=="Implementation")){
+                _items.push(_r);
+              }
+            }
+
+        		res.locals.kanbanId = id;
+            res.locals.board=board;
+            res.locals.moment = require('moment');
+        		res.locals.epics = _items;
+        		res.render('kanban', { title: 's p a c e - initiative roadmap board' })
+    	    });
+        }
+        else if (board.dataLink=="planningbacklogsepics"){
+          v1Service.getPlanningBacklogsByEpics({},function (err, epics){
+        		logger.debug("board type ="+board.dataLink);
+            res.locals.kanbanId = id;
+            res.locals.board=board;
+            res.locals.moment = require('moment');
+        		res.locals.epics = epics;
+        		res.render('kanban', { title: 's p a c e - planning backlogs board' })
+
+  	       });
+        }
+        else res.send("no valid dataLink: "+board.dataLink)
   })
 
 });

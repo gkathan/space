@@ -50,7 +50,7 @@ router.get('/planningbacklogs', function(req, res) {
 
 	v1Service.getPlanningBacklogs(_filter,function(err,result){
 		res.locals.backlogs = _.sortBy(result.backlogs,'Name');
-		res.locals.totalSwag = result.statistics.totalSwag;
+		res.locals.statistics = result.statistics;
 		res.locals.moment=moment;
 		res.render('portfolio/planningbacklogs'), { title: 's p a c e - planning backlogs overview ' }
 	})

@@ -257,40 +257,33 @@ function redraw() {
  *
  */
 function render(svgFile){
+	console.log("--------------render()");
 	checkServices();
 	initShortcuts();
+
 
 	d3.xml(svgFile, function(xml) {
 		document.body.appendChild(document.importNode(xml.documentElement, true));
 		var _boardId;
 		//var _boardId="54bba57720f4764e7e797849";
 		_boardId = _.last(window.location.href.split("/"));
+
 		console.log("kanban.js render: _boardId: "+_boardId);
-		$.when($.getJSON(dataSourceFor("roadmapinitiatives")),
-				$.getJSON(dataSourceFor("metrics")),
-				$.getJSON(dataSourceFor("releases")),
-				$.getJSON(dataSourceFor("boards/"+_boardId)),
-				$.getJSON(dataSourceFor("targets"))
-				)
+		console.log("_url: "+dataSourceFor("boards/"+_boardId));
 
-			.done(function(initiatives,metrics,releases,board,targets){
-					if (initiatives[1]=="success"){
+		$.getJSON(dataSourceFor("boards/"+_boardId),function(board){
+			console.log("OK - board loaded: "+board._id+ " dataLink: "+board.dataLink);
+			boardData=board;
+			console.log("trying to load items: "+dataSourceFor("items"+board.dataLink));
 
-						initiativeData=initiatives[0];
-						console.log("======= initiatives.length: "+initiativeData.length);
-					}
-					else throw new Exception("error loading initiatives");
-					if (metrics[1]=="success") metricData=metrics[0];
-					else throw new Exception("error loading metrics");
-					if (releases[1]=="success") releaseData=releases[0];
-					else throw new Exception("error loading releases");
-					if (board[1]=="success") boardData=board[0];
-					else throw new Exception("error loading postits");
-					if (targets[1]=="success") targetData=targets[0];
-					else throw new Exception("error loading targets");
-					console.log("kanban.js loading data done..");
-					renderBoard(_boardId);
-				});
+			$.getJSON(dataSourceFor("items"+board.dataLink),function(items){
+				console.log("items loaded...");
+				initiativeData=items;
+
+				renderBoard(_boardId);
+			})
+		})
+
 	}); // end xml load anonymous
 }
 
@@ -408,7 +401,6 @@ function drawCustomPostits(){
 */
 function drawInitiatives(){
 	if (BOARD.viewConfig.lanes!="off") drawLanes();
-	drawWC2014();
 	drawItems();
 }
 
@@ -478,7 +470,7 @@ function drawAll(){
 	}
 	//drawOverviewMetaphors(svg);
 
-	drawReleases();
+		//if (BOARD.viewConfig.releases!="off") drawMetrics();drawReleases();
 
 	d3.select("#whiteboard").style("visibility","hidden");
 // --------------------------------------------------------------------------------------------------

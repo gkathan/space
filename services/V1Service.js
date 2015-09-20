@@ -29,6 +29,7 @@ exports.getPlanningEpics=_getPlanningEpics;
 exports.getBacklogsFromInitiativesWithPlanningEpics=_getBacklogsFromInitiativesWithPlanningEpics;
 exports.getMembersPerPlanningBacklog = _getMembersPerPlanningBacklog;
 exports.getPlanningBacklogs = _getPlanningBacklogs;
+exports.getPlanningBacklogsByEpics = _getPlanningBacklogsByEpics;
 
 /**
  * find all Epics
@@ -114,10 +115,14 @@ function _getPlanningBacklogs(filter,callback){
 			// and sort the initiatives
 			var _totalSwag =0;
 			var _totalPlanningEpics =0;
+			var _totalInitiatives =0;
+			var _totalMembers =0;
+			var _totalTeams =0;
+
 			for (var b in _backlogs){
 				var _backlogSwag=0;
 				var _backlogPlanningEpics=0;
-
+				_totalInitiatives+=parseInt(_backlogs[b].Initiatives.length);
 				for (var i in _backlogs[b].Initiatives){
 					var _i = _backlogs[b].Initiatives[i]
 					var _swagSum=0;
@@ -143,10 +148,33 @@ function _getPlanningBacklogs(filter,callback){
 				_backlogs[b].Members = _getMembersPerPlanningBacklog(_backlogs[b].Name,teams)
 				_backlogs[b].TotalSwag = _backlogSwag;
 				_backlogs[b].TotalPlanningEpics = _backlogPlanningEpics;
+				_totalMembers+=_backlogs[b].Members.length;
+				_totalTeams+=_.uniq(_.map(_backlogs[b].Members,'Team')).length;
 			}
-			callback(null,{backlogs:_backlogs,statistics:{totalSwag:_totalSwag,totalPlanningEpics:_totalPlanningEpics}});
+			callback(null,{backlogs:_backlogs,statistics:{totalSwag:_totalSwag,totalPlanningEpics:_totalPlanningEpics,totalInitiatives:_totalInitiatives,totalMembers:_totalMembers,totalTeams:_totalTeams}});
 		});
 	});
+}
+
+
+function _getPlanningBacklogsByEpics(filter,callback){
+	_getPlanningBacklogs(filter,function(err,result){
+		var _planningepics = _extractPlanningEpicsFromBacklogs(result.backlogs);
+		callback(null,_planningepics);
+	})
+}
+/**
+helper
+*/
+function _extractPlanningEpicsFromBacklogs(backlogs){
+	var _planningepics=[];
+	for (var b in backlogs){
+		var _b = backlogs[b];
+		for(var i in _b.Initiatives){
+			_planningepics=_.union(_planningepics,_b.Initiatives[i].PlanningEpics);
+		}
+	}
+	return _planningepics;
 }
 
 /** this is for peter :-)

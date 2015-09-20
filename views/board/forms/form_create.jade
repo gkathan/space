@@ -1,7 +1,7 @@
 block content
 	
 div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;background-color:white;;width:500px;text-align: center;margin: 10px auto;")
-	div(style="margin: 10px auto;")
+	div(style="margin: 10px auto;") CREATE NEW BOARD
 		form.form-horizontal(id="createboardform" action="" method="" autocomplete="off" ) 
 			div(style="margin-left:5px;width:400px;height:40px")
 				input.form-control.floating-label(id="name" name="name" type="text" placeholder="name" autocomplete="off" data-hint="the name of your board")
@@ -34,14 +34,21 @@ div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;back
 						input.form-control.floating-label(id="rightbox" name="rightbox" type="laneboxrightext" placeholder="rightbox" autocomplete="off" value="10")
 					td(colspan="2" style="margin-left:5px;width:240px;height:50px;vertical-align:bottom")
 						input.form-control.floating-label(id="groupby" name="groupby" type="text" placeholder="groupby" autocomplete="off" value="Product,BusinessBacklog,Number")
-
-
-			br
-			div.togglebutton(style="margin-left:5px;width:400px;height:80px")
-				label 
-					input(id="roadmapinitiatives" type="checkbox" checked)
-					span import roadmap initiatives
-
+				tr
+					td(colspan="3" style="height:100px;text-align:left")
+						div.radio.radio-primary
+							label 
+								input(id="datalink_roadmap" type="radio" name="datalink" value="roadmapinitiatives" checked)
+								|link to V1 roadmap data
+						div.radio.radio-primary
+							label 
+								input(id="datalink_backlog" type="radio" name="datalink" value="planningbacklogsepics")
+								|link to V1 planning backlogs data
+						div.radio.radio-primary
+							label 
+								input(id="datalink_empty" type="radio" name="datalink" value="empty" )
+								|empty
+								
 			button.btn.btn-default.btn-xs(type="button" )
 				span Cancel
 			button.btn.btn-info.btn-xs(id="createboardsubmit" type="button")

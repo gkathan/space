@@ -68,14 +68,6 @@ function _sync(url,type,callback){
 				var _message = "syncv1 [DONE]: "+_epics.length+" epics";
 				logger.info(_message);
 
-				// and write a cahe collection with the roadmapinitiatives
-				v1Service.getRoadmapInitiatives(new Date("2014-01-01"),function(err,roadmapinitiatives){
-					logger.debug("------------- SAVE ")
-					var roadmap =  db.collection("roadmapinitiatives");
-					roadmap.drop();
-					roadmap.insert(roadmapinitiatives);
-				})
-
 				app.io.emit('syncUpdate', {status:"[SUCCESS]",from:_syncName,timestamp:_timestamp,info:_epics.length+" epics",type:type});
 				_syncStatus.saveLastSync(_syncName,_timestamp,_message,_statusSUCCESS,type);
 				callback(null,"syncv1 [DONE]: "+_epics.length+ " epics synced")

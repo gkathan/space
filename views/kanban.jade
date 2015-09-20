@@ -32,7 +32,7 @@ block content
 			span board config
 		// Button trigger modal
 		button.btn.btn-success.btn-xs(type="button" data-toggle="modal" data-target="#v1EpicsModal")
-			span roadmap items (Swag and Value filled)
+			span items (Swag and Value filled)
 
 		// Button trigger whiteboard
 		button.btn.btn-warning.btn-xs(type="button" onclick="renderWhiteboard()")
@@ -100,7 +100,7 @@ block content
 										td(style="vertical-align:top;text-align:left;vertical-align:middle;font-size:11px") #{e.Swag} 
 										td(style="vertical-align:top;text-align:left;font-size:11px;vertical-align:middle") #{e.Risk} 
 					script $("#table_roadmapitems").tablesorter();				
-								
+									
 	script(type="text/javascript").
 		
 		render("/images/svg/external.svg");

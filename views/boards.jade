@@ -90,6 +90,10 @@ script(type='text/javascript').
 
 	$("#createboardsubmit").click(function() {console.log("create board submit pressed"); submitCreate(); });
 
+	$("#datalink_roadmap").click(function() {console.log("datalink_roadmap clicked !!!!!");$("#groupby").val("Product,BusinessBacklog,Number")});
+	$("#datalink_backlog").click(function() {console.log("datalink_backlog clicked !!!!!");$("#groupby").val("BusinessBacklog,EpicRootName,Number")});
+	$("#datalink_empty").click(function() {console.log("datalink_empty clicked !!!!!");$("#groupby").val("")});
+
 
 	/**
 	* passing parameters to my modal
@@ -125,26 +129,6 @@ script(type='text/javascript').
 
 		var _board = {};
 
-		// default viewconfig
-		var _viewconfig ={};
-		_viewconfig.vision="show";
-		_viewconfig.metrics="off";
-		_viewconfig.swag="hide";
-		_viewconfig.start="hide";
-		_viewconfig.queues="show";
-		_viewconfig.targets="off";
-		_viewconfig.initiatives="show";
-		_viewconfig.guides="show";
-		_viewconfig.targets="off";
-		_viewconfig.lanes="show";
-		_viewconfig.grid="show";
-		_viewconfig.axes="show";
-		_viewconfig.lanes="show";
-		
-		
-
-
-
 		_board.name = form.name.value;
 		_board.vision = form.vision.value;
 		_board.subvision = form.subvision.value;
@@ -158,9 +142,35 @@ script(type='text/javascript').
 		_board.itemFontScale = form.itemfontscale.value;
 		_board.WIPWindowDays = form.wip.value;
 		_board.laneboxRightWidth = form.rightbox.value;
-		_board.viewConfig = _viewconfig;
-		_board.roadmapInitiatives = form.roadmapinitiatives.checked;
+		_board.dataLink = form.datalink.value;
 		_board.groupby = form.groupby.value;
+		
+		// default viewconfig
+		var _viewconfig ={};
+		_viewconfig.vision="show";
+		_viewconfig.metrics="off";
+		_viewconfig.queues="show";
+		_viewconfig.queuesmetrics="show";
+		_viewconfig.swag="hide";
+		_viewconfig.start="show";
+		if (_board.dataLink=="roadmapinitiatives"){
+			_viewconfig.queues="show";
+		}
+		else if (_board.dataLink=="planningbacklogsepics"){
+			_viewconfig.queues="show";
+			_viewconfig.queuesmetrics="hide";
+			_viewconfig.vision="hide";
+		}	
+			
+		_viewconfig.targets="off";
+		_viewconfig.initiatives="show";
+		_viewconfig.guides="show";
+		_viewconfig.targets="off";
+		_viewconfig.lanes="show";
+		_viewconfig.grid="show";
+		_viewconfig.axes="show";
+		
+		_board.viewConfig = _viewconfig;
 		
 		var _json = JSON.stringify(_board);
 
@@ -177,6 +187,7 @@ script(type='text/javascript').
 			success: function(msg)
 				{
 					console.log("***** and now do a client side redirect: "+msg._id);
+					console.log("_board.datalink: "+_board.dataLink);
 					window.location="/kanban/"+msg._id;
 
 				},

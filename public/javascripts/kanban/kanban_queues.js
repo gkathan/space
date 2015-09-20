@@ -50,13 +50,18 @@ function drawQueues(){
 
 	var _yMetricBracketOffset = height+METRIC_BRACKET_Y_OFFSET;
 	var gQueue = svg.append("g").attr("id","queues");
-		if (BOARD.viewConfig.queues=="hide"){
-			gQueue.style("visibility","hidden");
-		}
+
+	if (BOARD.viewConfig.queues=="hide"){
+		gQueue.style("visibility","hidden");
+	}
 
 
 	//---------------- METRICS --------------------
 	var gQueueMetrics = gQueue.append("g").attr("id","qmetrics");
+
+	if (BOARD.viewConfig.queuesmetrics=="hide"){
+		gQueueMetrics.style("visibility","hidden");
+	}
 
 
 	//---------------- DONE queue --------------------

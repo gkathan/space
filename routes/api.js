@@ -29,6 +29,11 @@ var PATH_ROOT ="/";
 var PATH = {
 						ROOT : PATH_ROOT,
 						REST_INITIATIVES : BASE+'/space/rest/initiatives',
+
+						REST_ITEMSPLANNINGEPICS : BASE+'/space/rest/itemsplanningbacklogsepics',
+						REST_ITEMSROADMAPINITIATIVES : BASE+'/space/rest/itemsroadmapinitiatives',
+
+
 						REST_METRICS : BASE+'/space/rest/metrics',
 						REST_TARGETS : BASE+'/space/rest/targets/:period',
 						REST_TARGETS_L1 : BASE+'/space/rest/targets/L1/:period',
@@ -137,6 +142,10 @@ var PATH = {
 router.get(PATH.ROOT, function(req, res, next) {res.locals.API_LIST=PATH;res.locals.REQ_PATH=req.baseUrl;res.render("api");});
 
 router.get(PATH.REST_INITIATIVES, function(req, res, next) {findAllByName(req,res,next); });
+
+router.get(PATH.REST_ITEMSPLANNINGEPICS, function(req, res, next) {getItemsPlanningEpics(req,res,next); });
+router.get(PATH.REST_ITEMSROADMAPINITIATIVES, function(req, res, next) {getItemsRoadmapInitiatives(req,res,next); });
+
 router.post(PATH.REST_INITIATIVES, function(req, res, next) {save(req,res,next); });
 router.delete(PATH.REST_INITIATIVES, function(req, res, next) {remove(req,res,next); });
 
@@ -492,6 +501,43 @@ function findBy_id(req, res , next){
     });
 }
 
+function getItemsPlanningEpics(req,res,next){
+	var context = config.context;
+	logger.debug("------ getItemsPlanningEpics called: ");
+	var v1Service = require('../services/V1Service');
+	if (req.query.context) context=req.query.context;
+
+	v1Service.getPlanningBacklogsByEpics({},function(err,planningepics){
+		if(err){
+			logger.error("error: "+err.message);
+			res.send("error: "+err.message);
+		}
+		else{
+			res.send(planningepics);
+			return;
+		}
+	})
+}
+
+function getItemsRoadmapInitiatives(req,res,next){
+	var context = config.context;
+	logger.debug("------ getItemsPlanningEpics called: ");
+	var v1Service = require('../services/V1Service');
+	if (req.query.context) context=req.query.context;
+
+	v1Service.getRoadmapInitiatives(new Date("2014-01-01"),function(err,roadmapinitiatves){
+		if(err){
+			logger.error("error: "+err.message);
+			res.send("error: "+err.message);
+		}
+		else{
+			res.send(roadmapinitiatves);
+			return;
+		}
+	})
+}
+
+
 /**
 */
 function findIncidents(req,res,next){
@@ -821,74 +867,98 @@ function findTrailByNameForId(req, res , next){
  PROTOTYPE !!!!!
 */
 function saveBoard(req, res , next){
-		var boardService = require('../services/BoardService');
-		var context;
-		if (req.session.CONTEXT) context = req.session.CONTEXT;
-		else context = res.config.context;
+	var boardService = require('../services/BoardService');
+	var context;
+	if (req.session.CONTEXT) context = req.session.CONTEXT;
+	else context = res.config.context;
+  var board = JSON.parse(req.body.board);
+	var _timestamp = new Date();
+  board.createDate=_timestamp;
+	var _groupby = board.groupby.split(",");
 
-    //var board = JSON.parse(req.body.board);
-    var board = JSON.parse(req.body.board);
-		logger.debug("board: "+JSON.stringify(board));
-		var _timestamp = new Date();
-    board.createDate=_timestamp;
-		logger.debug("*** groupby: "+board.groupby)
-		var _groupby = board.groupby.split(",");
-		logger.debug("*** _groupby: "+_groupby)
-		if (_groupby.length!=3){
-			logger.error("groupby currently must be 3 levels");
-			//default
-			_groupby=["Product","BusinessBacklog","Number"];
-		}
-    // now lets iterate over the array
-		var v1Service=require('../services/V1Service');
-		if (board.roadmapInitiatives){
-			var _items =[];
-			v1Service.getRoadmapInitiatives(new Date("2014-01-01"),function(err,roadmap){
-				for (var r in roadmap){
-					//split / join needed e.g. if businessbacklog is used we need to replace "/"
-					if (!roadmap[r][_groupby[0]]) roadmap[r][_groupby[0]]=board.name;
-					if (!roadmap[r][_groupby[1]]) roadmap[r][_groupby[1]]="empty";
-					if (!roadmap[r][_groupby[2]]) roadmap[r][_groupby[2]]="empty";
+	if (_groupby.length!=3){
+		logger.error("groupby currently must be 3 levels");
+		//default
+		_groupby=["Product","BusinessBacklog","Number"];
+	}
+  // now lets iterate over the array
+	var v1Service=require('../services/V1Service');
+	if (board.dataLink=="roadmapinititatives"){
+		var _items =[];
+		v1Service.getRoadmapInitiatives(new Date("2014-01-01"),function(err,roadmap){
+			for (var r in roadmap){
+				//split / join needed e.g. if businessbacklog is used we need to replace "/"
+				if (!roadmap[r][_groupby[0]]) roadmap[r][_groupby[0]]=board.name;
+				if (!roadmap[r][_groupby[1]]) roadmap[r][_groupby[1]]="empty";
+				if (!roadmap[r][_groupby[2]]) roadmap[r][_groupby[2]]="empty";
 
-					var _group1 = roadmap[r][_groupby[0]].split("/").join("|");
-					var _group2 = roadmap[r][_groupby[1]].split("/").join("|");
-					var _group3 = roadmap[r][_groupby[2]].split("/").join("|");
-					var _product = roadmap[r].Product;
+				var _group1 = roadmap[r][_groupby[0]].split("/").join("|");
+				var _group2 = roadmap[r][_groupby[1]].split("/").join("|");
+				var _group3 = roadmap[r][_groupby[2]].split("/").join("|");
+				var _product = roadmap[r].Product;
+				// !!!! path needs 3 levels right now at least
+				if (!_product) _product="No Product";
+				var _itemView={sublaneOffset:0,size:7,accuracy:10,lanePath:board.name+"/"+_group1+"/"+_group2+"/"+_group3}
+				var _item ={itemRef:roadmap[r].Number,itemView:_itemView};
+				_items.push(_item);
+			}
+			board.items =_items
 
-
-					// !!!! path needs 3 levels right now at least
-					if (!_product) _product="No Product";
-					//var _itemView={sublaneOffset:0,size:7,accuracy:10,lanePath:"/"+_product+"/"+_backlog+"/"+_status}
-					// distinct sublanes ;-) give one line per item for free ;-)
-					//var _itemView={sublaneOffset:0,size:7,accuracy:10,lanePath:"/"+_product+"/"+_status+"/"+_number}
-					var _itemView={sublaneOffset:0,size:7,accuracy:10,lanePath:board.name+"/"+_group1+"/"+_group2+"/"+_group3}
-					var _item ={itemRef:roadmap[r].Number,itemView:_itemView};
-					_items.push(_item);
-				}
-				board.items =_items
-    		logger.debug("*********************** save board: "+JSON.stringify(board));
-				boardService.save(board,function(err,success){
-					logger.debug("saved OK: _id: "+success._id);
-
-					// and create a thumbnail
-					/*
-					_generateBoardThumbnail(success._id,req.getBaseUrl(),function(err,result){
-							logger.debug("result: "+result);
-							res.send({_id:success._id});
-					})
-					*/
+			boardService.save(board,function(err,success){
+				logger.debug("saved OK: _id: "+success._id);
+				// and create a thumbnail
+				/*
+				_generateBoardThumbnail(success._id,req.getBaseUrl(),function(err,result){
+						logger.debug("result: "+result);
 						res.send({_id:success._id});
-
 				})
-			})
-		}
-		else{
-			logger.debug(".....no roadmap");
-				boardService.save(board,function(err,success){
-					logger.debug("saved OK: _id: "+success._id);
+				*/
 					res.send({_id:success._id});
+			})
+		})
+	}
+	else if (board.dataLink=="planningbacklogsepics"){
+		var _items =[];
+		v1Service.getPlanningBacklogsByEpics({},function(err,epics){
+			for (var e in epics){
+				var _e = epics[e];
+				//split / join needed e.g. if businessbacklog is used we need to replace "/"
+				if (!_e[_groupby[0]]) _e[_groupby[0]]=board.name;
+				if (!_e[_groupby[1]]) _e[_groupby[1]]="empty";
+				if (!_e[_groupby[2]]) _e[_groupby[2]]="empty";
+
+				var _group1 = _e[_groupby[0]].split("/").join("|");
+				var _group2 = _e[_groupby[1]].split("/").join("|");
+				var _group3 = _e[_groupby[2]].split("/").join("|");
+				var _product = _e.Product;
+				// !!!! path needs 3 levels right now at least
+				if (!_product) _product="No Product";
+				var _itemView={sublaneOffset:0,size:7,accuracy:10,lanePath:board.name+"/"+_group1+"/"+_group2+"/"+_group3}
+				var _item ={itemRef:_e.Number,itemView:_itemView};
+				_items.push(_item);
+			}
+			board.items =_items
+
+			boardService.save(board,function(err,success){
+				logger.debug("saved OK: _id: "+success._id);
+				// and create a thumbnail
+				/*
+				_generateBoardThumbnail(success._id,req.getBaseUrl(),function(err,result){
+						logger.debug("result: "+result);
+						res.send({_id:success._id});
 				})
-		}
+				*/
+					res.send({_id:success._id});
+			})
+		})
+	}
+	else{
+		logger.debug(".....no roadmap");
+			boardService.save(board,function(err,success){
+				logger.debug("saved OK: _id: "+success._id);
+				res.send({_id:success._id});
+			})
+	}
 }
 
 /**experimental dynamic thumbnail creation

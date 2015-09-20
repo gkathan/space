@@ -9,11 +9,44 @@ block content
 			br
 			a(href="/portfolio/planningepics") view planning epics
 			br
+			table(style="max-width:250px;font-size:12px")
+				tr
+					td(style="text-align:left;width:150px") 
+						|#backlogs:
+					td(style="text-align:right")
+						b
+							|#{backlogs.length}
+				tr
+					td(style="text-align:left;width:150px") 
+						|#initiatives:
+					td(style="text-align:right")
+						b
+							|#{statistics.totalInitiatives}
+				tr
+					td(style="text-align:left;width:150px") 
+						|#planning epics:
+					td(style="text-align:right")
+						b
+							|#{statistics.totalPlanningEpics}
+				tr
+					td(style="text-align:left;width:150px") 
+						|total swag:
+					td(style="text-align:right")
+						b
+							|#{statistics.totalSwag}
+				tr
+					td(style="text-align:left;width:150px") 
+						|total people:
+					td(style="text-align:right")
+						b
+							|#{statistics.totalMembers}
+				tr
+					td(style="text-align:left;width:150px") 
+						|total teams:
+					td(style="text-align:right")
+						b
+							|#{statistics.totalTeams}
 			
-			div(style="text-align:left")
-				|total backlogs: <b>#{backlogs.length}</b> 
-				br
-				|total swag: <b>#{totalSwag}</b> 
 		.panel-body
 		table.table.table-striped.table-hover.table-condensed.table-responsive.tablsesorter(id="planningbacklogs" style="max-width:1400px")
 			thead

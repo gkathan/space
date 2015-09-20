@@ -27,6 +27,11 @@ function drawVision(){
 		.attr("id","vision")
 		.attr("class","draggable");
 
+	if (BOARD.viewConfig.vision=="hide"){
+		gVision.style("visibility","hidden");
+	}
+
+
 	// ----- vision statement ------
 	var _x = x(KANBAN_START.getTime()+(KANBAN_END.getTime()-KANBAN_START.getTime())/2);
 	var _y = -200;
