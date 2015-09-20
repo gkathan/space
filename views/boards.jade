@@ -91,7 +91,8 @@ script(type='text/javascript').
 	$("#createboardsubmit").click(function() {console.log("create board submit pressed"); submitCreate(); });
 
 	$("#datalink_roadmap").click(function() {console.log("datalink_roadmap clicked !!!!!");$("#groupby").val("Product,BusinessBacklog,Number")});
-	$("#datalink_backlog").click(function() {console.log("datalink_backlog clicked !!!!!");$("#groupby").val("BusinessBacklog,EpicRootName,Number")});
+	$("#datalink_backlogplanningepics").click(function() {console.log("datalink_backlogplanningepics clicked !!!!!");$("#groupby").val("BusinessBacklog,EpicRootName,Number")});
+	$("#datalink_backloginitiatives").click(function() {console.log("datalink_backloginitiatives clicked !!!!!");$("#groupby").val("Product,BusinessBacklog,Number")});
 	$("#datalink_empty").click(function() {console.log("datalink_empty clicked !!!!!");$("#groupby").val("")});
 
 
@@ -156,7 +157,7 @@ script(type='text/javascript').
 		if (_board.dataLink=="roadmapinitiatives"){
 			_viewconfig.queues="show";
 		}
-		else if (_board.dataLink=="planningbacklogsepics"){
+		else if (_board.dataLink=="backlogplanningepics" || _board.dataLink=="backloginitiatives"){
 			_viewconfig.queues="show";
 			_viewconfig.queuesmetrics="hide";
 			_viewconfig.vision="hide";

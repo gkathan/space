@@ -50,13 +50,19 @@ router.get('/planningbacklogs', function(req, res) {
 	var _filter = {};
 
 	v1Service.getPlanningBacklogs(_filter,function(err,result){
-		boardService.find({name:"Planning Backlogs"},function(err,boards){
-			var _boardId;
-			if (boards[0]) _boardId = boards[0]._id;
+		boardService.find({},function(err,boards){
+			logger.debug("looking for boards: ....................."+boards.length);
+			var _planningEpicsBoardId;
+			var _initiativesBoardId;
+			if (boards){
+				_planningEpicsBoardId = _.findWhere(boards,{name:"Backlogs PlanningEpics"})._id;
+				_initiativesBoardId = _.findWhere(boards,{name:"Backlogs Initiatives"})._id;
+			}
 			res.locals.backlogs = _.sortBy(result.backlogs,'Name');
 			res.locals.statistics = result.statistics;
 			res.locals.moment=moment;
-			res.locals.boardId = _boardId;
+			res.locals.planningEpicsBoardId = _planningEpicsBoardId;
+			res.locals.initiativesBoardId = _initiativesBoardId;
 			res.render('portfolio/planningbacklogs'), { title: 's p a c e - planning backlogs overview ' }
 
 		})

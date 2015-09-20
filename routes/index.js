@@ -173,17 +173,29 @@ router.get('/kanban/:id', function(req, res) {
         		res.render('kanban', { title: 's p a c e - initiative roadmap board' })
     	    });
         }
-        else if (board.dataLink=="planningbacklogsepics"){
+        else if (board.dataLink=="backlogplanningepics"){
           v1Service.getPlanningBacklogsByEpics({},function (err, epics){
         		logger.debug("board type ="+board.dataLink);
             res.locals.kanbanId = id;
             res.locals.board=board;
             res.locals.moment = require('moment');
         		res.locals.epics = epics;
-        		res.render('kanban', { title: 's p a c e - planning backlogs board' })
+        		res.render('kanban', { title: 's p a c e - backlog planningepics board' })
 
   	       });
         }
+        else if (board.dataLink=="backloginitiatives"){
+          v1Service.getPlanningBacklogsByInitiatives({},function (err, inititatives){
+        		logger.debug("board type ="+board.dataLink);
+            res.locals.kanbanId = id;
+            res.locals.board=board;
+            res.locals.moment = require('moment');
+        		res.locals.epics = inititatives;
+        		res.render('kanban', { title: 's p a c e - backlog planningepics board' })
+
+  	       });
+        }
+
         else res.send("no valid dataLink: "+board.dataLink)
   })
 

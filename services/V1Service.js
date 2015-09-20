@@ -30,6 +30,7 @@ exports.getBacklogsFromInitiativesWithPlanningEpics=_getBacklogsFromInitiativesW
 exports.getMembersPerPlanningBacklog = _getMembersPerPlanningBacklog;
 exports.getPlanningBacklogs = _getPlanningBacklogs;
 exports.getPlanningBacklogsByEpics = _getPlanningBacklogsByEpics;
+exports.getPlanningBacklogsByInitiatives = _getPlanningBacklogsByInitiatives;
 
 /**
  * find all Epics
@@ -163,6 +164,14 @@ function _getPlanningBacklogsByEpics(filter,callback){
 		callback(null,_planningepics);
 	})
 }
+
+function _getPlanningBacklogsByInitiatives(filter,callback){
+	_getPlanningBacklogs(filter,function(err,result){
+		var _initiatives = _extractInitiativesFromBacklogs(result.backlogs);
+		callback(null,_initiatives);
+	})
+}
+
 /**
 helper
 */
@@ -176,6 +185,16 @@ function _extractPlanningEpicsFromBacklogs(backlogs){
 	}
 	return _planningepics;
 }
+function _extractInitiativesFromBacklogs(backlogs){
+	var _initiatives=[];
+	for (var b in backlogs){
+		var _b = backlogs[b];
+		_initiatives=_.union(_initiatives,_b.Initiatives);
+	}
+	return _initiatives;
+}
+
+
 
 /** this is for peter :-)
 * collects all initiatives and puts planning epics as children*

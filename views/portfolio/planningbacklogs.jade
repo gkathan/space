@@ -9,8 +9,11 @@ block content
 			br
 			a(href="/portfolio/planningepics") view planning epics
 			br
-			if boardId
-				a(style="font-size:11px" href="/kanban/#{boardId}") view timeline board (*experimental)
+			if initiativesBoardId
+				a(style="font-size:11px" href="/kanban/#{initiativesBoardId}") level-1 timeline board - backlogs initiatives(*experimental) 
+				br
+			if planningEpicsBoardId
+				a(style="font-size:11px" href="/kanban/#{planningEpicsBoardId}") level-2 timeline board - backlogs planningepics(*experimental) 
 				br
 			table(style="max-width:250px;font-size:12px")
 				tr

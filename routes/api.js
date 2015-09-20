@@ -30,7 +30,8 @@ var PATH = {
 						ROOT : PATH_ROOT,
 						REST_INITIATIVES : BASE+'/space/rest/initiatives',
 
-						REST_ITEMSPLANNINGEPICS : BASE+'/space/rest/itemsplanningbacklogsepics',
+						REST_ITEMSBACKLOGPLANNINGEPICS : BASE+'/space/rest/itemsbacklogplanningepics',
+						REST_ITEMSBACKLOGINITIATIVES : BASE+'/space/rest/itemsbackloginitiatives',
 						REST_ITEMSROADMAPINITIATIVES : BASE+'/space/rest/itemsroadmapinitiatives',
 
 
@@ -143,7 +144,8 @@ router.get(PATH.ROOT, function(req, res, next) {res.locals.API_LIST=PATH;res.loc
 
 router.get(PATH.REST_INITIATIVES, function(req, res, next) {findAllByName(req,res,next); });
 
-router.get(PATH.REST_ITEMSPLANNINGEPICS, function(req, res, next) {getItemsPlanningEpics(req,res,next); });
+router.get(PATH.REST_ITEMSBACKLOGPLANNINGEPICS, function(req, res, next) {getItemsBacklogPlanningEpics(req,res,next); });
+router.get(PATH.REST_ITEMSBACKLOGINITIATIVES, function(req, res, next) {getItemsBacklogInitiatives(req,res,next); });
 router.get(PATH.REST_ITEMSROADMAPINITIATIVES, function(req, res, next) {getItemsRoadmapInitiatives(req,res,next); });
 
 router.post(PATH.REST_INITIATIVES, function(req, res, next) {save(req,res,next); });
@@ -501,7 +503,7 @@ function findBy_id(req, res , next){
     });
 }
 
-function getItemsPlanningEpics(req,res,next){
+function getItemsBacklogPlanningEpics(req,res,next){
 	var context = config.context;
 	logger.debug("------ getItemsPlanningEpics called: ");
 	var v1Service = require('../services/V1Service');
@@ -514,6 +516,23 @@ function getItemsPlanningEpics(req,res,next){
 		}
 		else{
 			res.send(planningepics);
+			return;
+		}
+	})
+}
+function getItemsBacklogInitiatives(req,res,next){
+	var context = config.context;
+	logger.debug("------ getItemsInitiatives called: ");
+	var v1Service = require('../services/V1Service');
+	if (req.query.context) context=req.query.context;
+
+	v1Service.getPlanningBacklogsByInitiatives({},function(err,initiatives){
+		if(err){
+			logger.error("error: "+err.message);
+			res.send("error: "+err.message);
+		}
+		else{
+			res.send(initiatives);
 			return;
 		}
 	})
@@ -917,9 +936,44 @@ function saveBoard(req, res , next){
 			})
 		})
 	}
-	else if (board.dataLink=="planningbacklogsepics"){
+	else if (board.dataLink=="backlogplanningepics"){
 		var _items =[];
 		v1Service.getPlanningBacklogsByEpics({},function(err,epics){
+			for (var e in epics){
+				var _e = epics[e];
+				//split / join needed e.g. if businessbacklog is used we need to replace "/"
+				if (!_e[_groupby[0]]) _e[_groupby[0]]=board.name;
+				if (!_e[_groupby[1]]) _e[_groupby[1]]="empty";
+				if (!_e[_groupby[2]]) _e[_groupby[2]]="empty";
+
+				var _group1 = _e[_groupby[0]].split("/").join("|");
+				var _group2 = _e[_groupby[1]].split("/").join("|");
+				var _group3 = _e[_groupby[2]].split("/").join("|");
+				var _product = _e.Product;
+				// !!!! path needs 3 levels right now at least
+				if (!_product) _product="No Product";
+				var _itemView={sublaneOffset:0,size:7,accuracy:10,lanePath:board.name+"/"+_group1+"/"+_group2+"/"+_group3}
+				var _item ={itemRef:_e.Number,itemView:_itemView};
+				_items.push(_item);
+			}
+			board.items =_items
+
+			boardService.save(board,function(err,success){
+				logger.debug("saved OK: _id: "+success._id);
+				// and create a thumbnail
+				/*
+				_generateBoardThumbnail(success._id,req.getBaseUrl(),function(err,result){
+						logger.debug("result: "+result);
+						res.send({_id:success._id});
+				})
+				*/
+					res.send({_id:success._id});
+			})
+		})
+	}
+	else if (board.dataLink=="backloginitiatives"){
+		var _items =[];
+		v1Service.getPlanningBacklogsByInitiatives({},function(err,epics){
 			for (var e in epics){
 				var _e = epics[e];
 				//split / join needed e.g. if businessbacklog is used we need to replace "/"
