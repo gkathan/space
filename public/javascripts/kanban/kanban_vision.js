@@ -7,8 +7,6 @@
  * @license:
  * @website: www.github.com/gkathan/kanban
  */
-
-
 function showVision(){
 	d3.select("#vision").style("visibility","visible");
 }
@@ -16,8 +14,6 @@ function showVision(){
 function hideVision(){
 	d3.select("#vision").style("visibility","hidden");
 }
-
-
 
 function drawVision(){
 	"use strict";
@@ -30,13 +26,9 @@ function drawVision(){
 	if (BOARD.viewConfig.vision=="hide"){
 		gVision.style("visibility","hidden");
 	}
-
-
 	// ----- vision statement ------
 	var _x = x(KANBAN_START.getTime()+(KANBAN_END.getTime()-KANBAN_START.getTime())/2);
 	var _y = -200;
-
-
 	_drawXlink(gVision,"#world",(_x-175),(_y+27),{"scale":1});
 
 	_drawText(gVision,BOARD.vision,(_x-160),(_y-15),{"size":"32px","color":COLOR_BPTY,"weight":"bold"});
@@ -47,10 +39,8 @@ function drawVision(){
 	// --- mission strategy stuff ------
 	_drawBracket(gVision,"blue","bottom",_x-160,_y+90,3.3,0.8,"triangle",1);
 
-
 	_x = x(KANBAN_START.getTime()+(KANBAN_END.getTime()-KANBAN_START.getTime())/2)-100;
 	//var _x = 460;
-
 
 	var _mission = gVision.append("text")
 		.attr("x",_x)
@@ -62,5 +52,4 @@ function drawVision(){
 		.style("font-size","10px");
 
 	textarea(_mission,BOARD.mission,_x,_y+40,100,8);
-
 }

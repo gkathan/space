@@ -150,7 +150,7 @@ script(type='text/javascript').
 		else if (_board.dataLink=="backlogplanningepics" || _board.dataLink=="backloginitiatives"){
 			_viewconfig.queues="show";
 			_viewconfig.queuesmetrics="hide";
-			_viewconfig.vision="hide";
+			_viewconfig.vision="off";
 		}	
 			
 		_viewconfig.targets="off";
@@ -168,6 +168,9 @@ script(type='text/javascript').
 		
 		_viewconfig.laneboxText = {size:"8px",color:"grey",weight:"normal",mode:""};
 		_viewconfig.contextboxText = {"size":"8px","color":"grey","weight":"normal","mode":"tb"};
+		_viewconfig.boardOffsetTop = 0;
+		if (_viewconfig.vision="off") 
+			_viewconfig.boardOffsetTop = -50;
 		_viewconfig.contextboxWidth = 50;
 		_viewconfig.laneboxLeftWidth = 150;
 		_viewconfig.laneboxRightWidth = 10;

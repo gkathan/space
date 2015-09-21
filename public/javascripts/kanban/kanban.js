@@ -93,6 +93,7 @@ var WIP_WINDOW_DAYS =90;
 var WIP_OFFSET_DAYS =0;
 var WIP_START;
 var WIP_END;
+var SHOW_METRICS_CORPORATE=0;
 
 setWIP();
 
@@ -114,13 +115,15 @@ var SHOW_ONLY_NONVERSION1=false;
 //flippant test
 var back;
 var tooltip;
+var BOARD_OFFSET_TOP=100;
+
 
 function setMargin(){
 	var _marginXRight = 20;
 	var _marginXLeft = 20;
 	var _offsetXLeft=0;
 	var _offsetXRight=0;
-	var _offsetYTop =0;
+	var _offsetYTop = BOARD_OFFSET_TOP;
 	var _offsetXLeftBaseline = 100;
 	var _offsetXLeftForecast1 = 150;
 	var _offsetXLeftForecast2 =150;
@@ -128,8 +131,8 @@ function setMargin(){
 	var _offsetYTopCorporate =150;
 	_offsetXLeft = _marginXLeft+ (SHOW_METRICS_BASELINE*_offsetXLeftBaseline);
 	_offsetXRight= _marginXRight + (SHOW_METRICS_FORECAST1*_offsetXLeftForecast1)+(SHOW_METRICS_FORECAST2*_offsetXLeftForecast2)+(SHOW_METRICS_GOAL*_offsetXLeftGoal);//+ (SHOW_METRICS_FORECAST1_ACTUAL*_offsetXLeftForecast1)+(SHOW_METRICS_FORECAST2_ACTUAL*_offsetXLeftForecast2)
-	_offsetYTop = (SHOW_METRICS_CORPORATE*_offsetYTopCorporate);
-	margin = {top: 100+_offsetYTop, right: _offsetXRight+LANE_LABELBOX_RIGHT_WIDTH, bottom: 100, left: _offsetXLeft+150};
+	_offsetYTop = (SHOW_METRICS_CORPORATE*_offsetYTopCorporate)+_offsetYTop;
+	margin = {top: _offsetYTop, right: _offsetXRight+LANE_LABELBOX_RIGHT_WIDTH, bottom: 100, left: _offsetXLeft+150};
 }
 
 /**
@@ -265,7 +268,8 @@ function renderBoard(id){
 		ITEM_SCALE = parseFloat(boardData.itemScale);
 		ITEM_FONTSCALE = parseFloat(boardData.itemFontScale);
 		setWIP(parseInt(boardData.WIPWindowDays));
-		LANE_LABELBOX_RIGHT_WIDTH = parseInt(boardData.viewConfig.laneboxRightWidth);
+		if (boardData.viewConfig.laneboxRightWidth) LANE_LABELBOX_RIGHT_WIDTH = parseInt(boardData.viewConfig.laneboxRightWidth);
+		if (boardData.viewConfig.offsetTop) BOARD_OFFSET_TOP = parseInt(boardData.viewConfig.offsetTop);
 		KANBAN_START= new Date(boardData.startDate);
 		KANBAN_END= new Date(boardData.endDate);
 		BOARD = boardData;
@@ -279,17 +283,13 @@ function renderBoard(id){
 		// we have to now join boardData and initiative Data
 		boardItems =joinBoard2Initiatives(boardData,initiativeData);
 		// with drawAll() refresh without postback possible ;-)
-
 		enableAllMetrics();
-
 		console.log("---- lets draw ALL");
 		//q1_2014_reviewMetrics();
 		console.log("======= initiatives.length: "+initiativeData.length);
-
 		drawAll();
 		//drawCustomPostits();
 		//initHandlers();
-
 		if (AUTH=="bpty") hideNGR();
 }
 
@@ -305,14 +305,12 @@ function drawCustomPostits(){
 	}
 }
 
-
 /**
 */
 function drawInitiatives(){
 	if (BOARD.viewConfig.lanes!="off") drawLanes();
 	drawItems();
 }
-
 
 /* ------------------------ LANE sort EXPERIMENT -----------------------*/
 /**
@@ -321,44 +319,34 @@ function drawInitiatives(){
  */
 function joinInitiatives2LanesSort(){
 	for (var i in initiativeData){
-			var _lane = getItemByKey(laneData,"path",_.initial(initiativeData[i].lanePath.split(FQ_DELIMITER)).join([separator="/"]));
-			if (_lane){
-				 initiativeData[i]["laneSort"]=_lane.sort;
-				if (_lane.sublanes){
-					var _sublane = getItemByKey(_lane.sublanes,"name",initiativeData[i].lanePath);
-					if (_sublane) initiativeData[i]["sublaneSort"]=_sublane.sort;
-				}
+		var _lane = getItemByKey(laneData,"path",_.initial(initiativeData[i].lanePath.split(FQ_DELIMITER)).join([separator="/"]));
+		if (_lane){
+			 initiativeData[i]["laneSort"]=_lane.sort;
+			if (_lane.sublanes){
+				var _sublane = getItemByKey(_lane.sublanes,"name",initiativeData[i].lanePath);
+				if (_sublane) initiativeData[i]["sublaneSort"]=_sublane.sort;
 			}
+		}
 	}
-
 }
 /* ------------------------ EXPERIMENT -----------------------*/
 
 
 function drawAll(){
 	console.log("======= initiatives.length: "+initiativeData.length);
-
 	init();
 	// 1) draw static stuff
 	if (BOARD.viewConfig.queues!="off") drawGuides();
 	drawAxes();
-
 	if (BOARD.viewConfig.queues!="off") drawQueues();
 	if (BOARD.viewConfig.vision!="off") drawVision();
-	drawVersion();
 	drawLegend();
 	// 2) check if board empty
 	console.log("======= initiatives.length: "+initiativeData.length);
-
 	if (initiativeData.length>0){
-
-		/** multi column sort
-		 * https://github.com/Teun/thenBy.js
-		 */
+		// multi column sort https://github.com/Teun/thenBy.js
 		var firstBy=(function(){function e(f){f.thenBy=t;return f}function t(y,x){x=this;return e(function(a,b){return x(a,b)||y(a,b)})}return e})();
-
 		joinInitiatives2LanesSort();
-
 		//sorting hook
 		//var s = firstBy(function (v1, v2) { return v1.lane < v2.lane ? -1 : (v1.lane > v2.lane ? 1 : 0); }).thenBy(function (v1, v2) { return v1.sublane < v2.sublane ? -1 : (v1.sublane > v2.sublane ? 1 : 0); });
 		var s = firstBy(function (v1, v2) { return v1.laneSort - v2.laneSort})
@@ -366,10 +354,8 @@ function drawAll(){
 		initiativeData.sort(s);
 		initiativeData.sort(s);
 		// ------------------------------------------------------------------------------------------------
-
 		var _context = {"yMin":Y_MIN,"yMax":Y_MAX,"name":CONTEXT};
 		itemTree = createLaneHierarchy(initiativeData,ITEMDATA_FILTER,BOARD.groupby.split(","),_context);
-
 		//targetTree = createLaneHierarchy(targetData,ITEMDATA_FILTER,BOARD.groupby,_context);
 		// kanban_items.js
 		if (BOARD.viewConfig.initiatives!="off") drawInitiatives();
@@ -378,13 +364,10 @@ function drawAll(){
 		if (BOARD.viewConfig.metrics!="off") drawMetrics();
 	}
 	//drawOverviewMetaphors(svg);
-
 		//if (BOARD.viewConfig.releases!="off") drawMetrics();drawReleases();
-
 	d3.select("#whiteboard").style("visibility","hidden");
 // --------------------------------------------------------------------------------------------------
 }
-
 
 /**
  * change TODAY date and see what happens
@@ -403,7 +386,6 @@ function timeMachine(date){
 	drawAll();
 	calculateQueueMetrics();
 	drawAll();
-
 }
 
 /** whenever we use the TODAY.add() function we need to set back TODAY to original value...
