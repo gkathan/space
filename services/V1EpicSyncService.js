@@ -90,10 +90,17 @@ function _enrichEpics(epics){
 		epics[e].Markets = _strategicThemes.markets;
 		epics[e].Targets = _strategicThemes.targets;
 		epics[e].Customers = _strategicThemes.customers;
+		epics[e].BusinessBacklogID = _parseObjectID(epics[e].BusinessBacklogID);
 
 		epics[e].Product = v1Service.deriveProductFromBacklog(epics[e].BusinessBacklog);
 	}
 
+}
+// eg {_oid\u003dScope:10461}
+function _parseObjectID(name){
+	var _id;
+	_id =name.split("}")[0].split(":")[1];
+	return _id;
 }
 
 /**

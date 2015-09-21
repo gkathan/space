@@ -69,15 +69,15 @@ router.get('/planningbacklogs', function(req, res) {
 	})
 });
 
-router.get('/planningbacklogdetail/:name', function(req, res) {
-	var _backlogname = req.params.name+"#cpb";
+router.get('/planningbacklogdetail/:id', function(req, res) {
+	var _backlogId = req.params.id;
 	var v1Service = require('../services/V1Service');
 	var _filter = {};
 
 	v1Service.getPlanningBacklogs(_filter,function(err,result){
-		var _backlog = _.findWhere(result.backlogs,{Name:_backlogname});
+		var _backlog = _.findWhere(result.backlogs,{ID:_backlogId});
 		res.locals.backlog = _backlog;
-		res.locals.members = _backlog.Members;
+		if (_backlog) res.locals.members = _backlog.Members;
 		res.locals.moment=moment;
 		res.render('portfolio/planningbacklogdetail'), { title: 's p a c e - planning backlog detail' }
 	});

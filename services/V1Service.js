@@ -274,8 +274,8 @@ function _extractBacklogs(initiativesWithPlanningEpics){
 		if (_i.PlanningEpics){
 			for (var p in _i.PlanningEpics){
 				var _p = _i.PlanningEpics[p];
-				if (!_.findWhere(_backlogs,{Name:_p.BusinessBacklog})){
-					_backlogs.push({Name:_p.BusinessBacklog,Initiatives:[]})
+				if (!_.findWhere(_backlogs,{ID:_p.BusinessBacklogID})){
+					_backlogs.push({Name:_p.BusinessBacklog,ID:_p.BusinessBacklogID,Initiatives:[]})
 				}
 			}
 		}
@@ -291,10 +291,11 @@ function _repopulateBacklogs(backlogs,initiativesWithPlanningEpics){
 			var _i = initiativesWithPlanningEpics[i];
 			if (_i.PlanningEpics){
 				_i.PlanningBacklog=_b.Name;
+				_i.PlanningBacklogID=_b.ID;
 				_i.Product = _deriveProductFromBacklog(_b.Name);
 				for (var p in _i.PlanningEpics){
 					var _p = _i.PlanningEpics[p];
-					if (_p.BusinessBacklog==_b.Name){
+					if (_p.BusinessBacklogID==_b.ID){
 						if (!_.findWhere(_b.Initiatives,{Name:_i.Name})){
 							_b.Initiatives.push(_.cloneDeep(_i));
 						}
