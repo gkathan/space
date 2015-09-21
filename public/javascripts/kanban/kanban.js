@@ -119,7 +119,7 @@ var BOARD_OFFSET_TOP=100;
 
 
 function setMargin(){
-	var _marginXRight = 20;
+	var _marginXRight = 200;
 	var _marginXLeft = 20;
 	var _offsetXLeft=0;
 	var _offsetXRight=0;
@@ -188,7 +188,6 @@ function redraw() {
  *
  */
 function render(svgFile){
-	checkServices();
 	initShortcuts();
 	d3.xml(svgFile, function(xml) {
 
@@ -288,7 +287,7 @@ function renderBoard(id){
 		// we have to now join boardData and initiative Data
 		boardItems =joinBoard2Initiatives(boardData,initiativeData);
 		// with drawAll() refresh without postback possible ;-)
-		enableAllMetrics();
+		disableAllMetrics();
 		console.log("---- lets draw ALL");
 		//q1_2014_reviewMetrics();
 		console.log("======= initiatives.length: "+initiativeData.length);
@@ -345,7 +344,9 @@ function drawAll(){
 	drawAxes();
 	if (BOARD.viewConfig.queues!="off") drawQueues();
 	if (BOARD.viewConfig.vision!="off") drawVision();
+	drawVersion();
 	drawLegend();
+
 	// 2) check if board empty
 	console.log("======= initiatives.length: "+initiativeData.length);
 	if (initiativeData.length>0){
