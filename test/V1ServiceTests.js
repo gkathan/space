@@ -195,7 +195,7 @@ describe('#getPlanningEpics()', function(){
 				console.log("number of distinct backlogs: "+_backlogs.length)
 				for (var b in _backlogs){
 					var _b = _backlogs[b];
-					console.log("** "+_b.Name+ " - "+_b.Initiatives.length+ " initiatives");
+					console.log("** "+_b.Name+ " - "+_b.Initiatives.length+ " initiatives - "+_b.Capacity.TheoreticalCapacityPerMonth+ " PD");
 				}
 
 				done();
@@ -214,6 +214,24 @@ describe('#getPlanningBacklogs()', function(){
 				for (var i in initiatives){
 					var _i=initiatives[i];
 					console.log("++ "+_i.Number+" - "+_i.Name+" - "+_i.PlanningBacklog+" - "+_i.Product);
+				}
+
+					done();
+		})
+			//assert.equal("E2988", employee.EmployeeNumbexr);
+		});
+	});
+
+describe('#getPlanningBacklogs()', function(){
+	it('find alls plnning backlogs ', function(done){
+		var v1Service = require('../services/V1Service');
+
+		var _backlogs = v1Service.getPlanningBacklogs({},function(err,result){
+
+					console.log("planning vacklogs: "+result.backlogs.length);
+				for (var b in result.backlogs){
+					var _b=result.backlogs[b];
+					console.log("++ "+_b.Name+" - "+_b.Capacity.PDperMonth+ " - "+_b.Members.length);
 				}
 
 					done();

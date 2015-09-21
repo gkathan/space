@@ -131,6 +131,14 @@
 		"gatesLimit":0
 	},
 
+	"backlogs":{
+		"PDperMonth":20,
+		"defaultProductiveWorkRatio":0.9,
+		"defaultAvailableForInitiativesRatio":0.6
+	},
+
+
+
 	"availability":{
 		"coreTime":[
 			{"dayOfWeek":6,"start":"12:00:00","stop":"23:59:59"},
@@ -146,7 +154,7 @@
 	},
 
 	"import":{
-		"plainTypes" : ["productportfolio","productcatalog","incidents","labels","customers","competitors","roadmaps","availability","v1teams","scrumteams","incidenttracker","content","incidenttrackeroldsnow","socservices","soclabel2customer","oldsnowincidents","socincident2revenueimpact","label2customer","datacenters","users","targets2015","targets2016"]
+		"plainTypes" : ["productportfolio","productcatalog","incidents","labels","customers","competitors","roadmaps","availability","v1teams","scrumteams","incidenttracker","content","incidenttrackeroldsnow","socservices","soclabel2customer","oldsnowincidents","socincident2revenueimpact","label2customer","datacenters","users","targets2015","targets2016","v1backlogscapacity"]
 	},
 
   "context" : "bpty.studios",

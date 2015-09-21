@@ -58,8 +58,6 @@ block content
 			thead
 				tr
 					th(style="min-width:100px;vertical-align:top") backlog
-					th(style="text-align:right;vertical-align:top") #
-					th(style="text-align:right;vertical-align:top") #p
 					th(style="text-align:right;vertical-align:top") swag
 					th(style="text-align:right;vertical-align:top") 
 						img(src="/images/iconexp/user.png" width="20px" height="20px")
@@ -76,6 +74,10 @@ block content
 							span(style="margin-left:20px;text-align:left") start
 							span(style="margin-left:70px;text-align:left") end
 							span(style="margin-left:70px;text-align:left") #
+					th(style="text-align:right;vertical-align:top") prod 	
+					th(style="text-align:right;vertical-align:top") init 
+					th(style="text-align:right;vertical-align:top") capa/month (days) 
+					th(style="text-align:right;vertical-align:top") duration	(month)
 						
 					
 			tbody
@@ -85,13 +87,6 @@ block content
 							b
 								a(href="/portfolio/planningbacklogdetail/"+b.ID title="show details")
 									|#{b.Name} 
-						td(style="vertical-align:top;text-align:right;font-size:11px;width:30px")
-							if b.Initiatives
-								|#{b.Initiatives.length}
-							else
-								|0
-						td(style="vertical-align:top;text-align:right;font-size:10px;width:30px")
-							|#{b.TotalPlanningEpics}
 						td(style="vertical-align:top;text-right:left;font-size:10px;width:30px")
 							b
 								|#{b.TotalSwag}
@@ -126,5 +121,14 @@ block content
 											td(style="vertical-align:top;text-align:center;font-size:10px;vertical-align:top;width:80px") #{moment(i.PlannedStart).format('YYYY-MM-DD')}
 											td(style="vertical-align:top;text-align:center;font-size:10px;vertical-align:top;width:80px") #{moment(i.PlannedEnd).format('YYYY-MM-DD')}
 											td(style="vertical-align:top;text-align:right;font-size:10px;vertical-align:top;width:50px") #{i.PlanningEpics.length}
+						td(style="vertical-align:top;text-align:right;font-size:10px;width:50px")
+							|#{(b.Capacity.defaultProductiveWorkRatio*100)}%
+						td(style="vertical-align:top;text-align:right;font-size:10px;width:50px")
+							|#{(b.Capacity.defaultAvailableForInitiativesRatio)*100}%
+						td(style="vertical-align:top;text-align:right;font-size:10px;width:50px")
+							|#{b.Capacity.TheoreticalCapacityPerMonth} 
+						td(style="vertical-align:top;text-align:right;font-size:10px;width:50px")
+							|#{(b.TotalSwag/b.Capacity.TheoreticalCapacityPerMonth).toFixed(2)} 
+
 
 			script $("#planningbacklogs").tablesorter();

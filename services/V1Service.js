@@ -148,9 +148,10 @@ function _getPlanningBacklogs(filter,callback){
 			for (var b in _backlogs){
 				var _backlogSwag=0;
 				var _backlogPlanningEpics=0;
-				_totalInitiatives+=parseInt(_backlogs[b].Initiatives.length);
-				for (var i in _backlogs[b].Initiatives){
-					var _i = _backlogs[b].Initiatives[i]
+				var _b=_backlogs[b];
+				_totalInitiatives+=parseInt(_b.Initiatives.length);
+				for (var i in _b.Initiatives){
+					var _i = _b.Initiatives[i]
 					var _swagSum=0;
 					var _startDates = [];
 					var _endDates = [];
@@ -172,12 +173,16 @@ function _getPlanningBacklogs(filter,callback){
 				_totalSwag+=_swagSum;
 				_totalPlanningEpics+=_backlogPlanningEpics;
 
-				_backlogs[b].Initiatives=_.sortBy(_backlogs[b].Initiatives,function(i){return _statussorting.indexOf(i.Status)});
-				_backlogs[b].Members = _getMembersPerPlanningBacklog(_backlogs[b].Name,teams)
-				_backlogs[b].TotalSwag = _backlogSwag;
-				_backlogs[b].TotalPlanningEpics = _backlogPlanningEpics;
-				_totalMembers+=_backlogs[b].Members.length;
-				_totalTeams+=_.uniq(_.map(_backlogs[b].Members,'Team')).length;
+				_b.Initiatives=_.sortBy(_backlogs[b].Initiatives,function(i){return _statussorting.indexOf(i.Status)});
+				_b.Members = _getMembersPerPlanningBacklog(_b.Name,teams);
+				_b.TotalSwag = _backlogSwag;
+				_b.TotalPlanningEpics = _backlogPlanningEpics;
+				//_b.Capacity.TheoreticalCapacityPerMonth=(_b.Capacity.PDperMonth*_b.Capacity.defaultProductiveWorkRatio*_b.Capacity.defaultAvailableForInitiativesRatio*_b.Members.length).toFixed(2);
+				//_b.Capacity.TheoreticalCapacityPerMonth=_b.Capacity.defaultProductiveWorkRatio*_b.Capacity.defaultAvailableForInitiativesRatio*_b.Members.length;
+
+				_b.Capacity.TheoreticalCapacityPerMonth= (_b.Capacity.PDperMonth*_b.Members.length*_b.Capacity.defaultProductiveWorkRatio*_b.Capacity.defaultAvailableForInitiativesRatio).toFixed(2);
+				_totalMembers+=_b.Members.length;
+				_totalTeams+=_.uniq(_.map(_b.Members,'Team')).length;
 			}
 			callback(null,{backlogs:_backlogs,statistics:{totalSwag:_totalSwag,totalPlanningEpics:_totalPlanningEpics,totalInitiatives:_totalInitiatives,totalMembers:_totalMembers,totalTeams:_totalTeams}});
 		});
@@ -275,7 +280,8 @@ function _extractBacklogs(initiativesWithPlanningEpics){
 			for (var p in _i.PlanningEpics){
 				var _p = _i.PlanningEpics[p];
 				if (!_.findWhere(_backlogs,{ID:_p.BusinessBacklogID})){
-					_backlogs.push({Name:_p.BusinessBacklog,ID:_p.BusinessBacklogID,Initiatives:[]})
+					var _capacityConfig={PDperMonth:config.backlogs.PDperMonth,defaultProductiveWorkRatio:config.backlogs.defaultProductiveWorkRatio,defaultAvailableForInitiativesRatio:config.backlogs.defaultAvailableForInitiativesRatio};
+					_backlogs.push({Name:_p.BusinessBacklog,ID:_p.BusinessBacklogID,Initiatives:[],Capacity:_capacityConfig})
 				}
 			}
 		}
