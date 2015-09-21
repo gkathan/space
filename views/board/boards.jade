@@ -161,6 +161,14 @@ script(type='text/javascript').
 		_viewconfig.lanes="show";
 		_viewconfig.grid="show";
 		_viewconfig.axes="show";
+		_viewconfig.sublaneText="off";
+		if (_board.dataLink=="roadmapinitiatives")
+			_viewconfig.sublaneLine="on";
+		else
+			_viewconfig.sublaneLine="off";
+		
+		_viewConfig.laneboxText = {size:"9px",color:"grey",weight:"normal",mode:""};
+		_viewConfig.contextboxText = {"size":"8px","color":"grey","weight":"normal","mode":"tb"};
 		
 		_board.viewConfig = _viewconfig;
 		

@@ -913,20 +913,8 @@ function saveBoard(req, res , next){
 		var _items =[];
 		v1Service.getRoadmapInitiatives(new Date("2014-01-01"),function(err,roadmap){
 			for (var r in roadmap){
-				//split / join needed e.g. if businessbacklog is used we need to replace "/"
-				if (!roadmap[r][_groupby[0]]) roadmap[r][_groupby[0]]=board.name;
-				if (!roadmap[r][_groupby[1]]) roadmap[r][_groupby[1]]="empty";
-				if (!roadmap[r][_groupby[2]]) roadmap[r][_groupby[2]]="empty";
-
-				var _group1 = roadmap[r][_groupby[0]].split("/").join("|");
-				var _group2 = roadmap[r][_groupby[1]].split("/").join("|");
-				var _group3 = roadmap[r][_groupby[2]].split("/").join("|");
-				var _product = roadmap[r].Product;
-				// !!!! path needs 3 levels right now at least
-				if (!_product) _product="No Product";
-				var _itemView={sublaneOffset:0,size:7,accuracy:10,lanePath:board.name+"/"+_group1+"/"+_group2+"/"+_group3}
-				var _item ={itemRef:roadmap[r].Number,itemView:_itemView};
-				_items.push(_item);
+				var _r = roadmap[r];
+				_items.push(_createItem(_r,_groupby,board.name));
 			}
 			board.items =_items
 
@@ -948,20 +936,7 @@ function saveBoard(req, res , next){
 		v1Service.getPlanningBacklogsByEpics({},function(err,epics){
 			for (var e in epics){
 				var _e = epics[e];
-				//split / join needed e.g. if businessbacklog is used we need to replace "/"
-				if (!_e[_groupby[0]]) _e[_groupby[0]]=board.name;
-				if (!_e[_groupby[1]]) _e[_groupby[1]]="empty";
-				if (!_e[_groupby[2]]) _e[_groupby[2]]="empty";
-
-				var _group1 = _e[_groupby[0]].split("/").join("|");
-				var _group2 = _e[_groupby[1]].split("/").join("|");
-				var _group3 = _e[_groupby[2]].split("/").join("|");
-				var _product = _e.Product;
-				// !!!! path needs 3 levels right now at least
-				if (!_product) _product="No Product";
-				var _itemView={sublaneOffset:0,size:7,accuracy:10,lanePath:board.name+"/"+_group1+"/"+_group2+"/"+_group3}
-				var _item ={itemRef:_e.Number,itemView:_itemView};
-				_items.push(_item);
+				_items.push(_createItem(_e,_groupby,board.name));
 			}
 			board.items =_items
 
@@ -983,20 +958,7 @@ function saveBoard(req, res , next){
 		v1Service.getPlanningBacklogsByInitiatives({},function(err,epics){
 			for (var e in epics){
 				var _e = epics[e];
-				//split / join needed e.g. if businessbacklog is used we need to replace "/"
-				if (!_e[_groupby[0]]) _e[_groupby[0]]=board.name;
-				if (!_e[_groupby[1]]) _e[_groupby[1]]="empty";
-				if (!_e[_groupby[2]]) _e[_groupby[2]]="empty";
-
-				var _group1 = _e[_groupby[0]].split("/").join("|");
-				var _group2 = _e[_groupby[1]].split("/").join("|");
-				var _group3 = _e[_groupby[2]].split("/").join("|");
-				var _product = _e.Product;
-				// !!!! path needs 3 levels right now at least
-				if (!_product) _product="No Product";
-				var _itemView={sublaneOffset:0,size:7,accuracy:10,lanePath:board.name+"/"+_group1+"/"+_group2+"/"+_group3}
-				var _item ={itemRef:_e.Number,itemView:_itemView};
-				_items.push(_item);
+				_items.push(_createItem(_e,_groupby,board.name));
 			}
 			board.items =_items
 
@@ -1028,7 +990,7 @@ function saveBoard(req, res , next){
 			*/
 				res.send({_id:success._id});
 		})
-		
+
 	}
 	else{
 		logger.debug(".....no roadmap");
@@ -1037,6 +999,30 @@ function saveBoard(req, res , next){
 				res.send({_id:success._id});
 			})
 	}
+}
+
+/**helper
+*/
+function _createItem(epic,groupby,boardName){
+	logger.debug("======== _createItem: epic: "+epic.Number+ " - groupby: "+groupby);
+	logger.debug("====== epic:PlanningBacklog: "+epic.PlanningBacklog);
+	//split / join needed e.g. if businessbacklog is used we need to replace "/"
+	if (!epic[groupby[0]]) epic[groupby[0]]=boardName;
+	if (!epic[groupby[1]]) epic[groupby[1]]="empty";
+	if (!epic[groupby[2]]) epic[groupby[2]]="empty";
+
+	var _group1 = epic[groupby[0]].split("/").join("|");
+	var _group2 = epic[groupby[1]].split("/").join("|");
+	var _group3 = epic[groupby[2]].split("/").join("|");
+	var _product = epic.Product;
+	var _path = boardName+"/"+_group1+"/"+_group2+"/"+_group3;
+	logger.debug("====== epic:lanePath: "+_path);
+
+	// !!!! path needs 3 levels right now at least
+	if (!_product) _product="No Product";
+	var _itemView={sublaneOffset:0,size:7,accuracy:10,lanePath:_path}
+	var _item ={itemRef:epic.Number,itemView:_itemView};
+	return _item;
 }
 
 /**experimental dynamic thumbnail creation

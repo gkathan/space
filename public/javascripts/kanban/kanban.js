@@ -15,30 +15,19 @@
  * @license:
  * @website: www.kathan.at
  */
-
-
 /**
 	 -------------------- HOWTO HIDE elements of a lane ----------------------------
-
 	 d3.select("#items").selectAll("g").filter(function(d){return d.lane=="bwin"}).style("visibility","hidden")
-
 	 d3.select("#items").selectAll("g").filter(function(d){return ((d.sublane=="touch")&&(d.lane=="bwin"))}).style("visibility","visible")
-
 	 d3.select("#items").selectAll("g").filter(function(d){return ((d.theme=="topline"))}).style("visibility","hidden")
 	 d3.select("#items").selectAll("g").filter(function(d){return ((true))}).style("visibility","hidden")
-
 	 -------------------- HOWTO HIDE elements of a column ----------------------------
-
 	 d3.select("#items").selectAll("g").filter(function(d){return (new Date(d.planDate)>WIP_END)}).style("visibility","hidden")
-
-
 	---------------------- power of css3 selectors
 	* d3.selectAll("[id*=item]").style("visibility","hidden") (wildcard *= all "*item*")
-
 	----------------------- hide all results metrics
 	* hideMetrics([{"name":"goal","hide":true}])
 	* d3.selectAll("[id*=NGR]").style("visibility","hidden")
-
 	----------------------- hide all corporate total  metrics
 	* hideMetrics([{"name":"goal","hide":true}])
 	 d3.selectAll("[id*=corp_metrics]").style("visibility","hidden")
@@ -46,38 +35,26 @@
 	* show
 	 d3.selectAll("[id*=corp_metrics]").style("visibility","visible")
 	 d3.selectAll("[id*=metric_date]").transition().duration(300).attr("transform","translate(0,0)")
-
-
-d3.select("#metrics_forecast1").transition().delay(300).style("visibility","hidden");d3.select("#metrics_forecast2").transition().duration(300).attr("transform","translate(-150,0)")
+	d3.select("#metrics_forecast1").transition().delay(300).style("visibility","hidden");d3.select("#metrics_forecast2").transition().duration(300).attr("transform","translate(-150,0)")
 * d3.select("#metrics_forecast1").transition().delay(300).style("visibility","visible");d3.select("#metrics_forecast2").transition().duration(300).attr("transform","translate(0,0)")
 	--------------------- HOWTO runtime change e.g. lanedistribution --------------------
-
 	1) remove groups
 		d3.select("#axes").remove()
 		d3.select("#lanes").remove()
 		d3.select("#queues").remove()
 		d3.select("#items").remove()
-
 	2) change data - e.g. reset lanePercentagesOverride
 		lanePercentagesOverride=null
-
 	3) re-create lane distribution
 		createLaneDistribution();
-
 	4) re-draw stuff (ordered)
 		drawAxes();
 		drawLanes();
 		drawQueues();
 		drawItems();
-
-
 	OR EVEN COOLER
 	1) change data e.g. WIP_WINDOW
 	2) drawAll()
-
-
-
-
 	highlight metrics
 	* ===============
 	1)dim all
@@ -85,8 +62,6 @@ d3.select("#metrics_forecast1").transition().delay(300).style("visibility","hidd
 	* d3.select("#metrics").selectAll("[id*=metric_]").style("opacity",0.2)
 	2) highlight a specific one
 	* d3.selectAll("[id*=metric_701]").style("opacity",1)
-
-
 */
 
 
@@ -95,43 +70,25 @@ var CONTEXT="CONTEXT";
 
 var releaseData;
 var initiativeData;
-
-
 var boardData;
 // the current "CONTEXT"
 var BOARD;
-
 // AUTH ROLE set by php script
 // current roles: bpty, exec, admin
 var AUTH;
-
-
 // raster px configuration
-
 var WIDTH =1200;
 var HEIGHT = 1200;
-
 var WHITEBOARD_WIDTH =1400;
 var WHITEBOARD_HEIGHT = 900;
-
-
 // height of the timeline header block where the dates are in
 var TIMELINE_HEIGHT = 20;
-
-
-
 var margin;
 var width,height;
-
-
 //time stuff
-
 var yearFormat = d3.time.format("%Y-%m-%d");
-
 var TODAY = new Date();
 var TIMEMACHINE;
-
-
 var WIP_WINDOW_DAYS =90;
 var WIP_OFFSET_DAYS =0;
 var WIP_START;
@@ -141,55 +98,37 @@ setWIP();
 
 var KANBAN_START;
 var KANBAN_END;
-
 // diff = 44.668.800.000
 // 1 pixel (WIDTH = 1500) would be 29.779.200 units
-
 //domain for y-axis => i am using percentage as domain => meaning "100"%
 var Y_MAX =100;
 var Y_MIN=0;
-
-
 var x,y,svg,whiteboard,drag,drag_x;
-
-
 var dataversions={};
-
 var COLOR_BPTY="#174D75";
-
 var COLOR_TARGET = COLOR_BPTY;
-
-
 var laneData;
-
 // additional buttons state
 var SHOW_ONLY_VERSION1=false;
 var SHOW_ONLY_NONVERSION1=false;
-
-
 //flippant test
 var back;
-
 var tooltip;
 
 function setMargin(){
 	var _marginXRight = 20;
 	var _marginXLeft = 20;
-
 	var _offsetXLeft=0;
 	var _offsetXRight=0;
 	var _offsetYTop =0;
-
 	var _offsetXLeftBaseline = 100;
 	var _offsetXLeftForecast1 = 150;
 	var _offsetXLeftForecast2 =150;
 	var _offsetXLeftGoal = 120;
 	var _offsetYTopCorporate =150;
-
 	_offsetXLeft = _marginXLeft+ (SHOW_METRICS_BASELINE*_offsetXLeftBaseline);
 	_offsetXRight= _marginXRight + (SHOW_METRICS_FORECAST1*_offsetXLeftForecast1)+(SHOW_METRICS_FORECAST2*_offsetXLeftForecast2)+(SHOW_METRICS_GOAL*_offsetXLeftGoal);//+ (SHOW_METRICS_FORECAST1_ACTUAL*_offsetXLeftForecast1)+(SHOW_METRICS_FORECAST2_ACTUAL*_offsetXLeftForecast2)
 	_offsetYTop = (SHOW_METRICS_CORPORATE*_offsetYTopCorporate);
-
 	margin = {top: 100+_offsetYTop, right: _offsetXRight+LANE_LABELBOX_RIGHT_WIDTH, bottom: 100, left: _offsetXLeft+150};
 }
 
@@ -198,20 +137,15 @@ function setMargin(){
 */
 function init(){
 	d3.select("#kanban").remove()
-
 	setMargin();
-
 	width = WIDTH - margin.left - margin.right,
 	height = HEIGHT - margin.top - margin.bottom;
-
 	y = d3.scale.linear()
 		// changed 20140104 => from [0,100]
 		.domain([Y_MAX,Y_MIN])
 		.range([height, 0]);
-
 	console.log(">>>>>>>>>>>>>>>>>>>> KANBAN_START: "+KANBAN_START);
 	console.log(">>>>>>>>>>>>>>>>>>>> KANBAN_END: "+KANBAN_END);
-
 	x = d3.time.scale()
 		.domain([KANBAN_START, KANBAN_END])
 		.range([0, width]);
@@ -226,12 +160,8 @@ function init(){
 	tooltip = d3.select("body")
 		.append("div")
 		.attr("id","tooltip");
-
-
 	// zoom experiment
 	//svg.call(d3.behavior.zoom().on("zoom", redraw));
-
-
 	drag_x = d3.behavior.drag()
 	.on("drag", function(d,i) {
 		d.x += d3.event.dx
@@ -241,8 +171,6 @@ function init(){
 		})
 	});
 }
-
-
 
 /** zoom experiments...
  */
@@ -257,91 +185,76 @@ function redraw() {
  *
  */
 function render(svgFile){
-	console.log("--------------render()");
 	checkServices();
 	initShortcuts();
-
-
 	d3.xml(svgFile, function(xml) {
 		document.body.appendChild(document.importNode(xml.documentElement, true));
 		var _boardId;
 		//var _boardId="54bba57720f4764e7e797849";
 		_boardId = _.last(window.location.href.split("/"));
-
-		console.log("kanban.js render: _boardId: "+_boardId);
 		console.log("_url: "+dataSourceFor("boards/"+_boardId));
-
 		$.getJSON(dataSourceFor("boards/"+_boardId),function(board){
-			console.log("OK - board loaded: "+board._id+ " dataLink: "+board.dataLink);
 			boardData=board;
-			console.log("trying to load items: "+dataSourceFor("items"+board.dataLink));
-
 			$.getJSON(dataSourceFor("items"+board.dataLink),function(items){
-				console.log("items loaded...");
+				console.log("items loaded...from: "+dataSourceFor("items"+board.dataLink));
 				initiativeData=items;
-
 				renderBoard(_boardId);
 			})
 		})
-
 	}); // end xml load anonymous
 }
 
 function joinBoard2Initiatives(board,initiatives){
-		console.log("join: "+initiatives.length);
-		console.log("board: "+board.items.length);
+	console.log("join: "+initiatives.length+" board: "+board.items.length);
+	var _items = board.items;
+	var _join = [];
 
-		var _items = board.items;
-		var _join = [];
+	for (var i in _items){
+		var _i = _items[i];
 
-		for (var i in _items){
-			var _initiative = getItemByKey(initiatives,"Number",_items[i].itemRef);
+		var _joinedItem={};
 
-			//console.log("+: "+_items[i].itemRef);
-			//console.log("=: "+initiatives[i].Number);
-			if (_initiative){
-				// legacy attributes
-				_initiative.id=_items[i].itemRef;
-				_initiative.Type="item";
-				if (_initiative.Status=="Done" || _initiative.Status=="Monitoring"){
-					_initiative.state="done";
-				}
-				else if (_initiative.Status=="Cancelled"){
-					_initiative.state="killed";
-				}
-				else{
-					_initiative.state="planned";
+		var _initiative = _.findWhere(initiatives,{"Number":_i.itemRef});
+		// legacy attributes
+		_joinedItem.id=_i.itemRef;
+		_joinedItem.Type="item";
 
-				}
-				_initiative.name=_initiative.Name;
-				_initiative.health=_initiative.Health;
-				_initiative.status=_initiative.Status;
-				_initiative.ExtId=_initiative.id;
-				_initiative.isCorporate=_initiative.PortfolioApproval;
+		if (_initiative.Status=="Done" || _initiative.Status=="Monitoring")
+			_joinedItem.state="done";
+		else if (_initiative.Status=="Cancelled")
+			_joinedItem.state="killed";
+		else
+			_joinedItem.state="planned";
 
-				_initiative.owner=_initiative.InitiativeOwner;
-				_initiative.DoD=_initiative.Description;
+		_joinedItem.name=_initiative.Name;
+		_joinedItem.health=_initiative.Health;
+		_joinedItem.healthComment=_initiative.HealthComment;
+		_joinedItem.Value=_initiative.Value;
+		_joinedItem.Swag=_initiative.Swag;
+		_joinedItem.status=_initiative.Status;
+		_joinedItem.ExtId=_initiative.ID;
+		_joinedItem.isCorporate=_initiative.PortfolioApproval;
+		_joinedItem.owner=_initiative.InitiativeOwner;
+		_joinedItem.DoD=_initiative.ElevatorPitch;
+		_joinedItem.startDate=_initiative.PlannedStart;
+		_joinedItem.planDate=_initiative.PlannedEnd;
 
-				_initiative.startDate=_initiative.PlannedStart;
-				_initiative.planDate=_initiative.PlannedEnd;
-				if (_initiative.LaunchDate){
-						_initiative.actualDate=_initiative.LaunchDate;
-				}
-				else _initiative.actualDate=_initiative.PlannedEnd;
+		if (_initiative.LaunchDate)
+			_joinedItem.actualDate=_initiative.LaunchDate;
+		else
+			_joinedItem.actualDate=_initiative.PlannedEnd;
 
-				for (ii in _items[i].itemView){
-						var _view = _items[i].itemView[ii];
-						_initiative[ii]=_view;
-				}
-				if (moment(_initiative.actualDate) >= moment(board.startDate)){
-					_join.push(_initiative);
-				}
-
-			}
+		for (_key in _i.itemView){
+			var _view = _items[i].itemView[_key];
+			_joinedItem[_key]=_view;
 		}
-		//set global
-		initiativeData = _join;
-		return _join;
+		if (moment(_joinedItem.actualDate) >= moment(board.startDate)){
+			_join.push(_joinedItem);
+		}
+	}//end for
+	//set global
+	initiativeData = _join;
+	return _join;
 }
 
 /**generic render method for NG board handling
@@ -353,20 +266,16 @@ function renderBoard(id){
 		ITEM_FONTSCALE = parseFloat(boardData.itemFontScale);
 		setWIP(parseInt(boardData.WIPWindowDays));
 		LANE_LABELBOX_RIGHT_WIDTH = parseInt(boardData.laneboxRightWidth);
-
 		KANBAN_START= new Date(boardData.startDate);
 		KANBAN_END= new Date(boardData.endDate);
-
 		BOARD = boardData;
 		CONTEXT = boardData.name;
-
 		/*
 		initiativeData = _.filter(initiativeData,function(item){
 			if(!item.Status || item.Status=="On hold" || item.Status=="Cancelled") return false;
 			return true;
 		})
 		*/
-
 		// we have to now join boardData and initiative Data
 		boardItems =joinBoard2Initiatives(boardData,initiativeData);
 		// with drawAll() refresh without postback possible ;-)

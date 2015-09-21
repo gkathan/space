@@ -154,40 +154,38 @@ function drawItems(){
 		if (d.status) _color=CONFIG.initiatives.states.colors[d.status];
 
 		// ----------------- startDate indicator ---------------------
-		if(d.startDate){
-			console.log("____startDate: "+d.startDate+" item: "+d.name+" plan: "+d.planDate);
-			var _startVisibility ="hidden";
-			if (BOARD.viewConfig.start=="show"){
-				_startVisibility="visible";
-			}
-			var _start = d3.select(this).append("g").attr("id","startID_"+d.id).style("visibility",_startVisibility);
-			var _startX1 = _itemXStart;
-			var _startX2 = _itemXPlanned;
+		var _startDate=d.startDate;
+		if (!d.startDate){
+			_startDate=new Date();
+		}
+		console.log("____startDate: "+_startDate+" item: "+d.name+" plan: "+d.planDate);
+		var _startVisibility ="hidden";
+		if (BOARD.viewConfig.start=="show"){
+			_startVisibility="visible";
+		}
+		var _start = d3.select(this).append("g").attr("id","startID_"+d.id).style("visibility",_startVisibility);
+		var _startX1 = _itemXStart;
+		var _startX2 = _itemXPlanned;
 
-			var _x1Beyond = false;
-			var _x2Beyond = false;
-			if (moment(d.startDate).toDate()<=KANBAN_START){
-				_startX1=x(KANBAN_START);
-				_x1Beyond = true;
-			}
-			else if (moment(d.actualDate).toDate()>KANBAN_END){
-				_startX2=x(KANBAN_END);
-				_x2Beyond = true;
-
-			}
-			_drawStartDateIndicator(_start,d,{x1:_startX1,x1Beyond:_x1Beyond,x2:_startX2,x2Beyond:_x2Beyond,y:_itemY},_size,_color);
+		var _x1Beyond = false;
+		var _x2Beyond = false;
+		if (moment(_startDate).toDate()<=KANBAN_START){
+			_startX1=x(KANBAN_START);
+			_x1Beyond = true;
+		}
+		else if (moment(d.actualDate).toDate()>KANBAN_END){
+			_startX2=x(KANBAN_END);
+			_x2Beyond = true;
 
 		}
-
+		_drawStartDateIndicator(_start,d,{x1:_startX1,x1Beyond:_x1Beyond,x2:_startX2,x2Beyond:_x2Beyond,y:_itemY},_size,_color);
 
 		if (d.state =="done" || d.state =="planned"){
 			if (d.actualDate>d.planDate) _drawItemDelayLine(d3.select(this),_lineX1,_lineX2,_itemY);
 			// ------------  line if before plan--------------
 			else if (d.actualDate<d.planDate) _drawItemDelayLine(d3.select(this),_itemX,(_itemXPlanned-_size-(_size/2)),_itemY);
 
-			d3.select(this)
-				.style("opacity",d.accuracy/10);
-
+			d3.select(this).style("opacity",d.accuracy/10);
 			// ------------  circles --------------
 			if (d.Type !=="target"){
 				// only draw circle if we are inside KANBAN_START/END
@@ -203,7 +201,6 @@ function drawItems(){
 							if (d.actualDate>d.planDate &&d.state=="planned") {return "delayed"}
 							else if (moment(d.actualDate).toDate()>WIP_END) {return "future";}
 							else {return d.state}})
-
 					// ----------- circle icons -------------
 					// only append icon if we have declared on in external.svg
 					if (document.getElementById("icon_"+d.theme+"."+d.lane+"."+d.sublane)){
@@ -211,7 +208,6 @@ function drawItems(){
 					}
 				}
 			} //end if d.Type!="target"
-
 		}//end kill check
 
 		// ------------  item blocks & names & postits --------------
@@ -221,11 +217,9 @@ function drawItems(){
 			if (!d.isCorporate) {
 				_iconRef = "tactic";
 			}
-
 			if (!d.ExtId) _iconRef="item_notsynced";
 			if (d.status=="Understanding" || d.status=="New" || d.status=="Conception") _iconRef="item_grey";
 			if (d.state=="onhold") _iconRef="item_grey";
-
 			if (d.state=="done") _iconRef="item_green";
 			if (d.state=="planned" && new Date (d.planDate) < moment(d.actualDate).toDate()) _iconRef="item_red";
 			if (d.state=="killed") _iconRef="item_killed";
@@ -342,7 +336,6 @@ function _drawItemName(svg,d,x,y,scale,color,visibility,context,anchor){
 	// ------------  item names --------------
 	var _anchor ="middle";
 	if (anchor) _anchor=anchor;
-
 	if (!scale) scale=1;
 	var size = d.size*ITEM_SCALE*scale;
 	var _textWeight="bold";
@@ -354,11 +347,7 @@ function _drawItemName(svg,d,x,y,scale,color,visibility,context,anchor){
 		_textSize =_textSize * TACTIC_SCALE;
 	}
 	var _textDecoration="";
-	//if (d.ExtId!="") _textDecoration="underline";
-
-
 	var _name = d.name.replace(/\s*\[.*?\]\s*/g, '');
-
 	var _text =svg.append("text")
 			.attr("id","text_"+context+"_"+d.id)
 	   .style("font-size",_textSize+"px")
@@ -373,11 +362,11 @@ function _drawItemName(svg,d,x,y,scale,color,visibility,context,anchor){
 	   //google font
 	   .style("font-family","arial, sans-serif")
 	   .style("fill",function(d){
-								if ((d.actualDate>d.planDate && d.state!="done" &&d.state!="killed"&&d.state!="onhold")) return "red";
-								else if (d.state=="done") return "green";
-								else if (d.state=="todo" || d.state=="killed" || d.state=="onhold" ||!d.ExtId) return "#aaaaaa";
-								else if (d.Type=="target") return COLOR_TARGET;
-								return"black";})
+				if ((d.actualDate>d.planDate && d.state!="done" &&d.state!="killed"&&d.state!="onhold")) return "red";
+				else if (d.state=="done") return "green";
+				else if (d.state=="todo" || d.state=="killed" || d.state=="onhold") return "#aaaaaa";
+				else if (d.Type=="target") return COLOR_TARGET;
+				return"black";})
 	   .attr("x",x)
 	   .attr("y",y)
 	   //.text(d.name);
