@@ -222,40 +222,42 @@ function joinBoard2Initiatives(board,initiatives){
 
 		var _initiative = _.findWhere(initiatives,{"Number":_i.itemRef});
 		// legacy attributes
-		_joinedItem.id=_i.itemRef;
-		_joinedItem.Type="item";
+		if (_initiative){
+			_joinedItem.id=_i.itemRef;
+			_joinedItem.Type="item";
 
-		if (_initiative.Status=="Done" || _initiative.Status=="Monitoring")
-			_joinedItem.state="done";
-		else if (_initiative.Status=="Cancelled")
-			_joinedItem.state="killed";
-		else
-			_joinedItem.state="planned";
+			if (_initiative.Status=="Done" || _initiative.Status=="Monitoring")
+				_joinedItem.state="done";
+			else if (_initiative.Status=="Cancelled")
+				_joinedItem.state="killed";
+			else
+				_joinedItem.state="planned";
 
-		_joinedItem.name=_initiative.Name;
-		_joinedItem.health=_initiative.Health;
-		_joinedItem.healthComment=_initiative.HealthComment;
-		_joinedItem.Value=_initiative.Value;
-		_joinedItem.Swag=_initiative.Swag;
-		_joinedItem.status=_initiative.Status;
-		_joinedItem.ExtId=_initiative.ID;
-		_joinedItem.isCorporate=_initiative.PortfolioApproval;
-		_joinedItem.owner=_initiative.InitiativeOwner;
-		_joinedItem.DoD=_initiative.ElevatorPitch;
-		_joinedItem.startDate=_initiative.PlannedStart;
-		_joinedItem.planDate=_initiative.PlannedEnd;
+			_joinedItem.name=_initiative.Name;
+			_joinedItem.health=_initiative.Health;
+			_joinedItem.healthComment=_initiative.HealthComment;
+			_joinedItem.Value=_initiative.Value;
+			_joinedItem.Swag=_initiative.Swag;
+			_joinedItem.status=_initiative.Status;
+			_joinedItem.ExtId=_initiative.ID;
+			_joinedItem.isCorporate=_initiative.PortfolioApproval;
+			_joinedItem.owner=_initiative.InitiativeOwner;
+			_joinedItem.DoD=_initiative.ElevatorPitch;
+			_joinedItem.startDate=_initiative.PlannedStart;
+			_joinedItem.planDate=_initiative.PlannedEnd;
 
-		if (_initiative.LaunchDate)
-			_joinedItem.actualDate=_initiative.LaunchDate;
-		else
-			_joinedItem.actualDate=_initiative.PlannedEnd;
+			if (_initiative.LaunchDate)
+				_joinedItem.actualDate=_initiative.LaunchDate;
+			else
+				_joinedItem.actualDate=_initiative.PlannedEnd;
 
-		for (_key in _i.itemView){
-			var _view = _items[i].itemView[_key];
-			_joinedItem[_key]=_view;
-		}
-		if (moment(_joinedItem.actualDate) >= moment(board.startDate)){
-			_join.push(_joinedItem);
+			for (_key in _i.itemView){
+				var _view = _items[i].itemView[_key];
+				_joinedItem[_key]=_view;
+			}
+			if (moment(_joinedItem.actualDate) >= moment(board.startDate)){
+				_join.push(_joinedItem);
+			}
 		}
 	}//end for
 	//set global
