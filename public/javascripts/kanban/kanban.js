@@ -265,7 +265,7 @@ function renderBoard(id){
 		ITEM_SCALE = parseFloat(boardData.itemScale);
 		ITEM_FONTSCALE = parseFloat(boardData.itemFontScale);
 		setWIP(parseInt(boardData.WIPWindowDays));
-		LANE_LABELBOX_RIGHT_WIDTH = parseInt(boardData.laneboxRightWidth);
+		LANE_LABELBOX_RIGHT_WIDTH = parseInt(boardData.viewConfig.laneboxRightWidth);
 		KANBAN_START= new Date(boardData.startDate);
 		KANBAN_END= new Date(boardData.endDate);
 		BOARD = boardData;

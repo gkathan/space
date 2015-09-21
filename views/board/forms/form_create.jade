@@ -30,10 +30,17 @@ div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;back
 				tr
 					td(style="margin-left:5px;width:80px;height:50px;vertical-align:bottom")
 						input.form-control.floating-label(id="wip" name="wip" type="text" placeholder="wip days" autocomplete="off" value="90")
-					td(style="margin-left:5px;width:80px;height:50px;vertical-align:bottom")
-						input.form-control.floating-label(id="rightbox" name="rightbox" type="laneboxrightext" placeholder="rightbox" autocomplete="off" value="10")
-					td(colspan="2" style="margin-left:5px;width:240px;height:50px;vertical-align:bottom")
+					td(colspan="3" style="margin-left:5px;width:290px;height:50px;vertical-align:bottom")
 						input.form-control.floating-label(id="groupby" name="groupby" type="text" placeholder="groupby" autocomplete="off" value="Product,BusinessBacklog,Number")
+				tr
+					td(style="margin-left:5px;width:80px;height:50px;vertical-align:bottom")
+						input.form-control.floating-label(id="leftbox" name="leftbox" type="text" placeholder="leftbox" autocomplete="off" value="100")
+					td(style="margin-left:5px;width:80px;height:50px;vertical-align:bottom")
+						input.form-control.floating-label(id="rightbox" name="rightbox" type="text" placeholder="rightbox" autocomplete="off" value="10")
+					td(style="margin-left:5px;width:80px;height:50px;vertical-align:bottom")
+						input.form-control.floating-label(id="contextbox" name="contextbox" type="text" placeholder="contextbox" autocomplete="off" value="50")
+					td(style="margin-left:5px;width:80px;height:50px;vertical-align:bottom")
+						//input.form-control.floating-label(id="itemfontscale" name="itemfontscale" type="text" placeholder="font scale" autocomplete="off" value="5")
 				tr
 					td(colspan="2" style="margin-left:5px;width:160px;height:50px;vertical-align:bottom")
 						input.form-control.floating-label(id="ref" name="ref" type="text" placeholder="reference" autocomplete="off" value="")

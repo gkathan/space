@@ -132,7 +132,6 @@ script(type='text/javascript').
 		_board.itemScale = form.itemscale.value;
 		_board.itemFontScale = form.itemfontscale.value;
 		_board.WIPWindowDays = form.wip.value;
-		_board.laneboxRightWidth = form.rightbox.value;
 		_board.dataLink = form.datalink.value;
 		_board.groupby = form.groupby.value;
 		_board.ref = form.ref.value;
@@ -167,8 +166,17 @@ script(type='text/javascript').
 		else
 			_viewconfig.sublaneLine="off";
 		
-		_viewConfig.laneboxText = {size:"9px",color:"grey",weight:"normal",mode:""};
-		_viewConfig.contextboxText = {"size":"8px","color":"grey","weight":"normal","mode":"tb"};
+		_viewconfig.laneboxText = {size:"8px",color:"grey",weight:"normal",mode:""};
+		_viewconfig.contextboxText = {"size":"8px","color":"grey","weight":"normal","mode":"tb"};
+		_viewconfig.contextboxWidth = 50;
+		_viewconfig.laneboxLeftWidth = 150;
+		_viewconfig.laneboxRightWidth = 10;
+		
+		if (form.rightbox.value) _viewconfig.laneboxRightWidth = form.rightbox.value;
+		if (form.leftbox.value) _viewconfig.laneboxLeftWidth = form.leftbox.value;
+		if (form.contextbox.value) _viewconfig.contextboxWidth = form.contextbox.value;
+		
+		
 		
 		_board.viewConfig = _viewconfig;
 		

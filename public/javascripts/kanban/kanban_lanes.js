@@ -18,6 +18,9 @@ var PILLAR_X_OFFSET=90;
 var WIDTH_WHITESTROKE ="5px";
 var LANE_LABELBOX_LEFT_WIDTH =100;
 var LANE_LABELBOX_RIGHT_WIDTH =100;
+var CONTEXTBOX_WIDTH=50;
+
+
 var LANE_LABELBOX_RIGHT_START;
 // ----------------------------------------------------------------------------------------------------------------
 // ---------------------------------------------- LANES SECTION ---------------------------------------------------
@@ -31,6 +34,14 @@ function drawLanes(){
 	if (BOARD.viewConfig.lanes=="hide"){
 		lanes.style("visibility","hidden");
 	}
+	if (BOARD.viewConfig.laneboxLeftWidth)
+		LANE_LABELBOX_LEFT_WIDTH = parseInt(BOARD.viewConfig.laneboxLeftWidth);
+	if (BOARD.viewConfig.laneboxRightWidth)
+		LANE_LABELBOX_RIGHT_WIDTH = parseInt(BOARD.viewConfig.laneboxRightWidth);
+	if (BOARD.viewConfig.contextboxWidth)
+		CONTEXTBOX_WIDTH = parseInt(BOARD.viewConfig.contextboxWidth);
+
+
 //experiment
 	//var drag_item = _registerDragDrop();
 //experiment
@@ -137,7 +148,7 @@ function _drawTheme(_theme,svg){
 	var _t2 = y(_theme.yt2);
 	var _height = _t2-_t1;
 	var _name = _.last(_theme.name.split("/"));
-	_drawLaneContext(svg,_name,-margin.left+120,_t1,50,_height,"","themebox")
+	_drawLaneContext(svg,_name,-LANE_LABELBOX_LEFT_WIDTH-CONTEXTBOX_WIDTH,_t1,CONTEXTBOX_WIDTH,_height,"","themebox")
 }
 
 function _drawThemeDemarcation(svg,css){
