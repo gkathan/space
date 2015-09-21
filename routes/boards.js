@@ -37,6 +37,10 @@ router.get('/kanban/:id', function(req, res) {
   	var v1Service =  require('../services/V1Service');
     var boardService = require('../services/BoardService');
   		boardService.findById(id,function(err,board){
+        if (!board){
+          res.send("sorry no board for id: "+id);
+          return;
+        }
 
         logger.debug("loading board... board type ="+board.dataLink);
         if (board.dataLink=="roadmapinitiatives"){

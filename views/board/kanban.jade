@@ -27,20 +27,25 @@ script(src="/javascripts/components/flippant.js/flippant.min.js")
 block content
 	div.notifications.top-left
 	div.row(style="margin-left:10px;margin-bottom:10px")
-		// Button trigger modal
-		button.btn.btn-primary.btn-xs(type="button" data-toggle="modal" data-target="#myModal")
-			span board config
-		// Button trigger modal
-		button.btn.btn-success.btn-xs(type="button" data-toggle="modal" data-target="#v1EpicsModal")
-			span items (Swag and Value filled)
+		div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;background-color:white;width:#{board.width}px;text-align: center;margin: 10px auto;")
+			.panel-heading
+				h3.panel-title(style="font-size:24px;font-weight:bold") #{board.name}
+			.panel-body
+				div.row(style="margin-left:10px;margin-bottom:10px")
+					// Button trigger modal
+					button.btn.btn-primary.btn-xs(type="button" data-toggle="modal" data-target="#myModal")
+						span board config
+					// Button trigger modal
+					button.btn.btn-success.btn-xs(type="button" data-toggle="modal" data-target="#v1EpicsModal")
+						span items (Swag and Value filled)
+					// Button trigger whiteboard
+					button.btn.btn-warning.btn-xs(type="button" onclick="renderWhiteboard()")
+						span show backboard
+					// Button trigger kanbanboard
+					button.btn.btn-warning.btn-xs(type="button" onclick="hideWhiteboard();showKanbanboard()")
+						span show kanban board
 
-		// Button trigger whiteboard
-		button.btn.btn-warning.btn-xs(type="button" onclick="renderWhiteboard()")
-			span show backboard
-
-		// Button trigger kanbanboard
-		button.btn.btn-warning.btn-xs(type="button" onclick="hideWhiteboard();showKanbanboard()")
-			span show kanban board
+				div(id="board")
 		
 		//Modal
 		div.modal.fade(id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" )

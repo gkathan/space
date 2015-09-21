@@ -909,9 +909,10 @@ function saveBoard(req, res , next){
 	}
   // now lets iterate over the array
 	var v1Service=require('../services/V1Service');
-	if (board.dataLink=="roadmapinititatives"){
+	if (board.dataLink=="roadmapinitiatives"){
 		var _items =[];
 		v1Service.getRoadmapInitiatives(new Date("2014-01-01"),function(err,roadmap){
+			logger.debug("--------- roadmap items: "+roadmap.length);
 			for (var r in roadmap){
 				var _r = roadmap[r];
 				_items.push(_createItem(_r,_groupby,board.name));
@@ -993,11 +994,8 @@ function saveBoard(req, res , next){
 
 	}
 	else{
-		logger.debug(".....no roadmap");
-			boardService.save(board,function(err,success){
-				logger.debug("saved OK: _id: "+success._id);
-				res.send({_id:success._id});
-			})
+		logger.debug(".....no valid datalink");
+		res.send("no valid datalink..");
 	}
 }
 

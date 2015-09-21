@@ -191,7 +191,10 @@ function render(svgFile){
 	checkServices();
 	initShortcuts();
 	d3.xml(svgFile, function(xml) {
-		document.body.appendChild(document.importNode(xml.documentElement, true));
+
+		$('#board').append(document.importNode(xml.documentElement, true));
+		//document.body.appendChild(document.importNode(xml.documentElement, true));
+
 		var _boardId;
 		//var _boardId="54bba57720f4764e7e797849";
 		_boardId = _.last(window.location.href.split("/"));
