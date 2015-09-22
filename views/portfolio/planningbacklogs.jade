@@ -42,10 +42,10 @@ block content
 							|#{statistics.totalPlanningEpics}
 				tr
 					td(style="text-align:left;width:150px") 
-						|total swag:
+						|total swag remaining:
 					td(style="text-align:right")
 						b
-							|#{statistics.totalSwag}
+							|#{statistics.totalSwagRemaining}
 				tr
 					td(style="text-align:left;width:150px") 
 						|total people:
@@ -71,20 +71,21 @@ block content
 					th(style="min-width:800px") 
 						|initiatives 
 						div(style="font-weight:normal;font-size:12px")
-							span(style="margin-left:20px;text-align:left") id
+							span(style="margin-left:10px;text-align:left") id
 							span(style="margin-left:40px;text-align:left") name
-							span(style="margin-left:300px;text-align:left") status
-							span(style="margin-left:30px;text-align:left") value
-							span(style="margin-left:20px;text-align:left") risk
+							span(style="margin-left:280px;text-align:left") status
+							span(style="margin-left:60px;text-align:left") value
+							span(style="margin-left:10px;text-align:left") risk
 							span(style="margin-left:20px;text-align:left") swag
 							span(style="margin-left:20px;text-align:left") start
-							span(style="margin-left:70px;text-align:left") end
-							span(style="margin-left:70px;text-align:left") #
+							span(style="margin-left:60px;text-align:left") end
+							span(style="margin-left:60px;text-align:left") prog%
+							span(style="margin-left:10px;text-align:left") #
 					th(style="text-align:right;vertical-align:top") prod 	
 					th(style="text-align:right;vertical-align:top") init 
 					th(style="text-align:right;vertical-align:top") capa/month (days) 
-					th(style="text-align:right;vertical-align:top") duration	(month)
-						
+					th(style="text-align:right;vertical-align:top") remaining	(month)
+					//th(style="text-align:right;vertical-align:top") remain
 					
 			tbody
 				each b in backlogs
@@ -125,10 +126,16 @@ block content
 											td(style="vertical-align:top;text-align:right;font-size:10px;vertical-align:top;width:30px") #{i.Value}
 											td(style="vertical-align:top;text-align:right;font-size:10px;vertical-align:top;width:30px") #{i.Risk}
 											
-											td(style="vertical-align:top;text-align:right;font-size:10px;vertical-align:top;width:50px") #{i.SwagPlanned}
+											td(style="vertical-align:top;text-align:right;font-size:10px;vertical-align:top;width:50px") #{i.SwagRemaining}
 											td(style="vertical-align:top;text-align:center;font-size:10px;vertical-align:top;width:80px") #{moment(i.PlannedStart).format('YYYY-MM-DD')}
 											td(style="vertical-align:top;text-align:center;font-size:10px;vertical-align:top;width:80px") #{moment(i.PlannedEnd).format('YYYY-MM-DD')}
-											td(style="vertical-align:top;text-align:right;font-size:10px;vertical-align:top;width:50px") #{i.PlanningEpics.length}
+											td(style="vertical-align:top;text-align:right;font-size:10px;vertical-align:top;width:40px") 
+												if i.Progress
+													b
+														|#{i.Progress}
+												else 
+													|-
+											td(style="vertical-align:top;text-align:right;font-size:10px;vertical-align:top;width:20px") #{i.PlanningEpics.length}
 						td(style="vertical-align:top;text-align:right;font-size:10px;width:50px")
 							|#{(b.Capacity.defaultProductiveWorkRatio*100)}%
 						td(style="vertical-align:top;text-align:right;font-size:10px;width:50px")
@@ -136,7 +143,10 @@ block content
 						td(style="vertical-align:top;text-align:right;font-size:10px;width:50px")
 							|#{b.Capacity.TheoreticalCapacityPerMonth} 
 						td(style="vertical-align:top;text-align:right;font-size:10px;width:50px")
-							|#{(b.TotalSwag/b.Capacity.TheoreticalCapacityPerMonth).toFixed(2)} 
+							|#{(b.TotalSwagRemaining/b.Capacity.TheoreticalCapacityPerMonth).toFixed(2)} 
+						//td(style="vertical-align:top;text-align:right;font-size:10px;width:50px")
+							//|#{b.TotalSwagRemaining} 
+
 
 
 			script $("#planningbacklogs").tablesorter();

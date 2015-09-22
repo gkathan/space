@@ -71,7 +71,8 @@ function _sync(url,type,callback){
 				logger.debug(">>>> DONE ???? "+_collection);
 				done();
 			});
-		})},function(err,result){
+		})
+			},function(err,result){
 				//
 				if (err) {
 					logger.error('Response error '+err.message);

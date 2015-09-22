@@ -46,33 +46,37 @@ function _sync(url,type,callback){
 	// call v1 rest service
   var Client = require('node-rest-client').Client;
 	client = new Client();
-	// direct way
-	client.get(url, function(data, response){
-		// parsed response body as js object
-		//console.log(data);
-		// raw response
-		//console.log(response);
-		// and insert
-		var _epics = JSON.parse(data);
-		var v1epics =  db.collection(_syncName);
-		v1epics.drop();
+	// first the progress data
+	client.get(url[0], function(progress, response){
+		var _progress = JSON.parse(progress);
+		// second the epic data
+		client.get(url[1], function(data, response){
+			// parsed response body as js object
+			//console.log(data);
+			// raw response
+			//console.log(response);
+			// and insert
+			var _epics = JSON.parse(data);
+			var v1epics =  db.collection(_syncName);
+			v1epics.drop();
 
-		_enrichEpics(_epics);
+			_enrichEpics(_epics,_progress);
 
-		v1epics.insert(_epics, function(err , success){
-			//console.log('Response success '+success);
-			if (err) {
-				logger.error('Response error '+err.message);
-			}
-			if(success){
-				var _message = "syncv1 [DONE]: "+_epics.length+" epics";
-				logger.info(_message);
+			v1epics.insert(_epics, function(err , success){
+				//console.log('Response success '+success);
+				if (err) {
+					logger.error('Response error '+err.message);
+				}
+				if(success){
+					var _message = "syncv1 [DONE]: "+_epics.length+" epics";
+					logger.info(_message);
 
-				app.io.emit('syncUpdate', {status:"[SUCCESS]",from:_syncName,timestamp:_timestamp,info:_epics.length+" epics",type:type});
-				_syncStatus.saveLastSync(_syncName,_timestamp,_message,_statusSUCCESS,type);
-				callback(null,"syncv1 [DONE]: "+_epics.length+ " epics synced")
-			}
-			//return next(err);
+					app.io.emit('syncUpdate', {status:"[SUCCESS]",from:_syncName,timestamp:_timestamp,info:_epics.length+" epics",type:type});
+					_syncStatus.saveLastSync(_syncName,_timestamp,_message,_statusSUCCESS,type);
+					callback(null,"syncv1 [DONE]: "+_epics.length+ " epics synced")
+				}
+				//return next(err);
+			})
 		})
 	}).on('error',function(err){
 			var _message = err.message;
@@ -84,15 +88,25 @@ function _sync(url,type,callback){
 }
 
 
-function _enrichEpics(epics){
+function _enrichEpics(epics,progress){
 	for (var e in epics){
-		var _strategicThemes = _parseStrategicThemes(epics[e].StrategicThemesNames);
-		epics[e].Markets = _strategicThemes.markets;
-		epics[e].Targets = _strategicThemes.targets;
-		epics[e].Customers = _strategicThemes.customers;
-		epics[e].BusinessBacklogID = _parseObjectID(epics[e].BusinessBacklogID);
+		var _e = epics[e];
+		var _strategicThemes = _parseStrategicThemes(_e.StrategicThemesNames);
+		_e.Markets = _strategicThemes.markets;
+		_e.Targets = _strategicThemes.targets;
+		_e.Customers = _strategicThemes.customers;
+		_e.BusinessBacklogID = _parseObjectID(epics[e].BusinessBacklogID);
+		var _estimateClosed = _.findWhere(progress,{Number:_e.Number})["SubsAndDown:PrimaryWorkitem[AssetState\u003d\u0027Closed\u0027].Estimate.@Sum"];
+		var _estimateAll = _.findWhere(progress,{Number:_e.Number})["SubsAndDown:PrimaryWorkitem[AssetState!\u003d\u0027Dead\u0027].Estimate.@Sum"];
+		var _estimateOpen = _estimateAll-_estimateClosed;
+		_e.EstimateClosed = parseFloat(_estimateClosed);
+		_e.EstimateOpen = parseFloat(_estimateOpen);
+		_e.Progress = parseFloat(((_estimateClosed/_estimateAll)*100).toFixed(2));
 
-		epics[e].Product = v1Service.deriveProductFromBacklog(epics[e].BusinessBacklog);
+
+
+
+		epics[e].Product = v1Service.deriveProductFromBacklog(_e.BusinessBacklog);
 	}
 
 }

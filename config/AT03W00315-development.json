@@ -7,7 +7,7 @@
 		"v1epics" : {
 			"mode": "on",
 			"intervalMinutes" :240,
-			"url" : "http://knbnprxy.ea.bwinparty.corp/rest/epics"
+			"url" : ["http://localhost:8686/rest/epicsprogress","http://localhost:8686/rest/epics"]
 
 		},
 		"availability" : {
