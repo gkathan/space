@@ -96,7 +96,7 @@ block content
 									|#{b.Name} 
 						td(style="vertical-align:top;text-right:left;font-size:10px;width:30px")
 							b
-								|#{b.TotalSwag}
+								|#{b.TotalSwagRemaining.toFixed(2)}
 						td(style="vertical-align:top;text-right:left;font-size:10px;width:30px")
 							b
 								a(href="#"  title="#{_.uniq(_.map(b.Members,'Name')).join(', ')}")
