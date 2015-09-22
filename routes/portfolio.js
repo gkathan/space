@@ -57,12 +57,14 @@ router.get('/planningbacklogs', function(req, res) {
 			if (boards){
 				if (_.findWhere(boards,{ref:"bpe"})) _planningEpicsBoardId = _.findWhere(boards,{ref:"bpe"})._id;
 				if (_.findWhere(boards,{ref:"bi"})) _initiativesBoardId = _.findWhere(boards,{ref:"bi"})._id;
+				if (_.findWhere(boards,{ref:"rcs"})) _roadmapBoardId = _.findWhere(boards,{ref:"rcs"})._id;
 			}
 			res.locals.backlogs = _.sortBy(result.backlogs,'Name');
 			res.locals.statistics = result.statistics;
 			res.locals.moment=moment;
 			res.locals.planningEpicsBoardId = _planningEpicsBoardId;
 			res.locals.initiativesBoardId = _initiativesBoardId;
+			res.locals.roadmapBoardId = _roadmapBoardId;
 			res.render('portfolio/planningbacklogs'), { title: 's p a c e - planning backlogs overview ' }
 
 		})

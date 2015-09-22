@@ -2,6 +2,10 @@ include ../kanban_menu
 
 //link(rel='stylesheet', href='/stylesheets/tables.css')
 
+- function getStatusColor(status){
+-		return config.initiatives.states.colors[status];
+- }
+
 block content
 	div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;background-color:white;;width:1600px;text-align: center;margin: 10px auto;")
 		.panel-heading
@@ -47,19 +51,22 @@ block content
 		table.table.table-striped.table-hover.table-condensed.table-responsive.tablsesorter(id="planningepics" style="max-width:1600px")
 			thead
 				tr
+					th(style="max-width:5px")
 					th(style="min-width:60px") id
 					th(style="min-width:150px") initiative
-					th status
+					th(style="min-width:100px") status
 					th(style="min-width:40px;text-align:right") value
 					th(style="min-width:40px;text-align:right") risk
-					th swag
-					th planning epics
-					th(style="text-align:right") #
-					th(style="text-align:right") swag
+					th(style="text-align:right;width:50px") swag
+					th(style="width:750px") planning epics
+					th(style="text-align:right;min-width:50px") #
+					th(style="text-align:right;min-width:50px") swag
 					
 			tbody
 				each i in initiatives
 					tr
+						td(style="background-color:"+getStatusColor(i.Status))
+							| 
 						td(style="vertical-align:top;font-size:11px;;text-align:left;font-weight:normal;vertical-align:top") 
 							a(href="http://v1.bwinparty.corp/V1-Production/Epic.mvc/Summary?oidToken=Epic%3A"+i.ID.split(":")[1] target="_new" title="see epic in V1")
 								|#{i.Number}
@@ -67,12 +74,13 @@ block content
 							b
 								a(href="http://v1.bwinparty.corp/V1-Production/Epic.mvc/Summary?oidToken=Epic%3A"+i.ID.split(":")[1] target="_new" title="#{i.ElevatorPitch}")
 									|#{i.Name} 
-						td(style="vertical-align:top;font-size:11px;;text-align:left;font-weight:normal;vertical-align:top;width:60px") #{i.Status} 
+						td(style="vertical-align:top;font-size:11px;;text-align:left;font-weight:normal;vertical-align:top") 
+							|#{i.Status} 
 						
 						td(style="vertical-align:top;font-size:11px;;text-align:right;font-weight:normal;vertical-align:top") #{i.Value}
 						td(style="vertical-align:top;font-size:11px;;text-align:right;font-weight:normal;vertical-align:top") #{i.Risk}
-						td(style="vertical-align:top;font-size:11px;;text-align:right;font-weight:normal;vertical-align:top;width:60px") #{i.Swag}
-						td(style="vertical-align:top;text-align:left;font-size:10px;vertical-align:top;width:800px")
+						td(style="vertical-align:top;font-size:11px;;text-align:right;font-weight:normal;vertical-align:top") #{i.Swag}
+						td(style="vertical-align:top;text-align:left;font-size:10px;vertical-align:top")
 							if i.PlanningEpics
 								table.table-responsive.table-striped(style="width:800px")
 									- var _sum = 0; 
@@ -85,7 +93,7 @@ block content
 												a(href="http://v1.bwinparty.corp/V1-Production/Epic.mvc/Summary?oidToken=Epic%3A"+p.ID.split(":")[1] target="_new")
 													|#{p.Number} 
 											td(style="vertical-align:top;text-align:left;font-size:10px;vertical-align:top;width:200px")
-												a(href="http://v1.bwinparty.corp/V1-Production/Epic.mvc/Summary?oidToken=Epic%3A"+p.ID.split(":")[1] target="_new" title="#{p.ElevatorPitch}") 
+												a(href="http://v1.bwinparty.corp/V1-Production/Epic.mvc/Scorecard?oidToken=Epic%3A"+p.ID.split(":")[1] target="_new" title="go to V1 Scorecard") 
 													|#{p.Name}
 											td(style="vertical-align:top;text-align:center;font-size:10px;vertical-align:top;width:60px") #{p.CategoryName}
 											td(style="vertical-align:top;text-align:right;font-size:10px;vertical-align:top;width:30px") #{p.Swag}
@@ -96,12 +104,12 @@ block content
 													|#{p.BusinessBacklog}
 											
 							else
-						td(style="vertical-align:top;text-align:right;font-size:10px;vertical-align:bottom;width:50px")
+						td(style="vertical-align:top;text-align:right;font-size:10px;vertical-align:bottom")
 							if i.Children
 								|#{i.PlanningEpics.length}
 							else
 								|0
-						td(style="vertical-align:top;text-right:left;font-size:10px;vertical-align:bottom;width:100px")
+						td(style="vertical-align:top;text-align:right;font-size:10px;vertical-align:bottom")
 							b
 								|#{_sum}
 			script $("#planningepics").tablesorter();

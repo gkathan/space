@@ -1,6 +1,9 @@
 include ../kanban_menu
 
 //link(rel='stylesheet', href='/stylesheets/tables.css')
+- function getStatusColor(status){
+-		return config.initiatives.states.colors[status];
+- }
 
 block content
 	div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;background-color:white;;width:1400px;text-align: center;margin: 10px auto;")
@@ -14,6 +17,9 @@ block content
 				br
 			if planningEpicsBoardId
 				a(style="font-size:11px" href="/boards/kanban/#{planningEpicsBoardId}") level-2 timeline board - backlogs planningepics(*experimental) 
+				br
+			if roadmapBoardId
+				a(style="font-size:11px" href="/boards/kanban/#{roadmapBoardId}") roadmap board - initiatives - clustered by status|product(*experimental) 
 				br
 			table(style="max-width:250px;font-size:12px")
 				tr
@@ -106,14 +112,16 @@ block content
 										- _sumPlanningEpics+=i.PlanningEpics.length;
 										tr
 											td(style="width:10px;vertical-align:top")
-												|+ 
+												span(style="background-color:"+getStatusColor(i.Status))&nbsp;&nbsp;
+												| 
 											td(style="vertical-align:top;text-align:left;font-size:10px;vertical-align:top;width:50px") 
 												a(href="http://v1.bwinparty.corp/V1-Production/Epic.mvc/Summary?oidToken=Epic%3A"+i.ID.split(":")[1] target="_new"  title="go to V1 Epic Details")
 													|#{i.Number} 
 											td(style="vertical-align:top;text-align:left;font-size:10px;vertical-align:top;width:300px")
 												a(href="http://v1.bwinparty.corp/V1-Production/Epic.mvc/Scorecard?oidToken=Epic%3A"+i.ID.split(":")[1] target="_new" title="go to V1 Scorecard") 
 													|#{i.Name}
-											td(style="vertical-align:top;text-align:left;font-size:10px;vertical-align:top;width:70px") #{i.Status}
+											td(style="vertical-align:top;text-align:left;font-size:10px;vertical-align:top;width:80px") 
+												|#{i.Status} 
 											td(style="vertical-align:top;text-align:right;font-size:10px;vertical-align:top;width:30px") #{i.Value}
 											td(style="vertical-align:top;text-align:right;font-size:10px;vertical-align:top;width:30px") #{i.Risk}
 											
