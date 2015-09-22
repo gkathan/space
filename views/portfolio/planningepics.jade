@@ -13,6 +13,13 @@ block content
 			br
 			a(href="/portfolio/planningbacklogs") view planning backlogs
 			br
+			if planningEpicsBoardId
+				a(style="font-size:11px" href="/boards/kanban/#{planningEpicsBoardId}") timeline board - initiatives planningepics(*experimental) 
+				br
+			if roadmapBoardId
+				a(style="font-size:11px" href="/boards/kanban/#{roadmapBoardId}") roadmap board - initiatives - clustered by status|product(*experimental) 
+				br
+
 			table(style="text-align:right;font-size:12px")
 				tr
 					td(style="text-align:left")
@@ -51,7 +58,7 @@ block content
 		table.table.table-striped.table-hover.table-condensed.table-responsive.tablsesorter(id="planningepics" style="max-width:1600px")
 			thead
 				tr
-					th(style="max-width:5px")
+					th(style="width:2px")
 					th(style="min-width:60px") id
 					th(style="min-width:150px") initiative
 					th(style="min-width:100px") status
@@ -65,8 +72,9 @@ block content
 			tbody
 				each i in initiatives
 					tr
+						//td(style="border-left: solid 3px "+getStatusColor(i.Status))
 						td(style="background-color:"+getStatusColor(i.Status))
-							| 
+							
 						td(style="vertical-align:top;font-size:11px;;text-align:left;font-weight:normal;vertical-align:top") 
 							a(href="http://v1.bwinparty.corp/V1-Production/Epic.mvc/Summary?oidToken=Epic%3A"+i.ID.split(":")[1] target="_new" title="see epic in V1")
 								|#{i.Number}

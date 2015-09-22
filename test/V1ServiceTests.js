@@ -187,7 +187,7 @@ describe('#getPlanningEpics()', function(){
 				console.log("-----planning epics: "+_planningepics.length);
 				for (var p in _planningepics){
 					var _p = _planningepics[p];
-					console.log("planning epic: "+_p.Number+" backlog: "+_p.BusinessBacklog);
+					console.log("planning epic: "+_p.Number+" backlog: "+_p.BusinessBacklog+ "----- initiative root: "+_p.InitiativeRoot.Number);
 					//console.log("planning epic: "+JSON.stringify(_p));
 				}
 

@@ -258,8 +258,17 @@ function _findInitiativesWithPlanningEpics(filter,callback){
 		var _cleaned = [];
 		// and now we flatten to "Planning Epics" as children only
 		for (var i in _initiatives){
-			if (_initiatives[i].Status=="Conception" || _initiatives[i].Status=="Understanding" || _initiatives[i].Status=="Implementation"){
-				_initiatives[i].PlanningEpics = _getPlanningEpics(_initiatives[i]);
+			var _i = _initiatives[i];
+			if (_i.Status=="Conception" || _i.Status=="Understanding" || _i.Status=="Implementation"){
+				_i.PlanningEpics = _getPlanningEpics(_i);
+
+				// and setting real root for planning epics
+				for (var p in _i.PlanningEpics){
+					_i.PlanningEpics[p].InitiativeRootName = _i.Name;
+					_i.PlanningEpics[p].InitiativeRootNumber = _i.Number;
+				}
+
+
 				_cleaned.push(_initiatives[i]);
 			}
 		}
@@ -359,8 +368,9 @@ function _getRoot(epics,number){
 /** collects all epics type Planning in a parent child three
 */
 function _getPlanningEpics(epic,planningepics){
+	var _planningepics;
 	if (!planningepics){
-		var _planningepics=[];
+		_planningepics=[];
 	}
 	else{
 		_planningepics = planningepics;

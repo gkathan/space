@@ -20,27 +20,40 @@ module.exports = router;
 router.get('/planningepics', function(req, res) {
 	var v1Service = require('../services/V1Service');
 	var _filter = {};
+	var boardService= require('../services/BoardService');
 	v1Service.findInitiativesWithPlanningEpics(_filter,function(err,epics){
-		var _swagSum=0;;
-		var _valueSum=0;;
-		var _riskSum=0;;
-		for (var e in epics){
-			var _e = epics[e];
-			for (var p in _e.PlanningEpics){
-				var _p = _e.PlanningEpics[p];
-				_swagSum+=parseInt(_p.Swag);
+		boardService.find({},function(err,boards){
+			var _planningEpicsBoardId;
+			var _roadmapBoardId;
+			if (boards){
+				// "ipe" stands for "initiatives 2 planning epics"
+				if (_.findWhere(boards,{ref:"ipe"})) _planningEpicsBoardId = _.findWhere(boards,{ref:"ipe"})._id;
+				// "rcs" stands for roadmap clustered by status
+				if (_.findWhere(boards,{ref:"rcs"})) _roadmapBoardId = _.findWhere(boards,{ref:"rcs"})._id;
 			}
+			var _swagSum=0;;
+			var _valueSum=0;;
+			var _riskSum=0;;
+			for (var e in epics){
+				var _e = epics[e];
+				for (var p in _e.PlanningEpics){
+					var _p = _e.PlanningEpics[p];
+					_swagSum+=parseInt(_p.Swag);
+				}
 
-			_valueSum+=parseInt(epics[e].Value);
-			_riskSum+=parseInt(epics[e].Risk);
-		}
-		var _grouped = _.groupBy(epics,'Status');
+				_valueSum+=parseInt(epics[e].Value);
+				_riskSum+=parseInt(epics[e].Risk);
+			}
+			var _grouped = _.groupBy(epics,'Status');
 
-		res.locals.grouped = _grouped;
-		res.locals.statistics={swagSum:_swagSum,averageSwag:_swagSum/epics.length,valueSum:_valueSum,averageValue:_valueSum/epics.length,riskSum:_riskSum,averageRisk:_riskSum/epics.length}
-		res.locals.initiatives = epics;
-		res.locals.moment=moment;
-		res.render('portfolio/planningepics'), { title: 's p a c e - planning epics overview ' }
+			res.locals.planningEpicsBoardId = _planningEpicsBoardId;
+			res.locals.roadmapBoardId = _roadmapBoardId;
+			res.locals.grouped = _grouped;
+			res.locals.statistics={swagSum:_swagSum,averageSwag:_swagSum/epics.length,valueSum:_valueSum,averageValue:_valueSum/epics.length,riskSum:_riskSum,averageRisk:_riskSum/epics.length}
+			res.locals.initiatives = epics;
+			res.locals.moment=moment;
+			res.render('portfolio/planningepics'), { title: 's p a c e - planning epics overview ' }
+		});
 	});
 });
 
@@ -54,6 +67,7 @@ router.get('/planningbacklogs', function(req, res) {
 			logger.debug("looking for boards: ....................."+boards.length);
 			var _planningEpicsBoardId;
 			var _initiativesBoardId;
+			var _roadmapBoardId;
 			if (boards){
 				if (_.findWhere(boards,{ref:"bpe"})) _planningEpicsBoardId = _.findWhere(boards,{ref:"bpe"})._id;
 				if (_.findWhere(boards,{ref:"bi"})) _initiativesBoardId = _.findWhere(boards,{ref:"bi"})._id;
