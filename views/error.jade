@@ -2,16 +2,24 @@ include kanban_menu
 
 
 block content
-	div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;background-color:white;;max-width:700px;text-align: center;margin: 10px auto;")
+	div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;background-color:white;;max-width:900px;text-align: center;margin: 10px auto;")
 		.panel-heading
-			h3.panel-title(style="font-size:24px;font-weight:bold;color:red") 
-				i.glyphicon.glyphicon-flash 
-				|SOMETHING FISHY HAPPENED....
+			h3.panel-title(style="font-size:24px;font-weight:normal;color:red") 
+				table
+					tr
+						td(style="width:150px;text-align:left")
+							// i.glyphicon.glyphicon-flash 
+							img("src=/images/space/fishy.png" height="100px")
+						td
+							|POTENTIALLY SOMETHING <b>FISHY</b> HAPPENED....
 			
 		.panel-body
 			p(style="color:red")
-				|[s p a c e] says:
+				|[ s p a c e ] says:
 				span(style="font-weight:bold")&nbsp;#{message}
 			if error
 				h2= error.status
-				pre #{error.stack}
+				pre(style="font-size:10px;text-align:left") #{error.stack}
+			p(style="color:red")
+				|please contact your local  <a href="mailto:cactus@bwinparty.com?subject=[s p a c e] error">s p a c e support </a>;-)
+			

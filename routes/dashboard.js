@@ -103,6 +103,8 @@ router.get('/itservicereport', function(req, res) {
 		//default is in config
 		var _from = moment().startOf('year').format("YYYY-MM-DD");
 		var _to = moment().format("YYYY-MM-DD");
+		if (req.query.to) _to = moment(req.query.to).add(1,"days").format("YYYY-MM-DD");//"2015-01-10";
+
 		var _customer;
 		var _filter;
 		//"openedAt", "resolvedAt", "closedAt"
@@ -179,7 +181,11 @@ router.get('/opsreport', function(req, res) {
 			_prio = req.query.prio;
 		}
 		if (req.query.from)	 _from = req.query.from;//"2015-01-01";
-		if (req.query.to) _to = req.query.to;//"2015-01-10";
+		// add one day to include the last day
+		if (req.query.to) _to = moment(req.query.to).add(1,"days").format("YYYY-MM-DD");//"2015-01-10";
+
+
+
 		if (req.query.excludeNOLABEL) _excludeNOLABEL = req.query.excludeNOLABEL;
 
 		var labelService = require('../services/LabelService');
@@ -192,27 +198,21 @@ router.get('/opsreport', function(req, res) {
 								P08:{openedAt:{$gte:new Date(_from),$lte:new Date(_to)},priority:"P08 - High",category:{$nin:config.incidents.customerImpact.categoryExclude}},
 								P16:{openedAt:{$gte:new Date(_from),$lte:new Date(_to)},priority:"P16 - Moderate",category:{$nin:config.incidents.customerImpact.categoryExclude}}
 					};
-
 					inc.findFiltered(_incfilter[_prio],{openedAt:-1},function(err,snowIncidents){
 						logger.debug("++++++++++++++++++++++++++ all snow incidents.length: "+snowIncidents.length);
 						labelService.filterIncidents(snowIncidents,_customer,_excludeNOLABEL,function(err,filteredIncidents){
 							logger.debug("++++++++++++++++++++++++++ filtered snow incidents.length: "+filteredIncidents.length);
-
 							res.locals.slaMetrics=_enrichIncidents(filteredIncidents,problems);
-
 							res.locals.av = avDataOverall;
 							res.locals.labelService = labelService;
 							res.locals.customer = _customer;
 							res.locals.prio = _prio;
-
-
 							res.locals.avExternal = avDataExternal;
 							res.locals.snowIncidents = filteredIncidents;
 							res.locals.coreDef = config.availability.coreTime
 							res.locals.moment = moment;
 							res.locals.from = _from;
 							res.locals.to = _to;
-
 							res.locals.problems = problems;
 							res.locals.sla_incidents = config.customers.sla.incidents;
 							res.locals.excludeNOLABEL = _excludeNOLABEL;
@@ -264,8 +264,6 @@ function _createTTR(time,sla){
    if (_return.ttrHours>sla) _return.slaBreach=true;
  	return _return;
 }
-
-
 
 router.get('/corpIT', function(req, res) {
 		var apps=[{name:"lync",rag:"green"},{name:"servicenow",rag:"amber"},{name:"email",rag:"green"},{name:"versionone",rag:"green"},{name:"Pi",rag:"green"},{name:"oracle financials",rag:"green"},{name:"moss",rag:"green"},{name:"confluence",rag:"green"},{name:"myrewards",rag:"green"}];

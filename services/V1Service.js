@@ -261,14 +261,13 @@ function _findInitiativesWithPlanningEpics(filter,callback){
 			var _i = _initiatives[i];
 			if (_i.Status=="Conception" || _i.Status=="Understanding" || _i.Status=="Implementation"){
 				_i.PlanningEpics = _getPlanningEpics(_i);
-
 				// and setting real root for planning epics
 				for (var p in _i.PlanningEpics){
 					_i.PlanningEpics[p].InitiativeRootName = _i.Name;
 					_i.PlanningEpics[p].InitiativeRootNumber = _i.Number;
+					_i.PlanningEpics[p].InitiativeRootStatus = _i.Status;
+
 				}
-
-
 				_cleaned.push(_initiatives[i]);
 			}
 		}
