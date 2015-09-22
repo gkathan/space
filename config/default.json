@@ -180,7 +180,7 @@
 		"v1epics" : {
 			"mode": "off",
 			"intervalMinutes" :60,
-			"url" : "http://knbnprxy.ea.bwinparty.corp/rest/epics"
+			"url" : ["http://knbnprxy.ea.bwinparty.corp/rest/epicsprogress","http://knbnprxy.ea.bwinparty.corp/rest/epics"]
 		},
 
 		"v1data" : {

@@ -52,8 +52,8 @@
   		"v1epics" : {
   			"mode": "on",
   			"intervalMinutes" :10,
-  			"url" : "http://knbnprxy.ea.bwinparty.corp/rest/epics"
-  		},
+			  "url" : ["http://knbnprxy.ea.bwinparty.corp/rest/epicsprogress","http://knbnprxy.ea.bwinparty.corp/rest/epics"]
+      },
 			"v1data" : {
   			"mode": "on",
   			"intervalMinutes" :30,
