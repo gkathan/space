@@ -2,9 +2,11 @@ include ../kanban_menu
 
 //link(rel='stylesheet', href='/stylesheets/tables.css')
 
-- function getStatusColor(status){
--		return config.initiatives.states.colors[status];
+- function getHealthColor(status){
+-		if (!status) status="Undefined";
+-			return config.initiatives.health.colors[status];
 - }
+
 
 block content
 	div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;background-color:white;;width:1600px;text-align: center;margin: 10px auto;")
@@ -57,8 +59,8 @@ block content
 		.panel-body
 		table.table.table-striped.table-hover.table-condensed.table-responsive.tablsesorter(id="planningepics" style="max-width:1600px")
 			thead
-				tr
-					th(style="width:2px")
+				tr(style="font-size:12px")
+					th(style="width:2px") h
 					th(style="min-width:60px") id
 					th(style="min-width:150px") initiative
 					th(style="min-width:100px") status
@@ -74,8 +76,8 @@ block content
 				each i in initiatives
 					tr
 						//td(style="border-left: solid 3px "+getStatusColor(i.Status))
-						td(style="background-color:"+getStatusColor(i.Status))
-							
+						td(style="font-size:0px;background-color:"+getHealthColor(i.Health))
+							|#{_.first(i.Health)}
 						td(style="vertical-align:top;font-size:11px;;text-align:left;font-weight:normal;vertical-align:top") 
 							a(href="http://v1.bwinparty.corp/V1-Production/Epic.mvc/Summary?oidToken=Epic%3A"+i.ID.split(":")[1] target="_new" title="see epic in V1")
 								|#{i.Number}

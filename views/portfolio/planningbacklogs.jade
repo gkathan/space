@@ -1,12 +1,13 @@
 include ../kanban_menu
 
 //link(rel='stylesheet', href='/stylesheets/tables.css')
-- function getStatusColor(status){
--		return config.initiatives.states.colors[status];
+- function getHealthColor(status){
+-		if (!status) status="Undefined";
+-			return config.initiatives.health.colors[status];
 - }
 
 block content
-	div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;background-color:white;;width:1400px;text-align: center;margin: 10px auto;")
+	div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;background-color:white;;width:1600px;text-align: center;margin: 10px auto;")
 		.panel-heading
 			h3.panel-title(style="font-size:24px;font-weight:bold") Planning Backlogs Overview
 			br
@@ -45,7 +46,7 @@ block content
 						|total swag remaining:
 					td(style="text-align:right")
 						b
-							|#{statistics.totalSwagRemaining}
+							|#{statistics.totalSwagRemaining.toFixed(0)}
 				tr
 					td(style="text-align:left;width:150px") 
 						|total people:
@@ -60,15 +61,18 @@ block content
 							|#{statistics.totalTeams}
 			
 		.panel-body
-		table.table.table-striped.table-hover.table-condensed.table-responsive.tablsesorter(id="planningbacklogs" style="max-width:1400px")
+		table.table.table-striped.table-hover.table-condensed.table-responsive.tablsesorter(id="planningbacklogs" style="max-width:1600px")
 			thead
-				tr
-					th(style="min-width:100px;vertical-align:top") backlog
-					th(style="text-align:right;vertical-align:top") swag
+				tr(style="font-size:12px")
+					th(style="min-width:250px;vertical-align:top") backlog
 					th(style="text-align:right;vertical-align:top") 
 						img(src="/images/iconexp/user.png" width="20px" height="20px")
-					th(style="text-align:right;vertical-align:top") ratio	
-					th(style="min-width:800px") 
+					th(style="min-width:60px;text-align:right;vertical-align:top") available PD/month 
+					th(style="min-width:60px;text-align:right;vertical-align:top") % init
+					th(style="min-width:50px;text-align:center;vertical-align:top") capacity/month (days) 
+					th(style="min-width:50px;text-align:center;vertical-align:top") swag remaining
+					th(style="min-width:50px;text-align:center;vertical-align:top") occupation (month)
+					th(style="text-align:left;min-width:800px") 
 						|initiatives 
 						div(style="font-weight:normal;font-size:12px")
 							span(style="margin-left:10px;text-align:left") id
@@ -81,10 +85,7 @@ block content
 							span(style="margin-left:60px;text-align:left") end
 							span(style="margin-left:60px;text-align:left") prog%
 							span(style="margin-left:10px;text-align:left") #
-					th(style="text-align:right;vertical-align:top") prod 	
-					th(style="text-align:right;vertical-align:top") init 
-					th(style="text-align:right;vertical-align:top") capa/month (days) 
-					th(style="text-align:right;vertical-align:top") remaining	(month)
+				
 					//th(style="text-align:right;vertical-align:top") remain
 					
 			tbody
@@ -96,16 +97,26 @@ block content
 									|#{b.Name} 
 						td(style="vertical-align:top;text-right:left;font-size:10px;width:30px")
 							b
+								a(href="#"  title="#{_.uniq(_.map(b.Members,'Name')).join(', ')}")
+									|#{b.Members.length}
+						td(style="vertical-align:top;text-align:right;font-size:10px;width:50px")
+							|#{Math.round(b.Capacity.AvailablePDperMonth)} 
+						td(style="vertical-align:top;text-align:right;font-size:10px;width:50px")
+							|#{(b.Capacity.defaultAvailableForInitiativesRatio)*100}%
+						
+						td(style="vertical-align:top;text-align:right;font-size:10px;width:50px")
+							|#{Math.round(b.Capacity.AvailablePDperMonthForInitiatives)} 
+						//td(style="vertical-align:top;text-align:right;font-size:10px;width:50px")
+							//|#{b.TotalSwagRemaining} 
+						td(style="vertical-align:top;text-right:left;font-size:10px;width:30px")
+							b
 								|#{b.TotalSwagRemaining.toFixed(2)}
 						td(style="vertical-align:top;text-right:left;font-size:10px;width:30px")
 							b
-								a(href="#"  title="#{_.uniq(_.map(b.Members,'Name')).join(', ')}")
-									|#{b.Members.length}
-						td(style="vertical-align:top;text-right:left;font-size:10px;width:50px")
-							|#{(b.TotalSwag/b.Members.length).toFixed(2)}
+								|#{(b.TotalSwagRemaining/b.Capacity.AvailablePDperMonthForInitiatives).toFixed(1)}
 						td(style="vertical-align:top;text-align:left;font-size:10px")
 							if b.Initiatives
-								table.table-responsive.table-striped(style="width:800px")
+								table.table-responsive.table-striped(style="")
 									- var _sum = 0; 
 									- var _sumPlanningEpics = 0;
 									each i in b.Initiatives
@@ -113,7 +124,7 @@ block content
 										- _sumPlanningEpics+=i.PlanningEpics.length;
 										tr
 											td(style="width:10px;vertical-align:top")
-												span(style="background-color:"+getStatusColor(i.Status))&nbsp;&nbsp;
+												span(style="background-color:"+getHealthColor(i.Health))&nbsp;&nbsp;
 												| 
 											td(style="vertical-align:top;text-align:left;font-size:10px;vertical-align:top;width:50px") 
 												a(href="http://v1.bwinparty.corp/V1-Production/Epic.mvc/Summary?oidToken=Epic%3A"+i.ID.split(":")[1] target="_new"  title="go to V1 Epic Details")
@@ -132,20 +143,12 @@ block content
 											td(style="vertical-align:top;text-align:right;font-size:10px;vertical-align:top;width:40px") 
 												if i.Progress
 													b
-														|#{i.Progress}
+														|#{i.ProgressPlanned}
 												else 
 													|-
 											td(style="vertical-align:top;text-align:right;font-size:10px;vertical-align:top;width:20px") #{i.PlanningEpics.length}
-						td(style="vertical-align:top;text-align:right;font-size:10px;width:50px")
-							|#{(b.Capacity.defaultProductiveWorkRatio*100)}%
-						td(style="vertical-align:top;text-align:right;font-size:10px;width:50px")
-							|#{(b.Capacity.defaultAvailableForInitiativesRatio)*100}%
-						td(style="vertical-align:top;text-align:right;font-size:10px;width:50px")
-							|#{b.Capacity.TheoreticalCapacityPerMonth} 
-						td(style="vertical-align:top;text-align:right;font-size:10px;width:50px")
-							|#{(b.TotalSwagRemaining/b.Capacity.TheoreticalCapacityPerMonth).toFixed(2)} 
-						//td(style="vertical-align:top;text-align:right;font-size:10px;width:50px")
-							//|#{b.TotalSwagRemaining} 
+					
+					
 
 
 

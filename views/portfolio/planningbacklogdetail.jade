@@ -1,8 +1,9 @@
 include ../kanban_menu
 
 //link(rel='stylesheet', href='/stylesheets/tables.css')
-- function getStatusColor(status){
--		return config.initiatives.states.colors[status];
+- function getHealthColor(status){
+-		if (!status) status="Undefined";
+-			return config.initiatives.health.colors[status];
 - }
 
 block content
@@ -29,10 +30,10 @@ block content
 							|#{backlog.TotalPlanningEpics}
 				tr
 					td(style="text-align:left") 
-						|total swag:
+						|total swag remaining:
 					td(style="text-align:right")
 						b
-							|#{backlog.TotalSwag}
+							|#{backlog.TotalSwagRemaining}
 
 				tr
 					td(style="text-align:left") 
@@ -51,23 +52,23 @@ block content
 
 				tr
 					td(style="text-align:left") 
-						|swag / person
+						|swag remaining/ person
 					td(style="text-align:right")
 						b
-							|#{(backlog.TotalSwag/members.length).toFixed(2)}
+							|#{(backlog.TotalSwagRemaining/members.length).toFixed(2)}
 							
 			
 		.panel-body
 			table.table.table-striped.table-hover.table-condensed.table-responsive.tablsesorter(id="planningbacklogdetail" style="max-width:1600px")
 				thead
-					tr
+					tr(style="font-size:12px")
 						th(style="min-width:5px")
 						th(style="min-width:60px") id
-						th(style="min-width:300px") initiative
+						th(style="min-width:250px") initiative
 						th(style="min-width:70px") status 
 						th(style="min-width:30px;text-align:right") value 
 						th(style="min-width:30px;text-align:right") risk 
-						th(style="min-width:50px;text-align:right") swag 
+						th(style="min-width:40px;text-align:right") swag 
 						th(style="min-width:70px;text-align:center") start
 						th(style="min-width:70px;text-align:center") end 
 						th(style="min-width:50px;text-align:right") prog%
@@ -81,7 +82,7 @@ block content
 						- _sum+=i.SwagPlanned
 						- _sumPlanningEpics+=i.PlanningEpics.length;
 						tr
-							td(style="background-color:"+getStatusColor(i.Status))
+							td(style="background-color:"+getHealthColor(i.Health))
 								| 
 							td(style="vertical-align:top;text-align:left;font-size:10px;vertical-align:top;width:50px") 
 								a(href="http://v1.bwinparty.corp/V1-Production/Epic.mvc/Summary?oidToken=Epic%3A"+i.ID.split(":")[1] target="_new"  title="see details in V1")
@@ -93,13 +94,13 @@ block content
 							td(style="vertical-align:top;text-align:right;font-size:10px;vertical-align:top") #{i.Value}
 							td(style="vertical-align:top;text-align:right;font-size:10px;vertical-align:top") #{i.Risk}
 							
-							td(style="vertical-align:top;text-align:right;font-size:10px;vertical-align:top") #{i.SwagPlanned}
+							td(style="vertical-align:top;text-align:right;font-size:10px;vertical-align:top") #{i.SwagRemaining}
 							td(style="vertical-align:top;text-align:center;font-size:10px;vertical-align:top") #{moment(i.PlannedStart).format('YYYY-MM-DD')}
 							td(style="vertical-align:top;text-align:center;font-size:10px;vertical-align:top") #{moment(i.PlannedEnd).format('YYYY-MM-DD')}
 							td(style="vertical-align:top;text-align:right;font-size:10px;vertical-align:top") 
 								if i.Progress
 									b
-										|#{i.Progress}
+										|#{i.ProgressPlanned}
 								else 
 									|-
 							td(style="vertical-align:top;text-align:left;font-size:10px;vertical-align:top")
@@ -114,14 +115,16 @@ block content
 												td(style="vertical-align:top;text-align:left;font-size:10px;vertical-align:top;width:40px") 
 													a(href="http://v1.bwinparty.corp/V1-Production/Epic.mvc/Summary?oidToken=Epic%3A"+p.ID.split(":")[1] target="_new" title="go to V1 Epic Details")
 														|#{p.Number} 
-												td(style="vertical-align:top;text-align:left;font-size:10px;vertical-align:top;width:250px")
+												td(style="vertical-align:top;text-align:left;font-size:10px;vertical-align:top;width:200px")
 													a(href="http://v1.bwinparty.corp/V1-Production/Epic.mvc/Scorecard?oidToken=Epic%3A"+p.ID.split(":")[1] target="_new" title="go to V1 Scorecard") 
 														|#{p.Name}
-												td(style="vertical-align:top;text-align:right;font-size:10px;vertical-align:top;width:40px") #{p.Swag}
-												td(style="vertical-align:top;text-align:center;font-size:10px;vertical-align:top;width:50px") #{moment(p.PlannedStart).format('YYYY-MM-DD')}
-												td(style="vertical-align:top;text-align:center;font-size:10px;vertical-align:top;width:50px") #{moment(p.PlannedEnd).format('YYYY-MM-DD')}
-												td(style="vertical-align:top;text-align:left;font-size:10px;vertical-align:top;width:150px") 
+												td(style="vertical-align:top;text-align:right;font-size:10px;vertical-align:top;width:30px") #{p.Swag}
+												td(style="vertical-align:top;text-align:right;font-size:10px;vertical-align:top;width:30px") #{p.SwagRemaining}
+												td(style="vertical-align:top;text-align:right;font-size:10px;vertical-align:top;width:30px") #{p.Progress}
+												td(style="vertical-align:top;text-align:center;font-size:10px;vertical-align:top;width:60px") #{moment(p.PlannedStart).format('YYYY-MM-DD')}
+												td(style="vertical-align:top;text-align:center;font-size:10px;vertical-align:top;width:60px") #{moment(p.PlannedEnd).format('YYYY-MM-DD')}
+												td(style="vertical-align:top;text-align:left;font-size:10px;vertical-align:top;width:200px") 
 													a(href="/portfolio/planningbacklogdetail/"+p.BusinessBacklogID title="show details")
 														|#{p.BusinessBacklog}
-							td(style="vertical-align:top;text-align:right;font-size:10px;vertical-align:top;width:50px") #{i.PlanningEpics.length}
+							td(style="vertical-align:top;text-align:right;font-size:10px;vertical-align:top;width:20px") #{i.PlanningEpics.length}
 				script $("#planningbacklogdetail").tablesorter();
