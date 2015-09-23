@@ -190,8 +190,8 @@ script.
 
 		$('#daterange').daterangepicker({ 
 			format: 'YYYY-MM-DD',
-			startDate: '2015-01-01',
-			endDate: new Date(),
+			startDate: "#{from}",
+			endDate: "#{to}",
 			showDropdowns:true,
 			showWeekNumbers:true,
 			ranges: {
@@ -211,7 +211,6 @@ script.
 
 		$('#filter').on('change', function() {
 			console.log("select change event: "+this.value);
-			
 			if (_from && _to)
 				window.location.href = "/dashboard/opsreport?from="+_from+"&to="+_to+"&excludeNOLABEL="+_excludeNOLABEL+"&prio="+_prio;
 			else

@@ -101,18 +101,18 @@ router.get('/itservicereport', function(req, res) {
 		var prob = require ('../services/ProblemService');
 
 		//default is in config
-		var _from = moment().startOf('year').format("YYYY-MM-DD");
+		var _from = moment().startOf('month').format("YYYY-MM-DD");
+
 		var _to = moment().format("YYYY-MM-DD");
 		if (req.query.to) _to = moment(req.query.to).add(1,"days").format("YYYY-MM-DD");//"2015-01-10";
-
+		if (req.query.from)	 _from = req.query.from;//"2015-01-01";
 		var _customer;
 		var _filter;
 		//"openedAt", "resolvedAt", "closedAt"
 		var _dateField = req.query.dateField;
 		res.locals.dateField = _dateField;
 
-		if (req.query.from)	 _from = req.query.from;//"2015-01-01";
-		if (req.query.to) _to = req.query.to;//"2015-01-10";
+
 		if (req.query.customer){
 			_customer = req.query.customer;//"bwin" or "pmu" or "danske spil",...;
 			_filter = {customer:_customer};
@@ -166,7 +166,7 @@ router.get('/opsreport', function(req, res) {
 		//sess.AUTH = user.role;
 
 		//default is in config
-		var _from = moment().startOf('year').format("YYYY-MM-DD");
+		var _from = moment().startOf('month').format("YYYY-MM-DD");
 		var _to = moment().format("YYYY-MM-DD");
 
 		var _filter = {customer:_customer};;
