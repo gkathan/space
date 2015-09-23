@@ -182,7 +182,10 @@ function _buildInitiativeResult(initiatives){
 		_i.PlannedStart = _.first(_startDates.sort());
 		_i.PlannedEnd = _.first(_endDates.sort());
 		_i.SwagPlanned = _swagSum;
-		_i.ProgressPlanned = ((1-_swagSumRemaining/_swagSum)*100).toFixed(2);
+		if (_swagSum !=0)
+			_i.ProgressPlanned = ((1-(_swagSumRemaining/_swagSum))*100).toFixed(2);
+		else
+			_i.ProgressPlanned =0;
 
 
 		/*

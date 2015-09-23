@@ -64,27 +64,27 @@ block content
 		table.table.table-striped.table-hover.table-condensed.table-responsive.tablsesorter(id="planningbacklogs" style="max-width:1600px")
 			thead
 				tr(style="font-size:12px")
-					th(style="min-width:250px;vertical-align:top") backlog
+					th(style="min-width:220px;vertical-align:top") backlog
 					th(style="text-align:right;vertical-align:top") 
 						img(src="/images/iconexp/user.png" width="20px" height="20px")
 					th(style="min-width:60px;text-align:right;vertical-align:top") available PD/month 
-					th(style="min-width:60px;text-align:right;vertical-align:top") % init
-					th(style="min-width:50px;text-align:center;vertical-align:top") capacity/month (days) 
+					th(style="min-width:60px;text-align:right;vertical-align:top") init %
+					th(style="min-width:50px;text-align:right;vertical-align:top") capa/month days 
 					th(style="min-width:50px;text-align:center;vertical-align:top") swag remaining
-					th(style="min-width:50px;text-align:center;vertical-align:top") occupation (month)
+					th(style="min-width:50px;text-align:center;vertical-align:top") occupation month
 					th(style="text-align:left;min-width:800px") 
 						|initiatives 
 						div(style="font-weight:normal;font-size:12px")
 							span(style="margin-left:10px;text-align:left") id
 							span(style="margin-left:40px;text-align:left") name
-							span(style="margin-left:280px;text-align:left") status
+							span(style="margin-left:270px;text-align:left") status
 							span(style="margin-left:60px;text-align:left") value
 							span(style="margin-left:10px;text-align:left") risk
-							span(style="margin-left:20px;text-align:left") swag
-							span(style="margin-left:20px;text-align:left") start
-							span(style="margin-left:60px;text-align:left") end
-							span(style="margin-left:60px;text-align:left") prog%
-							span(style="margin-left:10px;text-align:left") #
+							span(style="margin-left:10px;text-align:left") swag
+							span(style="margin-left:30px;text-align:left") start
+							span(style="margin-left:50px;text-align:left") end
+							span(style="margin-left:40px;text-align:left") prog%
+							span(style="margin-left:20px;text-align:left") #
 				
 					//th(style="text-align:right;vertical-align:top") remain
 					
@@ -110,7 +110,7 @@ block content
 							//|#{b.TotalSwagRemaining} 
 						td(style="vertical-align:top;text-right:left;font-size:10px;width:30px")
 							b
-								|#{b.TotalSwagRemaining.toFixed(2)}
+								|#{Math.round(b.TotalSwagRemaining)}
 						td(style="vertical-align:top;text-right:left;font-size:10px;width:30px")
 							b
 								|#{(b.TotalSwagRemaining/b.Capacity.AvailablePDperMonthForInitiatives).toFixed(1)}
@@ -137,19 +137,23 @@ block content
 											td(style="vertical-align:top;text-align:right;font-size:10px;vertical-align:top;width:30px") #{i.Value}
 											td(style="vertical-align:top;text-align:right;font-size:10px;vertical-align:top;width:30px") #{i.Risk}
 											
-											td(style="vertical-align:top;text-align:right;font-size:10px;vertical-align:top;width:50px") #{i.SwagRemaining}
-											td(style="vertical-align:top;text-align:center;font-size:10px;vertical-align:top;width:80px") #{moment(i.PlannedStart).format('YYYY-MM-DD')}
-											td(style="vertical-align:top;text-align:center;font-size:10px;vertical-align:top;width:80px") #{moment(i.PlannedEnd).format('YYYY-MM-DD')}
-											td(style="vertical-align:top;text-align:right;font-size:10px;vertical-align:top;width:40px") 
-												if i.Progress
+											td(style="vertical-align:top;text-align:right;font-size:10px;vertical-align:top;width:50px") #{Math.round(i.SwagRemaining)}
+											td(style="vertical-align:top;text-align:center;font-size:10px;vertical-align:top;width:80px") 
+												if i.PlannedStart
+													|#{moment(i.PlannedStart).format('YYYY-MM-DD')}
+												else
+													|-
+											td(style="vertical-align:top;text-align:center;font-size:10px;vertical-align:top;width:80px")
+												if i.PlannedEnd
+													|#{moment(i.PlannedEnd).format('YYYY-MM-DD')}
+												else 
+													|-
+											td(style="vertical-align:top;text-align:center;font-size:10px;vertical-align:top;width:40px") 
+												if i.ProgressPlanned
 													b
-														|#{i.ProgressPlanned}
+														|#{Math.round(i.ProgressPlanned)}
 												else 
 													|-
 											td(style="vertical-align:top;text-align:right;font-size:10px;vertical-align:top;width:20px") #{i.PlanningEpics.length}
-					
-					
-
-
 
 			script $("#planningbacklogs").tablesorter();

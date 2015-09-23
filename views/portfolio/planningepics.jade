@@ -67,10 +67,8 @@ block content
 					th(style="min-width:40px;text-align:right") value
 					th(style="min-width:40px;text-align:right") risk
 					th(style="text-align:right;width:50px") swag
-					th(style="text-align:right;width:50px") prog%
+					th(style="text-align:right;center:50px") prog%
 					th(style="width:750px") planning epics
-					th(style="text-align:right;min-width:50px") #
-					th(style="text-align:right;min-width:50px") swag
 					
 			tbody
 				each i in initiatives
@@ -92,13 +90,13 @@ block content
 						td(style="vertical-align:top;font-size:11px;;text-align:right;font-weight:normal;vertical-align:top") #{i.Risk}
 						td(style="vertical-align:top;font-size:11px;;text-align:right;font-weight:normal;vertical-align:top") 
 							if i.Progress
-								|#{(i.Swag*((100-i.Progress)/100)).toFixed(2)}
+								|#{Math.round(i.SwagPlanned*((100-i.ProgressPlanned)/100))}
 							else 
-								|#{i.Swag}
+								|#{i.SwagPlanned}
 						td(style="vertical-align:top;text-align:right;font-size:11px;vertical-align:top") 
 							if i.Progress
 								b
-									|#{i.Progress}
+									|#{Math.round(i.ProgressPlanned)}
 							else 
 								|-
 						td(style="vertical-align:top;text-align:left;font-size:10px;vertical-align:top")
@@ -117,24 +115,24 @@ block content
 												a(href="http://v1.bwinparty.corp/V1-Production/Epic.mvc/Scorecard?oidToken=Epic%3A"+p.ID.split(":")[1] target="_new" title="go to V1 Scorecard") 
 													|#{p.Name}
 											td(style="vertical-align:top;text-align:center;font-size:10px;vertical-align:top;width:60px") #{p.CategoryName}
-											td(style="vertical-align:top;text-align:right;font-size:10px;vertical-align:top;width:30px") 
+											td(style="vertical-align:top;text-align:center;font-size:10px;vertical-align:top;width:60px") #{p.Progress}
+											td(style="vertical-align:top;text-align:center;font-size:10px;vertical-align:top;width:30px") 
 												if p.Progress
-													|#{(p.Swag*((100-p.Progress)/100)).toFixed(2)}
+													|#{Math.round(p.Swag*((100-p.Progress)/100))}
 												else
 													|#{p.Swag}
-											td(style="vertical-align:top;text-align:center;font-size:10px;vertical-align:top;width:70px") #{moment(p.PlannedStart).format('YYYY-MM-DD')}
-											td(style="vertical-align:top;text-align:center;font-size:10px;vertical-align:top;width:70px") #{moment(p.PlannedEnd).format('YYYY-MM-DD')}
+											td(style="vertical-align:top;text-align:center;font-size:10px;vertical-align:top;width:70px")
+												if p.PlannedStart
+													|#{moment(p.PlannedStart).format('YYYY-MM-DD')}
+												else
+													|-
+											td(style="vertical-align:top;text-align:center;font-size:10px;vertical-align:top;width:80px")
+												if p.PlannedEnd
+													|#{moment(p.PlannedEnd).format('YYYY-MM-DD')}
+												else 
+													|-
 											td(style="vertical-align:top;text-align:left;font-size:10px;vertical-align:top;width:200px") 
 												a(href="/portfolio/planningbacklogdetail/"+p.BusinessBacklogID title="show details")
 													|#{p.BusinessBacklog}
 											
-							else
-						td(style="vertical-align:top;text-align:right;font-size:10px;vertical-align:bottom")
-							if i.Children
-								|#{i.PlanningEpics.length}
-							else
-								|0
-						td(style="vertical-align:top;text-align:right;font-size:10px;vertical-align:bottom")
-							b
-								|#{_sum}
 			script $("#planningepics").tablesorter();
