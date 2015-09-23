@@ -21,7 +21,7 @@ router.get('/planningepics', function(req, res) {
 	var v1Service = require('../services/V1Service');
 	var _filter = {};
 	var boardService= require('../services/BoardService');
-	v1Service.findInitiativesWithPlanningEpics(_filter,function(err,epics){
+	v1Service.getPlanningInitiatives(_filter,function(err,result){
 		boardService.find({},function(err,boards){
 			var _planningEpicsBoardId;
 			var _roadmapBoardId;
@@ -34,6 +34,7 @@ router.get('/planningepics', function(req, res) {
 			var _swagSum=0;;
 			var _valueSum=0;;
 			var _riskSum=0;;
+			var epics = result.initiatives;
 			for (var e in epics){
 				var _e = epics[e];
 				for (var p in _e.PlanningEpics){

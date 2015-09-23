@@ -34,6 +34,7 @@ exports.getMembersPerPlanningBacklog = _getMembersPerPlanningBacklog;
 exports.getPlanningBacklogs = _getPlanningBacklogs;
 exports.getPlanningBacklogsByEpics = _getPlanningBacklogsByEpics;
 exports.getPlanningBacklogsByInitiatives = _getPlanningBacklogsByInitiatives;
+exports.getPlanningInitiatives = _getPlanningInitiatives;
 
 function _deriveProductFromBacklog(backlog){
 	var _product = "";
@@ -130,81 +131,99 @@ function _findEpicsWithChildren(filter,callback) {
 
 
 function _getPlanningBacklogs(filter,callback){
-	var _statussorting = ["Implementation","Conception","Understanding"];
 	_findTeams({},function(err,teams){
 		_findInitiativesWithPlanningEpics(filter,function(err,epics){
 			var _backlogs = _getBacklogsFromInitiativesWithPlanningEpics(epics);
-			// and sort the initiatives
-			var _totalSwag =0;
-			var _totalSwagRemaining =0;
 
-			var _totalPlanningEpics =0;
-			var _totalInitiatives =0;
-			var _totalMembers =0;
-			var _totalTeams =0;
-
-			var _initiatives=[];
-			var _planningEpics=[];
-
-			for (var b in _backlogs){
-				var _backlogSwag=0;
-				var _backlogSwagRemaining=0;
-				var _backlogPlanningEpics=0;
-				var _b=_backlogs[b];
-
-				for (var i in _b.Initiatives){
-					var _i = _b.Initiatives[i];
-				 _initiatives.push(_i.Number);
-					var _swagSum=0;
-					var _swagSumRemaining=0;
-
-					var _startDates = [];
-					var _endDates = [];
-					for (var p in _i.PlanningEpics){
-						var _p = _i.PlanningEpics[p];
-						_planningEpics.push(_p.Number);
-						_swagSum+=parseInt(_p.Swag);
-						_backlogPlanningEpics++;
-						if (_p.PlannedStart) _startDates.push(_p.PlannedStart);
-						if (_p.PlannedEnd) _endDates.push(_p.PlannedEnd);
-					}
-					//overwrite initiative attributes with planned from below epics
-					_i.PlannedStartInitiative = _i.PlannedStart;
-					_i.PlannedEndInitiative = _i.PlannedEnd
-					_i.PlannedStart = _.first(_startDates.sort());
-					_i.PlannedEnd = _.last(_endDates.sort());
-					_i.SwagPlanned = _swagSum;
-					if (_i.Progress){
-						_swagSumRemaining = parseFloat((_swagSum*(1-(_i.Progress/100))).toFixed(2));
-					}
-					else{
-						_swagSumRemaining = _swagSum;
-					}
-					_i.SwagRemaining = _swagSumRemaining;
-					_backlogSwag+=_swagSum;
-					_backlogSwagRemaining+=parseFloat(_swagSumRemaining);
-				}
-				_totalSwag+=_swagSum;
-				_totalSwagRemaining+=_swagSumRemaining;
-
-				_b.Initiatives=_.sortBy(_backlogs[b].Initiatives,function(i){return _statussorting.indexOf(i.Status)});
-				_b.Members = _getMembersPerPlanningBacklog(_b.Name,teams);
-				_b.TotalSwag = _backlogSwag;
-				_b.TotalSwagRemaining = _backlogSwagRemaining;
-
-				_b.TotalPlanningEpics = _backlogPlanningEpics;
-				//_b.Capacity.TheoreticalCapacityPerMonth=(_b.Capacity.PDperMonth*_b.Capacity.defaultProductiveWorkRatio*_b.Capacity.defaultAvailableForInitiativesRatio*_b.Members.length).toFixed(2);
-				//_b.Capacity.TheoreticalCapacityPerMonth=_b.Capacity.defaultProductiveWorkRatio*_b.Capacity.defaultAvailableForInitiativesRatio*_b.Members.length;
-
-				_b.Capacity.TheoreticalCapacityPerMonth= (_b.Capacity.PDperMonth*_b.Members.length*_b.Capacity.defaultProductiveWorkRatio*_b.Capacity.defaultAvailableForInitiativesRatio).toFixed(2);
-				_totalMembers+=_b.Members.length;
-				_totalTeams+=_.uniq(_.map(_b.Members,'Team')).length;
-			}
-			_totalPlanningEpics = _.uniq(_planningEpics).length;
-			_totalInitiatives = _.uniq(_initiatives).length;
-			callback(null,{backlogs:_backlogs,statistics:{totalSwag:_totalSwag,totalSwagRemaining:_totalSwagRemaining,totalPlanningEpics:_totalPlanningEpics,totalInitiatives:_totalInitiatives,totalMembers:_totalMembers,totalTeams:_totalTeams}});
+			var _result = _buildBacklogResult(_backlogs,teams);
+			callback(null,_result);
 		});
 	});
+}
+
+
+function _buildInitiativeResult(initiatives){
+	var _totalSwag=0;
+	var _totalSwagRemaining=0;
+	for (var i in initiatives){
+		var _i = initiatives[i];
+		//_initiatives.push(_i.Number);
+		var _swagSum=0;
+		var _swagSumRemaining=0;
+
+		var _startDates = [];
+		var _endDates = [];
+		for (var p in _i.PlanningEpics){
+			var _p = _i.PlanningEpics[p];
+			//_planningEpics.push(_p.Number);
+			_swagSum+=parseInt(_p.Swag);
+			//_backlogPlanningEpics++;
+			if (_p.PlannedStart) _startDates.push(_p.PlannedStart);
+			if (_p.PlannedEnd) _endDates.push(_p.PlannedEnd);
+		}
+		//overwrite initiative attributes with planned from below epics
+		_i.PlannedStartInitiative = _i.PlannedStart;
+		_i.PlannedEndInitiative = _i.PlannedEnd
+		_i.PlannedStart = _.first(_startDates.sort());
+		_i.PlannedEnd = _.last(_endDates.sort());
+		_i.SwagPlanned = _swagSum;
+		if (_i.Progress){
+			_swagSumRemaining = parseFloat((_swagSum*(1-(_i.Progress/100))).toFixed(2));
+		}
+		else{
+			_swagSumRemaining = _swagSum;
+		}
+		_i.SwagRemaining = _swagSumRemaining;
+		_totalSwag+=_swagSum;
+		_totalSwagRemaining+=parseFloat(_swagSumRemaining);
+	}
+	return({initiatives:initiatives,statistics:{totalSwagSum:_totalSwag,totalSwagRemaining:_totalSwagRemaining}})
+}
+function _buildBacklogResult(_backlogs,teams){
+	var _statussorting = ["Implementation","Conception","Understanding"];
+
+	var _totalSwag =0;
+	var _totalSwagRemaining =0;
+
+	var _totalPlanningEpics =0;
+	var _totalInitiatives =0;
+	var _totalMembers =0;
+	var _totalTeams =0;
+
+	var _initiatives=[];
+	var _planningEpics=[];
+
+	for (var b in _backlogs){
+		var _backlogSwag=0;
+		var _backlogSwagRemaining=0;
+		var _backlogPlanningEpics=0;
+		var _b=_backlogs[b];
+
+		var _iResult = _buildInitiativeResult(_b.Initiatives);
+		_backlogSwag+=_iResult.statistics.totalSwag;
+		_backlogSwagRemaining+=_iResult.statistics.totalSwagRemaining;
+
+
+		_totalSwag+=_iResult.statistics.totalSwag;
+		_totalSwagRemaining+=_iResult.statistics.totalSwagRemaining;
+
+		_b.Initiatives=_.sortBy(_backlogs[b].Initiatives,function(i){return _statussorting.indexOf(i.Status)});
+		_b.Members = _getMembersPerPlanningBacklog(_b.Name,teams);
+		_b.TotalSwag = _backlogSwag;
+		_b.TotalSwagRemaining = _backlogSwagRemaining;
+
+		_b.TotalPlanningEpics = _backlogPlanningEpics;
+		//_b.Capacity.TheoreticalCapacityPerMonth=(_b.Capacity.PDperMonth*_b.Capacity.defaultProductiveWorkRatio*_b.Capacity.defaultAvailableForInitiativesRatio*_b.Members.length).toFixed(2);
+		//_b.Capacity.TheoreticalCapacityPerMonth=_b.Capacity.defaultProductiveWorkRatio*_b.Capacity.defaultAvailableForInitiativesRatio*_b.Members.length;
+
+		_b.Capacity.TheoreticalCapacityPerMonth= (_b.Capacity.PDperMonth*_b.Members.length*_b.Capacity.defaultProductiveWorkRatio*_b.Capacity.defaultAvailableForInitiativesRatio).toFixed(2);
+		_totalMembers+=_b.Members.length;
+		_totalTeams+=_.uniq(_.map(_b.Members,'Team')).length;
+	}
+	_totalPlanningEpics = _.uniq(_planningEpics).length;
+	_totalInitiatives = _.uniq(_initiatives).length;
+	var _statistics =  {totalSwag:_totalSwag,totalSwagRemaining:_totalSwagRemaining,totalPlanningEpics:_totalPlanningEpics,totalInitiatives:_totalInitiatives,totalMembers:_totalMembers,totalTeams:_totalTeams};
+	return{backlogs:_backlogs,statistics:_statistics};
 }
 
 
@@ -218,10 +237,29 @@ function _getPlanningBacklogsByEpics(filter,callback){
 function _getPlanningBacklogsByInitiatives(filter,callback){
 	_getPlanningBacklogs(filter,function(err,result){
 		var _initiatives = _extractInitiativesFromBacklogs(result.backlogs);
+
 		callback(null,_initiatives);
 	})
 }
 
+function _getPlanningInitiatives(filter,callback){
+	_getPlanningBacklogs(filter,function(err,result){
+		var _initiatives = _extractInitiativesFromBacklogs(result.backlogs);
+		// and condense them back on Initiative level
+		var _condensed = [];
+		for (var i in _initiatives){
+			var _i = _initiatives[i];
+			var _lookup = _.findWhere(_condensed,{Number:_i.Number});
+			if (!_lookup){
+				_condensed.push(_i);
+			}
+			else{
+				_i.PlanningEpics=_.union(_i.PlanningEpics,_lookup.PlanningEpics);
+			}
+		}
+		callback(null,{initiatives:_condensed,statistics:result.statistics});
+	})
+}
 /**
 helper
 */
