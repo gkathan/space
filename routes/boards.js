@@ -44,7 +44,8 @@ router.get('/kanban/:id', function(req, res) {
 
         logger.debug("loading board... board type ="+board.dataLink);
         if (board.dataLink=="roadmapinitiatives"){
-          v1Service.getRoadmapInitiatives(new Date("2014-01-01"),function (err, docs){
+          var _filter={};
+          v1Service.getRoadmapInitiatives(_filter,function (err, docs){
             var _items = [];
             for (var i in docs){
               var _r = docs[i];

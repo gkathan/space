@@ -545,13 +545,32 @@ function getItemsBacklogInitiatives(req,res,next){
 	})
 }
 
+
+function _extractTargetFilter(req){
+	var _filterTargets;
+	var _targets;
+	var _filter={};
+	if (req.query.filter_target){
+		_filterTargets = req.query.filter_target;
+		_targets = _filterTargets.split(",");
+		_filter={Targets:{$in:_targets}};
+	}
+	return _filter;
+}
+
+
 function getItemsRoadmapInitiatives(req,res,next){
 	var context = config.context;
-	logger.debug("------ getItemsPlanningEpics called: ");
+	var _filterTargets;
+	var _targets;
+
+	var _filter=_extractTargetFilter(req);
+
+	logger.debug("------ api.getItemsRoadmapInitiatives called: filter: "+_filter);
 	var v1Service = require('../services/V1Service');
 	if (req.query.context) context=req.query.context;
-
-	v1Service.getRoadmapInitiatives(new Date("2014-01-01"),function(err,roadmapinitiatves){
+	// example for mobile first roadmap
+	v1Service.getRoadmapInitiatives(_filter,function(err,roadmapinitiatves){
 		if(err){
 			logger.error("error: "+err.message);
 			res.send("error: "+err.message);
@@ -902,6 +921,8 @@ function saveBoard(req, res , next){
   board.createDate=_timestamp;
 	var _groupby = board.groupby.split(",");
 
+	var _filter=_extractTargetFilter(req);
+
 	if (_groupby.length!=3){
 		logger.error("groupby currently must be 3 levels");
 		//default
@@ -911,7 +932,8 @@ function saveBoard(req, res , next){
 	var v1Service=require('../services/V1Service');
 	if (board.dataLink=="roadmapinitiatives"){
 		var _items =[];
-		v1Service.getRoadmapInitiatives(new Date("2014-01-01"),function(err,roadmap){
+		
+		v1Service.getRoadmapInitiatives(_filter,function(err,roadmap){
 			logger.debug("--------- roadmap items: "+roadmap.length);
 			for (var r in roadmap){
 				var _r = roadmap[r];

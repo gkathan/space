@@ -36,7 +36,7 @@ describe('V1Service', function(){
   describe('#getInitiativeEpics()', function(){
     it('should get all epics type == Initiative in DB', function(done){
       var v1Service = require('../services/V1Service');
-			v1Service.findInitiativeEpics(function(err,epics){
+			v1Service.findInitiativeEpics({},function(err,epics){
 					console.log("--- epics type == Initiative: "+epics.length);
 
 					done();
@@ -62,8 +62,8 @@ describe('V1Service', function(){
 describe('#getRoadmap()', function(){
 	it('should get all epics which should appear in a roadmap ', function(done){
 		var v1Service = require('../services/V1Service');
-
-		v1Service.getRoadmapInitiatives(new Date("2015-01-01"),function(err,roadmap){
+		var _filter={};
+		v1Service.getRoadmapInitiatives(_filter,function(err,roadmap){
 				console.log("--- roadmap: "+roadmap.length);
 
 				done();

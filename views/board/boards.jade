@@ -135,6 +135,8 @@ script(type='text/javascript').
 
 	function submitCreate() {
 		var form = document.getElementById("createboardform");
+		
+		
 
 		var _board = {};
 		_board.name = form.name.value;
@@ -200,10 +202,15 @@ script(type='text/javascript').
 		_board.viewConfig = _viewconfig;
 		
 		var _json = JSON.stringify(_board);
-
-		var _url = "/api/space/rest/board";
 		
+		var _filterTarget = form.filter_target.value;
+		var _filter;
+		if (_filterTarget){
+			_filter="&filter_target="+_filterTarget;
+		}
+		var _url = "/api/space/rest/board?true=true"+_filter;
 		
+		console.log("---- url = "+_url);
 		//form.ajax call
 		$.ajax({
 			type: "POST",

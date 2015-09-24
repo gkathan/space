@@ -148,8 +148,6 @@ mixin renderTargetContribution(status,_date)
 						td(style="font-size:9px;padding-left:30px;font-weight:normal;text-align:right") #{_date.targetContributionBucket[status][target].swag}
 	hr		
 
-
-
 mixin renderPortfolioMeeting(_date,type)
 	div.panel(style="margin:auto;max-width:1400px")
 		div.panel-heading(style="font-size:16px; color:black") 
@@ -201,9 +199,11 @@ block content
 		div(style="margin:auto;max-width:1400px;text-align:center") 
 			if type =="current"
 				h1 LATEST APPROVED PORTFOLIO
-				div(style="margin:auto;color:#999999;font-size:8px;max-width:1400px;text-align:center") #{pgates.length} [portfolio meeting] snapshots online | last v1.epics sync #{moment(v1LastUpdate).format('YYYY-MMM-DD HH:mm:ss')}
 				div(style="margin:auto;font-size:10px;max-width:1400px;text-align:center")
-					a(href="/portfolio/history") | show full portfolio history |
+					a(href="/portfolio/history") | show full portfolio history  
+					a(href="/portfolio/planningepics") | show planning initiatives 
+					a(href="/portfolio/planningbacklogs") | show planning backlogs | 
+				div(style="margin:auto;color:#999999;font-size:9px;max-width:1400px;text-align:center") #{pgates.length} [portfolio meeting] snapshots online | last v1.epics sync #{moment(v1LastUpdate).format('YYYY-MMM-DD HH:mm:ss')}
 			else if type =="history"
 				h1 PORTFOLIO HISTORY
 				div(style="margin:auto;color:#999999;font-size:8px;max-width:1400px;text-align:center") #{pgates.length} [portfolio meeting] snapshots online | last v1.epics sync #{moment(v1LastUpdate).format('YYYY-MMM-DD HH:mm:ss')}

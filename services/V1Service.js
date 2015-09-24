@@ -486,9 +486,9 @@ function _getPlanningEpics(epic,planningepics){
 
 
 
-function _findInitiativeEpics(callback) {
+function _findInitiativeEpics(filter,callback) {
 	var epics =  db.collection('v1epics');
-		epics.find({}, function (err, docs){
+		epics.find(filter, function (err, docs){
 			//sort
 			var _e =_.sortBy(_.where(docs,{CategoryName:"Initiative"}), "Number")
 			callback(err,_e);
@@ -507,14 +507,17 @@ function _findPortfolioApprovalEpics(callback) {
 	});
 }
 
-function _getRoadmapInitiatives(start,callback){
-	_findInitiativeEpics(function (err,initiatives){
+function _getRoadmapInitiatives(filter,callback){
+	_findInitiativeEpics(filter,function (err,initiatives){
+		/*
 		var _roadmap = [];
 		for (var i in initiatives){
 			var _in=initiatives[i];
 			if (new Date(_in.PlannedStart)>=start && _in.Product) _roadmap.push(_in);
 		}
 		callback(err,_roadmap);
+		*/
+		callback(err,initiatives);
 	});
 }
 

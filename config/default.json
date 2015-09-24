@@ -75,13 +75,14 @@
 	"initiatives":{
 		"states":{
 			"colors":{
-				"New":"#DD5362",
-				"Understanding":"#DFD46A",
-				"Conception":"#EA9764",
-				"Implementation":"#74A680",
-				"Monitoring":"limegreen",
+				"New":"#d3e2f6",
+				"Understanding":"#89cadd",
+				"Conception":"#4699d9",
+				"Implementation":"#054989",
+				"Monitoring":"lightgrey",
 				"On hold":"lightgrey",
-				"Done" : "green"
+				"Done" : "lightgrey",
+				"Undefinded": "e8ee82"
 
 			}
 		},
