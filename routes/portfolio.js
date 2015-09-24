@@ -35,22 +35,12 @@ router.get('/planningepics', function(req, res) {
 			var _valueSum=0;;
 			var _riskSum=0;;
 			var epics = result.initiatives;
-			for (var e in epics){
-				var _e = epics[e];
-				for (var p in _e.PlanningEpics){
-					var _p = _e.PlanningEpics[p];
-					_swagSum+=parseInt(_p.Swag);
-				}
-
-				_valueSum+=parseInt(epics[e].Value);
-				_riskSum+=parseInt(epics[e].Risk);
-			}
 			var _grouped = _.groupBy(epics,'Status');
 
 			res.locals.planningEpicsBoardId = _planningEpicsBoardId;
 			res.locals.roadmapBoardId = _roadmapBoardId;
 			res.locals.grouped = _grouped;
-			res.locals.statistics={swagSum:_swagSum,averageSwag:_swagSum/epics.length,valueSum:_valueSum,averageValue:_valueSum/epics.length,riskSum:_riskSum,averageRisk:_riskSum/epics.length}
+			res.locals.statistics=result.statistics;
 			res.locals.initiatives = epics;
 			res.locals.moment=moment;
 			res.render('portfolio/planningepics'), { title: 's p a c e - planning epics overview ' }

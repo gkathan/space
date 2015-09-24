@@ -22,7 +22,7 @@ block content
 			if roadmapBoardId
 				a(style="font-size:11px" href="/boards/kanban/#{roadmapBoardId}") roadmap board - initiatives - clustered by status|product(*experimental) 
 				br
-			table(style="max-width:250px;font-size:12px")
+			table(style="max-width:400px;font-size:12px")
 				tr
 					td(style="text-align:left;width:150px") 
 						|#backlogs:
@@ -43,23 +43,28 @@ block content
 							|#{statistics.totalPlanningEpics}
 				tr
 					td(style="text-align:left;width:150px") 
+						|capacity:
+					td(style="text-align:right")
+						|<b>#{statistics.totalMembers}</b> people in <b>#{statistics.totalTeams}</b> teams
+				tr
+					td(style="text-align:left;width:150px") 
 						|total swag remaining:
 					td(style="text-align:right")
 						b
 							|#{statistics.totalSwagRemaining.toFixed(0)}
 				tr
 					td(style="text-align:left;width:150px") 
-						|total people:
+						|total size:
 					td(style="text-align:right")
 						b
-							|#{statistics.totalMembers}
+							|#{statistics.totalSwag}
 				tr
-					td(style="text-align:left;width:150px") 
-						|total teams:
-					td(style="text-align:right")
+					td(style="text-align:left;width:150px")
+						|overall progess: 
+					td(style="font-size:16px;text-align:right")
 						b
-							|#{statistics.totalTeams}
-			
+							|#{Math.round((statistics.totalSwagRemaining/statistics.totalSwag)*100)}% 
+
 		.panel-body
 		table.table.table-striped.table-hover.table-condensed.table-responsive.tablsesorter(id="planningbacklogs" style="max-width:1600px")
 			thead

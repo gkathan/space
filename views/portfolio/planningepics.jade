@@ -28,33 +28,31 @@ block content
 						|total initiatives: 
 					td
 						b
-							|#{initiatives.length}
+							|#{statistics.totalInitiatives}
 					td(style="text-align:left")
-						|(Understanding: #{grouped.Understanding.length} Conception: #{grouped.Conception.length} Implementation: #{grouped.Implementation.length})
+						|&nbsp;(Understanding: #{grouped.Understanding.length} Conception: #{grouped.Conception.length} Implementation: #{grouped.Implementation.length})
 				tr
 					td(style="text-align:left")
-						|total swag: 
+						|total planning epics: 
 					td
 						b
-							|#{statistics.swagSum} 
-					td(style="text-align:left")
-						|(average: #{statistics.averageSwag.toFixed(2)})
+							|#{statistics.totalPlanningEpics}
+						
 				tr
-					td(style="text-align:left")
-						|total value: 
+					td(style="text-align:left;width:150px")
+						|total swag remaining: 
 					td
 						b
-							|#{statistics.valueSum} 
+							|#{Math.round(statistics.totalSwagRemaining)} 
 					td(style="text-align:left")
-						|(average: #{statistics.averageValue.toFixed(2)})
+						//|(average: #{statistics.averageSwag.toFixed(2)})
 				tr
-					td(style="text-align:left")
-						|total risk: 
-					td
+					td(style="text-align:left;width:150px")
+						|overall progess: 
+					td(style="font-size:16px")
 						b
-							|#{statistics.riskSum} 
-					td(style="text-align:left")
-						|(average: #{statistics.averageRisk.toFixed(2)})
+							|#{Math.round((statistics.totalSwagRemaining/statistics.totalSwag)*100)}% 
+			
 			
 		.panel-body
 		table.table.table-striped.table-hover.table-condensed.table-responsive.tablsesorter(id="planningepics" style="max-width:1600px")
@@ -68,6 +66,7 @@ block content
 					th(style="min-width:40px;text-align:right") risk
 					th(style="text-align:right;width:50px") swag
 					th(style="text-align:right;center:50px") prog%
+					th(style="text-align:right;center:50px") size
 					th(style="width:750px") planning epics
 					
 			tbody
@@ -99,6 +98,7 @@ block content
 									|#{Math.round(i.ProgressPlanned)}
 							else 
 								|-
+						td(style="vertical-align:top;font-size:11px;;text-align:right;font-weight:normal;vertical-align:top") #{i.SwagPlanned}								
 						td(style="vertical-align:top;text-align:left;font-size:10px;vertical-align:top")
 							if i.PlanningEpics
 								table.table-responsive.table-striped(style="width:800px")
@@ -115,7 +115,7 @@ block content
 												a(href="http://v1.bwinparty.corp/V1-Production/Epic.mvc/Scorecard?oidToken=Epic%3A"+p.ID.split(":")[1] target="_new" title="go to V1 Scorecard") 
 													|#{p.Name}
 											td(style="vertical-align:top;text-align:center;font-size:10px;vertical-align:top;width:60px") #{p.CategoryName}
-											td(style="vertical-align:top;text-align:center;font-size:10px;vertical-align:top;width:60px") #{p.Progress}
+											td(style="vertical-align:top;text-align:center;font-size:10px;vertical-align:top;width:60px") #{Math.round(p.Progress)}
 											td(style="vertical-align:top;text-align:center;font-size:10px;vertical-align:top;width:30px") 
 												if p.Progress
 													|#{Math.round(p.Swag*((100-p.Progress)/100))}

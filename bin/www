@@ -9,6 +9,9 @@ var debug = require('debug')('space:server');
 var http = require('http');
 var https = require('https');
 
+http.globalAgent.maxSockets = Infinity;
+https.globalAgent.maxSockets = Infinity; 
+
 /**
  * Get port from environment and store in Express.
  */
