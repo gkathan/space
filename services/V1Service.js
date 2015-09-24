@@ -99,6 +99,10 @@ function _findBacklogs(filter,callback) {
 			return;
 	});
 }
+function _findPlanningBacklogs(callback) {
+	var _filter = {Name:/#cpb/};
+	_findBacklogs(_filter,callback);
+}
 
 /**
  * find all Programs
@@ -110,7 +114,6 @@ function _findPrograms(filter,callback) {
 			return;
 	});
 }
-
 
 
 function _findEpicsWithChildren(filter,callback) {
@@ -131,11 +134,26 @@ function _findEpicsWithChildren(filter,callback) {
 
 
 function _getPlanningBacklogs(filter,callback){
+	_findPlanningBacklogs(function(err,planningbacklogs){
+		_findTeams({},function(err,teams){
+			_findInitiativesWithPlanningEpics(filter,function(err,epics){
+				var _backlogs = _getBacklogsFromInitiativesWithPlanningEpics(epics,planningbacklogs);
+
+				//
+
+
+				var _result = _buildBacklogResult(_backlogs,teams);
+				callback(null,_result);
+			});
+		});
+	});
+}
+
+function _getPlanningInitiatives(filter,callback){
 	_findTeams({},function(err,teams){
 		_findInitiativesWithPlanningEpics(filter,function(err,epics){
-			var _backlogs = _getBacklogsFromInitiativesWithPlanningEpics(epics);
-
-			var _result = _buildBacklogResult(_backlogs,teams);
+			//var _backlogs = _getBacklogsFromInitiativesWithPlanningEpics(epics);
+			var _result = _buildInitiativeResult(epics,teams);
 			callback(null,_result);
 		});
 	});
@@ -173,9 +191,6 @@ function _buildInitiativeResult(initiatives){
 			if (_p.PlannedStart) _startDates.push(_p.PlannedStart);
 			if (_p.PlannedEnd) _endDates.push(_p.PlannedEnd);
 		}
-
-
-
 		//overwrite initiative attributes with planned from below epics
 		_i.PlannedStartInitiative = _i.PlannedStart;
 		_i.PlannedEndInitiative = _i.PlannedEnd
@@ -186,16 +201,6 @@ function _buildInitiativeResult(initiatives){
 			_i.ProgressPlanned = ((1-(_swagSumRemaining/_swagSum))*100).toFixed(2);
 		else
 			_i.ProgressPlanned =0;
-
-
-		/*
-		if (_i.Progress){
-			_swagSumRemaining = parseFloat((_swagSum*(1-(_i.Progress/100))).toFixed(2));
-		}
-		else{
-			_swagSumRemaining = _swagSum;
-		}*/
-
 
 		_i.SwagRemaining = _swagSumRemaining;
 		_totalSwag+=_swagSum;
@@ -227,7 +232,6 @@ function _buildBacklogResult(_backlogs,teams){
 
 		_backlogSwag+=_iResult.statistics.totalSwag;
 		_backlogSwagRemaining+=_iResult.statistics.totalSwagRemaining;
-
 
 		_totalSwag+=_iResult.statistics.totalSwag;
 		_totalSwagRemaining+=_iResult.statistics.totalSwagRemaining;
@@ -265,30 +269,10 @@ function _getPlanningBacklogsByEpics(filter,callback){
 function _getPlanningBacklogsByInitiatives(filter,callback){
 	_getPlanningBacklogs(filter,function(err,result){
 		var _initiatives = _extractInitiativesFromBacklogs(result.backlogs);
-
 		callback(null,_initiatives);
 	})
 }
 
-function _getPlanningInitiatives(filter,callback){
-	_getPlanningBacklogs(filter,function(err,result){
-		var _initiatives = _extractInitiativesFromBacklogs(result.backlogs);
-		// and condense them back on Initiative level
-		var _condensed = [];
-		for (var i in _initiatives){
-			var _i = _initiatives[i];
-			var _lookup = _.findWhere(_condensed,{Number:_i.Number});
-			if (!_lookup){
-				_condensed.push(_i);
-			}
-			else{
-				_lookup.PlanningEpics=_.union(_i.PlanningEpics,_lookup.PlanningEpics);
-			}
-
-		}
-		callback(null,{initiatives:_condensed,statistics:result.statistics});
-	})
-}
 /**
 helper
 */
@@ -302,6 +286,10 @@ function _extractPlanningEpicsFromBacklogs(backlogs){
 	}
 	return _planningepics;
 }
+
+/**
+helper
+*/
 function _extractInitiativesFromBacklogs(backlogs){
 	var _initiatives=[];
 	for (var b in backlogs){
@@ -310,7 +298,6 @@ function _extractInitiativesFromBacklogs(backlogs){
 	}
 	return _initiatives;
 }
-
 
 
 /** this is for peter :-)
@@ -355,9 +342,10 @@ function _findInitiativesWithPlanningEpics(filter,callback){
 
 /** extracts the backlog field and groups around this
 */
-function _getBacklogsFromInitiativesWithPlanningEpics(initiativesWithPlanningEpics){
+function _getBacklogsFromInitiativesWithPlanningEpics(initiativesWithPlanningEpics,planningbacklogs){
 	var _backlogs = [];
 	_backlogs = _extractBacklogs(initiativesWithPlanningEpics);
+	_backlogs = _enrichCapacityPerBacklog(_backlogs,planningbacklogs)
 	_backlogs = _repopulateBacklogs(_backlogs,initiativesWithPlanningEpics);
 	_backlogs = _filterPlanningEpics(_backlogs);
 	return _backlogs;
@@ -366,14 +354,14 @@ function _getBacklogsFromInitiativesWithPlanningEpics(initiativesWithPlanningEpi
 function _extractBacklogs(initiativesWithPlanningEpics){
 	var _backlogs = [];
 	// first lets build up the distinct backlog collection
+
 	for (var i in initiativesWithPlanningEpics){
 		var _i = initiativesWithPlanningEpics[i];
 		if (_i.PlanningEpics){
 			for (var p in _i.PlanningEpics){
 				var _p = _i.PlanningEpics[p];
 				if (!_.findWhere(_backlogs,{ID:_p.BusinessBacklogID})){
-					var _capacityConfig={PDperMonth:config.backlogs.PDperMonth,defaultProductiveWorkRatio:config.backlogs.defaultProductiveWorkRatio,defaultAvailableForInitiativesRatio:config.backlogs.defaultAvailableForInitiativesRatio};
-					_backlogs.push({Name:_p.BusinessBacklog,ID:_p.BusinessBacklogID,Initiatives:[],Capacity:_capacityConfig})
+					_backlogs.push({Name:_p.BusinessBacklog,ID:_p.BusinessBacklogID})
 				}
 			}
 		}
@@ -381,8 +369,32 @@ function _extractBacklogs(initiativesWithPlanningEpics){
 	return _backlogs;
 }
 
+function _enrichCapacityPerBacklog(backlogs,planningbacklogs){
+	var _capacityConfig={PDperMonth:config.backlogs.PDperMonth,defaultProductiveWorkRatio:config.backlogs.defaultProductiveWorkRatio,defaultAvailableForInitiativesRatio:config.backlogs.defaultAvailableForInitiativesRatio};
+	for (var b in backlogs){
+		var _b = backlogs[b];
+		_b.Capacity=_capacityConfig;
+		_b.Initiatives=[];
+	}
+
+	// and join the empty backlogs
+	for (var p in planningbacklogs){
+		var _p = planningbacklogs[p];
+		if (!_.findWhere(backlogs,{Name:_p.Name})){
+			_p.Capacity=_capacityConfig;
+			_p.Initiatives=[];
+			backlogs.push(_p);
+		}
+	}
+	return backlogs;
+}
+
 function _repopulateBacklogs(backlogs,initiativesWithPlanningEpics){
 	// now put the initiatives back in
+	var _ini0 = _.map(initiativesWithPlanningEpics,'Number');
+	var _ini1 = [];
+
+	var _count=0;
 	for (var b in backlogs){
 		var _b = backlogs[b];
 		for (var i in initiativesWithPlanningEpics){
@@ -391,19 +403,24 @@ function _repopulateBacklogs(backlogs,initiativesWithPlanningEpics){
 				_i.PlanningBacklog=_b.Name;
 				_i.PlanningBacklogID=_b.ID;
 				_i.Product = _deriveProductFromBacklog(_b.Name);
+
 				for (var p in _i.PlanningEpics){
 					var _p = _i.PlanningEpics[p];
 					if (_p.BusinessBacklogID==_b.ID){
 						if (!_.findWhere(_b.Initiatives,{Name:_i.Name})){
 							_b.Initiatives.push(_.cloneDeep(_i));
+							_count++;
+							_ini1.push(_i.Number);
 						}
 					}
 				}
 			}
 		}
 	}
+
 	return backlogs;
 }
+
 
 function _filterPlanningEpics(backlogs){
 	// and filter planning epics

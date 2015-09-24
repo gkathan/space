@@ -16,6 +16,7 @@ var logger = winston.loggers.get('space_log');
 var _syncName = "v1epics";
 
 var v1Service = require("../services/V1Service");
+var portfolioService = require('../services/PortfolioService');
 
 exports.sync = _sync;
 
@@ -51,33 +52,33 @@ function _sync(url,type,callback){
 		var _progress = JSON.parse(progress);
 		// second the epic data
 		client.get(url[1], function(data, response){
-			// parsed response body as js object
-			//console.log(data);
-			// raw response
-			//console.log(response);
-			// and insert
-			var _epics = JSON.parse(data);
-			var v1epics =  db.collection(_syncName);
-			v1epics.drop();
+			portfolioService.getCurrentApprovedInitiatives(function(err,approved){
+				// parsed response body as js object
+				//console.log(data);
+				// raw response
+				//console.log(response);
+				// and insert
+				var _epics = JSON.parse(data);
+				var v1epics =  db.collection(_syncName);
+				v1epics.drop();
 
-			_enrichEpics(_epics,_progress);
+				_enrichEpics(_epics,_progress,approved);
 
-			v1epics.insert(_epics, function(err , success){
-				//console.log('Response success '+success);
-				if (err) {
-					logger.error('Response error '+err.message);
-				}
-				if(success){
-					var _message = "syncv1 [DONE]: "+_epics.length+" epics";
-					logger.info(_message);
-
-					app.io.emit('syncUpdate', {status:"[SUCCESS]",from:_syncName,timestamp:_timestamp,info:_epics.length+" epics",type:type});
-					_syncStatus.saveLastSync(_syncName,_timestamp,_message,_statusSUCCESS,type);
-					callback(null,"syncv1 [DONE]: "+_epics.length+ " epics synced")
-				}
-				//return next(err);
+				v1epics.insert(_epics, function(err , success){
+					//console.log('Response success '+success);
+					if (err) {
+						logger.error('Response error '+err.message);
+					}
+					if(success){
+						var _message = "syncv1 [DONE]: "+_epics.length+" epics";
+						logger.info(_message);
+						app.io.emit('syncUpdate', {status:"[SUCCESS]",from:_syncName,timestamp:_timestamp,info:_epics.length+" epics",type:type});
+						_syncStatus.saveLastSync(_syncName,_timestamp,_message,_statusSUCCESS,type);
+						callback(null,"syncv1 [DONE]: "+_epics.length+ " epics synced")
+					}
 			})
 		})
+	})
 	}).on('error',function(err){
 			var _message = err.message;
 			logger.warn('[V1EpicSyncService] says: something went wrong on the request', err.request.options,err.message);
@@ -88,7 +89,7 @@ function _sync(url,type,callback){
 }
 
 
-function _enrichEpics(epics,progress){
+function _enrichEpics(epics,progress,approved){
 	for (var e in epics){
 		var _e = epics[e];
 		var _strategicThemes = _parseStrategicThemes(_e.StrategicThemesNames);
@@ -102,13 +103,10 @@ function _enrichEpics(epics,progress){
 		_e.EstimateClosed = parseFloat(_estimateClosed);
 		_e.EstimateOpen = parseFloat(_estimateOpen);
 		_e.Progress = parseFloat(((_estimateClosed/_estimateAll)*100).toFixed(2));
-
-
-
-
 		epics[e].Product = v1Service.deriveProductFromBacklog(_e.BusinessBacklog);
+		if (_.findWhere(approved,{EpicRef:_e.Number}))
+			_e.IsInLatestApprovedPortfolio=true;
 	}
-
 }
 // eg {_oid\u003dScope:10461}
 function _parseObjectID(name){
@@ -126,13 +124,11 @@ function _parseStrategicThemes(strategicThemeString){
 		// cut first and last bracket
 	var _transform = _.initial(_.rest(strategicThemeString)).join("");
 	_transform = _transform.split(",");
-
 	for (var i in _transform){
 		var _temp = _.trim(_transform[i]);
 		if (_.startsWith(_temp,"[CUS]")) strategicTheme.customers.push(_.trim(_temp.split("[CUS]")[1]));
 		else if (_.startsWith(_temp,"[MAR]")) strategicTheme.markets.push(_.trim(_temp.split("[MAR]")[1]));
 		else if (_.startsWith(_temp,"[STR]")) strategicTheme.targets.push(_.trim(_temp.split("[STR]")[1]));
 	}
-
 	return strategicTheme;
 }

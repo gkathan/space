@@ -44,7 +44,13 @@ mixin renderEpic(epic,_date)
 			tr(id="#{epic.EpicRef}_#{moment(_date).format('YYYY-MM-DD')}")
 				td(style="max-width:15px;vertical-align:middle")
 					if epic.Status != "Monitoring"
-						div(style="margin-left:5px;width: 10px;height: 10px;-moz-border-radius: 50%; -webkit-border-radius: 50%; border-radius: 50%;background-color:#{mapHealth2Color(epic.Health)};margin-top:2px")
+						if type=="current"
+							//show current V1 synced health 
+							div(style="margin-left:5px;width: 10px;height: 10px;-moz-border-radius: 50%; -webkit-border-radius: 50%; border-radius: 50%;background-color:#{mapHealth2Color(epic.actualHealth)};margin-top:2px")
+						else if type=="history"
+							// show frozen snapshot health
+							div(style="margin-left:5px;width: 10px;height: 10px;-moz-border-radius: 50%; -webkit-border-radius: 50%; border-radius: 50%;background-color:#{mapHealth2Color(epic.Health)};margin-top:2px")
+						
 				td(style="font-weight:normal;font-size:8px;max-width:50px;height:14px;vertical-align:middle")
 					| #{epic.EpicRef} 
 				td(style="font-weight:bold;font-size:9px;max-width:160px;vertical-align:middle;white-space:nowrap;overflow:hidden;text-overflow:ellipsis")
@@ -55,7 +61,6 @@ mixin renderEpic(epic,_date)
 						|#{epic.value}
 					else
 						|-
-
 				td(style="font-weight:normal;font-size:8px;max-width:35px;height:14px;vertical-align:middle;text-align:left")
 					&nbsp;&nbsp;
 					if epic.attachmentProposal
@@ -108,7 +113,6 @@ mixin renderStatus(status,_date)
 												//span.glyphicon.glyphicon-triangle-bottom(style="font-size:8px;color:black;")
 										th(style="width:20px;text-align:right;font-size:8px;vertical-align:top")
 											a(href="#" title="sort by value") 
-
 										th(style="width:35px;text-align:left;font-size:8px;vertical-align:top")
 											a(href="#" title="sort by ref" )
 										th(style="width:30px;text-align:left;font-size:8px;vertical-align:top") 
@@ -139,7 +143,6 @@ mixin renderTargetContribution(status,_date)
 					tr
 						td(style="font-size:9px;margin-left:10px;font-weight:normal;padding-right:10px") 
 							-var _epicRefs = _date.targetContributionBucket[status][target].epics.join(",#");
-							
 							a(title="#{_epicRefs}" onMouseOver="$('##{_epicRefs}').css('background', '#{_targetHighlight}')" onMouseOut="$('##{_epicRefs}').css('background', '')") #{target} 
 						td(style="font-size:9px;margin-left:10px;font-weight:bold;text-align:right") #{_date.targetContributionBucket[status][target].count}
 						td(style="font-size:9px;padding-left:30px;font-weight:normal;text-align:right") #{_date.targetContributionBucket[status][target].swag}
@@ -147,8 +150,8 @@ mixin renderTargetContribution(status,_date)
 
 
 
-mixin renderPortfolioMeeting(_date)
-	div.panel(style="max-width:1400px")
+mixin renderPortfolioMeeting(_date,type)
+	div.panel(style="margin:auto;max-width:1400px")
 		div.panel-heading(style="font-size:16px; color:black") 
 			span(style="margin-left:7px;font-size:28px;font-weight:bold") #{_date.pDate}
 			br
@@ -163,15 +166,12 @@ mixin renderPortfolioMeeting(_date)
 							th(style="max-width:100px;font-size:10px;vertical-align:top") Epic Name
 							th(style="max-width:60px;font-size:10px;vertical-align:top") Decision
 							th(style="max-width:150px;font-size:10px;vertical-align:top") Comment
-							
 					tbody
 						each _pb in _date.portfolioBoardBucket
 							tr(style="line-height:12px")
 								td(style="font-size:10px;vertical-align:top")
 									| <span style="font-size:9px">#{_pb.EpicRef}</span>
-								
 								td(style="font-size:10px;vertical-align:top")
-									
 									-var _epicRef = _pb.EpicRef+"_"+moment(_date.pDate).format("YYYY-MM-DD");
 									a(href="http://v1.bwinparty.corp/V1-Production/Epic.mvc/Summary?oidToken=Epic%3A"+_pb.id target="_new" onMouseOver="$('##{_epicRef}').css('background', '#dddddd')" onMouseOut="$('##{_epicRef}').css('background', '')" )
 										| <span style="font-size:9px"><b>#{_pb.name}</b>  
@@ -193,14 +193,25 @@ mixin renderPortfolioMeeting(_date)
 		div.panel-body
 			each status in states
 				+renderStatus(status,_date)
+	br
 
 // ------------------ mixin end ----------------------------
-
 block content
 	div.container-fluid
-		span(style="color:#999999;font-size:8px") #{pgates.length} [portfolio meeting] snapshots online | last v1.epics sync #{v1LastUpdate}
+		div(style="margin:auto;max-width:1400px;text-align:center") 
+			if type =="current"
+				h1 LATEST APPROVED PORTFOLIO
+				div(style="margin:auto;color:#999999;font-size:8px;max-width:1400px;text-align:center") #{pgates.length} [portfolio meeting] snapshots online | last v1.epics sync #{moment(v1LastUpdate).format('YYYY-MMM-DD HH:mm:ss')}
+				div(style="margin:auto;font-size:10px;max-width:1400px;text-align:center")
+					a(href="/portfolio/history") | show full portfolio history |
+			else if type =="history"
+				h1 PORTFOLIO HISTORY
+				div(style="margin:auto;color:#999999;font-size:8px;max-width:1400px;text-align:center") #{pgates.length} [portfolio meeting] snapshots online | last v1.epics sync #{moment(v1LastUpdate).format('YYYY-MMM-DD HH:mm:ss')}
+				div(style="margin:auto;font-size:10px;max-width:1400px;text-align:center")
+					a(href="/portfolio") | show current portfolio |
+		br
 		each _date in pgates
-			+renderPortfolioMeeting(_date)
+			+renderPortfolioMeeting(_date,type)
 			
 	script.
 		$(function () {

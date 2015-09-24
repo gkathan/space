@@ -397,9 +397,9 @@ function timeMachine(date){
 /** whenever we use the TODAY.add() function we need to set back TODAY to original value...
  * */
 function setWIP(wipDays){
-	WIP_START = TODAY.add(WIP_OFFSET_DAYS).days();
+	WIP_START = moment(TODAY).add("days",WIP_OFFSET_DAYS);
 	setTODAY();
-	WIP_END = TODAY.add(wipDays+WIP_OFFSET_DAYS).days();
+	WIP_END = moment(TODAY).add("days",wipDays+WIP_OFFSET_DAYS);
 	setTODAY();
 }
 

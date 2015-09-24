@@ -28,7 +28,7 @@ block content
 						|total initiatives: 
 					td
 						b
-							|#{statistics.totalInitiatives}
+							|#{initiatives.length}
 					td(style="text-align:left")
 						|&nbsp;(Understanding: #{grouped.Understanding.length} Conception: #{grouped.Conception.length} Implementation: #{grouped.Implementation.length})
 				tr
@@ -59,25 +59,28 @@ block content
 			thead
 				tr(style="font-size:12px")
 					th(style="width:2px") h
-					th(style="min-width:60px") id
-					th(style="min-width:150px") initiative
-					th(style="min-width:100px") status
-					th(style="min-width:40px;text-align:right") value
-					th(style="min-width:40px;text-align:right") risk
-					th(style="text-align:right;width:50px") swag
+					th(style="width:70px") id
+					th(style="max-width:100px") initiative
+					th(style="max-width:80px") status
+					th(style="max-width:40px;text-align:right") value
+					th(style="max-width:40px;text-align:right") risk
+					th(style="text-align:right;width:50px") swag initiative PD
+					th(style="text-align:right;width:50px") progress initiative %
 					th(style="text-align:right;center:50px") prog%
-					th(style="text-align:right;center:50px") size
+					th(style="text-align:right;width:50px") swag remaining
+					th(style="text-align:right;width:50px") size
+
 					th(style="width:750px") planning epics
 					
 			tbody
 				each i in initiatives
-					tr
+					tr(style="background-color:#{_color}")
 						//td(style="border-left: solid 3px "+getStatusColor(i.Status))
-						td(style="font-size:0px;background-color:"+getHealthColor(i.Health))
+						td(title="#{i.HealthComment}" style="font-size:0px;background-color:"+getHealthColor(i.Health))
 							|#{_.first(i.Health)}
 						td(style="vertical-align:top;font-size:11px;;text-align:left;font-weight:normal;vertical-align:top") 
 							a(href="http://v1.bwinparty.corp/V1-Production/Epic.mvc/Summary?oidToken=Epic%3A"+i.ID.split(":")[1] target="_new" title="see epic in V1")
-								|#{i.Number}
+								|#{i.Number} #{i.IsInLatestApprovedPortfolio} 
 						td(style="vertical-align:top;font-size:11px;;text-align:left;font-weight:normal;vertical-align:top") 
 							b
 								a(href="http://v1.bwinparty.corp/V1-Production/Epic.mvc/Summary?oidToken=Epic%3A"+i.ID.split(":")[1] target="_new" title="#{i.ElevatorPitch}")
@@ -85,23 +88,25 @@ block content
 						td(style="vertical-align:top;font-size:11px;;text-align:left;font-weight:normal;vertical-align:top") 
 							|#{i.Status} 
 						
-						td(style="vertical-align:top;font-size:11px;;text-align:right;font-weight:normal;vertical-align:top") #{i.Value}
-						td(style="vertical-align:top;font-size:11px;;text-align:right;font-weight:normal;vertical-align:top") #{i.Risk}
-						td(style="vertical-align:top;font-size:11px;;text-align:right;font-weight:normal;vertical-align:top") 
-							if i.Progress
-								|#{Math.round(i.SwagPlanned*((100-i.ProgressPlanned)/100))}
-							else 
-								|#{i.SwagPlanned}
-						td(style="vertical-align:top;text-align:right;font-size:11px;vertical-align:top") 
+						td(style="vertical-align:top;font-size:11px;;text-align:right;font-weight:normal;vertical-align:top" title="Value: #{i.Value}") #{i.Value}
+						td(style="vertical-align:top;font-size:11px;;text-align:right;font-weight:normal;vertical-align:top" title="Risk: #{i.Risk}")  #{i.Risk}
+						td(style="vertical-align:top;font-size:11px;;text-align:right;font-weight:normal;vertical-align:top" title="Swag from Initiative: #{i.Swag} PD") #{i.Swag}			
+						td(style="vertical-align:top;font-size:11px;;text-align:right;font-weight:normal;vertical-align:top" title="Progress from Initiative: #{i.Progress}%") #{i.Progress}			
+						td(style="vertical-align:top;text-align:right;font-size:11px;vertical-align:top" title="Progress aggregated for underlying Planning Epics: #{i.ProgressPlanned}%") 
 							if i.Progress
 								b
 									|#{Math.round(i.ProgressPlanned)}
 							else 
 								|-
-						td(style="vertical-align:top;font-size:11px;;text-align:right;font-weight:normal;vertical-align:top") #{i.SwagPlanned}								
+						td(style="vertical-align:top;font-size:11px;;text-align:right;font-weight:normal;vertical-align:top"  title="Swag aggregated from underlying planning epics: #{i.SwagPlanned} PD") 
+							if i.Progress
+								|#{Math.round(i.SwagPlanned*((100-i.ProgressPlanned)/100))}
+							else 
+								|#{i.SwagPlanned}
+						td(style="vertical-align:top;font-size:11px;;text-align:right;font-weight:normal;vertical-align:top" title="Swag aggregated from underlying planning epics: #{i.SwagPlanned} PD") #{i.SwagPlanned}								
 						td(style="vertical-align:top;text-align:left;font-size:10px;vertical-align:top")
-							if i.PlanningEpics
-								table.table-responsive.table-striped(style="width:800px")
+							if i.PlanningEpics.length>0
+								table.table-responsive.table-stripe
 									- var _sum = 0; 
 									each p in i.PlanningEpics
 										- _sum+=p.Swag
@@ -114,8 +119,10 @@ block content
 											td(style="vertical-align:top;text-align:left;font-size:10px;vertical-align:top;width:200px")
 												a(href="http://v1.bwinparty.corp/V1-Production/Epic.mvc/Scorecard?oidToken=Epic%3A"+p.ID.split(":")[1] target="_new" title="go to V1 Scorecard") 
 													|#{p.Name}
-											td(style="vertical-align:top;text-align:center;font-size:10px;vertical-align:top;width:60px") #{p.CategoryName}
-											td(style="vertical-align:top;text-align:center;font-size:10px;vertical-align:top;width:60px") #{Math.round(p.Progress)}
+											td(style="vertical-align:top;text-align:center;font-size:10px;vertical-align:top;width:30px") #{p.CategoryName}
+											td(style="vertical-align:top;text-align:center;font-size:10px;vertical-align:top;width:30px") #{p.Swag}
+											
+											td(style="vertical-align:top;text-align:center;font-size:10px;vertical-align:top;width:30px") #{Math.round(p.Progress)}%
 											td(style="vertical-align:top;text-align:center;font-size:10px;vertical-align:top;width:30px") 
 												if p.Progress
 													|#{Math.round(p.Swag*((100-p.Progress)/100))}
@@ -134,5 +141,6 @@ block content
 											td(style="vertical-align:top;text-align:left;font-size:10px;vertical-align:top;width:200px") 
 												a(href="/portfolio/planningbacklogdetail/"+p.BusinessBacklogID title="show details")
 													|#{p.BusinessBacklog}
-											
+							else		
+								|-
 			script $("#planningepics").tablesorter();
