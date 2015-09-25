@@ -82,12 +82,12 @@ block content
 						td(style="vertical-align:top;font-size:11px;;text-align:left;font-weight:normal;vertical-align:top") 
 							a(href="http://v1.bwinparty.corp/V1-Production/Epic.mvc/Summary?oidToken=Epic%3A"+i.ID.split(":")[1] target="_new" title="see epic in V1")
 								|#{i.Number}
-						td(style="vertical-align:top;font-size:0px;;text-align:left;font-weight:normal;vertical-align:top") 
+						td(style="vertical-align:top;font-size:0px;;text-align:left;font-weight:normal") 
 							if i.IsInLatestApprovedPortfolio
-								img(src="/images/iconexp/check.png" height="10px") 
+								img(src="/images/iconexp/check.png" style="margin-top:3px" height="10px") 
 								|ok
 							else
-								img(src="/images/iconexp/delete.png" height="10px")
+								img(src="/images/iconexp/delete.png" style="margin-top:3px" height="10px")
 								|no
 								
 						td(style="vertical-align:top;font-size:11px;;text-align:left;font-weight:normal;vertical-align:top") 
