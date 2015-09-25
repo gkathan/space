@@ -343,7 +343,10 @@ function _handleIncidentsNEW(incidents){
 					logger.info("[IncidentSyncService] NEW Incident - incTrackerService.incrementTracker SUCCESS: "+JSON.stringify(result));
 					if (config.emit.snow_incidents_new =="on"){
 						for (var i in incidents){
-							_emitNEWIncidentMessage(incidents[i]);
+							//only notify those which are configured in config.emit.snow_incidents_prios
+							if (config.emit.snow_incidents_prios.indexOf(incidents[i].priority.split(" - ")[0])>-1){
+								_emitNEWIncidentMessage(incidents[i]);
+							}
 						}
 					}
 				}
@@ -390,7 +393,9 @@ function _handleIncidentsCHANGED(changes,baseline,_incidentsNEW){
 		// we also need an mongo _id to to a proper update....
 		_updateIncidents.push(_inc);
 		if (config.emit.snow_incidents_changes =="on"){
-			_emitCHANGEIncidentMessage(_diff,_inc);
+			if (config.emit.snow_incidents_prios.indexOf(_inc.priority.split(" - ")[0])>-1){
+				_emitCHANGEIncidentMessage(_diff,_inc);
+			}
 		}
 	}
 	incService.update(_updateIncidents);

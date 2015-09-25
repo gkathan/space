@@ -90,9 +90,6 @@ block content
 							span(style="margin-left:50px;text-align:left") end
 							span(style="margin-left:40px;text-align:left") prog%
 							span(style="margin-left:20px;text-align:left") #
-				
-					//th(style="text-align:right;vertical-align:top") remain
-					
 			tbody
 				each b in backlogs
 					tr
@@ -107,8 +104,7 @@ block content
 						td(style="vertical-align:top;text-align:right;font-size:10px;width:50px")
 							|#{Math.round(b.Capacity.AvailablePDperMonth)} 
 						td(style="vertical-align:top;text-align:right;font-size:10px;width:50px")
-							|#{(b.Capacity.defaultAvailableForInitiativesRatio)*100}%
-						
+							|#{Math.round(b.Capacity.availablePercentageForInitiatives*100)}%
 						td(style="vertical-align:top;text-align:right;font-size:10px;width:50px")
 							|#{Math.round(b.Capacity.AvailablePDperMonthForInitiatives)} 
 						//td(style="vertical-align:top;text-align:right;font-size:10px;width:50px")
@@ -128,8 +124,8 @@ block content
 										- _sum+=i.SwagPlanned
 										- _sumPlanningEpics+=i.PlanningEpics.length;
 										tr
-											td(style="width:10px;vertical-align:top")
-												span(style="background-color:"+getHealthColor(i.Health))&nbsp;&nbsp;
+											td(style="width:12px;vertical-align:top;text-align:center")
+												div(style="margin:auto;width:8px;height:8px;-moz-border-radius: 50%; -webkit-border-radius: 50%; border-radius: 50%;background-color:#{getHealthColor(i.Health)};margin-top:2px")
 												| 
 											td(style="vertical-align:top;text-align:left;font-size:10px;vertical-align:top;width:50px") 
 												a(href="http://v1.bwinparty.corp/V1-Production/Epic.mvc/Summary?oidToken=Epic%3A"+i.ID.split(":")[1] target="_new"  title="go to V1 Epic Details")

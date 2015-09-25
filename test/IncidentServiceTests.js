@@ -20,6 +20,8 @@ winston.loggers.add('test_log',{
 var logger = winston.loggers.get('test_log');
 var assert = require("assert")
 
+var config=require('config');
+
 
 describe('IncidentService', function(){
   describe('#_mapPriority()', function(){
@@ -76,7 +78,6 @@ describe('IncidentService', function(){
 			})
 		});
   });
-
 
 
 /*
@@ -210,6 +211,22 @@ describe('#find single incident', function(){
 	});
 */
 
+
+  describe('#emitFilterBy()', function(){
+    it('check whether emitfilter works', function(done){
+			var _inc1={};
+			_inc1.priority = "P16 - Critical";
+
+			console.log("config : "+config.emit.snow_incidents_prios);
+			console.log("prio: "+_inc1.priority.split(" - ")[0]);
+
+			if (config.emit.snow_incidents_prios.indexOf(_inc1.priority.split(" - ")[0])>-1){
+					console.log("*************** EMIT OK");
+			}
+
+			done();
+		});
+  });
 
 
 })

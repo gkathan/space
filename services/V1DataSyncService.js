@@ -48,46 +48,55 @@ function _sync(url,type,callback){
 
 	var _cache ={};
 
-	async.eachSeries(url,function(_url,done){
-		//var _url = url[0];
-		client.get(_url, function(data, response){
-			logger.debug(">>>> calling "+_url);
-			var _data = JSON.parse(data);
-			var _collection = "v1"+_.last(_url.split("/"));
-			_cache[_collection]=_data;
+	// needed to join capacity config to backlog data
+	v1Service.findBacklogsCapacity(function(err,backlogscapacity){
+		async.eachSeries(url,function(_url,done){
+			//var _url = url[0];
+			client.get(_url, function(data, response){
+				logger.debug(">>>> calling "+_url);
+				var _data = JSON.parse(data);
+				var _collection = "v1"+_.last(_url.split("/"));
+				_cache[_collection]=_data;
 
-			var v1data =  db.collection(_collection);
-			if (_collection=="v1teams"){
-				_data = _enrichTeamData(_data,_cache.v1members);
-			}
-			if (_collection=="v1members"){
-				_data = _enrichMemberData(_data);
-			}
-
-			v1data.drop();
-			v1data.insert(_data, function(err , success){
-				//console.log('Response success '+success);
-				if (err) callback(err);
-				logger.debug(">>>> DONE ???? "+_collection);
-				done();
-			});
-		})
-			},function(err,result){
-				//
-				if (err) {
-					logger.error('Response error '+err.message);
-					var _message = err.message;
-					logger.warn('[V1DataSyncService] says: something went wrong on the request', err.request.options,err.message);
-					app.io.emit('syncUpdate', {status:"[ERROR]",from:_syncName,timestamp:_timestamp,info:err.message,type:type});
-					_syncStatus.saveLastSync(_syncName,_timestamp,_message,_statusERROR,type);
-					callback(err);
+				var v1data =  db.collection(_collection);
+				if (_collection=="v1teams"){
+					_data = _enrichTeamData(_data,_cache.v1members);
 				}
-				var _message = "v1Data sync "+url.join(", ")+" [DONE]: ";
-				logger.info(_message);
-				app.io.emit('syncUpdate', {status:"[SUCCESS]",from:_syncName,timestamp:_timestamp,info:_message,type:type});
-				_syncStatus.saveLastSync(_syncName,_timestamp,_message,_statusSUCCESS,type);
-				callback(null,_message)
-		});
+				if (_collection=="v1members"){
+					_data = _enrichMemberData(_data);
+				}
+				if (_collection=="v1backlogs"){
+					_data = _enrichBacklogData(_data,backlogscapacity);
+				}
+
+				_enrichBacklogData
+
+				v1data.drop();
+				v1data.insert(_data, function(err , success){
+					//console.log('Response success '+success);
+					if (err) callback(err);
+					logger.debug(">>>> DONE ???? "+_collection);
+					done();
+				});
+			})
+				},function(err,result){
+					//
+					if (err) {
+						logger.error('Response error '+err.message);
+						var _message = err.message;
+						logger.warn('[V1DataSyncService] says: something went wrong on the request', err.request.options,err.message);
+						app.io.emit('syncUpdate', {status:"[ERROR]",from:_syncName,timestamp:_timestamp,info:err.message,type:type});
+						_syncStatus.saveLastSync(_syncName,_timestamp,_message,_statusERROR,type);
+						callback(err);
+					}
+					var _message = "v1Data sync "+url.join(", ")+" [DONE]: ";
+					logger.info(_message);
+					app.io.emit('syncUpdate', {status:"[SUCCESS]",from:_syncName,timestamp:_timestamp,info:_message,type:type});
+					_syncStatus.saveLastSync(_syncName,_timestamp,_message,_statusSUCCESS,type);
+					callback(null,_message)
+			});
+	});
+
 }
 
 
@@ -107,6 +116,26 @@ function _enrichMemberData(members){
 	}
 	return members;
 }
+
+function _enrichBacklogData(backlogs,backlogscapacity){
+	for (var b in backlogs){
+		var _b =backlogs[b];
+		_b.Capacity={};
+		var _bc = _.findWhere(backlogscapacity,{backlog:_b.Name});
+		if (_bc){
+		 _b.Capacity.averageAvailablePDperMonth= _bc.averageAvailablePDperMonth;
+		 _b.Capacity.availablePercentageForInitiatives= _bc.availablePercentageForInitiatives;
+		}
+		else{
+			_b.Capacity.averageAvailablePDperMonth=config.backlogscapacity.defaultAverageAvailablePDperMonth;
+			_b.Capacity.availablePercentageForInitiatives=config.backlogscapacity.defaultAvailablePercentageForInitiatives;
+		}
+		_b.Initiatives=[];
+	}
+	return backlogs;
+}
+
+
 
 /**
 parse from V1 participant string

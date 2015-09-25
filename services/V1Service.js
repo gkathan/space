@@ -21,6 +21,7 @@ exports.findTeams=_findTeams;
 exports.findEpics=_findEpics;
 exports.findBacklogs=_findBacklogs;
 exports.findMembers=_findMembers;
+exports.findBacklogsCapacity = _findBacklogsCapacity;
 
 exports.findEpicsWithChildren=_findEpicsWithChildren;
 exports.findInitiativesWithPlanningEpics = _findInitiativesWithPlanningEpics;
@@ -111,6 +112,17 @@ function _findPrograms(filter,callback) {
 	var programs =  db.collection('v1programs');
 		backlogs.find(filter, function (err, result){
 			callback(err,result);
+			return;
+	});
+}
+
+/**
+ * find all BacklogsCapacity Configs
+ */
+function _findBacklogsCapacity(callback) {
+	var items =  db.collection('v1backlogscapacity');
+		items.find({}, function (err, docs){
+			callback(err,docs);
 			return;
 	});
 }
@@ -240,9 +252,10 @@ function _buildBacklogResult(_backlogs,teams){
 		_b.Members = _getMembersPerPlanningBacklog(_b.Name,teams);
 		_b.TotalSwag = _iResult.statistics.totalSwag;
 		_b.TotalSwagRemaining = _backlogSwagRemaining;
-		_b.Capacity.AvailablePDperMonth = _b.Capacity.PDperMonth*_b.Members.length;
 
-		_b.Capacity.AvailablePDperMonthForInitiatives= _b.Capacity.AvailablePDperMonth *_b.Capacity.defaultAvailableForInitiativesRatio;
+		_b.Capacity.AvailablePDperMonth = _b.Capacity.averageAvailablePDperMonth*_b.Members.length;
+		_b.Capacity.AvailablePDperMonthForInitiatives= _b.Capacity.averageAvailablePDperMonth *_b.Capacity.availablePercentageForInitiatives;
+
 		_totalMembers+=_b.Members.length;
 		_totalTeams+=_.uniq(_.map(_b.Members,'Team')).length;
 
@@ -345,7 +358,7 @@ function _findInitiativesWithPlanningEpics(filter,callback){
 function _getBacklogsFromInitiativesWithPlanningEpics(initiativesWithPlanningEpics,planningbacklogs){
 	var _backlogs = [];
 	_backlogs = _extractBacklogs(initiativesWithPlanningEpics);
-	_backlogs = _enrichCapacityPerBacklog(_backlogs,planningbacklogs)
+	_backlogs = _enrichBacklogs(_backlogs,planningbacklogs)
 	_backlogs = _repopulateBacklogs(_backlogs,initiativesWithPlanningEpics);
 	_backlogs = _filterPlanningEpics(_backlogs);
 	return _backlogs;
@@ -369,20 +382,16 @@ function _extractBacklogs(initiativesWithPlanningEpics){
 	return _backlogs;
 }
 
-function _enrichCapacityPerBacklog(backlogs,planningbacklogs){
-	var _capacityConfig={PDperMonth:config.backlogs.PDperMonth,defaultProductiveWorkRatio:config.backlogs.defaultProductiveWorkRatio,defaultAvailableForInitiativesRatio:config.backlogs.defaultAvailableForInitiativesRatio};
+
+function _enrichBacklogs(backlogs,planningbacklogs){
+	// and join the empty backlogs
 	for (var b in backlogs){
 		var _b = backlogs[b];
-		_b.Capacity=_capacityConfig;
-		_b.Initiatives=[];
+		_b.Capacity=_.findWhere(planningbacklogs,{Name:_b.Name}).Capacity;
 	}
-
-	// and join the empty backlogs
 	for (var p in planningbacklogs){
 		var _p = planningbacklogs[p];
 		if (!_.findWhere(backlogs,{Name:_p.Name})){
-			_p.Capacity=_capacityConfig;
-			_p.Initiatives=[];
 			backlogs.push(_p);
 		}
 	}
@@ -408,6 +417,7 @@ function _repopulateBacklogs(backlogs,initiativesWithPlanningEpics){
 					var _p = _i.PlanningEpics[p];
 					if (_p.BusinessBacklogID==_b.ID){
 						if (!_.findWhere(_b.Initiatives,{Name:_i.Name})){
+							if (!_b.Initiatives) _b.Initiatives=[];
 							_b.Initiatives.push(_.cloneDeep(_i));
 							_count++;
 							_ini1.push(_i.Number);

@@ -58,11 +58,11 @@ block content
 		table.table.table-striped.table-hover.table-condensed.table-responsive.tablsesorter(id="planningepics" style="max-width:1600px")
 			thead
 				tr(style="font-size:12px")
-					th(style="width:2px") h
 					th(style="width:60px;text-align:center") id
 					th(style="width:30px") pm
 					th(style="max-width:100px") initiative
 					th(style="max-width:80px") status
+					th(style="width:10px;text-align:center") health
 					th(style="max-width:40px;text-align:right") value
 					th(style="max-width:40px;text-align:right") risk
 					th(style="text-align:right;width:50px") swag initiative PD
@@ -76,9 +76,6 @@ block content
 			tbody
 				each i in initiatives
 					tr(style="background-color:#{_color}")
-						//td(style="border-left: solid 3px "+getStatusColor(i.Status))
-						td(title="#{i.HealthComment}" style="font-size:0px;background-color:"+getHealthColor(i.Health))
-							|#{_.first(i.Health)}
 						td(style="vertical-align:top;font-size:11px;;text-align:left;font-weight:normal;vertical-align:top") 
 							a(href="http://v1.bwinparty.corp/V1-Production/Epic.mvc/Summary?oidToken=Epic%3A"+i.ID.split(":")[1] target="_new" title="see epic in V1")
 								|#{i.Number}
@@ -96,7 +93,9 @@ block content
 									|#{i.Name} 
 						td(style="vertical-align:top;font-size:11px;;text-align:left;font-weight:normal;vertical-align:top") 
 							|#{i.Status} 
-						
+						td(title="#{i.HealthComment}" style="text-align:center")
+							div(style="margin:auto;width: 10px;height: 10px;-moz-border-radius: 50%; -webkit-border-radius: 50%; border-radius: 50%;background-color:#{getHealthColor(i.Health)};margin-top:2px")
+							span(style="font-size:0px") #{i.Health}
 						td(style="vertical-align:top;font-size:11px;;text-align:right;font-weight:normal;vertical-align:top" title="Value: #{i.Value}") #{i.Value}
 						td(style="vertical-align:top;font-size:11px;;text-align:right;font-weight:normal;vertical-align:top" title="Risk: #{i.Risk}")  #{i.Risk}
 						td(style="vertical-align:top;font-size:11px;;text-align:right;font-weight:normal;vertical-align:top" title="Swag from Initiative: #{i.Swag} PD") #{i.Swag}			
