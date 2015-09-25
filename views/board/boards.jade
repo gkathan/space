@@ -132,11 +132,8 @@ script(type='text/javascript').
 		$(_self.attr('href')).modal('show');
 	});
 
-
 	function submitCreate() {
 		var form = document.getElementById("createboardform");
-		
-		
 
 		var _board = {};
 		_board.name = form.name.value;
@@ -203,11 +200,15 @@ script(type='text/javascript').
 		
 		var _json = JSON.stringify(_board);
 		
-		var _filterTarget = form.filter_target.value;
-		var _filter;
-		if (_filterTarget){
-			_filter="&filter_target="+_filterTarget;
-		}
+		
+		var _filter="";
+		if (form.filter_Targets.value) _filter+="&filter_Targets="+form.filter_Targets.value;
+		if (form.filter_Customers.value)_filter+="&filter_Customers="+form.filter_Customers.value;
+		if (form.filter_Markets.value)_filter+="&filter_Markets="+form.filter_Markets.value;
+		if (form.filter_Status.value)_filter+="&filter_Status="+form.filter_Status.value;
+		if (form.filter_Product.value)_filter+="&filter_Product="+form.filter_Product.value;
+		
+
 		var _url = "/api/space/rest/board?true=true"+_filter;
 		
 		console.log("---- url = "+_url);

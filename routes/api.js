@@ -545,15 +545,19 @@ function getItemsBacklogInitiatives(req,res,next){
 	})
 }
 
-
-function _extractTargetFilter(req){
-	var _filterTargets;
-	var _targets;
+function _extractFilter(types,req){
+	var _elements;
 	var _filter={};
-	if (req.query.filter_target){
-		_filterTargets = req.query.filter_target;
-		_targets = _filterTargets.split(",");
-		_filter={Targets:{$in:_targets}};
+
+	for (var t in types){
+		var type = types[t];
+		if (req.query["filter_"+type]){
+			_elements = req.query["filter_"+type].split(",");
+			for (var e in _elements){
+				_elements[e]=new RegExp(_elements[e]);
+			}
+			_filter[type]={$in:_elements};
+		}
 	}
 	return _filter;
 }
@@ -561,10 +565,9 @@ function _extractTargetFilter(req){
 
 function getItemsRoadmapInitiatives(req,res,next){
 	var context = config.context;
-	var _filterTargets;
-	var _targets;
 
-	var _filter=_extractTargetFilter(req);
+	var _filterTypes=["Targets","Customers","Markets","Status","Product"];
+	var _filter=_extractFilter(_filterTypes,req);
 
 	logger.debug("------ api.getItemsRoadmapInitiatives called: filter: "+_filter);
 	var v1Service = require('../services/V1Service');
@@ -921,7 +924,9 @@ function saveBoard(req, res , next){
   board.createDate=_timestamp;
 	var _groupby = board.groupby.split(",");
 
-	var _filter=_extractTargetFilter(req);
+	var _filterTypes=["Targets","Customers","Markets","Status","Product"];
+	var _filter=_extractFilter(_filterTypes,req);
+	logger.debug("----------------filter: "+JSON.stringify(_filter));
 
 	if (_groupby.length!=3){
 		logger.error("groupby currently must be 3 levels");
@@ -932,7 +937,7 @@ function saveBoard(req, res , next){
 	var v1Service=require('../services/V1Service');
 	if (board.dataLink=="roadmapinitiatives"){
 		var _items =[];
-		
+
 		v1Service.getRoadmapInitiatives(_filter,function(err,roadmap){
 			logger.debug("--------- roadmap items: "+roadmap.length);
 			for (var r in roadmap){

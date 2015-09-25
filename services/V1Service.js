@@ -509,14 +509,6 @@ function _findPortfolioApprovalEpics(callback) {
 
 function _getRoadmapInitiatives(filter,callback){
 	_findInitiativeEpics(filter,function (err,initiatives){
-		/*
-		var _roadmap = [];
-		for (var i in initiatives){
-			var _in=initiatives[i];
-			if (new Date(_in.PlannedStart)>=start && _in.Product) _roadmap.push(_in);
-		}
-		callback(err,_roadmap);
-		*/
 		callback(err,initiatives);
 	});
 }
