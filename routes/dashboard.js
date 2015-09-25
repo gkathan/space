@@ -167,7 +167,7 @@ router.get('/opsreport', function(req, res) {
 
 		//default is in config
 		var _from = moment().startOf('month').format("YYYY-MM-DD");
-		var _to = moment().format("YYYY-MM-DD");
+		var _to = moment().add(1,"days").format("YYYY-MM-DD");
 
 		var _filter = {customer:_customer};;
 

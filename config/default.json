@@ -102,7 +102,7 @@
 
 	"incidents": {
 		"customerImpact":{
-			"categoryExclude":["Failure","Request","Misplaced Call"]
+			"categoryExclude":["Request","Misplaced Call"]
 		},
 		"SLA":{
 			"P01":1,
