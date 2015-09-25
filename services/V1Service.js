@@ -233,6 +233,7 @@ function _buildBacklogResult(_backlogs,teams){
 
 	var _initiatives=[];
 	var _planningEpics=[];
+	var _totalPDforInitiativesPerMonth=0;
 
 	for (var b in _backlogs){
 		var _backlogSwag=0;
@@ -254,7 +255,7 @@ function _buildBacklogResult(_backlogs,teams){
 		_b.TotalSwagRemaining = _backlogSwagRemaining;
 
 		_b.Capacity.AvailablePDperMonth = _b.Capacity.averageAvailablePDperMonth*_b.Members.length;
-		_b.Capacity.AvailablePDperMonthForInitiatives= _b.Capacity.averageAvailablePDperMonth *_b.Capacity.availablePercentageForInitiatives;
+		_b.Capacity.AvailablePDperMonthForInitiatives= _b.Capacity.AvailablePDperMonth *_b.Capacity.availablePercentageForInitiatives;
 
 		_totalMembers+=_b.Members.length;
 		_totalTeams+=_.uniq(_.map(_b.Members,'Team')).length;
@@ -262,12 +263,14 @@ function _buildBacklogResult(_backlogs,teams){
 		_initiatives=_.union(_initiatives,_.map(_b.Initiatives,"Number"));
 
 		_totalPlanningEpics+=_iResult.statistics.totalPlanningEpics;
-		_b.TotalPlanningEpics =_iResult.statistics.totalPlanningEpics
+		_b.TotalPlanningEpics =_iResult.statistics.totalPlanningEpics;
+
+		_totalPDforInitiativesPerMonth+=_b.Capacity.AvailablePDperMonthForInitiatives;
 	}
 
 	_totalInitiatives = _.uniq(_initiatives).length;
 
-	var _statistics =  {totalSwag:_totalSwag,totalSwagRemaining:_totalSwagRemaining,totalPlanningEpics:_totalPlanningEpics,totalInitiatives:_totalInitiatives,totalMembers:_totalMembers,totalTeams:_totalTeams};
+	var _statistics =  {totalSwag:_totalSwag,totalSwagRemaining:_totalSwagRemaining,totalPlanningEpics:_totalPlanningEpics,totalInitiatives:_totalInitiatives,totalMembers:_totalMembers,totalTeams:_totalTeams,totalPDforInitiativesPerMonth:_totalPDforInitiativesPerMonth};
 	return{backlogs:_backlogs,statistics:_statistics};
 }
 
