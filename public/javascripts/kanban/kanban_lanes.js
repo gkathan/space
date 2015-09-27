@@ -32,7 +32,7 @@ function drawLanes(){
 	d3.select("#lanes").remove()
 	var lanes = svg.append("g").attr("id","lanes");
 	if (BOARD.viewConfig.lanes=="hide"){
-		lanes.style("visibility","hidden");
+		lanes.style("opacity",0);
 	}
 	if (BOARD.viewConfig.laneboxLeftWidth)
 		LANE_LABELBOX_LEFT_WIDTH = parseInt(BOARD.viewConfig.laneboxLeftWidth);

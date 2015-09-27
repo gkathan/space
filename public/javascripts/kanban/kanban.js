@@ -223,6 +223,8 @@ function joinBoard2Initiatives(board,initiatives){
 		// legacy attributes
 		if (_initiative){
 			_joinedItem.id=_i.itemRef;
+			_joinedItem.Number=_i.itemRef;
+
 			_joinedItem.Type="item";
 
 			if (_initiative.Status=="Done" || _initiative.Status=="Monitoring")

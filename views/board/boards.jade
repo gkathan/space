@@ -27,7 +27,6 @@ block content
 			div.panel.panel-default
 				div.panel-heading ...select a board
 				div.panel-body
-
 					// new board
 					div.col-md-3.col-sm-4.col-xs-9.col-lg2
 						div.panel(style=" position: relative;padding: 10px 10px 10px;display: block;background-color:white;;width:250px;height:320px;text-align: center;margin: 10px auto;")
@@ -38,12 +37,10 @@ block content
 							h4
 								small &nbsp;
 							br
-							button.btn.btn-info.btn-xs(type="button" data-toggle="modal" data-target="#createBoardModal")
+							button.btn.btn-info.btn-xs(id="createnewboard" type="button" data-toggle="modal" data-target="#createBoardModal")
 								span create
 					each val in boards
 						+board(val)
-
-
 					// ************ remove modal  ******************
 					.modal.fade.bs-example-modal-sm(id="deleteBoard" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true")
 						.modal-dialog.modal-sm
@@ -66,10 +63,6 @@ block content
 										button.btn.btn-danger(id="removeboardsubmit" type="button" )
 											span.glyphicon.glyphicon-flash
 											span delete now
-
-
-
-
 	//Modal
 	div.modal.fade(id="createBoardModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" )
 		div.modal-dialog
@@ -77,38 +70,49 @@ block content
 				div.modal-header
 					button.close(type="button" data-dismiss="modal" aria-label="Close")
 						span(aria-hidden="true") &times
-					img.img-thumbnail(src="/images/boards/s2t_board_new.png"  style=" height:60px" )
+					table
+						tr
+							td(style="width:60px") 
+								img.img-thumbnail(src="/images/boards/s2t_board_new.png"  style=" height:50px" )
+							td 
+								span(style="font-size:20px") #{formBoardTitle}
 				div.modal-body
-					include forms/form_create
+					
+					include includes/form_board
 
 include ../includes/material
 
 // some code ;-)
 script(type='text/javascript').
-
+	//make server variable accesible on client :-)
+	var BOARD=!{JSON.stringify(board)};
+	
 	$("#removeboardsubmit").click(function() { console.log("########KCHING");submitRemove(); });
-
-	$("#createboardsubmit").click(function() {console.log("create board submit pressed"); submitCreate(); });
-
-	$("#datalink_roadmap").click(function() {
-		console.log("datalink_roadmap clicked !!!!!");
-		$("#groupby").val("Status,Product,Number");
-			$("#ref").val("rcs");
+	$("#boardsubmit").click(function() {console.log("create board submit pressed"); submitCreate(BOARD); });
+	$("#createnewboard").click(function() {
+		console.log("create board clicked"); 
 	});
-	$("#datalink_backlogplanningepics").click(function() {
+
+
+	$("#f_datalink_roadmap").click(function() {
+		console.log("datalink_roadmap clicked !!!!!");
+		$("#f_groupby").val("Status,Product,Number");
+			$("#f_ref").val("rcs");
+	});
+	$("#f_datalink_backlogplanningepics").click(function() {
 		console.log("datalink_backlogplanningepics clicked !!!!!");
-		$("#groupby").val("PlanningBacklog,EpicRootName,Number");
-		$("#ref").val("bpe");
+		$("#f_groupby").val("PlanningBacklog,EpicRootName,Number");
+		$("#f_ref").val("bpe");
 		});
-	$("#datalink_backloginitiatives").click(function() {
+	$("#f_datalink_backloginitiatives").click(function() {
 		console.log("datalink_backloginitiatives clicked !!!!!");
-		$("#groupby").val("Product,PlanningBacklog,Number");
-			$("#ref").val("bi");
+		$("#f_groupby").val("Product,PlanningBacklog,Number");
+			$("#f_ref").val("bi");
 		});
 	$("#datalink_empty").click(function() {
 		console.log("datalink_empty clicked !!!!!");
 		$("#groupby").val("");
-			$("#ref").val("");
+			$("#f_ref").val("");
 	});
 
 
@@ -132,10 +136,11 @@ script(type='text/javascript').
 		$(_self.attr('href')).modal('show');
 	});
 
-	function submitCreate() {
-		var form = document.getElementById("createboardform");
 
-		var _board = {};
+	function submitCreate(_board) {
+		console.log("in submitCreate: board:"+BOARD);
+		var form = document.getElementById("form_board");
+
 		_board.name = form.name.value;
 		_board.vision = form.vision.value;
 		_board.subvision = form.subvision.value;
@@ -150,81 +155,84 @@ script(type='text/javascript').
 		_board.dataLink = form.datalink.value;
 		_board.groupby = form.groupby.value;
 		_board.ref = form.ref.value;
+
 		
-		// default viewconfig
-		var _viewconfig ={};
-		_viewconfig.vision="show";
-		_viewconfig.metrics="off";
-		_viewconfig.queues="show";
-		_viewconfig.queuesmetrics="show";
-		_viewconfig.swag="hide";
-		_viewconfig.start="show";
 		if (_board.dataLink=="roadmapinitiatives"){
-			_viewconfig.queues="show";
+			_board.viewConfig.queues="show";
 		}
 		else if (_board.dataLink=="backlogplanningepics" || _board.dataLink=="backloginitiatives"){
-			_viewconfig.queues="show";
-			_viewconfig.queuesmetrics="hide";
-			_viewconfig.vision="off";
+			_board.viewConfig.queues="show";
+			_board.viewConfig.queuesmetrics="hide";
+			_board.viewConfig.vision="off";
 		}	
-			
-		_viewconfig.targets="off";
-		_viewconfig.initiatives="show";
-		_viewconfig.guides="show";
-		_viewconfig.targets="off";
-		_viewconfig.lanes="show";
-		_viewconfig.grid="show";
-		_viewconfig.axes="show";
-		_viewconfig.sublaneText="off";
+
 		if (_board.dataLink=="roadmapinitiatives")
-			_viewconfig.sublaneLine="on";
+			_board.viewConfig.sublaneLine="on";
 		else
-			_viewconfig.sublaneLine="off";
-		
-		_viewconfig.laneboxText = {size:"8px",color:"grey",weight:"normal",mode:""};
-		_viewconfig.contextboxText = {"size":"8px","color":"grey","weight":"normal","mode":"tb"};
-		_viewconfig.offsetTop = 0;
-		if (!_viewconfig.vision=="off") 
-			_viewconfig.offsetTop = 150;
-		_viewconfig.contextboxWidth = 50;
-		_viewconfig.laneboxLeftWidth = 150;
-		_viewconfig.laneboxRightWidth = 10;
-		
-		if (form.rightbox.value) _viewconfig.laneboxRightWidth = form.rightbox.value;
-		if (form.leftbox.value) _viewconfig.laneboxLeftWidth = form.leftbox.value;
-		if (form.contextbox.value) _viewconfig.contextboxWidth = form.contextbox.value;
+			_board.viewConfig.sublaneLine="off";
+		if (!_board.viewConfig.vision=="off") 
+			_board.viewConfig.offsetTop = 150;
 		
 		
+		if (form.rightbox.value) _board.viewConfig.laneboxRightWidth = form.rightbox.value;
+		if (form.leftbox.value) _board.viewConfig.laneboxLeftWidth = form.leftbox.value;
+		if (form.contextbox.value) _board.viewConfig.contextboxWidth = form.contextbox.value;
 		
-		_board.viewConfig = _viewconfig;
-		
-		var _json = JSON.stringify(_board);
+
+	_board.viewConfig.initiatives=form.view_items.value;
+	_board.viewConfig.swag=form.view_swag.value;
+	_board.viewConfig.start=form.view_roadmap.value;
+	_board.viewConfig.queues=form.view_queues.value;
+	_board.viewConfig.grid=form.view_grid.value;
+	_board.viewConfig.vision=form.view_vision.value;
+	_board.viewConfig.targets=form.view_targets.value;
+	_board.viewConfig.lanes=form.view_lanes.value;
+	_board.viewConfig.axes=form.view_axes.value;
+
+	_board.viewConfig.qmetrics=form.view_qmetrics.value;
+	_board.viewConfig.metrics=form.view_metrics.value;
+	_board.viewConfig.releases=form.view_releases.value;
+	_board.viewConfig.NGR=form.view_NGR.value;
 		
 		
 		var _filter="";
-		if (form.filter_Targets.value) _filter+="&filter_Targets="+form.filter_Targets.value;
-		if (form.filter_Customers.value)_filter+="&filter_Customers="+form.filter_Customers.value;
-		if (form.filter_Markets.value)_filter+="&filter_Markets="+form.filter_Markets.value;
-		if (form.filter_Status.value)_filter+="&filter_Status="+form.filter_Status.value;
-		if (form.filter_Product.value)_filter+="&filter_Product="+form.filter_Product.value;
-		
+		if (form.filter_Targets.value){
+		 	_filter+="&filter_Targets="+form.filter_Targets.value;
+			_board.filter.Targets = form.filter_Targets.value;
+		}
+		if (form.filter_Customers.value){
+			_filter+="&filter_Customers="+form.filter_Customers.value;
+			_board.filter.Customers = form.filter_Customers.value;
+		}
+		if (form.filter_Markets.value){
+			_filter+="&filter_Markets="+form.filter_Markets.value;
+			_board.filter.Markets = form.filter_Markets.value;
+		}
+		if (form.filter_Status.value){
+			_filter+="&filter_Status="+form.filter_Status.value;
+			_board.filter.Status = form.filter_Status.value;
+		}
+		if (form.filter_Product.value){
+			_filter+="&filter_Product="+form.filter_Product.value;
+			_board.filter.Product = form.filter_Product.value;
+		}
+		var _json = JSON.stringify(_board);
+
 
 		var _url = "/api/space/rest/board?true=true"+_filter;
-		
 		console.log("---- url = "+_url);
 		//form.ajax call
 		$.ajax({
 			type: "POST",
 			url: _url,
-			data: { 'board': _json},
-					cache: false,
+			data: { 'itemJson': _json},
+			cache: false,
 			dataType:"json",
 			success: function(msg)
 				{
 					console.log("***** and now do a client side redirect: "+msg._id);
 					console.log("_board.datalink: "+_board.dataLink);
 					window.location="/boards/kanban/"+msg._id;
-
 				},
 			error: function(msg)
 				{
@@ -240,18 +248,13 @@ script(type='text/javascript').
 	}
 
 
-
 	function submitRemove() {
-
 		var _id = $(".modal-body #removeboardsubmit").val();
-
 		console.log("------------------- and now lets remove : _id = "+_id);
-
 		var _ids = [];
 		_ids.push(_id);
 		var _json = JSON.stringify(_ids);
 		var _url = "/api/space/rest/boards";
-
 		//form.ajax call
 		$.ajax({
 			type: "DELETE",
@@ -263,7 +266,6 @@ script(type='text/javascript').
 				{
 					console.log("***** and now do a client side redirect: ");
 					window.location="/boards";
-
 				},
 			error: function(msg)
 				{
@@ -276,6 +278,5 @@ script(type='text/javascript').
 						  }).show(); // for the ones that aren't closable and don't fade out there is a .hide() function.
 				}
 			});
-
 		return false;
 	}

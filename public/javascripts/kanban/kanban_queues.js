@@ -52,7 +52,7 @@ function drawQueues(){
 	var gQueue = svg.append("g").attr("id","queues");
 
 	if (BOARD.viewConfig.queues=="hide"){
-		gQueue.style("visibility","hidden");
+		gQueue.style("opacity",0);
 	}
 
 
@@ -60,7 +60,7 @@ function drawQueues(){
 	var gQueueMetrics = gQueue.append("g").attr("id","qmetrics");
 
 	if (BOARD.viewConfig.queuesmetrics=="hide"){
-		gQueueMetrics.style("visibility","hidden");
+		gQueueMetrics.style("opacity",0);
 	}
 
 

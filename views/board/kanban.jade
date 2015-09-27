@@ -33,6 +33,8 @@ block content
 			.panel-body
 				div.row(style="margin-left:10px;margin-bottom:10px")
 					// Button trigger modal
+					button.btn.btn-info.btn-xs(id="createnewboard" type="button" data-toggle="modal" data-target="#createBoardModal")
+						span board update
 					button.btn.btn-primary.btn-xs(type="button" data-toggle="modal" data-target="#myModal")
 						span board config
 					// Button trigger modal
@@ -106,14 +108,30 @@ block content
 											td(style="vertical-align:top;text-align:left;vertical-align:middle;font-size:11px") #{e.Swag} 
 											td(style="vertical-align:top;text-align:left;font-size:11px;vertical-align:middle") #{e.Risk} 
 						script $("#table_roadmapitems").tablesorter();				
+		
+		//Modal
+		div.modal.fade(id="createBoardModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" )
+			div.modal-dialog
+				div.modal-content(style="opacity:1;")
+					div.modal-header
+						button.close(type="button" data-dismiss="modal" aria-label="Close")
+							span(aria-hidden="true") &times
+						table
+							tr
+								td(style="width:60px") 
+									img.img-thumbnail(src="/images/boards/thumbs/#{board._id}.png"  style=" height:50px" )
+								td 
+									span(style="font-size:20px") #{formBoardTitle}
+
+					div.modal-body
+						include includes/form_board
+
+		
 									
+include ../includes/material
+
 	script(type="text/javascript").
-		
 		render("/images/svg/external.svg");
-		
-		//var el = document.getElementById('v1epics');
-		//var sortable = Sortable.create(el,{});
-		
 		// target elements with the "draggable" class
 		interact('.draggable')
 		  .draggable({

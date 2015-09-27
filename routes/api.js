@@ -913,21 +913,39 @@ function findTrailByNameForId(req, res , next){
 /**
 * saves a kanban / roadmap board
  PROTOTYPE !!!!!
+
+ TODO !!!
+currently ONLY work for CREATE
+=> when used for save in update case => it messes all UP :-)
+
 */
 function saveBoard(req, res , next){
 	var boardService = require('../services/BoardService');
 	var context;
 	if (req.session.CONTEXT) context = req.session.CONTEXT;
 	else context = res.config.context;
-  var board = JSON.parse(req.body.board);
+  var board;
+	try{
+		board = JSON.parse(req.body.itemJson);
+
+	} catch (e){
+		logger.error("crash: "+e.message);
+	}
+
+	//0 fixing some _id shit
+	// http://stackoverflow.com/questions/13031541/mongoerror-cannot-change-id-of-a-document
+	if ( board._id && ( typeof(board._id) === 'string' ) ) {
+		logger.debug("[DEBUG] fixing mongDB _id issue....");
+		board._id = mongojs.ObjectId.createFromHexString(board._id);
+	}
+
+
 	var _timestamp = new Date();
   board.createDate=_timestamp;
 	var _groupby = board.groupby.split(",");
-
 	var _filterTypes=["Targets","Customers","Markets","Status","Product"];
 	var _filter=_extractFilter(_filterTypes,req);
 	logger.debug("----------------filter: "+JSON.stringify(_filter));
-
 	if (_groupby.length!=3){
 		logger.error("groupby currently must be 3 levels");
 		//default
@@ -937,7 +955,6 @@ function saveBoard(req, res , next){
 	var v1Service=require('../services/V1Service');
 	if (board.dataLink=="roadmapinitiatives"){
 		var _items =[];
-
 		v1Service.getRoadmapInitiatives(_filter,function(err,roadmap){
 			logger.debug("--------- roadmap items: "+roadmap.length);
 			for (var r in roadmap){
@@ -945,7 +962,6 @@ function saveBoard(req, res , next){
 				_items.push(_createItem(_r,_groupby,board.name));
 			}
 			board.items =_items
-
 			boardService.save(board,function(err,success){
 				logger.debug("saved OK: _id: "+success._id);
 				// and create a thumbnail

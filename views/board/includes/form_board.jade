@@ -1,0 +1,85 @@
+block content
+	
+div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;background-color:white;;width:500px;text-align: center;margin: 10px auto;")
+
+	form.form-horizontal(id="form_board" action="" method="" autocomplete="off" ) 
+		div(style="margin-left:5px;width:400px;height:40px")
+			input.form-control.floating-label(id="f_name" name="name" type="text" placeholder="name" autocomplete="off" data-hint="the name of your board" value="#{board.name}")
+		div(style="margin-left:5px;width:400px;height:40px")
+			input.form-control.floating-label(id="f_vision" name="vision" type="text" placeholder="vision" autocomplete="off" data-hint="your purpose catch-phrase" value="#{board.vision}")
+		div(style="margin-left:5px;width:400px;height:80px")
+			textarea.form-control.floating-label(id="f_subvision" name ="subvision" rows="3" placeholder="sub - vision" autocomplete="off"  value="#{board.subvision}")
+		div(style="margin-left:5px;width:400px;height:80px")
+			textarea.form-control.floating-label(id="f_mission" name ="mission" rows="3" placeholder="mission" autocomplete="off"  value="#{board.mission}")
+		
+		table(style="width:400px")
+			tr
+				td(colspan="2" style="margin-left:5px;width:160px;height:50px;vertical-align:bottom")
+					input.form-control.floating-label(id="f_startdate" name="startdate" type="text" placeholder="start date" autocomplete="off" value="#{board.startDate}")
+				td(colspan="2" style="margin-left:5px;width:160px;height:50px;vertical-align:bottom")
+					input.form-control.floating-label(id="f_enddate" name="enddate" type="text" placeholder="end date" autocomplete="off" value="#{board.endDate}")
+			tr
+				td(style="margin-left:5px;width:80px;height:50px;vertical-align:bottom")
+					input.form-control.floating-label(id="f_height" name="height" type="text" placeholder="height" autocomplete="off" value="#{board.height}")
+				td(style="margin-left:5px;width:80px;height:50px;vertical-align:bottom")
+					input.form-control.floating-label(id="f_width" name="width" type="text" placeholder="width" autocomplete="off" value="#{board.width}")
+				td(style="margin-left:5px;width:80px;height:50px;vertical-align:bottom")
+					input.form-control.floating-label(id="f_itemscale" name="itemscale" type="text" placeholder="item scale" autocomplete="off" value="#{board.itemScale}")
+				td(style="margin-left:5px;width:80px;height:50px;vertical-align:bottom")
+					input.form-control.floating-label(id="f_itemfontscale" name="itemfontscale" type="text" placeholder="font scale" autocomplete="off" value="#{board.itemFontScale}")
+			tr
+				td(style="margin-left:5px;width:80px;height:50px;vertical-align:bottom")
+					input.form-control.floating-label(id="f_wip" name="wip" type="text" placeholder="wip days" autocomplete="off" value="#{board.WIPWindowDays}")
+				td(colspan="3" style="margin-left:5px;width:290px;height:50px;vertical-align:bottom")
+					input.form-control.floating-label(id="f_groupby" name="groupby" type="text" placeholder="groupby" autocomplete="off" value="#{board.groupby}")
+			tr
+				td(style="margin-left:5px;width:80px;height:50px;vertical-align:bottom")
+					input.form-control.floating-label(id="f_leftbox" name="leftbox" type="text" placeholder="leftbox" autocomplete="off" value="#{board.viewConfig.laneboxLeftWidth}")
+				td(style="margin-left:5px;width:80px;height:50px;vertical-align:bottom")
+					input.form-control.floating-label(id="f_rightbox" name="rightbox" type="text" placeholder="rightbox" autocomplete="off" value="#{board.viewConfig.laneboxRightWidth}")
+				td(style="margin-left:5px;width:80px;height:50px;vertical-align:bottom")
+					input.form-control.floating-label(id="f_contextbox" name="contextbox" type="text" placeholder="contextbox" autocomplete="off" value="#{board.viewConfig.contextboxWidth}")
+				td(style="margin-left:5px;width:80px;height:50px;vertical-align:bottom")
+					//input.form-control.floating-label(id="itemfontscale" name="itemfontscale" type="text" placeholder="font scale" autocomplete="off" value="5")
+			tr
+				td(colspan="2" style="margin-left:5px;width:160px;height:50px;vertical-align:bottom")
+					input.form-control.floating-label(id="f_filter_Targets" name="filter_Targets" type="text" placeholder="filter for Targets" autocomplete="off" value="")
+				td(colspan="2" style="margin-left:5px;width:160px;height:50px;vertical-align:bottom")
+					input.form-control.floating-label(id="f_filter_Customers" name="filter_Customers" type="text" placeholder="filter for Customers" autocomplete="off" value="")
+			tr
+				td(colspan="2" style="margin-left:5px;width:160px;height:50px;vertical-align:bottom")
+					input.form-control.floating-label(id="f_filter_Markets" name="filter_Markets" type="text" placeholder="filter for Markets" autocomplete="off" value="")
+				td(colspan="2" style="margin-left:5px;width:160px;height:50px;vertical-align:bottom")
+					input.form-control.floating-label(id="f_filter_Status" name="filter_Status" type="text" placeholder="filter for Status" autocomplete="off" value="")
+			tr
+				td(colspan="2" style="margin-left:5px;width:160px;height:50px;vertical-align:bottom")
+					input.form-control.floating-label(id="f_filter_Product" name="filter_Product" type="text" placeholder="filter for Product" autocomplete="off" value="")
+			tr
+				td(colspan="2" style="margin-left:5px;width:160px;height:50px;vertical-align:bottom")
+					input.form-control.floating-label(id="f_ref" name="ref" type="text" placeholder="reference" autocomplete="off" value="#{board.ref}")
+				td(colspan="2" style="margin-left:5px;width:160px;height:50px;vertical-align:bottom")
+			tr
+				td(colspan="3" style="height:100px;text-align:left")
+					div.radio.radio-primary
+						label 
+							input(id="f_datalink_roadmap" type="radio" name="datalink" value="roadmapinitiatives" checked)
+							|link to V1 roadmap data
+					div.radio.radio-primary
+						label 
+							input(id="f_datalink_backloginitiatives" type="radio" name="datalink" value="backloginitiatives")
+							|link to V1 backlogs - initiatives
+					div.radio.radio-primary
+						label 
+							input(id="f_datalink_backlogplanningepics" type="radio" name="datalink" value="backlogplanningepics")
+							|link to V1 backlogs - planning epics
+					div.radio.radio-primary
+						label 
+							input(id="f_datalink_empty" type="radio" name="datalink" value="empty" )
+							|empty
+							
+		include ../includes/menu_visibility_switches
+		
+		button.btn.btn-default.btn-xs(type="button" )
+			span Cancel
+		button.btn.btn-info.btn-xs(id="boardsubmit" type="button")
+			span Create

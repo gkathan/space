@@ -68,6 +68,12 @@ function drawAxes(){
 	var gAxes =svg.append("g")
 		.attr("id","axes");
 
+	if (BOARD.viewConfig.axes=="hide"){
+		gAxes.style("opacity",0);
+	}
+
+
+
 	var gy = gAxes.append("g")
 		.attr("class", "y axis")
 		.call(yAxis)
@@ -192,6 +198,10 @@ function drawGuides(){
 	_drawLine(gGuides,LANE_LABELBOX_RIGHT_START+LANE_LABELBOX_RIGHT_WIDTH+(2*METRIC_WIDTH),0-margin.top,LANE_LABELBOX_RIGHT_START+LANE_LABELBOX_RIGHT_WIDTH+(2*METRIC_WIDTH),height+margin.bottom,"rasterLine");
 
 	d3.select("#guides").style("visibility","hidden");
+	if (BOARD.viewConfig.guides=="show"){
+		d3.select("#guides").style("visibility","visible");
+	}
+
 
 }
 

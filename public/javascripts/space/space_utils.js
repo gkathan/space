@@ -35,13 +35,10 @@ function getUrlVars()
 * referenced from admin.php
 */
 function ajaxCall(verb,action,itemList,_type,afterHandlerCallback){
-
 		console.log("++ verb: "+verb);
 		console.log("++ action: "+action);
 		console.log("++ _type: "+_type);
 		console.log("++ _url: "+dataSourceFor(_type));
-
-
 		var _json = JSON.stringify(itemList);
 
 
@@ -58,9 +55,6 @@ function ajaxCall(verb,action,itemList,_type,afterHandlerCallback){
 			{
 				console.log("[space_utils.ajaxCall] ==== success handler...");
 				if (afterHandlerCallback !=undefined) afterHandlerCallback(_type);
-
-
-
 				console.log("==== and now lets notify...");
 
 				$(function(){

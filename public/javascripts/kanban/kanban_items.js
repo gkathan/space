@@ -852,7 +852,7 @@ function _registerDragDrop(){
 					console.log("BOARD.items: "+BOARD.items.length);
 
 					var _item;
-					_item = getItemByKey(BOARD.items,"itemRef",d.Number).itemView;
+					_item = _.findWhere(BOARD.items,{"itemRef":d.Number}).itemView;
 					console.log("NG: itemView: "+JSON.stringify(_item));
 
 					// and it would be interesting to derive the lane we are in after dragend
@@ -917,7 +917,7 @@ function _registerDragDrop(){
 					}
 					console.log("after: sublaneOffset = "+_item.sublaneOffset);
 
-					if (movedY!=0) ajaxCall("POST","save",new Array(BOARD),"boards");
+					if (movedY!=0) ajaxCall("POST","save",BOARD,"boards");
 					// and refresh the transient initiativeData
 					joinBoard2Initiatives(BOARD,initiativeData);
 

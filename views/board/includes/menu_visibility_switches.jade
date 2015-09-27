@@ -4,85 +4,111 @@ style.
 		background-color: #fff;
 	}
 
+mixin switchVisibilityRadio(_name,_value)
+	div.form-group
+		label
+			|#{_name.split("view_")[1]} 
+		div.radio.radio-warning
+			label
+				if _value=="off"
+					input(id=_name+"_off" type="radio" name=_name value="off" checked)
+				else
+					input(id=_name+"_off" type="radio" name=_name value="off")
+		div.radio.radio-primary
+			label
+				if _value == "hide"
+					input(id=_name+"_hide" type="radio" name=_name value="hide" checked)
+				else
+					input(id=_name+"_hide" type="radio" name=_name value="hide")
+		div.radio.radio-success
+			label
+				if _value=="show"
+					input(id=_name+"_show" type="radio" name=_name value="show" checked)
+				else
+					input(id=_name+"_show" type="radio" name=_name value="show")
+	script.
+		if ('#{_value}'=="off"){$('#'+'#{_name}'+"_"+"show").prop("disabled",true);$('#'+'#{_name}'+"_"+"hide").prop("disabled",true);} 
+		else {$('#'+'#{_name}'+"_"+"off").prop("disabled",true);} 
+		
 .row
 	hr.divider
-	h4 switches
-
-
-	mixin switch(name,value)
-		.input-group(style="margin-left:10px;")
-			.btn-group(id="radioBtn")
-				if value=="show"
-					a.btn.btn-primary.btn-xs.notActive(data-toggle=name data-title="off") off
-					a.btn.btn-primary.btn-xs.active(data-toggle=name data-title="show") show
-					a.btn.btn-primary.btn-xs.notActive(data-toggle=name data-title="hide") hide
-				else if value=="hide"
-					a.btn.btn-primary.btn-xs.notActive(data-toggle=name data-title="off") off
-					a.btn.btn-primary.btn-xs.notActive(data-toggle=name data-title="show") show
-					a.btn.btn-primary.btn-xs.active(data-toggle=name data-title="hide") hide
-				else
-					a.btn.btn-primary.btn-xs.active(data-toggle=name data-title="off") off
-					a.btn.btn-primary.btn-xs.notActive(data-toggle=name data-title="show") show
-					a.btn.btn-primary.btn-xs.notActive(data-toggle=name data-title="hide") hide
-			input(type="hidden" name=name id="_input_"+name)
-			span(style="margin-left:5px; font-size:16px; font-weight:bold")=name
-
-
-
-	// nice mixins :-)
-	+switch('initiatives',board.viewConfig.initiatives)
-	+switch('Swag',board.viewConfig.swag)
-	+switch('Start',board.viewConfig.start)
-	+switch('queues',board.viewConfig.queues)
-	+switch('grid',board.viewConfig.grid)
-	+switch('vision',board.viewConfig.vision)
-	+switch('targets',board.viewConfig.targets)
-	+switch('lanes',board.viewConfig.lanes)
-	+switch('axes',board.viewConfig.axes)
-	hr.divider
-	+switch('queues.qmetrics',"off")
-	+switch('metrics',board.viewConfig.metrics)
-	+switch('releases',"off")
-	+switch('NGR',"off")
-	
-
+	h4 view config details
+	table(style="font-size:10px;width:400px")
+		tr
+			td(style="vertical-align:top;text-align:right")
+				table
+					tr
+						td(style="height:32px;vertical-align:top") 
+							b
+								|switch
+					tr
+						td(style="height:30px;vertical-align:top") off
+					tr
+						td(style="height:29px;vertical-align:top") hide
+					tr
+						td(style="height:29px;vertical-align:top") show
+							
+			td
+				+switchVisibilityRadio('view_items',board.viewConfig.initiatives)
+			td
+				+switchVisibilityRadio('view_swag',board.viewConfig.swag)
+			td
+				+switchVisibilityRadio('view_roadmap',board.viewConfig.start)
+			td
+				+switchVisibilityRadio('view_queues',board.viewConfig.queues)
+			td
+				+switchVisibilityRadio('view_grid',board.viewConfig.grid)
+			td
+				+switchVisibilityRadio('view_vision',board.viewConfig.vision)
+			td
+				+switchVisibilityRadio('view_targets',board.viewConfig.targets)
+			td
+				+switchVisibilityRadio('view_lanes',board.viewConfig.lanes)
+			td
+				+switchVisibilityRadio('view_axes',board.viewConfig.axes)
+			td
+				+switchVisibilityRadio('view_guides',board.viewConfig.guides)
+		tr
+			td
+				+switchVisibilityRadio('view_qmetrics',board.viewConfig.queuesmetrics)
+			td
+				+switchVisibilityRadio('view_sublaneText',board.viewConfig.sublaneText)
+			td
+				+switchVisibilityRadio('view_metrics',board.viewConfig.metrics)
+			td
+				+switchVisibilityRadio('view_releases',"off")
+			td
+				+switchVisibilityRadio('view_NGR',"off")
 
 
 	script.
-		$('#radioBtn a').on('click', function(){
-			var sel = $(this).data('title');
-			var tog = $(this).data('toggle');
-			$('#'+tog).prop('value', sel);
-			$('a[data-toggle="'+tog+'"]').not('[data-title="'+sel+'"]').removeClass('active').addClass('notActive');
-			$('a[data-toggle="'+tog+'"][data-title="'+sel+'"]').removeClass('notActive').addClass('active');
-			console.log("* clicked..." +tog+" selected: "+sel);
-			
-			if(tog=="Swag"){
-				if (sel=="show") showSwag();
-				if (sel=="hide") hideSwag();
-			}
-			else if(tog=="Start"){
-				if (sel=="show") showStart();
-				if (sel=="hide") hideStart();
-			}
-
-			else{
-				if (sel=="show") show("#"+tog);
-				if (sel=="hide") hide("#"+tog);
-			}
-	
-		})
-
+		$('input[type="radio"]').click(function(){
+				console.log(this.name+": "+$(this).val());
+				var tog = this.name.split("view_")[1];
+				var sel = $(this).val();
+				if(tog=="Swag"){
+					if (sel=="show") showSwag();
+					if (sel=="hide") hideSwag();
+				}
+				else if(tog=="Start"){
+					if (sel=="show") showStart();
+					if (sel=="hide") hideStart();
+				}
+				else{
+					if (sel=="show") show(tog);
+					if (sel=="hide") hide(tog);
+				}
+		});
 
 		function hide(group){
 			//d3.select(group).style("visibility","hidden");
-			d3.select(group).transition().duration(500).style("opacity",0);
+			d3.select("#"+group).transition().duration(500).style("opacity",0);
 			console.log("++++++++: "+group);
 		}
 
 		function show(group){
 			//d3.select(group).style("visibility","visible");
-			d3.select(group).transition().duration(500).style("opacity",1);
+			d3.select("#"+group).transition().duration(500).style("opacity",1);
 			//d3.select(group).transition().duration(500).style("opacity","");
 			console.log("++++++++: "+group);
 		}
@@ -92,7 +118,6 @@ style.
 			d3.selectAll("[id*=text_start]").style("visibility","hidden");
 			d3.selectAll("[id*=text_end]").style("visibility","visible");
 			d3.selectAll("[id*=item_]").style("visibility","visible");
-			BOARD.viewConfig.start="hide";
 		}
 
 		function showStart(){
@@ -100,7 +125,6 @@ style.
 			d3.selectAll("[id*=text_start]").style("visibility","visible");
 			d3.selectAll("[id*=text_end]").style("visibility","hidden");
 			d3.selectAll("[id*=item_]").style("visibility","hidden");
-			BOARD.viewConfig.start="show";
 		}
 
 		function hideSwag(){
@@ -116,7 +140,6 @@ style.
 				.delay(0)
 				.duration(1000)
 				.style("opacity",1);
-
 		}
 		function showSwag(){
 			d3.selectAll("#sizings,#labels")
