@@ -214,6 +214,8 @@ function render(svgFile){
 	}); // end xml load anonymous
 }
 
+
+
 /**
 builds URL query string out of filter attributes
 */

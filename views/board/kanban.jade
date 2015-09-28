@@ -132,10 +132,14 @@ include ../includes/material
 
 	script(type="text/javascript").
 		
+		$(document).keypress(function(e) {
+			if(e.which == 13) {
+					$("#boardrefresh").click();
+			}
+		});
+
 		var BOARD=!{JSON.stringify(board)};
 		$("#boardrefresh").click(function() {console.log("board REFRESH pressed"); refresh(BOARD); });
-
-		
 		
 		render("/images/svg/external.svg");
 		// target elements with the "draggable" class
@@ -186,11 +190,29 @@ include ../includes/material
 				console.log("...refresh ");
 				var _form = document.getElementById("form_board");
 				
+				
+				BOARD.name=_form.name.value;
+				BOARD.vision=_form.vision.value;
+				BOARD.subvision=_form.subvision.value;
+				BOARD.mission=_form.mission.value;
+				
 				BOARD.startDate=_form.startdate.value;
 				BOARD.endDate=_form.enddate.value;
 				BOARD.width=_form.width.value;
 				BOARD.height=_form.height.value;
 				BOARD.groupby=_form.groupby.value;
+				
+				BOARD.itemScale=_form.itemscale.value;
+				BOARD.itemFontScale=_form.itemfontscale.value;
+				
+				BOARD.filter.Targets=_form.filter_Targets.value;
+				BOARD.filter.Customers=_form.filter_Customers.value;
+				BOARD.filter.Markets=_form.filter_Markets.value;
+				BOARD.filter.Status=_form.filter_Status.value;
+				BOARD.filter.Product=_form.filter_Product.value;
+				
+				BOARD.dataLink=_form.datalink.value;
+				BOARD.ref=_form.ref.value;
 				
 				
 				renderBoard("#{board._id}");

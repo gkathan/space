@@ -41,6 +41,11 @@ function drawLanes(){
 	if (BOARD.viewConfig.contextboxWidth)
 		CONTEXTBOX_WIDTH = parseInt(BOARD.viewConfig.contextboxWidth);
 
+	var laneConfig={contextbox:{
+			orientation:"vertical",
+			height:20
+		}
+	};
 
 //experiment
 	//var drag_item = _registerDragDrop();
@@ -68,11 +73,11 @@ function drawLanes(){
 	//.on("mouseover",animateScaleUp)
 	.each(function(_theme){
 		//level1
-		_drawTheme(_theme,d3.select(this));
+		_drawTheme(_theme,d3.select(this),laneConfig);
 		for (var l in _theme.children){
 			//level2
 			var _lane = _theme.children[l];
-			_drawLane(_lane,d3.select(this),lanesLeft,lanesRight,_xRightStart);
+			_drawLane(_lane,d3.select(this),lanesLeft,lanesRight,_xRightStart,laneConfig,l);
 			//level3
 			_drawSublanes(_lane,lanesLeft);
 			//experiment
@@ -92,7 +97,7 @@ function drawLanes(){
 	}
 }
 
-function _drawLane(d,svg,lanesLeft,lanesRight,_xRightStart){
+function _drawLane(d,svg,lanesLeft,lanesRight,_xRightStart,laneConfig,count){
 	var _lane = d.name;
 	// [changed 20140104]
 	var _y = y(d.yt1);
@@ -104,7 +109,7 @@ function _drawLane(d,svg,lanesLeft,lanesRight,_xRightStart){
 	//left box
 	var _leftBox = lanesLeft.append("g").attr("id",_lane);
 	var _rightBox = lanesRight.append("g").attr("id",_lane);
-	_metrics = _drawLaneBox(_leftBox,-LANE_LABELBOX_LEFT_WIDTH,_y,LANE_LABELBOX_LEFT_WIDTH,_height,_lane,"left");
+	_metrics = _drawLaneBox(_leftBox,-LANE_LABELBOX_LEFT_WIDTH,_y,LANE_LABELBOX_LEFT_WIDTH,_height,_lane,"left",laneConfig,count);
 	var _yTextOffset = 10;
 	if (_metrics) _yTextOffset+=_metrics.height;
 	//baseline box text
@@ -112,7 +117,7 @@ function _drawLane(d,svg,lanesLeft,lanesRight,_xRightStart){
 	// lane area
 	_drawLaneArea(svg,x(KANBAN_START),_y,x(KANBAN_END)+LANE_LABELBOX_RIGHT_WIDTH+280,_height,i)
 	//target box
-	_metrics =_drawLaneBox(_rightBox,_xRightStart,_y,LANE_LABELBOX_RIGHT_WIDTH,_height,_lane,"right");
+	_metrics =_drawLaneBox(_rightBox,_xRightStart,_y,LANE_LABELBOX_RIGHT_WIDTH,_height,_lane,"right",laneConfig,count);
 	//target box text
 	if (BOARD.viewConfig.laneboxTextRight!="off") _drawLaneText(_rightBox,_lane,"target",_yTextOffset);
 	// laneside descriptors
@@ -143,12 +148,18 @@ function _drawSublanes(d,svg){
 	}
 }
 
-function _drawTheme(_theme,svg){
+function _drawTheme(_theme,svg,laneConfig){
+	console.log("---orientation: "+laneConfig.contextbox.orientation)
 	var _t1 = y(_theme.yt1);
 	var _t2 = y(_theme.yt2);
 	var _height = _t2-_t1;
 	var _name = _.last(_theme.name.split("/"));
-	_drawLaneContext(svg,_name,-LANE_LABELBOX_LEFT_WIDTH-CONTEXTBOX_WIDTH,_t1,CONTEXTBOX_WIDTH,_height,"","themebox")
+
+
+	if (laneConfig.contextbox.orientation=="vertical")
+		_drawLaneContext(svg,_name,-LANE_LABELBOX_LEFT_WIDTH-CONTEXTBOX_WIDTH,_t1,CONTEXTBOX_WIDTH,_height,"","themebox",laneConfig)
+	else if (laneConfig.contextbox.orientation=="horizontal")
+		_drawLaneContext(svg,_name,-LANE_LABELBOX_LEFT_WIDTH-CONTEXTBOX_WIDTH,_t1,LANE_LABELBOX_LEFT_WIDTH+CONTEXTBOX_WIDTH,laneConfig.contextbox.height,"","themebox",laneConfig)
 }
 
 function _drawThemeDemarcation(svg,css){
@@ -269,14 +280,23 @@ function highlightLane(svg,lane){
 /* ------------------------------------------------- drawLanes() helper functions ----------------------------------------------------------- */
 /* @level0
  */
-function _drawLaneContext(svg,context,x,y,width,height,link,css){
+function _drawLaneContext(svg,context,x,y,width,height,link,css,laneConfig){
 	var _textOffsetX = 15;
 	var _textOffsetY = 5;
+	var _textOffsetYHorizontal = height-(height/2);
+	var _textOffsetXHorizontal = 10;
 	if (!css) var css ="contextbox";
+	//default
 	var _textStyle = {"size":"8px","color":"grey","weight":"normal","mode":"tb"};
 	if (BOARD.viewConfig.contextboxText)
 		_textStyle=BOARD.viewConfig.contextboxText;
-	_drawText(svg,context.toUpperCase(),(x+_textOffsetX),(y+_textOffsetY),_textStyle);
+	if (laneConfig.contextbox.orientation=="horizontal"){
+		_textStyle.mode="";
+		_drawText(svg,context.toUpperCase(),(x+_textOffsetXHorizontal),(y+_textOffsetYHorizontal),_textStyle);
+
+	}
+	else
+		_drawText(svg,context.toUpperCase(),(x+_textOffsetX),(y+_textOffsetY),_textStyle);
 	svg.append("rect")
 	.attr("x",x)
 	.attr("y",y)
@@ -299,10 +319,20 @@ function _drawLaneContext(svg,context,x,y,width,height,link,css){
 /**
  * returns the metrics of logo
  */
-function _drawLaneBox(svg,x,y,width,height,lane,side){
+function _drawLaneBox(svg,x,y,width,height,lane,side,laneConfig,count){
 	var _x_offset=10;
 	var _y_offset=4;
 	var _metrics;
+
+	var _topOffset=0;
+	// set differntly when contextbox is horizontal and count is 0 = the first lanebox
+	if (laneConfig.contextbox.orientation=="horizontal" &&count==0){
+		_topOffset=laneConfig.contextbox.height;
+		y+=_topOffset;
+		height-=_topOffset;
+	}
+
+
 	// if it comes in FQ format
 	lane = _.last(lane.split(FQ_DELIMITER));
 	var _lanebox=svg.append("rect")
