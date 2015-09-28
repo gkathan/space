@@ -9,7 +9,7 @@
  */
 
 //the data as it is read on init = flat JSON table
-var initiativeData;
+//var initiativeData;
 // depending on context we filter this data for every view
 var filteredInitiativeData;
 // hierarchical data enriched with y-coords based on lanestructure
@@ -66,7 +66,7 @@ function _getVisibility(element){
 
 /** renders the items
 */
-function drawItems(){
+function drawItems(boardItems){
 	d3.selectAll("#initiatives,#dependencies,#sizings").remove();
 	tooltip.attr("class","itemTooltip");
 
@@ -83,7 +83,7 @@ function drawItems(){
 		.attr("id","labels")
 		.style("opacity",0);
 
-	filteredInitiativeData = initiativeData.filter(function(d){
+	filteredInitiativeData = boardItems.filter(function(d){
 	var _filterStart=(moment(d.planDate).toDate()>=KANBAN_START ||moment(d.actualDate).toDate()>=KANBAN_START);
 	var _filterEnd=moment(d.planDate).toDate()<=KANBAN_END;
 	return _filterStart && _filterEnd;

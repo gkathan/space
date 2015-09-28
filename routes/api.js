@@ -951,95 +951,17 @@ function saveBoard(req, res , next){
 		//default
 		_groupby=["Product","BusinessBacklog","Number"];
 	}
-  // now lets iterate over the array
-	var v1Service=require('../services/V1Service');
-	if (board.dataLink=="roadmapinitiatives"){
-		var _items =[];
-		v1Service.getRoadmapInitiatives(_filter,function(err,roadmap){
-			logger.debug("--------- roadmap items: "+roadmap.length);
-			for (var r in roadmap){
-				var _r = roadmap[r];
-				_items.push(_createItem(_r,_groupby,board.name));
-			}
-			board.items =_items
-			boardService.save(board,function(err,success){
-				logger.debug("saved OK: _id: "+success._id);
-				// and create a thumbnail
-				/*
-				_generateBoardThumbnail(success._id,req.getBaseUrl(),function(err,result){
-						logger.debug("result: "+result);
-						res.send({_id:success._id});
-				})
-				*/
-					res.send({_id:success._id});
-			})
-		})
-	}
-	else if (board.dataLink=="backlogplanningepics"){
-		var _items =[];
-		v1Service.getPlanningBacklogsByEpics({},function(err,epics){
-			for (var e in epics){
-				var _e = epics[e];
-				_items.push(_createItem(_e,_groupby,board.name));
-			}
-			board.items =_items
-
-			boardService.save(board,function(err,success){
-				logger.debug("saved OK: _id: "+success._id);
-				// and create a thumbnail
-				/*
-				_generateBoardThumbnail(success._id,req.getBaseUrl(),function(err,result){
-						logger.debug("result: "+result);
-						res.send({_id:success._id});
-				})
-				*/
-					res.send({_id:success._id});
-			})
-		})
-	}
-	else if (board.dataLink=="backloginitiatives"){
-		var _items =[];
-		v1Service.getPlanningBacklogsByInitiatives({},function(err,epics){
-			for (var e in epics){
-				var _e = epics[e];
-				_items.push(_createItem(_e,_groupby,board.name));
-			}
-			board.items =_items
-
-			boardService.save(board,function(err,success){
-				logger.debug("saved OK: _id: "+success._id);
-				// and create a thumbnail
-				/*
-				_generateBoardThumbnail(success._id,req.getBaseUrl(),function(err,result){
-						logger.debug("result: "+result);
-						res.send({_id:success._id});
-				})
-				*/
-					res.send({_id:success._id});
-			})
-		})
-	}
-	else if (board.dataLink=="empty"){
-		var _items =[];
-		board.items =_items
-
-		boardService.save(board,function(err,success){
-			logger.debug("saved OK: _id: "+success._id);
-			// and create a thumbnail
-			/*
-			_generateBoardThumbnail(success._id,req.getBaseUrl(),function(err,result){
-					logger.debug("result: "+result);
-					res.send({_id:success._id});
-			})
-			*/
+	boardService.save(board,function(err,success){
+		logger.debug("saved OK: _id: "+success._id);
+		// and create a thumbnail
+		/*
+		_generateBoardThumbnail(success._id,req.getBaseUrl(),function(err,result){
+				logger.debug("result: "+result);
 				res.send({_id:success._id});
 		})
-
-	}
-	else{
-		logger.debug(".....no valid datalink");
-		res.send("no valid datalink..");
-	}
+		*/
+			res.send({_id:success._id});
+	})
 }
 
 /**helper

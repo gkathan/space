@@ -27,10 +27,10 @@ var SIZING_DONE,SIZING_WIP,SIZING_FUTURE,SIZING_TOTAL;
 /**
 *
 */
-function drawQueues(){
+function drawQueues(boardItems){
 	d3.select("#queues").remove()
 
-	calculateQueueMetrics();
+	calculateQueueMetrics(boardItems);
 
 	var _xWIPStart = x(WIP_START);
 	// in case we look to much into the future with the timemachine..
@@ -194,7 +194,7 @@ function drawQueues(){
 /**  do some calculation - metrics about number and capacity of items
 * writes currently in global vars ;-) => should be refactored into some array ...
 **/
-function calculateQueueMetrics(){
+function calculateQueueMetrics(boardItems){
 	var _d;
 
 	SIZING_TOTAL=0;
@@ -213,7 +213,7 @@ function calculateQueueMetrics(){
 
 	var _item;
 
-	_filteredItems = initiativeData;
+	_filteredItems = boardItems;
 
 	for(_d in _filteredItems){
 		_item = _filteredItems[_d];

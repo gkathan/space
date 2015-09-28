@@ -200,33 +200,81 @@ function render(svgFile){
 		console.log("_url: "+dataSourceFor("boards/"+_boardId));
 		$.getJSON(dataSourceFor("boards/"+_boardId),function(board){
 			boardData=board;
-			$.getJSON(dataSourceFor("items"+board.dataLink),function(items){
-				console.log("items loaded...from: "+dataSourceFor("items"+board.dataLink));
+			var _filterQueryString ="?true=true"+_createFilterQueryString(board);
+			var _urlItems = dataSourceFor("items"+board.dataLink)+_filterQueryString;
+			$.getJSON(_urlItems,function(items){
+				console.log("items loaded...from: "+_urlItems);
+
+				//the original loaded items
 				initiativeData=items;
+
 				renderBoard(_boardId);
 			})
 		})
 	}); // end xml load anonymous
 }
 
+/**
+builds URL query string out of filter attributes
+*/
+function _createFilterQueryString(board){
+	var _filter="";
+	if (board.filter.Targets){
+	 	_filter+="&filter_Targets="+board.filter.Targets;
+	}
+	if (board.filter.Customers){
+		_filter+="&filter_Customers="+board.filter.Customers;
+	}
+	if (board.filter.Markets){
+		_filter+="&filter_Markets="+board.filter.Markets;
+	}
+	if (board.filter.Status){
+		_filter+="&filter_Status="+board.filter.Status;
+	}
+	if (board.filter.Product){
+		_filter+="&filter_Product="+board.filter.Product;
+	}
+	return _filter;
+}
+
+/**helper
+*/
+function _createItem(epic,groupby,boardName){
+	console.log("======== _createItem: epic: "+epic.Number+ " - groupby: "+groupby);
+	console.log("====== epic:PlanningBacklog: "+epic.PlanningBacklog);
+	//split / join needed e.g. if businessbacklog is used we need to replace "/"
+	if (!epic[groupby[0]]) epic[groupby[0]]=boardName;
+	if (!epic[groupby[1]]) epic[groupby[1]]="empty";
+	if (!epic[groupby[2]]) epic[groupby[2]]="empty";
+
+	var _group1 = epic[groupby[0]].split("/").join("|");
+	var _group2 = epic[groupby[1]].split("/").join("|");
+	var _group3 = epic[groupby[2]].split("/").join("|");
+	var _product = epic.Product;
+	var _path = boardName+"/"+_group1+"/"+_group2+"/"+_group3;
+	console.log("====== epic:lanePath: "+_path);
+
+	// !!!! path needs 3 levels right now at least
+	if (!_product) _product="No Product";
+	var _itemView={sublaneOffset:0,size:7,accuracy:10,lanePath:_path}
+	var _item ={itemRef:epic.Number,itemView:_itemView};
+	return _item;
+}
+
+
 function joinBoard2Initiatives(board,initiatives){
 	console.log("join: "+initiatives.length+" board: "+board.items.length);
 	var _items = board.items;
 	var _join = [];
-
 	for (var i in _items){
 		var _i = _items[i];
-
 		var _joinedItem={};
-
 		var _initiative = _.findWhere(initiatives,{"Number":_i.itemRef});
 		// legacy attributes
 		if (_initiative){
 			_joinedItem.id=_i.itemRef;
 			_joinedItem.Number=_i.itemRef;
-
 			_joinedItem.Type="item";
-
 			if (_initiative.Status=="Done" || _initiative.Status=="Monitoring")
 				_joinedItem.state="done";
 			else if (_initiative.Status=="Cancelled")
@@ -262,7 +310,7 @@ function joinBoard2Initiatives(board,initiatives){
 		}
 	}//end for
 	//set global
-	initiativeData = _join;
+	//initiativeData = _join;
 	return _join;
 }
 
@@ -287,13 +335,21 @@ function renderBoard(id){
 		})
 		*/
 		// we have to now join boardData and initiative Data
+		var _items=[];
+
+		for (var i in initiativeData){
+			var _i = initiativeData[i];
+			_items.push(_createItem(_i,boardData.groupby.split(","),boardData.name));
+		}
+		boardData.items =_items
+
 		boardItems =joinBoard2Initiatives(boardData,initiativeData);
 		// with drawAll() refresh without postback possible ;-)
 		disableAllMetrics();
 		console.log("---- lets draw ALL");
 		//q1_2014_reviewMetrics();
 		console.log("======= initiatives.length: "+initiativeData.length);
-		drawAll();
+		drawAll(boardItems);
 		//drawCustomPostits();
 		//initHandlers();
 		if (AUTH=="bpty") hideNGR();
@@ -313,9 +369,9 @@ function drawCustomPostits(){
 
 /**
 */
-function drawInitiatives(){
+function drawInitiatives(boardItems){
 	if (BOARD.viewConfig.lanes!="off") drawLanes();
-	drawItems();
+	drawItems(boardItems);
 }
 
 /* ------------------------ LANE sort EXPERIMENT -----------------------*/
@@ -323,14 +379,14 @@ function drawInitiatives(){
  * joins laneData with initiativeData
  * to get sorting information into each initiative item
  */
-function joinInitiatives2LanesSort(){
-	for (var i in initiativeData){
-		var _lane = getItemByKey(laneData,"path",_.initial(initiativeData[i].lanePath.split(FQ_DELIMITER)).join([separator="/"]));
+function joinInitiatives2LanesSort(boardItems){
+	for (var i in boardItems){
+		var _lane = getItemByKey(laneData,"path",_.initial(boardItems[i].lanePath.split(FQ_DELIMITER)).join([separator="/"]));
 		if (_lane){
-			 initiativeData[i]["laneSort"]=_lane.sort;
+			 boardItems[i]["laneSort"]=_lane.sort;
 			if (_lane.sublanes){
-				var _sublane = getItemByKey(_lane.sublanes,"name",initiativeData[i].lanePath);
-				if (_sublane) initiativeData[i]["sublaneSort"]=_sublane.sort;
+				var _sublane = getItemByKey(_lane.sublanes,"name",boardItems[i].lanePath);
+				if (_sublane) boardItems[i]["sublaneSort"]=_sublane.sort;
 			}
 		}
 	}
@@ -338,38 +394,38 @@ function joinInitiatives2LanesSort(){
 /* ------------------------ EXPERIMENT -----------------------*/
 
 
-function drawAll(){
-	console.log("======= initiatives.length: "+initiativeData.length);
+function drawAll(boardItems){
+	console.log("======= boardItems.length: "+boardItems.length);
 	init();
 	// 1) draw static stuff
 	if (BOARD.viewConfig.queues!="off") drawGuides();
 	drawAxes();
-	if (BOARD.viewConfig.queues!="off") drawQueues();
+	if (BOARD.viewConfig.queues!="off") drawQueues(boardItems);
 	if (BOARD.viewConfig.vision!="off") drawVision();
 	drawVersion();
 	drawLegend();
 
 	// 2) check if board empty
-	console.log("======= initiatives.length: "+initiativeData.length);
-	if (initiativeData.length>0){
+	console.log("======= boardItems.length: "+boardItems.length);
+	if (boardItems.length>0){
 		// multi column sort https://github.com/Teun/thenBy.js
 		var firstBy=(function(){function e(f){f.thenBy=t;return f}function t(y,x){x=this;return e(function(a,b){return x(a,b)||y(a,b)})}return e})();
-		joinInitiatives2LanesSort();
+		joinInitiatives2LanesSort(boardItems);
 		//sorting hook
 		//var s = firstBy(function (v1, v2) { return v1.lane < v2.lane ? -1 : (v1.lane > v2.lane ? 1 : 0); }).thenBy(function (v1, v2) { return v1.sublane < v2.sublane ? -1 : (v1.sublane > v2.sublane ? 1 : 0); });
 		var s = firstBy(function (v1, v2) { return v1.laneSort - v2.laneSort})
 				.thenBy(function (v1, v2) { return v1.sublaneSort - v2.sublaneSort });
-		initiativeData.sort(s);
-		initiativeData.sort(s);
+		boardItems.sort(s);
+		boardItems.sort(s);
 		// ------------------------------------------------------------------------------------------------
 		var _context = {"yMin":Y_MIN,"yMax":Y_MAX,"name":CONTEXT};
-		itemTree = createLaneHierarchy(initiativeData,ITEMDATA_FILTER,BOARD.groupby.split(","),_context);
+		itemTree = createLaneHierarchy(boardItems,ITEMDATA_FILTER,BOARD.groupby.split(","),_context);
 		//targetTree = createLaneHierarchy(targetData,ITEMDATA_FILTER,BOARD.groupby,_context);
 		// kanban_items.js
-		if (BOARD.viewConfig.initiatives!="off") drawInitiatives();
+		if (BOARD.viewConfig.initiatives!="off") drawInitiatives(boardItems);
 		// kanban_items.js
-		if (BOARD.viewConfig.targets!="off") drawTargets();
-		if (BOARD.viewConfig.metrics!="off") drawMetrics();
+		if (BOARD.viewConfig.targets!="off") drawTargets(boardItems);
+		if (BOARD.viewConfig.metrics!="off") drawMetrics(boardItems);
 	}
 	//drawOverviewMetaphors(svg);
 		//if (BOARD.viewConfig.releases!="off") drawMetrics();drawReleases();

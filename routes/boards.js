@@ -133,6 +133,8 @@ router.get('/kanban/:id', function(req, res) {
 
 		_board.viewConfig = _viewConfig;
     _board.filter = _filter;
+    _board.items=[];
+    
 		return _board;
 	}
 

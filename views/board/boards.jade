@@ -89,6 +89,8 @@ script(type='text/javascript').
 	
 	$("#removeboardsubmit").click(function() { console.log("########KCHING");submitRemove(); });
 	$("#boardsubmit").click(function() {console.log("create board submit pressed"); submitCreate(BOARD); });
+	$("#boardrefresh").click(function() {console.log("board REFRESH pressed"); refresh(BOARD); });
+	
 	$("#createnewboard").click(function() {
 		console.log("create board clicked"); 
 	});
@@ -195,31 +197,25 @@ script(type='text/javascript').
 	_board.viewConfig.NGR=form.view_NGR.value;
 		
 		
-		var _filter="";
 		if (form.filter_Targets.value){
-		 	_filter+="&filter_Targets="+form.filter_Targets.value;
 			_board.filter.Targets = form.filter_Targets.value;
 		}
 		if (form.filter_Customers.value){
-			_filter+="&filter_Customers="+form.filter_Customers.value;
 			_board.filter.Customers = form.filter_Customers.value;
 		}
 		if (form.filter_Markets.value){
-			_filter+="&filter_Markets="+form.filter_Markets.value;
 			_board.filter.Markets = form.filter_Markets.value;
 		}
 		if (form.filter_Status.value){
-			_filter+="&filter_Status="+form.filter_Status.value;
 			_board.filter.Status = form.filter_Status.value;
 		}
 		if (form.filter_Product.value){
-			_filter+="&filter_Product="+form.filter_Product.value;
 			_board.filter.Product = form.filter_Product.value;
 		}
 		var _json = JSON.stringify(_board);
 
 
-		var _url = "/api/space/rest/board?true=true"+_filter;
+		var _url = "/api/space/rest/board";
 		console.log("---- url = "+_url);
 		//form.ajax call
 		$.ajax({
