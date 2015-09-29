@@ -5,7 +5,7 @@ script(src='/javascripts/dashboards/nvd3_traffic.js')
 
 style.
 	#chartTraffic svg {
-	  height: 300px;
+		height: 300px;
 		width:750px;
 	}
 
@@ -24,6 +24,11 @@ div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;back
 		span(style="font-size:20px") &nbsp;TRAFFIC for #{period}
 		br
 		|total hits: <b>#{totalHits}</b>
+		div
+			|unique clients: 
+			b
+				span(id="uniqClients") 
+			
 	.panel-body(style="font-size:12px")
 		div(id="chartTraffic" style="text-align:center")
 			svg
@@ -48,9 +53,54 @@ div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;back
 						td #{bytesToSize(t.bytesSent)}
 		br
 		
+		div(id="liveconsole")
+		
 
 include ../includes/material
 
 script.
 	var _year = "#{year}";
 	var _month = "#{month}";
+	
+	
+	$(function() {
+		var loc = window.location;
+		var livelist = $('#liveconsole');
+		wsocket(loc, livelist);
+	})
+	
+	var maxlines = 100;
+	var pingtimer;
+	var wsocket = function(loc, livelist) {
+		
+		sock = new WebSocket(((loc.protocol==='https:')?'wss:':'ws:')+'//ea.bwinparty.corp/nginxlive/io/livelogs');
+		sock.onopen = function() {
+				//console.log('open');
+				pingtimer = setInterval(function() {
+																sock.send('ping');
+																}, 30000);
+		};
+		var _uniqRemoteAddr=[];
+		
+		sock.onmessage = function(e) {
+				//console.log('message', e.data);
+				var logline = JSON.parse(e.data);
+				var logdate = new Date(logline.time);
+				if (logline.host=="space.bwinparty.corp"){
+					var line = logdate.toTimeString()+' '+logline.remoteAddr+' -'+logline.requestMethod+'-> '+logline.scheme+'://'+logline.host+logline.requestURI+' status: '+logline.status;
+					$('<div class="logline '+((logline.status >= 300)?'bg-danger':'bg-success')+'" />').prependTo(livelist).html(line);
+					livelist.find('.logline:gt('+maxlines+')').remove();
+					if (_.indexOf(_uniqRemoteAddr,logline.remoteAddr)<0){
+						_uniqRemoteAddr.push(logline.remoteAddr);
+					}
+					$('#uniqClients').text(_uniqRemoteAddr.length)
+				}
+		};
+		sock.onclose = function() {
+				//console.log('close');
+				clearInterval(pingtimer);
+				setTimeout(function () {
+									 
+				}, 2000);
+		};
+	};
