@@ -62,22 +62,33 @@ router.get('/traffic/:period', function(req, res) {
 
 		var Client = require('node-rest-client').Client;
 		var _options = {};
+
+		/*
 		if (config.proxy){
 			_options.proxy = config.proxy;
 			_options.proxy.tunnel=false;
 		}
-		client = new Client(_options);// direct way
+		*/
+		client = new Client();// direct way
 
 		var _protocol="http";
 
+		process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+
+		var _url= "http://ea.bwinparty.corp/nginxlive/rest/hits/"+_year+"/"+_month;
+		logger.info("config.env: "+config.env);
 		if (config.env =="PRODUCTION")
-			_protocol="https";
-		var _url = _protocol+"://ea.bwinparty.corp/nginxlive/rest/hits/"+_year+"/"+_month;
+			_url = "https://ea.bwinparty.corp/nginxlive/rest/hits/"+_year+"/"+_month;
 
 		var traffic=[];
 
 		client.get(_url, function(data, response,done){
-			data=JSON.parse(data);
+			try{
+				data=JSON.parse(data);
+			}
+			catch(e){
+				logger.error("error: "+e.message);
+			}
 			var _totalHits = 0;
 			for (var d in data){
 				var _d = data[d];

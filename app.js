@@ -20,6 +20,7 @@ else _loggerconfig = config.logger.dev;
 winston.loggers.add('space_log',_loggerconfig);
 
 
+
 var logger = winston.loggers.get('space_log');
 
 
