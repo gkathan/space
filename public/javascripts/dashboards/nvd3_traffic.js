@@ -2,7 +2,8 @@ nv.addGraph(function() {
   //var _year = moment().year();
 	//var _month = moment().format("MM");
 	var traffic=[];
-	var _url = "http://ea.bwinparty.corp/nginxlive/rest/hits/"+_year+"/"+_month;
+
+	var _url = window.location.protocol+"//ea.bwinparty.corp/nginxlive/rest/hits/"+_year+"/"+_month;
 
   console.log("........traffic chart")
 

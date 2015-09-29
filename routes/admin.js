@@ -18,12 +18,6 @@ var winston=require('winston');
 var logger = winston.loggers.get('space_log');
 
 
-
-
-
-
-
-
 /* GET the admin page. */
 router.get('/', function(req, res) {
 	if (ensureAuthenticated(req,res)){
@@ -74,7 +68,11 @@ router.get('/traffic/:period', function(req, res) {
 		}
 		client = new Client(_options);// direct way
 
-		var _url = "http://ea.bwinparty.corp/nginxlive/rest/hits/"+_year+"/"+_month;
+		var _protocol="http";
+
+		if (config.env =="PRODUCTION")
+			_protocol="https";
+		var _url = _protocol+"://ea.bwinparty.corp/nginxlive/rest/hits/"+_year+"/"+_month;
 
 		var traffic=[];
 
