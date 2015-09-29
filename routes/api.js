@@ -1016,17 +1016,21 @@ function _generateBoardThumbnail(boardId,baseUrl,callback){
  * generic save handler
  */
 function save(req, res , next){
-		var context;
+
+		logger.debug("*********************** save.... "+config.context);
+
+    var context;
 		if (req.session.CONTEXT) context = req.session.CONTEXT;
-		else context = res.config.context;
+		else context = config.context;
 
 		var jsondiffpatch=require('jsondiffpatch');
     var path = req.path.split("/");
 		var _collection = _.last(path);
+		logger.debug("*********************** save POST _collection: "+_collection);
     var items = JSON.parse(req.body.itemJson);
     var _timestamp = new Date();
     // now lets iterate over the array
-    logger.debug("*********************** save POST _collection: "+_collection);
+    logger.debug("*********************** AFTER parse: "+_collection+"  items: "+items.length);
 		var _newid;
 
 		var async = require('async');

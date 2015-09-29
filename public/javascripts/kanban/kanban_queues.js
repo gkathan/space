@@ -8,15 +8,9 @@
  * @website: www.github.com/gkathan/kanban
  */
 
-
-
 // queue metrics
 var ITEMS_DONE,ITEMS_WIP,ITEMS_FUTURE,ITEMS_TOTAL,ITEMS_DELAYED,DAYS_DELAYED;
-
 var ITEMS_PLANNED_TOBEDONE, ITEMS_INRANGE_DONE;
-
-
-
 var SIZING_DONE,SIZING_WIP,SIZING_FUTURE,SIZING_TOTAL;
 
 
@@ -135,7 +129,6 @@ function drawQueues(boardItems){
 		/**
 		 */
 		function _drawQueueArea(svg,x,y,w,h,css,offsetX){
-
 			var _offsetY=3;
 			svg.append("rect")
 			.attr("x", x+offsetX)
@@ -149,8 +142,8 @@ function drawQueues(boardItems){
 		 *
 		 */
 		function _drawQueueMarker(svg,date,css,x,y){
-			_drawText(svg,date.toString("d-MMM-yyyy"),(x+5),(y+3),{"css":css+"Text","anchor":"start"});
-			_drawText(svg,date.toString("d-MMM-yyyy"),(x+5),(height-y+3),{"weight":"bold","css":css+"Text","anchor":"start"});
+			_drawText(svg,moment(date).format("d-MMM-YYYY"),(x+5),(y+3),{"css":css+"Text","anchor":"start"});
+			_drawText(svg,moment(date).format("d-MMM-YYYY"),(x+5),(height-y+3),{"weight":"bold","css":css+"Text","anchor":"start"});
 
 			_drawLine(svg,(x+0.5),y,(x+0.5),(height-y),css+"Line",[{"start":"rect_red"},{"end":"rect_red"}]);
 		}

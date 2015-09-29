@@ -38,7 +38,7 @@ mixin switchVisibilityRadio(_name,_value)
 			td(style="vertical-align:top;text-align:right")
 				table
 					tr
-						td(style="height:32px;vertical-align:top") 
+						td(style="height:32px;vertical-align:top;max-width:20px") 
 							b
 								|switch
 					tr
@@ -48,36 +48,36 @@ mixin switchVisibilityRadio(_name,_value)
 					tr
 						td(style="height:29px;vertical-align:top") show
 							
-			td
+			td(style="max-width:20px")
 				+switchVisibilityRadio('view_items',board.viewConfig.initiatives)
-			td
+			td(style="max-width:20px")
 				+switchVisibilityRadio('view_swag',board.viewConfig.swag)
-			td
+			td(style="max-width:20px")
 				+switchVisibilityRadio('view_roadmap',board.viewConfig.start)
-			td
+			td(style="max-width:20px")
 				+switchVisibilityRadio('view_queues',board.viewConfig.queues)
-			td
+			td(style="max-width:20px")
 				+switchVisibilityRadio('view_grid',board.viewConfig.grid)
-			td
+			td(style="max-width:20px")
 				+switchVisibilityRadio('view_vision',board.viewConfig.vision)
-			td
+			td(style="max-width:20px")
 				+switchVisibilityRadio('view_targets',board.viewConfig.targets)
-			td
+			td(style="max-width:20px")
 				+switchVisibilityRadio('view_lanes',board.viewConfig.lanes)
-			td
+			td(style="max-width:20px")
 				+switchVisibilityRadio('view_axes',board.viewConfig.axes)
-			td
+			td(style="max-width:20px")
 				+switchVisibilityRadio('view_guides',board.viewConfig.guides)
-		tr
-			td
+			td(style="max-width:20px")
 				+switchVisibilityRadio('view_qmetrics',board.viewConfig.queuesmetrics)
-			td
+		tr
+			td(style="max-width:20px")
 				+switchVisibilityRadio('view_sublaneText',board.viewConfig.sublaneText)
-			td
+			td(style="max-width:20px")
 				+switchVisibilityRadio('view_metrics',board.viewConfig.metrics)
-			td
+			td(style="max-width:20px")
 				+switchVisibilityRadio('view_releases',"off")
-			td
+			td(style="max-width:20px")
 				+switchVisibilityRadio('view_NGR',"off")
 
 

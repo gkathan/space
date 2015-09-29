@@ -25,6 +25,7 @@ router.get('/', function(req, res) {
   	boardService.find({}, function (err, docs){
   		res.locals.boards=docs;
       res.locals.formBoardTitle="CREATE NEW BOARD"
+      res.locals.createNew =true;
       res.locals.moment=moment;
       res.locals.board = initializeEmptyBoard();
   		//console.log(": "+boards[0]);
@@ -134,7 +135,7 @@ router.get('/kanban/:id', function(req, res) {
 		_board.viewConfig = _viewConfig;
     _board.filter = _filter;
     _board.items=[];
-    
+
 		return _board;
 	}
 
