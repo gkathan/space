@@ -46,6 +46,59 @@ router.get('/content', function(req, res) {
   }
 });
 
+
+router.get('/traffic', function(req, res) {
+	var _year = moment().year();
+	var _month = moment().format("MM");
+	var _period = +_year+'-'+_month;
+	logger.debug("...redirect to : "+_period);
+
+	res.redirect('/admin/traffic/'+_period);
+})
+
+/* GET the traffic page. */
+router.get('/traffic/:period', function(req, res) {
+	if (ensureAuthenticated(req,res)){
+		var _period = req.params.period;
+
+		if (_period){
+			_year=_period.split("-")[0];
+			_month=_period.split("-")[1];
+		}
+
+		var Client = require('node-rest-client').Client;
+		var _options = {};
+		if (config.proxy){
+			_options.proxy = config.proxy;
+			_options.proxy.tunnel=false;
+		}
+		client = new Client(_options);// direct way
+
+		var _url = "http://ea.bwinparty.corp/nginxlive/rest/hits/"+_year+"/"+_month;
+
+		var traffic=[];
+
+		client.get(_url, function(data, response,done){
+			data=JSON.parse(data);
+			var _totalHits = 0;
+			for (var d in data){
+				var _d = data[d];
+				if (_d._id.host=="space.bwinparty.corp"){
+					 traffic.push(_d);
+					 _totalHits+=_d.hits
+				 }
+			}
+			res.locals.traffic = traffic;
+			res.locals.moment = moment
+			res.locals.month = _month;
+			res.locals.year = _year;
+			res.locals.totalHits = _totalHits;
+			res.locals.period = moment(_year+"-"+_month+"01", "YYYY-MM-DD").format("MMMM YYYY");
+			res.render('admin/traffic', { title: 's p a c e - admin.traffic' });
+		});
+  }
+});
+
 /* GET the admin page. */
 router.get('/sync', function(req, res) {
 	if (ensureAuthenticated(req,res)){

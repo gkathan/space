@@ -131,6 +131,12 @@ router.get('/kanban/:id', function(req, res) {
 		_viewConfig.laneboxRightWidth = 10;
 
     var _filter ={};
+    _filter.Targets="";
+    _filter.Customers="";
+    _filter.Markets="";
+    _filter.Product="";
+    _filter.Status="";
+
 
 		_board.viewConfig = _viewConfig;
     _board.filter = _filter;

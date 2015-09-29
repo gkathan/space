@@ -1,0 +1,60 @@
+include ../kanban_menu
+
+script(src='/javascripts/components/nvd3/build/nv.d3.min.js')
+script(src='/javascripts/dashboards/nvd3_traffic.js')
+
+style.
+	#chartTraffic svg {
+	  height: 300px;
+		width:750px;
+	}
+
+block content
+
+-	function bytesToSize(bytes) {
+-		 var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+-		 if (bytes == 0) return '0 Byte';
+-		 var i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
+-		 return Math.round(bytes / Math.pow(1024, i), 2) + ' ' + sizes[i];
+-	}
+
+div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;background-color:white;width:900px;text-align: left;margin: 10px auto;")
+	.panel-heading
+		i.glyphicon.glyphicon-refresh(style="font-size:15px")
+		span(style="font-size:20px") &nbsp;TRAFFIC for #{period}
+		br
+		|total hits: <b>#{totalHits}</b>
+	.panel-body(style="font-size:12px")
+		div(id="chartTraffic" style="text-align:center")
+			svg
+		
+		table.table.table-striped.table-hover.table-condensed
+			thead
+				tr(style="line-height:24px")
+					th(style="width:50px") 
+						|date
+					th(style="width:50px;")
+						|hits
+					th(style="width:50px;")
+						|transfer IN
+					th(style="width:50px;")
+						|transfer OUT
+			tbody
+				each t in traffic
+					tr
+						td #{moment(year+"-"+month+"-"+t._id.day,"YYYY-MM-D").format("YYYY-MM-DD")}
+						td #{t.hits}
+						td #{bytesToSize(t.bytesReceived)}
+						td #{bytesToSize(t.bytesSent)}
+		br
+		
+
+include ../includes/material
+
+script.
+	var _year = "#{year}";
+	var _month = "#{month}";
+	var traffic=[];
+	$.getJSON( "http://ea.bwinparty.corp/nginxlive/rest/hits/"+_year+"/"+_month, function( data ) {
+
+	});
