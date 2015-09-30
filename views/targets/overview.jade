@@ -113,7 +113,7 @@ mixin renderL1Target(target)
 mixin renderTargetLane(lane,columns,totalColumns)
 	-var _factor = columns/totalColumns;
 	-var _minWidth=600*_factor, _maxWidth=1600*_factor;
-	div.col-sm-2.col-md-4.col-lg-4(style="max-width:#{_maxWidth}px;min-width:#{_minWidth}px")
+	div.col-sm-2.col-md-3.col-lg-4(style="max-width:#{_maxWidth}px;min-width:#{_minWidth}px")
 		div(style="max-width:#{_maxWidth}px;min-width:#{_minWidth}px" class="panel-body-lane")
 			div(class="box-#{lane.name.toLowerCase()}" style="text-align:center;line-height:40px;vertical-align:middle")
 				img(src="/images/targets/#{lane.name}_white_circle.png" height="30px" style="vertical-align:middle;margin-bottom:8px")
