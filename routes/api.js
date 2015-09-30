@@ -374,7 +374,8 @@ function findAllByName(req, res , next){
         if(success){
             //logger.debug("******************* success: "+success);
 
-            res.send(success);
+            //res.json(success);
+						res.send(success);
             return ;//next();
         }else{
             return next(err);

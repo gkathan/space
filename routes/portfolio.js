@@ -58,29 +58,34 @@ router.get('/planningepics', function(req, res) {
 	var v1Service = require('../services/V1Service');
 	var _filter = {};
 	var boardService= require('../services/BoardService');
-	v1Service.getPlanningInitiatives(_filter,function(err,result){
-		boardService.find({},function(err,boards){
-			var _planningEpicsBoardId;
-			var _roadmapBoardId;
-			if (boards){
-				// "ipe" stands for "initiatives 2 planning epics"
-				if (_.findWhere(boards,{ref:"ipe"})) _planningEpicsBoardId = _.findWhere(boards,{ref:"ipe"})._id;
-				// "rcs" stands for roadmap clustered by status
-				if (_.findWhere(boards,{ref:"rcs"})) _roadmapBoardId = _.findWhere(boards,{ref:"rcs"})._id;
-			}
-			var _swagSum=0;;
-			var _valueSum=0;;
-			var _riskSum=0;;
-			var epics = result.initiatives;
-			var _grouped = _.groupBy(epics,'Status');
+	var syncService =require('../services/SyncService');
 
-			res.locals.planningEpicsBoardId = _planningEpicsBoardId;
-			res.locals.roadmapBoardId = _roadmapBoardId;
-			res.locals.grouped = _grouped;
-			res.locals.statistics=result.statistics;
-			res.locals.initiatives = epics;
-			res.locals.moment=moment;
-			res.render('portfolio/planningepics'), { title: 's p a c e - planning epics overview ' }
+	syncService.getLastSync("v1epics",function(err,sync){
+		v1Service.getPlanningInitiatives(_filter,function(err,result){
+			boardService.find({},function(err,boards){
+				var _planningEpicsBoardId;
+				var _roadmapBoardId;
+				if (boards){
+					// "ipe" stands for "initiatives 2 planning epics"
+					if (_.findWhere(boards,{ref:"ipe"})) _planningEpicsBoardId = _.findWhere(boards,{ref:"ipe"})._id;
+					// "rcs" stands for roadmap clustered by status
+					if (_.findWhere(boards,{ref:"rcs"})) _roadmapBoardId = _.findWhere(boards,{ref:"rcs"})._id;
+				}
+				var _swagSum=0;;
+				var _valueSum=0;;
+				var _riskSum=0;;
+				var epics = result.initiatives;
+				var _grouped = _.groupBy(epics,'Status');
+
+				res.locals.planningEpicsBoardId = _planningEpicsBoardId;
+				res.locals.roadmapBoardId = _roadmapBoardId;
+				res.locals.grouped = _grouped;
+				res.locals.statistics=result.statistics;
+				res.locals.initiatives = epics;
+				res.locals.moment=moment;
+				res.locals.lastSync = sync.lastSync;
+				res.render('portfolio/planningepics'), { title: 's p a c e - planning epics overview ' }
+			});
 		});
 	});
 });
@@ -88,27 +93,32 @@ router.get('/planningepics', function(req, res) {
 router.get('/planningbacklogs', function(req, res) {
 	var v1Service = require('../services/V1Service');
 	var boardService= require('../services/BoardService');
+	var syncService =require('../services/SyncService');
+
 	var _filter = {};
 
-	v1Service.getPlanningBacklogs(_filter,function(err,result){
-		boardService.find({},function(err,boards){
-			logger.debug("looking for boards: ....................."+boards.length);
-			var _planningEpicsBoardId;
-			var _initiativesBoardId;
-			var _roadmapBoardId;
-			if (boards){
-				if (_.findWhere(boards,{ref:"bpe"})) _planningEpicsBoardId = _.findWhere(boards,{ref:"bpe"})._id;
-				if (_.findWhere(boards,{ref:"bi"})) _initiativesBoardId = _.findWhere(boards,{ref:"bi"})._id;
-				if (_.findWhere(boards,{ref:"rcs"})) _roadmapBoardId = _.findWhere(boards,{ref:"rcs"})._id;
-			}
-			res.locals.backlogs = _.sortBy(result.backlogs,'Name');
-			res.locals.statistics = result.statistics;
-			res.locals.moment=moment;
-			res.locals.planningEpicsBoardId = _planningEpicsBoardId;
-			res.locals.initiativesBoardId = _initiativesBoardId;
-			res.locals.roadmapBoardId = _roadmapBoardId;
-			res.render('portfolio/planningbacklogs'), { title: 's p a c e - planning backlogs overview ' }
+	syncService.getLastSync("v1epics",function(err,sync){
+		v1Service.getPlanningBacklogs(_filter,function(err,result){
+			boardService.find({},function(err,boards){
+				logger.debug("looking for boards: ....................."+boards.length);
+				var _planningEpicsBoardId;
+				var _initiativesBoardId;
+				var _roadmapBoardId;
+				if (boards){
+					if (_.findWhere(boards,{ref:"bpe"})) _planningEpicsBoardId = _.findWhere(boards,{ref:"bpe"})._id;
+					if (_.findWhere(boards,{ref:"bi"})) _initiativesBoardId = _.findWhere(boards,{ref:"bi"})._id;
+					if (_.findWhere(boards,{ref:"rcs"})) _roadmapBoardId = _.findWhere(boards,{ref:"rcs"})._id;
+				}
+				res.locals.backlogs = _.sortBy(result.backlogs,'Name');
+				res.locals.statistics = result.statistics;
+				res.locals.moment=moment;
+				res.locals.planningEpicsBoardId = _planningEpicsBoardId;
+				res.locals.initiativesBoardId = _initiativesBoardId;
+				res.locals.roadmapBoardId = _roadmapBoardId;
+				res.locals.lastSync = sync.lastSync;
+				res.render('portfolio/planningbacklogs'), { title: 's p a c e - planning backlogs overview ' }
 
+			})
 		})
 	})
 });
@@ -117,12 +127,17 @@ router.get('/planningbacklogdetail/:id', function(req, res) {
 	var _backlogId = req.params.id;
 	var v1Service = require('../services/V1Service');
 	var _filter = {};
+	var syncService =require('../services/SyncService');
 
-	v1Service.getPlanningBacklogs(_filter,function(err,result){
-		var _backlog = _.findWhere(result.backlogs,{ID:_backlogId});
-		res.locals.backlog = _backlog;
-		if (_backlog) res.locals.members = _backlog.Members;
-		res.locals.moment=moment;
-		res.render('portfolio/planningbacklogdetail'), { title: 's p a c e - planning backlog detail' }
+	syncService.getLastSync("v1epics",function(err,sync){
+		v1Service.getPlanningBacklogs(_filter,function(err,result){
+			var _backlog = _.findWhere(result.backlogs,{ID:_backlogId});
+			res.locals.backlog = _backlog;
+			if (_backlog) res.locals.members = _backlog.Members;
+			res.locals.moment=moment;
+			res.locals.lastSync = sync.lastSync;
+			res.render('portfolio/planningbacklogdetail'), { title: 's p a c e - planning backlog detail' }
+		});
 	});
+
 });
