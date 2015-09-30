@@ -203,7 +203,7 @@ block content
 					a(href="/portfolio/history") | show full portfolio history  
 					a(href="/portfolio/planningepics") | show planning initiatives 
 					a(href="/portfolio/planningbacklogs") | show planning backlogs | 
-				div(style="margin:auto;color:#999999;font-size:9px;max-width:1400px;text-align:center") #{pgates.length} [portfolio meeting] snapshots online | last v1.epics sync #{moment(v1LastUpdate).format('YYYY-MMM-DD HH:mm:ss ZZ')}
+				div(style="margin:auto;color:#999999;font-size:9px;max-width:1400px;text-align:center") #{pgates.length} [portfolio meeting] snapshots online | last v1.epics sync #{moment.utc(v1LastUpdate).toDate()}
 			else if type =="history"
 				h1 PORTFOLIO HISTORY
 				div(style="margin:auto;color:#999999;font-size:8px;max-width:1400px;text-align:center") #{pgates.length} [portfolio meeting] snapshots online | last v1.epics sync #{moment(v1LastUpdate).format('YYYY-MMM-DD HH:mm:ss')}

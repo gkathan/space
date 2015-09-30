@@ -26,7 +26,7 @@ block content
 	div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;background-color:white;;width:1400px;text-align: center;margin: 10px auto;")
 		.panel-heading
 			h3.panel-title(style="font-size:24px;font-weight:bold") Planning Backlogs Detail for: #{backlog.Name}
-			div(style="font-size:9px;color:grey") last V1 sync: #{moment.utc(lastSync).format("YYYY-MM-DD HH:mm:ss ZZ")} | refresh interval: #{config.sync.v1epics.intervalMinutes} minutes
+			div(style="font-size:9px;color:grey") last V1 sync: #{moment.utc(lastSync).toDate()} | refresh interval: #{config.sync.v1epics.intervalMinutes} minutes
 			br
 			a(href="/portfolio/planningepics") view planning epics
 			br
