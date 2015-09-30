@@ -113,7 +113,8 @@ mixin renderL1Target(target)
 mixin renderTargetLane(lane,columns,totalColumns)
 	-var _factor = columns/totalColumns;
 	-var _minWidth=600*_factor, _maxWidth=1600*_factor;
-	div.col-sm-2.col-md-3.col-lg-4(style="max-width:#{_maxWidth}px;min-width:#{_minWidth}px")
+	-if (columns==1) _test = "col-lg-offset-1";
+	div.col-sm-2.col-md-3.col-lg-4(class="#{_test}" style="max-width:#{_maxWidth}px;min-width:#{_minWidth}px")
 		div(style="max-width:#{_maxWidth}px;min-width:#{_minWidth}px" class="panel-body-lane")
 			div(class="box-#{lane.name.toLowerCase()}" style="text-align:center;line-height:40px;vertical-align:middle")
 				img(src="/images/targets/#{lane.name}_white_circle.png" height="30px" style="vertical-align:middle;margin-bottom:8px")
@@ -124,7 +125,7 @@ mixin renderTargetLane(lane,columns,totalColumns)
 			br
 			div.row.row-centered(style="font-size:11px")
 				// sort by id 
-				-var _width=230;
+				-var _width=210;
 				each t in lane.children[0].children
 					div.col.col-lg-4.col-centered(style="width:#{_width+(_factor*100)}px")
 						+renderL2Target(t,_width)
@@ -144,7 +145,7 @@ mixin renderL2Target(target,width)
 								a.turnback(id="#{target.name}" href="##{target.name}") 
 									img(src="/images/iconexp/#{target.children[0].icon}" width="20px" height="20px" )
 									//img(src="/images/targets/#{target.name}.png" height="25px" style="vertical-align:top" )
-							td(style="max-width:150px;min-width:150px;font-size:13px;vertical-align:middle;font-weight:normal;")
+							td(style="width:#{width-80}px;min-width:#{width-90}px;font-size:13px;vertical-align:middle;font-weight:normal;")
 								|#{target.name.split(" ")[0].toUpperCase()}
 								br
 								b #{_.rest(target.name.split(" ")).join(" ").toUpperCase()}
@@ -156,12 +157,12 @@ mixin renderL2Target(target,width)
 						each line in _.sortBy(target.children,"id")
 							tr(style="line-height:15px")
 								td(style="font-size:10px;text-align:left;vertical-align:top")
-									table(style="width:210px")
+									table(style="width:#{width-20}px")
 										tr(style="line-height:15px;border-bottom: 1px solid lightgrey")
 											td(style="width:10px;font-size:10px;text-align:left")
 												|-
-											td(style="width:145px;font-size:11px;font-weight:bold")
-												div(style="width:140px")
+											td(style="width:#{width-85}px;font-size:11px;font-weight:bold")
+												div(style="width:#{width-90}px")
 													//a(style="color:black" id="#{line.id}" href="" title="show more details...") #{line.target}
 													a.targetDetail(style="color:black" id="targetL2Detail" href="#targetL2Detail" title="show more details..."
 														data-_id="#{line._id}"
@@ -382,7 +383,7 @@ div.container-fluid(style="max-width:1600px")
 				each target in L1targets
 					+renderL1Target(target)
 
-	div.row(style="vertical-align:top")
+	div.row.row-centered(style="vertical-align:top")
 			-var _totalColumns=0;
 			each lane in targets
 				if lane.children[0].children.length<2
