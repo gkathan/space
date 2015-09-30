@@ -1,7 +1,6 @@
 /**
 * Portfolio Service
 **/
-
 var config = require('config');
 var schedule = require('node-schedule');
 var _ = require('lodash');
@@ -26,15 +25,12 @@ exports.findLatest = _findLatest;
 exports.getPortfolioMeetings = _getPortfolioMeetings;
 exports.getCurrentApprovedInitiatives = _getCurrentApprovedInitiatives;
 
-
-
 function _find(filter,limit,sort,callback){
 	var pgates = db.collection(_collection);
 	pgates.find(filter).limit(limit).sort(sort, function (err, docs){
 		callback(err,docs);
 	})
 }
-
 
 function _findLatest(callback){
   var _limit = 2;
@@ -44,14 +40,11 @@ function _findLatest(callback){
   })
 }
 
-
-
 function _getCurrentApprovedInitiatives(callback){
   _findLatest(function(err,result){
     callback(err,_.flatten(_.values(result[0].pItems)));
   });
 }
-
 
 /**
 TODO: refactor - this is quite spagetti ....:-)

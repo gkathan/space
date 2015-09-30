@@ -1,6 +1,4 @@
 include ../kanban_menu
-
-
 //
 	var COLOR_PRIMARY = "#174D75";
 	var COLOR_PRIMARY2 = "#00b8e4";
@@ -9,20 +7,15 @@ include ../kanban_menu
 	var COLOR_SECONDARY3 = "#b0acd5";
 	var COLOR_SECONDARY4 = "#ffcd03";
 
-
-
-
 style.
 	.panel-heading-run {background-color: #{color_RUN}!important}
 	.panel-heading-grow {background-color: #{color_GROW}!important}
 	.panel-heading-transform {background-color: #{color_TRANSFORM}!important}
 	.panel-heading-pl {background-color: #{color_PL}!important}
 
-
 	.left-border-RUN {border-left:solid 10px #{color_RUN}!important}
 	.left-border-GROW {border-left:solid 10px #{color_GROW}!important}
 	.left-border-TRANSFORM {border-left:solid 10px #{color_TRANSFORM}!important}
-
 
 	.panel-body-lane {background-color: #f9f9f9!important}
 
@@ -34,7 +27,6 @@ style.
 	.box-grow {background-color: #{color_GROW}!important}
 	.box-transform {background-color: #{color_TRANSFORM}!important}
 
-
 	.panel-run {border-left: solid 5px #{color_RUN}!important;}
 	.panel-grow {border-left: solid 5px #{color_GROW}!important;}
 	.panel-transform {border-left: solid 5px #{color_TRANSFORM}!important;}
@@ -42,7 +34,20 @@ style.
 	.panel-lane-heading-run {border-left: solid 5px #{color_RUN}!important;}
 	.panel-lane-heading-grow {border-left: solid 5px #{color_GROW}!important;}
 	.panel-lane-heading-transform {border-left: solid 5px #{color_TRANSFORM}!important;}
+	
 
+	.row-centered {
+			text-align:center;
+	}
+	.col-centered {
+			display:inline-block;
+			float:none;
+			/* reset the text-align */
+			text-align:left;
+			/* inline-block space fix */
+			margin-right:-4px;
+	}
+	
 
 -	function mapRAG2Color(rag){
 -		// there is no amber css color ;-)
@@ -55,91 +60,91 @@ style.
 
 link(rel='stylesheet', href='/stylesheets/flip.css')
 
-
 mixin ragStatus(rag,size,ragComment)
 	div(style="margin:auto;width: #{size}px;height: #{size}px;-moz-border-radius: 50%; -webkit-border-radius: 50%; border-radius: 50%;background-color:#{mapRAG2Color(rag)};margin-top:2px")
-		
-	
 // -----------------------------------------------------------------------
 // ------------------ mixin L1 targets ----------------------------
 // -----------------------------------------------------------------------
 mixin renderL1Target(target)
 	td(style="text-align:center;padding:10px")
 		div.panel
-			div(style="line-height:8px") &nbsp;
-			table.responsive(style="max-width:300px;color:#{color_PL};background-color:white")
-				tr
-					td(style="width:350px;text-align:center")
-						div
-							span(style="") 
-								a.targetDetail(style="line-height:20px;font-weight:normal;font-size:16px" id="targetL1Detail" href="#targetL1Detail" title="show more details..."
-									data-_id="#{target._id}"
-									data-id="#{target.id}"
-									data-name="#{target.target}"
-									data-rag="#{target.rag}"
-									data-ragcomment="#{target.ragComment}"
-									data-outcome="#{target.outcome}"
-									data-bywhen="#{target.byWhen}"
-									data-description="#{target.description}"
-									data-baseline="#{target.baseline}"
-									data-measure="#{target.measure}"
-									data-link="#{target.link}"
-									data-comments="#{target.comments}"
-									data-metric="#{target.directMetric}"
-									data-scale="#{target.directMetricScale}"
-									data-start="#{target.start}"
-									data-end="#{target.end}"
-									data-group="#{target.group}"
-									data-icon="#{target.icon}"
-									data-theme="#{target.theme}"
-									data-cluster="#{target.cluster}"
-									) #{target.directTarget}
-						span(style="line-height:28px;font-size:28px;font-weight:bold")
-							|#{target.directMetric}
-						span(style="line-height:12px;font-size:11px;font-weight:normal")
-							|&nbsp;#{target.directMetricScale}
-							+ragStatus(target.rag,15)
-						div(style="line-height:8px") &nbsp;
-							//span(style="line-height:16px;font-weight:normal;font-size:10px") #{target.directTime}
+			div(style="line-height:8px;text-align:center")
+				br
+				table.responsive(style="margin:auto;max-width:300px;color:#{color_PL};background-color:white")
+					tr
+						td(style="width:300px;text-align:center;border:1px solid black")
+							div
+								span(style="") 
+									a.targetDetail(style="line-height:20px;font-weight:normal;font-size:16px" id="targetL1Detail" href="#targetL1Detail" title="show more details..."
+										data-_id="#{target._id}"
+										data-id="#{target.id}"
+										data-name="#{target.target}"
+										data-rag="#{target.rag}"
+										data-ragcomment="#{target.ragComment}"
+										data-outcome="#{target.outcome}"
+										data-bywhen="#{target.byWhen}"
+										data-description="#{target.description}"
+										data-baseline="#{target.baseline}"
+										data-measure="#{target.measure}"
+										data-link="#{target.link}"
+										data-comments="#{target.comments}"
+										data-metric="#{target.directMetric}"
+										data-scale="#{target.directMetricScale}"
+										data-start="#{target.start}"
+										data-end="#{target.end}"
+										data-group="#{target.group}"
+										data-icon="#{target.icon}"
+										data-theme="#{target.theme}"
+										data-cluster="#{target.cluster}"
+										) #{target.directTarget}
+							span(style="line-height:28px;font-size:28px;font-weight:bold")
+								|#{target.directMetric}
+							span(style="line-height:12px;font-size:11px;font-weight:normal")
+								|&nbsp;#{target.directMetricScale}
+								+ragStatus(target.rag,15)
+							div(style="line-height:8px") &nbsp;
+								//span(style="line-height:16px;font-weight:normal;font-size:10px") #{target.directTime}
 		div(style="margin-top:10px;margin-bottom:10px")
-			img(src="/images/space_triangle_grey_up.png" style="vertical-align:middle;display:block;margin: auto auto" height="10px" width="120px"  )
+			img(src="/images/space_triangle_grey_up.png" style="vertical-align:middle;display:block;margin: auto auto" height="10px" width="120px"	)
 
 // -----------------------------------------------------------------------
 // ------------------ mixin target lane start ----------------------------
 // -----------------------------------------------------------------------
-mixin renderTargetLane(lane)
-	div.col-sm-2.col-md-4.col-lg-4
-		div(style="min-width:350px;max-width:600px" class="panel-body-lane")
+mixin renderTargetLane(lane,columns,totalColumns)
+	-var _factor = columns/totalColumns;
+	-var _minWidth=600*_factor, _maxWidth=1600*_factor;
+	div.col-sm-2.col-md-4.col-lg-4(style="max-width:#{_maxWidth}px;min-width:#{_minWidth}px")
+		div(style="max-width:#{_maxWidth}px;min-width:#{_minWidth}px" class="panel-body-lane")
 			div(class="box-#{lane.name.toLowerCase()}" style="text-align:center;line-height:40px;vertical-align:middle")
 				img(src="/images/targets/#{lane.name}_white_circle.png" height="30px" style="vertical-align:middle;margin-bottom:8px")
-				//span(class="text-heading-#{lane.name.toLowerCase()}" style="margin-left:2px;font-size:26px;color:black;font-weight:bold")  #{lane.name}
-				span(style="margin-left:2px;font-size:24px;color:white;font-weight:normal")  #{lane.name}
+				//span(class="text-heading-#{lane.name.toLowerCase()}" style="margin-left:2px;font-size:26px;color:black;font-weight:bold")	#{lane.name}
+				span(style="margin-left:2px;font-size:24px;color:white;font-weight:normal") #{lane.name}
 					//span(class="text-heading-#{lane.name.toLowerCase()}" style="font-size:14px;color:black;font-weight:normal") #{lane.children[0].name.toUpperCase()}
 				//span(style="font-size:14px;color:white;font-weight:normal") #{lane.children[0].name.toUpperCase()}
 			br
-			div.row(style="font-size:11px")
+			div.row.row-centered(style="font-size:11px")
 				// sort by id 
+				-var _width=230;
 				each t in lane.children[0].children
-					center
-						div.col-xs-6.col-sm-6.col-md-6.col-lg6
-							+renderL2Target(t)
+					div.col.col-lg-4.col-centered(style="width:#{_width+(_factor*100)}px")
+						+renderL2Target(t,_width)
 
 // -----------------------------------------------------------------------
 // ------------------ mixin target card start ----------------------------
 // -----------------------------------------------------------------------
-mixin renderL2Target(target)
+mixin renderL2Target(target,width)
 	div.fliptarget(id="#{target.name}")
 		div.front
-			div.panel(style="margin-left:-10px;position: relative;background-color:white;width:230px;text-align: left;height:280px")
+			div.panel(style="margin-left:0px;background-color:white;width:#{width}px;text-align: left;height:270px")
 				.panel-heading(class="panel-#{target.children[0].theme.toLowerCase()}")
-					table
-						tr(style="line-height:12px")
+					table(style="width:#{width-15}px;margin-left:-12px")
+						tr(style="line-height:14px")
 							td(style="width:30px;text-align:left")
 								//i.glyphicon.glyphicon-record(style="font-size:13px")
 								a.turnback(id="#{target.name}" href="##{target.name}") 
-									img(src="/images/iconexp/#{target.children[0].icon}" width="25px" height="25px" )
+									img(src="/images/iconexp/#{target.children[0].icon}" width="20px" height="20px" )
 									//img(src="/images/targets/#{target.name}.png" height="25px" style="vertical-align:top" )
-							td(style="width:150px;font-size:13px;vertical-align:middle;font-weight:normal;")
+							td(style="max-width:150px;min-width:150px;font-size:13px;vertical-align:middle;font-weight:normal;")
 								|#{target.name.split(" ")[0].toUpperCase()}
 								br
 								b #{_.rest(target.name.split(" ")).join(" ").toUpperCase()}
@@ -378,9 +383,21 @@ div.container-fluid(style="max-width:1600px")
 					+renderL1Target(target)
 
 	div.row(style="vertical-align:top")
+			-var _totalColumns=0;
+			each lane in targets
+				if lane.children[0].children.length<2
+					-_totalColumns+=1;
+				else
+						-_totalColumns+=2;
+				
 			each lane in targets
 				if lane.name != "P&L"
-					+renderTargetLane(lane)
+					if lane.children[0].children.length<2
+						+renderTargetLane(lane,1,_totalColumns)
+					else
+						+renderTargetLane(lane,2,_totalColumns)
+				
+					
 
 	if session.AUTH=="admin" 
 		div(style="text-align:right")
@@ -570,7 +587,7 @@ script.
 
 	function loadColors(context,callback){
 			$.get( "/api/space/config", function( data ) {
-	  		var c = _.findWhere(data.entities,{'name':context});
+				var c = _.findWhere(data.entities,{'name':context});
 				
 				callback(c.skin.colors);
 			});

@@ -250,7 +250,7 @@ function _buildBacklogResult(_backlogs,teams){
 		_b.Members = _getMembersPerPlanningBacklog(_b.Name,teams);
 		_b.TotalSwag = _iResult.statistics.totalSwag;
 		_b.TotalSwagRemaining = _backlogSwagRemaining;
-		_b.TotalProgress = (_b.TotalSwagRemaining/_b.TotalSwag)*100;
+		_b.TotalProgress = (1-(_b.TotalSwagRemaining/_b.TotalSwag))*100;
 
 		_b.Capacity.AvailablePDperMonth = _b.Capacity.averageAvailablePDperMonth*_b.Members.length;
 		_b.Capacity.AvailablePDperMonthForInitiatives= _b.Capacity.AvailablePDperMonth *_b.Capacity.availablePercentageForInitiatives;
