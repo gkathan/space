@@ -116,6 +116,9 @@ router.get('/planningbacklogs', function(req, res) {
 				res.locals.initiativesBoardId = _initiativesBoardId;
 				res.locals.roadmapBoardId = _roadmapBoardId;
 				res.locals.lastSync = sync.lastSync;
+
+				
+
 				res.render('portfolio/planningbacklogs'), { title: 's p a c e - planning backlogs overview ' }
 
 			})

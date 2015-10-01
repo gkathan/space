@@ -108,7 +108,7 @@ move potentials to new place ...
 // -------------------------------------------- METRICS SECTION ---------------------------------------------------
 // ----------------------------------------------------------------------------------------------------------------
 
-function drawMetrics(boardItems){
+function drawMetrics(board){
 	d3.select("#metrics").remove();
 	var i=0;
 	var gMetrics= svg.append("g").attr("id","metrics");

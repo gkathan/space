@@ -21,10 +21,10 @@ var SIZING_DONE,SIZING_WIP,SIZING_FUTURE,SIZING_TOTAL;
 /**
 *
 */
-function drawQueues(boardItems){
+function drawQueues(board){
 	d3.select("#queues").remove()
 
-	calculateQueueMetrics(boardItems);
+	calculateQueueMetrics(board.items);
 
 	var _xWIPStart = x(WIP_START);
 	// in case we look to much into the future with the timemachine..
@@ -45,7 +45,7 @@ function drawQueues(boardItems){
 	var _yMetricBracketOffset = height+METRIC_BRACKET_Y_OFFSET;
 	var gQueue = svg.append("g").attr("id","queues");
 
-	if (BOARD.viewConfig.queues=="hide"){
+	if (board.viewConfig.queues=="hide"){
 		gQueue.style("opacity",0);
 	}
 
@@ -53,7 +53,7 @@ function drawQueues(boardItems){
 	//---------------- METRICS --------------------
 	var gQueueMetrics = gQueue.append("g").attr("id","qmetrics");
 
-	if (BOARD.viewConfig.queuesmetrics=="hide"){
+	if (board.viewConfig.queuesmetrics=="hide"){
 		gQueueMetrics.style("opacity",0);
 	}
 

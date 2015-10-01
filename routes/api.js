@@ -1199,10 +1199,10 @@ function syncV1Epics(req,res,next){
 		logger.debug("*********************** lets sync v1 epics...: "+_url);
 	  v1EpicSyncService.sync(_url,_type,function(err,result){
 			if (err){
-				res.send("syncV1Epics says: "+err.message);
+				//res.send("syncV1Epics says: "+err.message);
 				return;
 			}
-			res.send("syncV1Epics says: "+result);
+			//res.send("syncV1Epics says: "+result);
 	});
 }
 
@@ -1215,10 +1215,10 @@ function syncV1Data(req,res,next){
 		logger.debug("*********************** lets sync v1 data...: "+_url);
 	  v1DataSyncService.sync(_url,_type,function(err,result){
 			if (err){
-				res.send("syncV1Data says: "+err.message);
+				//res.send("syncV1Data says: "+err.message);
 				return;
 			}
-			res.send("syncV1Data says: "+result);
+			//res.send("syncV1Data says: "+result);
 	});
 }
 

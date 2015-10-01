@@ -67,7 +67,7 @@ function _sync(urls,type,callback){
 		// parsed response body as js object
 		var _endpoint = _.last(urls[0].split("/"));
 		logger.debug("...get data..: endpoint: "+_endpoint);
-		logger.debug(data);
+		//logger.debug(data);
 		try{
 			avData[_endpoint]=JSON.parse(data);
 		}

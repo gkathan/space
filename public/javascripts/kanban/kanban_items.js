@@ -53,20 +53,20 @@ var ITEM_ISOLATION_MODE = false;
 // ---------------------------------------------- ITEMS SECTION ---------------------------------------------------
 // ----------------------------------------------------------------------------------------------------------------
 
-function _getVisibility(element){
+function _getVisibility(element,board){
 		var _visibility="visible";
-		if (element=="drawItemName.end" && BOARD.viewConfig.start=="show") _visibility="hidden";
-		if (element=="drawItemName.start" && BOARD.viewConfig.start=="hide") _visibility="hidden";
+		if (element=="drawItemName.end" && board.viewConfig.start=="show") _visibility="hidden";
+		if (element=="drawItemName.start" && board.viewConfig.start=="hide") _visibility="hidden";
 
-		if (element=="itemIcon" && BOARD.viewConfig.start=="show") _visibility="hidden";
-		if (element=="itemIcon" && BOARD.viewConfig.start=="hide") _visibility="visible";
+		if (element=="itemIcon" && board.viewConfig.start=="show") _visibility="hidden";
+		if (element=="itemIcon" && board.viewConfig.start=="hide") _visibility="visible";
 
 		return _visibility;
 }
 
 /** renders the items
 */
-function drawItems(boardItems){
+function drawItems(board){
 	d3.selectAll("#initiatives,#dependencies,#sizings").remove();
 	tooltip.attr("class","itemTooltip");
 
@@ -83,9 +83,10 @@ function drawItems(boardItems){
 		.attr("id","labels")
 		.style("opacity",0);
 
-	filteredInitiativeData = boardItems.filter(function(d){
+	filteredInitiativeData = board.items.filter(function(d){
 	var _filterStart=(moment(d.planDate).toDate()>=KANBAN_START ||moment(d.actualDate).toDate()>=KANBAN_START);
 	var _filterEnd=moment(d.planDate).toDate()<=KANBAN_END;
+
 	return _filterStart && _filterEnd;
 	});
 
@@ -160,7 +161,7 @@ function drawItems(boardItems){
 		}
 		console.log("____startDate: "+_startDate+" item: "+d.name+" plan: "+d.planDate);
 		var _startVisibility ="hidden";
-		if (BOARD.viewConfig.start=="show"){
+		if (board.viewConfig.start=="show"){
 			_startVisibility="visible";
 		}
 		var _start = d3.select(this).append("g").attr("id","startID_"+d.id).style("visibility",_startVisibility);
@@ -178,7 +179,7 @@ function drawItems(boardItems){
 			_x2Beyond = true;
 
 		}
-		_drawStartDateIndicator(_start,d,{x1:_startX1,x1Beyond:_x1Beyond,x2:_startX2,x2Beyond:_x2Beyond,y:_itemY},_size,_color);
+		_drawStartDateIndicator(_start,d,{x1:_startX1,x1Beyond:_x1Beyond,x2:_startX2,x2Beyond:_x2Beyond,y:_itemY},_size,_color,board);
 
 		if (d.state =="done" || d.state =="planned"){
 			if (d.actualDate>d.planDate) _drawItemDelayLine(d3.select(this),_lineX1,_lineX2,_itemY);
@@ -228,7 +229,7 @@ function drawItems(boardItems){
 			// 24 hours are NEW ...
 			if ( Math.floor(_diff/(60*60*1000))< 24) _iconRef="item_new";
 
-			_drawXlink(d3.select(this),"#"+_iconRef,(_itemXPlanned-(1.2*_size)),(_itemY-(1.2*_size)),{"scale":_size/10,"visibility":_getVisibility("itemIcon")},"item_icon_"+d.id);
+			_drawXlink(d3.select(this),"#"+_iconRef,(_itemXPlanned-(1.2*_size)),(_itemY-(1.2*_size)),{"scale":_size/10,"visibility":_getVisibility("itemIcon",board)},"item_icon_"+d.id);
 
 			// positioning of itemtext
 			var _textX;
@@ -236,18 +237,18 @@ function drawItems(boardItems){
 			if (ITEM_TEXT_POSITION=="ACTUAL" && (d.state=="planned" || d.state=="done"))_textX=_itemXActual;
 			if (ITEM_TEXT_POSITION=="PLAN") _textX=_itemXPlanned;
 
-			_drawItemName(d3.select(this),d,_textX,(_itemY)+ parseInt(_size)+(5+(_size/5)*ITEM_FONTSCALE),null,null,_getVisibility("drawItemName.end"),"end");
+			_drawItemName(d3.select(this),d,_textX,(_itemY)+ parseInt(_size)+(5+(_size/5)*ITEM_FONTSCALE),null,null,_getVisibility("drawItemName.end",board),"end");
 			// kanban_postits.js
 			_drawPostit(d3.select(this),d);
 		} // end KANBAN_START check
 		// if plandate is beyon KANBAN_START - we have to draw the name below the circle (a bit smaller)
 		else if (moment(d.actualDate).toDate()>KANBAN_START && (d.state =="done" || d.state =="planned")){
-			_drawItemName(d3.select(this),d,_itemXActual,(_itemY+_size+3),0.1,null,_getVisibility("drawItemName.end"),"end");
+			_drawItemName(d3.select(this),d,_itemXActual,(_itemY+_size+3),0.1,null,_getVisibility("drawItemName.end",board),"end");
 		}
 		// transparent circle on top for the event listener
-		if (d.state!="killed") _drawItemEventListenerCircle(d3.select(this),"event_circle_"+d.id,_itemX,_itemY,_size)
+		if (d.state!="killed") _drawItemEventListenerCircle(d3.select(this),"event_circle_"+d.id,_itemX,_itemY,_size,board)
 		// and always over the planned block
-		_drawItemEventListenerCircle(d3.select(this),"event_planned_circle_"+d.id,_itemXPlanned,_itemY,_size)
+		_drawItemEventListenerCircle(d3.select(this),"event_planned_circle_"+d.id,_itemXPlanned,_itemY,_size,board)
 
 		// ------------- labels for Swag view -------------
 		_text = gLabels
@@ -308,7 +309,7 @@ function drawItems(boardItems){
 		//d3.select(this).data([ {"x":0, "y":0, "lane":d.lane,"id":d._id} ]).call(drag_item);
 		//for drag&drop
 		if (getAUTH()=="admin"){
-			var drag_item = _registerDragDrop();
+			var drag_item = _registerDragDrop(board);
 			d.x=0;
 			d.y=0;
 			d3.select(this).call(drag_item);
@@ -316,17 +317,17 @@ function drawItems(boardItems){
 	}) //end each()
 } //end drawItems
 
-function _drawItemEventListenerCircle(svg,id,x,y,r){
+function _drawItemEventListenerCircle(svg,id,x,y,r,board){
 	svg.append("circle")
 		.attr("id",id)
 		.attr("cx",x)
 		.attr("cy",y)
 		.attr("r",r)
 		.style("opacity",0)
-		.on("mouseover", function(d){onTooltipOverHandler(d,tooltip);})
+		.on("mouseover", function(d){onTooltipOverHandler(d,tooltip,board);})
 		.on("mousemove", function(d){onTooltipMoveHandler(tooltip);})
-		.on("dblclick",	function(d){onTooltipDoubleClickHandler(tooltip,d3.select(this),d);})
-		.on("mouseout", function(d){onTooltipOutHandler(d,tooltip);})
+		.on("dblclick",	function(d){onTooltipDoubleClickHandler(tooltip,d3.select(this),d,board);})
+		.on("mouseout", function(d){onTooltipOutHandler(d,tooltip,board);})
 }
 
 /**
@@ -398,7 +399,7 @@ function _drawItemDelayLine(svg,x1,x2,y){
 /**
 * 			_drawStartDateIndicator(_start,d,{x1:_startX1,x1Beyond:_x1Beyond,x2:_startX2,x2Beyond:_x2Beyond,y:_itemY},_size,_color);
 */
-function _drawStartDateIndicator(svg,item,position,size,color){
+function _drawStartDateIndicator(svg,item,position,size,color,board){
 	var _color;
 	if (!color){
 		_color="url(#gradientblack)";
@@ -419,10 +420,10 @@ function _drawStartDateIndicator(svg,item,position,size,color){
 	.attr("height", _height)
 	.style("fill",_color)
 	.style("opacity",1)
-		.on("mouseover", function(d){onTooltipOverHandler(d,tooltip);})
+		.on("mouseover", function(d){onTooltipOverHandler(d,tooltip,board);})
 		.on("mousemove", function(d){onTooltipMoveHandler(tooltip);})
 		.on("dblclick",	function(d){onTooltipDoubleClickHandler(tooltip,d3.select(this),d);})
-		.on("mouseout", function(d){onTooltipOutHandler(d,tooltip);});
+		.on("mouseout", function(d){onTooltipOutHandler(d,tooltip,board);});
 
 	if (!position.x1Beyond){
 		svg.append("circle")
@@ -460,7 +461,7 @@ function _drawStartDateIndicator(svg,item,position,size,color){
 			 _textX=x(KANBAN_START);
 		}
 	}
-	_drawItemName(svg,item,_textX,(position.y+size+4), 1,null,_getVisibility("drawItemName.start"),"start",_anchor);
+	_drawItemName(svg,item,_textX,(position.y+size+4), 1,null,_getVisibility("drawItemName.start",board),"start",_anchor);
 }
 
 /**
@@ -469,7 +470,7 @@ function _drawStartDateIndicator(svg,item,position,size,color){
  * => is currently doing stuff for items AND targets !!!
  * quite crappy.....
  */
-function onTooltipOverHandler(d,tooltip){
+function onTooltipOverHandler(d,tooltip,board){
 	// and fadeout rest
 	var highlight ="#item_";
 
@@ -630,7 +631,7 @@ function onTooltipMoveHandler(tooltip){
 /**
  * handler for tooltip doubleclick handling
  */
-function onTooltipDoubleClickHandler(tooltip,svg,d){
+function onTooltipDoubleClickHandler(tooltip,svg,d,board){
 	console.log("doubleclick: "+d3.select(this)+" svg: "+svg);
 	if (!ITEM_ISOLATION_MODE){
 		d3.selectAll("#items,#targets").selectAll("g").selectAll("circle").on("mousemove",null);
@@ -684,7 +685,7 @@ function onTooltipDoubleClickHandler(tooltip,svg,d){
 		if (back) back.close();
 
 		d3.selectAll("#items").selectAll("g").selectAll("circle").on("mousemove", function(d){onTooltipMoveHandler(tooltip);})
-		d3.selectAll("#items").selectAll("g").selectAll("circle").on("mouseout", function(d){onTooltipOutHandler(d,tooltip);})
+		d3.selectAll("#items").selectAll("g").selectAll("circle").on("mouseout", function(d){onTooltipOutHandler(d,tooltip,board);})
 		d3.selectAll("#items").selectAll("g").selectAll("circle").on("mouseover", function(d){onTooltipOverHandler(d,tooltip);})
 
 
@@ -701,7 +702,7 @@ function onTooltipDoubleClickHandler(tooltip,svg,d){
  * handler for tooltip mouse out
  * called within item rendering
  */
-function onTooltipOutHandler(d,tooltip){
+function onTooltipOutHandler(d,tooltip,board){
 	tooltip.style("visibility", "hidden");
 
 	var highlight ="#item_";
@@ -763,7 +764,7 @@ function onTooltipOutHandler(d,tooltip){
 		} // end de- check depending items
 	}
 
-	if (BOARD.viewConfig.start=="hide"){
+	if (board.viewConfig.start=="hide"){
 		if (d.startDate) d3.select("#startID_"+d.id).style("visibility","hidden");
 		d3.select("#text_end_"+d.id).style("visibility","visible");
 		d3.select("#text_start_"+d.id).style("visibility","hidden");
@@ -774,7 +775,7 @@ function onTooltipOutHandler(d,tooltip){
 /** drag drop handler for items...
  *
  */
-function _registerDragDrop(){
+function _registerDragDrop(board){
 	// test drag item start
 	var baseY;
 
@@ -791,7 +792,7 @@ function _registerDragDrop(){
 						return "translate(" + [ d.x,d.y ] + ")"
 					})
 					// and highlight the sublane we are in
-					var _item = getItemByKey(initiativeData,"_id",d._id);
+					var _item = getItemByKey(board.items,"_id",d._id);
 					var _sublane = getSublaneByNameNEW(_item.lanePath);
 					console.log(">>>> highlight sublane: "+_sublane.name);
 					highlightLane(d3.select("#lanes"),_sublane);
@@ -816,12 +817,15 @@ function _registerDragDrop(){
 					tooltip.style("visibility","hidden");
 					tooltip.style("top",_ymoved+"px");
 					// watch sublane change
-					var _item = getItemByKey(initiativeData,"_id",d._id);
+					var _item = getItemByKey(board.items,"_id",d._id);
 				}
 			})
 
 			.on("dragend",function(d,i){
 				if(ITEM_ISOLATION_MODE){
+
+					console.log("___________________ DRAG END __________________board: "+board._id);
+					console.log("___________________ DRAG END __________________: "+JSON.stringify(d));
 
 					d3.selectAll("#highlightlane").remove();
 					console.log("dragend event: x="+d.x+", y="+d.y+"..."+d.lane);
@@ -848,11 +852,11 @@ function _registerDragDrop(){
 					console.log("...ok meaning i am now from a board perspective on y: "+_y);
 					console.log("d._id: "+d._id);
 
-					console.log("NG: on board: "+BOARD.name+" "+BOARD._id);
-					console.log("BOARD.items: "+BOARD.items.length);
+					console.log("NG: on board: "+board.name+" "+board._id);
+					console.log("board.items: "+board.items.length);
 
 					var _item;
-					_item = _.findWhere(BOARD.items,{"itemRef":d.Number}).itemView;
+					_item = _.findWhere(board.items,{"itemRef":d.Number}).itemView;
 					console.log("NG: itemView: "+JSON.stringify(_item));
 
 					// and it would be interesting to derive the lane we are in after dragend
@@ -917,14 +921,14 @@ function _registerDragDrop(){
 					}
 					console.log("after: sublaneOffset = "+_item.sublaneOffset);
 
-					if (movedY!=0) ajaxCall("POST","save",BOARD,"boards");
+					if (movedY!=0) ajaxCall("POST","save",board,"boards");
 					// and refresh the transient initiativeData
-					joinBoard2Initiatives(BOARD,initiativeData);
+					//joinBoard2Initiatives(board,initiativeData);
 
 					console.log("[OK] lets persist the change in y drag movement ....[id] = "+JSON.stringify(_item));
 
 					// and highlight the sublane we are in
-					var _item = getItemByKey(initiativeData,"Number",d.Number);
+					var _item = getItemByKey(board.items,"Number",d.Number);
 
 					var _sublane = getSublaneByNameNEW(_item.lanePath);
 

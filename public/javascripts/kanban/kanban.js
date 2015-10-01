@@ -69,16 +69,18 @@
 var CONTEXT="CONTEXT";
 
 var releaseData;
-var initiativeData;
-var boardData;
+
+// kind of backup
+var initiativeDataBase;
+
+
 // the current "CONTEXT"
-var BOARD;
+//var BOARD;
 // AUTH ROLE set by php script
 // current roles: bpty, exec, admin
 var AUTH;
 // raster px configuration
-var WIDTH =1200;
-var HEIGHT = 1200;
+
 var WHITEBOARD_WIDTH =1400;
 var WHITEBOARD_HEIGHT = 900;
 // height of the timeline header block where the dates are in
@@ -138,11 +140,11 @@ function setMargin(){
 /**
 *
 */
-function init(){
+function init(board){
 	d3.select("#kanban").remove()
 	setMargin();
-	width = WIDTH - margin.left - margin.right,
-	height = HEIGHT - margin.top - margin.bottom;
+	width = board.width - margin.left - margin.right,
+	height = board.height - margin.top - margin.bottom;
 	y = d3.scale.linear()
 		// changed 20140104 => from [0,100]
 		.domain([Y_MAX,Y_MIN])
@@ -154,8 +156,8 @@ function init(){
 		.range([0, width]);
 
 	svg = d3.select("svg")
-		.attr("width", WIDTH)
-		.attr("height", HEIGHT)
+		.attr("width", board.width)
+		.attr("height", board.height)
 		.append("g")
 		.attr("id","kanban")
 		.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
@@ -204,17 +206,188 @@ function render(svgFile){
 			var _urlItems = dataSourceFor("items"+board.dataLink)+_filterQueryString;
 			$.getJSON(_urlItems,function(items){
 				console.log("items loaded...from: "+_urlItems);
-
 				//the original loaded items
 				initiativeData=items;
+				// keep as a backup if we filter the initiativeData
+				initiativeDataBase=items;
 
-				renderBoard(_boardId);
+				renderBoard(board,initiativeData);
 			})
 		})
 	}); // end xml load anonymous
 }
 
+/** maps external items to internal kanban domain model
+*/
+function joinBoard2Items(board,items){
+	console.log("join: "+items.length+" board: "+board.items.length);
+	var _items = board.items;
+	var _join = [];
+	for (var i in _items){
+		var _i = _items[i];
+		var _joinedItem={};
+		var _item = _.findWhere(items,{"Number":_i.itemRef});
+		// legacy attributes
+		if (_item){
+			_joinedItem.id=_i.itemRef;
+			_joinedItem.Number=_i.itemRef;
+			_joinedItem.Type="item";
+			if (_item.Status=="Done" || _item.Status=="Monitoring")
+				_joinedItem.state="done";
+			else if (_item.Status=="Cancelled")
+				_joinedItem.state="killed";
+			else
+				_joinedItem.state="planned";
 
+			_joinedItem.name=_item.Name;
+			_joinedItem.health=_item.Health;
+			_joinedItem.healthComment=_item.HealthComment;
+			_joinedItem.Value=_item.Value;
+			_joinedItem.Swag=_item.Swag;
+			_joinedItem.status=_item.Status;
+			_joinedItem.ExtId=_item.ID;
+			_joinedItem.isCorporate=_item.PortfolioApproval;
+			_joinedItem.owner=_item.InitiativeOwner;
+			_joinedItem.DoD=_item.ElevatorPitch;
+			_joinedItem.startDate=_item.PlannedStart;
+			_joinedItem.planDate=_item.PlannedEnd;
+
+			if (_item.LaunchDate)
+				_joinedItem.actualDate=_item.LaunchDate;
+			else
+				_joinedItem.actualDate=_item.PlannedEnd;
+
+			for (_key in _i.itemView){
+				var _view = _items[i].itemView[_key];
+				_joinedItem[_key]=_view;
+			}
+			if (moment(_joinedItem.actualDate) >= moment(board.startDate)){
+				_join.push(_joinedItem);
+			}
+		}
+	}//end for
+	//set global
+	//initiativeData = _join;
+	return _join;
+}
+
+/**generic render method for NG board handling
+ */
+function renderBoard(board,items){
+		ITEM_SCALE = parseFloat(board.itemScale);
+		ITEM_FONTSCALE = parseFloat(board.itemFontScale);
+		setWIP(parseInt(board.WIPWindowDays));
+		if (board.viewConfig.laneboxRightWidth) LANE_LABELBOX_RIGHT_WIDTH = parseInt(board.viewConfig.laneboxRightWidth);
+		if (board.viewConfig.offsetTop) BOARD_OFFSET_TOP = parseInt(board.viewConfig.offsetTop);
+		KANBAN_START= new Date(board.startDate);
+		KANBAN_END= new Date(board.endDate);
+
+		CONTEXT = board.name;
+		/*
+		initiativeData = _.filter(initiativeData,function(item){
+			if(!item.Status || item.Status=="On hold" || item.Status=="Cancelled") return false;
+			return true;
+		})
+		*/
+		// we have to now join boardData and initiative Data
+		var _items=[];
+
+		for (var i in items){
+			var _i = items[i];
+			_items.push(_createItem(_i,board.groupby.split(","),board.name));
+		}
+		board.items =_items
+
+		board.items =joinBoard2Items(board,items);
+		// with drawAll() refresh without postback possible ;-)
+		disableAllMetrics();
+		console.log("---- lets draw ALL");
+		//q1_2014_reviewMetrics();
+		console.log("======= initiatives.length: "+items.length);
+		drawAll(board);
+		//drawCustomPostits();
+		//initHandlers();
+		if (AUTH=="bpty") hideNGR();
+}
+
+
+/**
+ * renders the custom postits which can be created manually
+ */
+function drawCustomPostits(){
+	var gCustomPostits = d3.select("#kanban").append("g").attr("id","customPostits");
+	for (var i in postitData){
+		var p = new Postit(postitData[i].id,postitData[i].text,postitData[i].x,postitData[i].y,postitData[i].scale,postitData[i].size,postitData[i].color,postitData[i].textcolor);
+		p.draw(gCustomPostits);
+	}
+}
+
+/**
+*/
+function drawInitiatives(board){
+	if (board.viewConfig.lanes!="off") drawLanes(board);
+	drawItems(board);
+}
+
+/* ------------------------ LANE sort EXPERIMENT -----------------------*/
+/**
+ * joins laneData with initiativeData
+ * to get sorting information into each initiative item
+ */
+function joinInitiatives2LanesSort(boardItems){
+	for (var i in boardItems){
+		var _lane = getItemByKey(laneData,"path",_.initial(boardItems[i].lanePath.split(FQ_DELIMITER)).join([separator="/"]));
+		if (_lane){
+			 boardItems[i]["laneSort"]=_lane.sort;
+			if (_lane.sublanes){
+				var _sublane = getItemByKey(_lane.sublanes,"name",boardItems[i].lanePath);
+				if (_sublane) boardItems[i]["sublaneSort"]=_sublane.sort;
+			}
+		}
+	}
+}
+/* ------------------------ EXPERIMENT -----------------------*/
+
+
+function drawAll(board){
+	var boardItems = board.items;
+	console.log("======= boardItems.length: "+boardItems.length);
+	init(board);
+	// 1) draw static stuff
+	if (board.viewConfig.queues!="off") drawGuides(board);
+	drawAxes(board);
+	if (board.viewConfig.queues!="off") drawQueues(board);
+	if (board.viewConfig.vision!="off") drawVision(board);
+	drawVersion(board);
+	drawLegend(board);
+
+	// 2) check if board empty
+	console.log("======= boardItems.length: "+boardItems.length);
+	if (boardItems.length>0){
+		// multi column sort https://github.com/Teun/thenBy.js
+		var firstBy=(function(){function e(f){f.thenBy=t;return f}function t(y,x){x=this;return e(function(a,b){return x(a,b)||y(a,b)})}return e})();
+		joinInitiatives2LanesSort(boardItems);
+		//sorting hook
+		//var s = firstBy(function (v1, v2) { return v1.lane < v2.lane ? -1 : (v1.lane > v2.lane ? 1 : 0); }).thenBy(function (v1, v2) { return v1.sublane < v2.sublane ? -1 : (v1.sublane > v2.sublane ? 1 : 0); });
+		var s = firstBy(function (v1, v2) { return v1.laneSort - v2.laneSort})
+				.thenBy(function (v1, v2) { return v1.sublaneSort - v2.sublaneSort });
+		boardItems.sort(s);
+		boardItems.sort(s);
+		// ------------------------------------------------------------------------------------------------
+		var _context = {"yMin":Y_MIN,"yMax":Y_MAX,"name":CONTEXT};
+		itemTree = createLaneHierarchy(boardItems,ITEMDATA_FILTER,board.groupby.split(","),_context);
+		//targetTree = createLaneHierarchy(targetData,ITEMDATA_FILTER,BOARD.groupby,_context);
+		// kanban_items.js
+		if (board.viewConfig.initiatives!="off") drawInitiatives(board);
+		// kanban_items.js
+		if (board.viewConfig.targets!="off") drawTargets(board);
+		if (board.viewConfig.metrics!="off") drawMetrics(board);
+	}
+	//drawOverviewMetaphors(svg);
+		//if (BOARD.viewConfig.releases!="off") drawMetrics();drawReleases();
+	d3.select("#whiteboard").style("visibility","hidden");
+// --------------------------------------------------------------------------------------------------
+}
 
 /**
 builds URL query string out of filter attributes
@@ -242,8 +415,8 @@ function _createFilterQueryString(board){
 /**helper
 */
 function _createItem(epic,groupby,boardName){
-	console.log("======== _createItem: epic: "+epic.Number+ " - groupby: "+groupby);
-	console.log("====== epic:PlanningBacklog: "+epic.PlanningBacklog);
+	//console.log("======== _createItem: epic: "+epic.Number+ " - groupby: "+groupby);
+	//console.log("====== epic:PlanningBacklog: "+epic.PlanningBacklog);
 	//split / join needed e.g. if businessbacklog is used we need to replace "/"
 	if (!epic[groupby[0]]) epic[groupby[0]]=boardName;
 	if (!epic[groupby[1]]) epic[groupby[1]]="empty";
@@ -254,7 +427,7 @@ function _createItem(epic,groupby,boardName){
 	var _group3 = epic[groupby[2]].split("/").join("|");
 	var _product = epic.Product;
 	var _path = boardName+"/"+_group1+"/"+_group2+"/"+_group3;
-	console.log("====== epic:lanePath: "+_path);
+	//console.log("====== epic:lanePath: "+_path);
 
 	// !!!! path needs 3 levels right now at least
 	if (!_product) _product="No Product";
@@ -264,176 +437,7 @@ function _createItem(epic,groupby,boardName){
 }
 
 
-function joinBoard2Initiatives(board,initiatives){
-	console.log("join: "+initiatives.length+" board: "+board.items.length);
-	var _items = board.items;
-	var _join = [];
-	for (var i in _items){
-		var _i = _items[i];
-		var _joinedItem={};
-		var _initiative = _.findWhere(initiatives,{"Number":_i.itemRef});
-		// legacy attributes
-		if (_initiative){
-			_joinedItem.id=_i.itemRef;
-			_joinedItem.Number=_i.itemRef;
-			_joinedItem.Type="item";
-			if (_initiative.Status=="Done" || _initiative.Status=="Monitoring")
-				_joinedItem.state="done";
-			else if (_initiative.Status=="Cancelled")
-				_joinedItem.state="killed";
-			else
-				_joinedItem.state="planned";
 
-			_joinedItem.name=_initiative.Name;
-			_joinedItem.health=_initiative.Health;
-			_joinedItem.healthComment=_initiative.HealthComment;
-			_joinedItem.Value=_initiative.Value;
-			_joinedItem.Swag=_initiative.Swag;
-			_joinedItem.status=_initiative.Status;
-			_joinedItem.ExtId=_initiative.ID;
-			_joinedItem.isCorporate=_initiative.PortfolioApproval;
-			_joinedItem.owner=_initiative.InitiativeOwner;
-			_joinedItem.DoD=_initiative.ElevatorPitch;
-			_joinedItem.startDate=_initiative.PlannedStart;
-			_joinedItem.planDate=_initiative.PlannedEnd;
-
-			if (_initiative.LaunchDate)
-				_joinedItem.actualDate=_initiative.LaunchDate;
-			else
-				_joinedItem.actualDate=_initiative.PlannedEnd;
-
-			for (_key in _i.itemView){
-				var _view = _items[i].itemView[_key];
-				_joinedItem[_key]=_view;
-			}
-			if (moment(_joinedItem.actualDate) >= moment(board.startDate)){
-				_join.push(_joinedItem);
-			}
-		}
-	}//end for
-	//set global
-	//initiativeData = _join;
-	return _join;
-}
-
-/**generic render method for NG board handling
- */
-function renderBoard(id){
-		HEIGHT= parseInt(boardData.height);
-		WIDTH = parseInt(boardData.width);
-		ITEM_SCALE = parseFloat(boardData.itemScale);
-		ITEM_FONTSCALE = parseFloat(boardData.itemFontScale);
-		setWIP(parseInt(boardData.WIPWindowDays));
-		if (boardData.viewConfig.laneboxRightWidth) LANE_LABELBOX_RIGHT_WIDTH = parseInt(boardData.viewConfig.laneboxRightWidth);
-		if (boardData.viewConfig.offsetTop) BOARD_OFFSET_TOP = parseInt(boardData.viewConfig.offsetTop);
-		KANBAN_START= new Date(boardData.startDate);
-		KANBAN_END= new Date(boardData.endDate);
-		BOARD = boardData;
-		CONTEXT = boardData.name;
-		/*
-		initiativeData = _.filter(initiativeData,function(item){
-			if(!item.Status || item.Status=="On hold" || item.Status=="Cancelled") return false;
-			return true;
-		})
-		*/
-		// we have to now join boardData and initiative Data
-		var _items=[];
-
-		for (var i in initiativeData){
-			var _i = initiativeData[i];
-			_items.push(_createItem(_i,boardData.groupby.split(","),boardData.name));
-		}
-		boardData.items =_items
-
-		boardItems =joinBoard2Initiatives(boardData,initiativeData);
-		// with drawAll() refresh without postback possible ;-)
-		disableAllMetrics();
-		console.log("---- lets draw ALL");
-		//q1_2014_reviewMetrics();
-		console.log("======= initiatives.length: "+initiativeData.length);
-		drawAll(boardItems);
-		//drawCustomPostits();
-		//initHandlers();
-		if (AUTH=="bpty") hideNGR();
-}
-
-
-/**
- * renders the custom postits which can be created manually
- */
-function drawCustomPostits(){
-	var gCustomPostits = d3.select("#kanban").append("g").attr("id","customPostits");
-	for (var i in postitData){
-		var p = new Postit(postitData[i].id,postitData[i].text,postitData[i].x,postitData[i].y,postitData[i].scale,postitData[i].size,postitData[i].color,postitData[i].textcolor);
-		p.draw(gCustomPostits);
-	}
-}
-
-/**
-*/
-function drawInitiatives(boardItems){
-	if (BOARD.viewConfig.lanes!="off") drawLanes();
-	drawItems(boardItems);
-}
-
-/* ------------------------ LANE sort EXPERIMENT -----------------------*/
-/**
- * joins laneData with initiativeData
- * to get sorting information into each initiative item
- */
-function joinInitiatives2LanesSort(boardItems){
-	for (var i in boardItems){
-		var _lane = getItemByKey(laneData,"path",_.initial(boardItems[i].lanePath.split(FQ_DELIMITER)).join([separator="/"]));
-		if (_lane){
-			 boardItems[i]["laneSort"]=_lane.sort;
-			if (_lane.sublanes){
-				var _sublane = getItemByKey(_lane.sublanes,"name",boardItems[i].lanePath);
-				if (_sublane) boardItems[i]["sublaneSort"]=_sublane.sort;
-			}
-		}
-	}
-}
-/* ------------------------ EXPERIMENT -----------------------*/
-
-
-function drawAll(boardItems){
-	console.log("======= boardItems.length: "+boardItems.length);
-	init();
-	// 1) draw static stuff
-	if (BOARD.viewConfig.queues!="off") drawGuides();
-	drawAxes();
-	if (BOARD.viewConfig.queues!="off") drawQueues(boardItems);
-	if (BOARD.viewConfig.vision!="off") drawVision();
-	drawVersion();
-	drawLegend();
-
-	// 2) check if board empty
-	console.log("======= boardItems.length: "+boardItems.length);
-	if (boardItems.length>0){
-		// multi column sort https://github.com/Teun/thenBy.js
-		var firstBy=(function(){function e(f){f.thenBy=t;return f}function t(y,x){x=this;return e(function(a,b){return x(a,b)||y(a,b)})}return e})();
-		joinInitiatives2LanesSort(boardItems);
-		//sorting hook
-		//var s = firstBy(function (v1, v2) { return v1.lane < v2.lane ? -1 : (v1.lane > v2.lane ? 1 : 0); }).thenBy(function (v1, v2) { return v1.sublane < v2.sublane ? -1 : (v1.sublane > v2.sublane ? 1 : 0); });
-		var s = firstBy(function (v1, v2) { return v1.laneSort - v2.laneSort})
-				.thenBy(function (v1, v2) { return v1.sublaneSort - v2.sublaneSort });
-		boardItems.sort(s);
-		boardItems.sort(s);
-		// ------------------------------------------------------------------------------------------------
-		var _context = {"yMin":Y_MIN,"yMax":Y_MAX,"name":CONTEXT};
-		itemTree = createLaneHierarchy(boardItems,ITEMDATA_FILTER,BOARD.groupby.split(","),_context);
-		//targetTree = createLaneHierarchy(targetData,ITEMDATA_FILTER,BOARD.groupby,_context);
-		// kanban_items.js
-		if (BOARD.viewConfig.initiatives!="off") drawInitiatives(boardItems);
-		// kanban_items.js
-		if (BOARD.viewConfig.targets!="off") drawTargets(boardItems);
-		if (BOARD.viewConfig.metrics!="off") drawMetrics(boardItems);
-	}
-	//drawOverviewMetaphors(svg);
-		//if (BOARD.viewConfig.releases!="off") drawMetrics();drawReleases();
-	d3.select("#whiteboard").style("visibility","hidden");
-// --------------------------------------------------------------------------------------------------
-}
 
 /**
  * change TODAY date and see what happens

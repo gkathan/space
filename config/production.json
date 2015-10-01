@@ -51,12 +51,12 @@
     "sync": {
   		"v1epics" : {
   			"mode": "on",
-  			"intervalMinutes" :10,
+  			"intervalMinutes" :5,
 			  "url" : ["http://knbnprxy.ea.bwinparty.corp/rest/epicsprogress","http://knbnprxy.ea.bwinparty.corp/rest/epics"]
       },
 			"v1data" : {
   			"mode": "on",
-  			"intervalMinutes" :30,
+  			"intervalMinutes" :5,
 			  "url" : ["http://knbnprxy.ea.bwinparty.corp/rest/members","http://knbnprxy.ea.bwinparty.corp/rest/teams","http://knbnprxy.ea.bwinparty.corp/rest/backlogs","http://knbnprxy.ea.bwinparty.corp/rest/programs"]
   		},
       "availability" : {
@@ -66,13 +66,13 @@
   		},
   		"incidents" : {
   			"mode": "on",
-  			"intervalMinutes" :1 	,
+  			"intervalMinutes" :2 	,
         "includePriority" : 4,
   			"url" : "https://bwinparty.service-now.com/incident_list.do?JSONv2&sysparm_action=getRecords"
   		},
       "soc_outages" : {
   			"mode": "on",
-  			"intervalMinutes" :1,
+  			"intervalMinutes" :30,
   			"url" : "http://avreport.bwinparty.corp/API/AvReportingService.svc/GetIncidentsDatapoints/?from=2014-01-01"
   		},
 

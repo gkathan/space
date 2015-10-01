@@ -83,7 +83,7 @@ function _syncProblem(url,type,callback){
 				app.io.emit('syncUpdate', {status:_statusERROR,from:_syncName,timestamp:_timestamp,info:err.message,type:type});
 
 				_syncStatus.saveLastSync(_syncName,_timestamp,_message,_statusERROR,type);
-				callback(null,result);
+				callback(err);
 				return;
 
 			}

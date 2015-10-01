@@ -28,23 +28,24 @@ var LANE_LABELBOX_RIGHT_START;
 /**
 *
 */
-function drawLanes(){
+function drawLanes(board){
 	d3.select("#lanes").remove()
 	var lanes = svg.append("g").attr("id","lanes");
-	if (BOARD.viewConfig.lanes=="hide"){
+	if (board.viewConfig.lanes=="hide"){
 		lanes.style("opacity",0);
 	}
-	if (BOARD.viewConfig.laneboxLeftWidth)
-		LANE_LABELBOX_LEFT_WIDTH = parseInt(BOARD.viewConfig.laneboxLeftWidth);
-	if (BOARD.viewConfig.laneboxRightWidth)
-		LANE_LABELBOX_RIGHT_WIDTH = parseInt(BOARD.viewConfig.laneboxRightWidth);
-	if (BOARD.viewConfig.contextboxWidth)
-		CONTEXTBOX_WIDTH = parseInt(BOARD.viewConfig.contextboxWidth);
+	if (board.viewConfig.laneboxLeftWidth)
+		LANE_LABELBOX_LEFT_WIDTH = parseInt(board.viewConfig.laneboxLeftWidth);
+	if (board.viewConfig.laneboxRightWidth)
+		LANE_LABELBOX_RIGHT_WIDTH = parseInt(board.viewConfig.laneboxRightWidth);
+	if (board.viewConfig.contextboxWidth)
+		CONTEXTBOX_WIDTH = parseInt(board.viewConfig.contextboxWidth);
 
 	var laneConfig={contextbox:{
 			orientation:"vertical",
 			height:20
-		}
+		},
+		board:board
 	};
 
 //experiment
@@ -79,7 +80,7 @@ function drawLanes(){
 			var _lane = _theme.children[l];
 			_drawLane(_lane,d3.select(this),lanesLeft,lanesRight,_xRightStart,laneConfig,l);
 			//level3
-			_drawSublanes(_lane,lanesLeft);
+			_drawSublanes(_lane,lanesLeft,laneConfig);
 			//experiment
 			//_leftBox.data([ {"x":0, "y":0, "lane":_lane} ]).call(drag_item);
 			_drawThemeDemarcation(d3.select(this),"themeLine");
@@ -113,13 +114,13 @@ function _drawLane(d,svg,lanesLeft,lanesRight,_xRightStart,laneConfig,count){
 	var _yTextOffset = 10;
 	if (_metrics) _yTextOffset+=_metrics.height;
 	//baseline box text
-	if (BOARD.viewConfig.laneboxTextLeft!="off") _drawLaneText(_leftBox,_lane,"baseline",_yTextOffset);
+	if (laneConfig.board.viewConfig.laneboxTextLeft!="off") _drawLaneText(_leftBox,_lane,"baseline",_yTextOffset);
 	// lane area
 	_drawLaneArea(svg,x(KANBAN_START),_y,x(KANBAN_END)+LANE_LABELBOX_RIGHT_WIDTH+280,_height,i)
 	//target box
 	_metrics =_drawLaneBox(_rightBox,_xRightStart,_y,LANE_LABELBOX_RIGHT_WIDTH,_height,_lane,"right",laneConfig,count);
 	//target box text
-	if (BOARD.viewConfig.laneboxTextRight!="off") _drawLaneText(_rightBox,_lane,"target",_yTextOffset);
+	if (laneConfig.board.viewConfig.laneboxTextRight!="off") _drawLaneText(_rightBox,_lane,"target",_yTextOffset);
 	// laneside descriptors
 	if (_.last(CONTEXT.split(FQ_DELIMITER))=="drill-in"){
 		var _laneName = _.last(_lane.split(FQ_DELIMITER))
@@ -127,7 +128,7 @@ function _drawLane(d,svg,lanesLeft,lanesRight,_xRightStart,laneConfig,count){
 	}
 }
 
-function _drawSublanes(d,svg){
+function _drawSublanes(d,svg,laneConfig){
 	var lane = d.name;
 	//sublane descriptors
 	var _sublanes = getSublanesNEW(lane);
@@ -136,10 +137,10 @@ function _drawSublanes(d,svg){
 		var _h = y(_sublanes[s].yt2-_sublanes[s].yt1);
 		// strip only the sublane name if name is fully qualified like "topline.bwin.touch"
 		var _sublane = _.last((_sublanes[s].name).split(FQ_DELIMITER))
-		if (BOARD.viewConfig.sublaneText!="off"){
+		if (laneConfig.board.viewConfig.sublaneText!="off"){
 			_drawLaneSideText(svg,_sublane,1,_y+_h/2,"4px","middle");
 		}
-		if (BOARD.viewConfig.sublaneLine!="off"){
+		if (laneConfig.board.viewConfig.sublaneLine!="off"){
 			//no lines for first and last sublane
 			if (s>0 && s<_sublanes.length){
 				_drawLine(svg,x(KANBAN_START),_y,x(KANBAN_END),_y,"sublaneLine");
@@ -288,8 +289,8 @@ function _drawLaneContext(svg,context,x,y,width,height,link,css,laneConfig){
 	if (!css) var css ="contextbox";
 	//default
 	var _textStyle = {"size":"8px","color":"grey","weight":"normal","mode":"tb"};
-	if (BOARD.viewConfig.contextboxText)
-		_textStyle=BOARD.viewConfig.contextboxText;
+	if (laneConfig.board.viewConfig.contextboxText)
+		_textStyle=laneConfig.board.viewConfig.contextboxText;
 	if (laneConfig.contextbox.orientation=="horizontal"){
 		_textStyle.mode="";
 		_drawText(svg,context.toUpperCase(),(x+_textOffsetXHorizontal),(y+_textOffsetYHorizontal),_textStyle);
@@ -371,8 +372,8 @@ function _drawLaneBox(svg,x,y,width,height,lane,side,laneConfig,count){
 	else {
 		//default
 		var _textStyle = {"size":"9px","color":"grey","weight":"normal","mode":""};
-		if (BOARD.viewConfig.laneboxText)
-			_textStyle=BOARD.viewConfig.laneboxText;
+		if (laneConfig.board.viewConfig.laneboxText)
+			_textStyle=laneConfig.board.viewConfig.laneboxText;
 		_drawText(svg,lane,x+5,y+15,_textStyle);
 	}
 return _metrics;

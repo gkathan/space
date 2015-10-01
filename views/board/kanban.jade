@@ -137,7 +137,7 @@ include ../includes/material
 			}
 		});
 
-		var BOARD=!{JSON.stringify(board)};
+		//var BOARD=!{JSON.stringify(board)};
 		$("#boardrefresh").click(function() {console.log("board REFRESH pressed"); refresh(BOARD); });
 		
 		render("/images/svg/external.svg");
@@ -189,7 +189,10 @@ include ../includes/material
 			console.log("...refresh ");
 			_updateBoardFromFormData(BOARD);
 			
-			//initiativeData = _.filter(initiativeData,function(i){if (_.findIndex(i.Targets,function(t){if (t.match(new RegExp(BOARD.filter.Targets))) return true;})>-1) return true; })
+			// restore original data from initial request
+			initiativeData = initiativeDataBase;
+			// and filter
+			initiativeData = _.filter(initiativeData,function(i){if (_.findIndex(i.Targets,function(t){if (t.match(new RegExp(BOARD.filter.Targets))) return true;})>-1) return true; })
 			
 			renderBoard("#{board._id}");
 		}

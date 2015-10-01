@@ -15,7 +15,7 @@ function hideVision(){
 	d3.select("#vision").style("visibility","hidden");
 }
 
-function drawVision(){
+function drawVision(board){
 	"use strict";
 	d3.select("#vision").remove();
 
@@ -23,7 +23,7 @@ function drawVision(){
 		.attr("id","vision")
 		.attr("class","draggable");
 
-	if (BOARD.viewConfig.vision=="hide"){
+	if (board.viewConfig.vision=="hide"){
 		gVision.style("visibility","hidden");
 	}
 	// ----- vision statement ------
@@ -31,8 +31,8 @@ function drawVision(){
 	var _y = -200;
 	_drawXlink(gVision,"#world",(_x-175),(_y+27),{"scale":1});
 
-	_drawText(gVision,BOARD.vision,(_x-160),(_y-15),{"size":"32px","color":COLOR_BPTY,"weight":"bold"});
-	_drawText(gVision,BOARD.subvision,(_x-160),(_y+10),{"size":"14px","color":COLOR_BPTY,"weight":"bold"});
+	_drawText(gVision,board.vision,(_x-160),(_y-15),{"size":"32px","color":COLOR_BPTY,"weight":"bold"});
+	_drawText(gVision,board.subvision,(_x-160),(_y+10),{"size":"14px","color":COLOR_BPTY,"weight":"bold"});
 
 	//_drawXlink(gVision,"#vision_statement",(_x-160),(_y-30),{"scale":2});
 
@@ -51,5 +51,5 @@ function drawVision(){
 		.style("font-weight","bold")
 		.style("font-size","10px");
 
-	textarea(_mission,BOARD.mission,_x,_y+40,100,8);
+	textarea(_mission,board.mission,_x,_y+40,100,8);
 }

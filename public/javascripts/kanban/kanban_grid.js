@@ -18,7 +18,7 @@ var VISION_SUBTEXT = "\"be the leader in regulated and to be regulated markets\"
 /** draws grid
 *
 */
-function drawAxes(){
+function drawAxes(board){
 	d3.select("#axes").remove();
 
 	var formatNumber = d3.format(".1f");
@@ -68,7 +68,7 @@ function drawAxes(){
 	var gAxes =svg.append("g")
 		.attr("id","axes");
 
-	if (BOARD.viewConfig.axes=="hide"){
+	if (board.viewConfig.axes=="hide"){
 		gAxes.style("opacity",0);
 	}
 
@@ -124,7 +124,7 @@ function drawAxes(){
 }
 
 
-function drawGuides(){
+function drawGuides(board){
 	LANE_LABELBOX_RIGHT_START = x(KANBAN_END)+TARGETS_COL_WIDTH;
 
 	var gGuides= svg.append("g").attr("id","guides");
@@ -198,7 +198,7 @@ function drawGuides(){
 	_drawLine(gGuides,LANE_LABELBOX_RIGHT_START+LANE_LABELBOX_RIGHT_WIDTH+(2*METRIC_WIDTH),0-margin.top,LANE_LABELBOX_RIGHT_START+LANE_LABELBOX_RIGHT_WIDTH+(2*METRIC_WIDTH),height+margin.bottom,"rasterLine");
 
 	d3.select("#guides").style("visibility","hidden");
-	if (BOARD.viewConfig.guides=="show"){
+	if (board.viewConfig.guides=="show"){
 		d3.select("#guides").style("visibility","visible");
 	}
 

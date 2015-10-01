@@ -67,7 +67,7 @@ mixin ragStatus(rag,size,ragComment)
 // -----------------------------------------------------------------------
 mixin renderL1Target(target)
 	td(style="text-align:center;padding:10px")
-		div.panel
+		div.panel(class="panel-#{target.cluster.toLowerCase()}")
 			div(style="line-height:8px;text-align:center")
 				br
 				table.responsive(style="margin:auto;max-width:300px;color:#{color_PL};background-color:white")
@@ -96,7 +96,7 @@ mixin renderL1Target(target)
 										data-icon="#{target.icon}"
 										data-theme="#{target.theme}"
 										data-cluster="#{target.cluster}"
-										) #{target.directTarget}
+										) #{target.directTarget} 
 							span(style="line-height:28px;font-size:28px;font-weight:bold")
 								|#{target.directMetric}
 							span(style="line-height:12px;font-size:11px;font-weight:normal")
@@ -125,7 +125,7 @@ mixin renderTargetLane(lane,columns,totalColumns)
 			br
 			div.row.row-centered(style="font-size:11px")
 				// sort by id 
-				-var _width=210;
+				-var _width=220;
 				each t in lane.children[0].children
 					div.col.col-lg-4.col-centered(style="width:#{_width+(_factor*100)}px")
 						+renderL2Target(t,_width)
