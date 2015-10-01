@@ -92,9 +92,9 @@ function drawQueues(board){
 			_drawQueueMetric(gQueueMetrics,_metric,_xWIPStart,_yMetricBracketOffset,_xWIPWidth,(_xWIPWidth/2+x(WIP_START)),_yMetricBase,_yMetricDetailsOffset,null,"bottom");
 		}
 		//-------------- TODAY markerlines ----------------
-		_drawQueueMarker(gQueueWip,WIP_START,"today",x(WIP_START),-TIMELINE_HEIGHT);
+		_drawQueueMarker(d3.select("#axes"),WIP_START,"today",x(WIP_START),-TIMELINE_HEIGHT);
 
-		_drawTodayMarker(gQueueWip,x(WIP_START),_yMetricBaseTop,"TODAY");
+		_drawTodayMarker(d3.select("#axes"),x(WIP_START),_yMetricBaseTop,"TODAY");
 		// ------------- WIP marker lines ---------------------
 		if (WIP_END < KANBAN_END){
 			_drawQueueMarker(gQueueWip,WIP_END,"wip",x(WIP_END),-TIMELINE_HEIGHT);

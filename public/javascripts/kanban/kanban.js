@@ -73,6 +73,7 @@ var releaseData;
 // kind of backup
 var initiativeDataBase;
 
+var BOARD;
 
 // the current "CONTEXT"
 //var BOARD;
@@ -251,6 +252,11 @@ function joinBoard2Items(board,items){
 			_joinedItem.DoD=_item.ElevatorPitch;
 			_joinedItem.startDate=_item.PlannedStart;
 			_joinedItem.planDate=_item.PlannedEnd;
+			_joinedItem.Product= _item.Product;
+			_joinedItem.Targets= _item.Targets;
+			_joinedItem.Customers= _item.Markets;
+			_joinedItem.Markets= _item.Products;
+
 
 			if (_item.LaunchDate)
 				_joinedItem.actualDate=_item.LaunchDate;
@@ -282,6 +288,9 @@ function renderBoard(board,items){
 		KANBAN_START= new Date(board.startDate);
 		KANBAN_END= new Date(board.endDate);
 
+		// dymaic height
+		board.height=300+(board.itemScale*board.itemFontScale*4)*items.length;
+
 		CONTEXT = board.name;
 		/*
 		initiativeData = _.filter(initiativeData,function(item){
@@ -308,6 +317,7 @@ function renderBoard(board,items){
 		//drawCustomPostits();
 		//initHandlers();
 		if (AUTH=="bpty") hideNGR();
+		BOARD = board;
 }
 
 
@@ -422,9 +432,9 @@ function _createItem(epic,groupby,boardName){
 	if (!epic[groupby[1]]) epic[groupby[1]]="empty";
 	if (!epic[groupby[2]]) epic[groupby[2]]="empty";
 
-	var _group1 = epic[groupby[0]].split("/").join("|");
-	var _group2 = epic[groupby[1]].split("/").join("|");
-	var _group3 = epic[groupby[2]].split("/").join("|");
+	var _group1 = epic[groupby[0]].toString().split("/").join("|");
+	var _group2 = epic[groupby[1]].toString().split("/").join("|");
+	var _group3 = epic[groupby[2]].toString().split("/").join("|");
 	var _product = epic.Product;
 	var _path = boardName+"/"+_group1+"/"+_group2+"/"+_group3;
 	//console.log("====== epic:lanePath: "+_path);

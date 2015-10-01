@@ -120,14 +120,14 @@
 				"priorities": ["P01","P08","P16"],
 				"baseline": {
 					"openedAt" : ["2014-10-01", "2015-01-01"],
-					"categoryExclude":["Failure","Request","Misplaced Call"],
+					"categoryExclude":["Request","Misplaced Call"],
 
 					"totalsOverride": {"P01":85,"P08":584}
 
 				},
 				"target": {
-					"openedAt" : ["NOW-90"],
-					"categoryExclude":["Failure","Request","Misplaced Call"],
+					"openedAt" : ["2015-10-01", "2015-12-31"],
+					"categoryExclude":["Request","Misplaced Call"],
 					"businessServiceExclude":"hardcoded",
 					"labelExclude":"hardcoded"
 					}

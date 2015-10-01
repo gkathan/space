@@ -136,6 +136,7 @@ router.get('/kanban/:id', function(req, res) {
     _filter.Markets="";
     _filter.Product="";
     _filter.Status="";
+    _filter.Value="";
 
 
 		_board.viewConfig = _viewConfig;

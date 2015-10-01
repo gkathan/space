@@ -30,6 +30,8 @@ block content
 		div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;background-color:white;width:#{parseInt(board.width)+200}px;text-align: center;margin: 10px auto;")
 			.panel-heading
 				h3.panel-title(style="font-size:24px;font-weight:bold") #{board.name}
+				span(style="font-size:10px") filtered by:
+				span(id="filter_header" style="font-size:10px") #{JSON.stringify(board.filter)}
 			.panel-body
 				div.row(style="margin-left:10px;margin-bottom:10px")
 					// Button trigger modal
@@ -185,16 +187,43 @@ include ../includes/material
 		  // this is used later in the resizing demo
 		  window.dragMoveListener = dragMoveListener;
 		
+		
+		
+		
 		function refresh(BOARD){
 			console.log("...refresh ");
 			_updateBoardFromFormData(BOARD);
 			
+			$('#filter_header').text(JSON.stringify(BOARD.filter));
+			
 			// restore original data from initial request
 			initiativeData = initiativeDataBase;
 			// and filter
-			initiativeData = _.filter(initiativeData,function(i){if (_.findIndex(i.Targets,function(t){if (t.match(new RegExp(BOARD.filter.Targets))) return true;})>-1) return true; })
 			
-			renderBoard("#{board._id}");
+			if (BOARD.filter.Targets){
+				initiativeData = _.filter(initiativeData,function(i){if (_.findIndex(i.Targets,function(t){if (t.match(new RegExp(BOARD.filter.Targets))) return true;})>-1) return true; });
+			}
+			
+			if (BOARD.filter.Customers){
+				initiativeData = _.filter(initiativeData,function(i){if (_.findIndex(i.Customers,function(t){if (t.match(new RegExp(BOARD.filter.Customers))) return true;})>-1) return true; });
+			}
+			
+			if (BOARD.filter.Markets){
+				initiativeData = _.filter(initiativeData,function(i){if (_.findIndex(i.Markets,function(t){if (t.match(new RegExp(BOARD.filter.Markets))) return true;})>-1) return true; });
+			}
+			
+			if (BOARD.filter.Product){
+				initiativeData=_.where(initiativeData,{Product:BOARD.filter.Product})
+			}
+			if (BOARD.filter.Status){
+				initiativeData=_.where(initiativeData,{Status:BOARD.filter.Status})
+			}
+			if (BOARD.filter.Value){
+				initiativeData=_.filter(initiativeData,function(d){return d.Value>=BOARD.filter.Value});
+			}
+
+			
+			renderBoard(BOARD,initiativeData);
 		}
 
 		function save(BOARD){
@@ -205,6 +234,7 @@ include ../includes/material
 			var _list =[];
 			_list.push(_board);
 			ajaxCall("POST","save",_list,"boards");
+			refresh(BOARD);
 		}
 						
 		
@@ -219,7 +249,7 @@ include ../includes/material
 			BOARD.startDate=_form.startdate.value;
 			BOARD.endDate=_form.enddate.value;
 			BOARD.width=_form.width.value;
-			BOARD.height=_form.height.value;
+			_form.height.value=BOARD.height;
 			BOARD.groupby=_form.groupby.value;
 			
 			BOARD.itemScale=_form.itemscale.value;
@@ -230,6 +260,25 @@ include ../includes/material
 			BOARD.filter.Markets=_form.filter_Markets.value;
 			BOARD.filter.Status=_form.filter_Status.value;
 			BOARD.filter.Product=_form.filter_Product.value;
+			BOARD.filter.Value=_form.filter_Value.value;
+			
+										
+			
+			
+			BOARD.viewConfig.initiatives = _form.view_items.value;
+			BOARD.viewConfig.swag = _form.view_swag.value;
+			BOARD.viewConfig.start = _form.view_roadmap.value;
+			BOARD.viewConfig.queues = _form.view_queues.value;
+			BOARD.viewConfig.grid = _form.view_grid.value;
+			BOARD.viewConfig.targets = _form.view_targets.value;
+			BOARD.viewConfig.lanes = _form.view_lanes.value;
+			BOARD.viewConfig.axes = _form.view_axes.value;
+			BOARD.viewConfig.guides = _form.view_guides.value;
+			BOARD.viewConfig.queuesmetrics = _form.view_qmetrics.value;
+			BOARD.viewConfig.sublaneText = _form.view_sublaneText.value;
+			BOARD.viewConfig.sublaneLine = _form.view_sublaneLine.value;
+			BOARD.viewConfig.metrics = _form.view_metrics.value;
+			
 			
 			BOARD.dataLink=_form.datalink.value;
 			BOARD.ref=_form.ref.value;

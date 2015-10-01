@@ -54,6 +54,8 @@ div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;back
 			tr
 				td(colspan="2" style="margin-left:5px;width:160px;height:50px;vertical-align:bottom")
 					input.form-control.floating-label(id="f_filter_Product" name="filter_Product" type="text" placeholder="filter for Product" autocomplete="off" value="#{board.filter.Product}")
+				td(colspan="2" style="margin-left:5px;width:160px;height:50px;vertical-align:bottom")
+					input.form-control.floating-label(id="f_filter_Value" name="filter_Value" type="text" placeholder="filter for Value greater than" autocomplete="off" value="#{board.filter.Value}")
 			tr
 				td(colspan="2" style="margin-left:5px;width:160px;height:50px;vertical-align:bottom")
 					input.form-control.floating-label(id="f_ref" name="ref" type="text" placeholder="reference" autocomplete="off" value="#{board.ref}")
@@ -78,9 +80,9 @@ div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;back
 							|empty
 							
 		include ../includes/menu_visibility_switches
-		
-		button.btn.btn-default.btn-xs(type="button" )
-			span Cancel
+
+		button.btn.btn-default.btn-xs(type="button" data-dismiss="modal")
+			span Close
 
 		if !createNew 
 			button.btn.btn-info.btn-xs(id="boardrefresh" type="button")
