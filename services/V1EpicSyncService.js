@@ -43,48 +43,45 @@ function _sync(url,type,callback){
 	var _statusERROR = "[ERROR]";
 	var _statusSUCCESS = "[SUCCESS]";
 
+	var fetch = require('node-fetch');
 
-	// call v1 rest service
-  var Client = require('node-rest-client').Client;
-	client = new Client();
-	// first the progress data
-	client.get(url[0], function(progress, response){
-		var _progress = JSON.parse(progress);
-		// second the epic data
-		client.get(url[1], function(data, response){
-			portfolioService.getCurrentApprovedInitiatives(function(err,approved){
-				// parsed response body as js object
-				//console.log(data);
-				// raw response
-				//console.log(response);
-				// and insert
-				var _epics = JSON.parse(data);
-				var v1epics =  db.collection(_syncName);
-				v1epics.drop();
+	fetch(url[0])
+	  .then(function(res) {
+	       return res.json();
+	  }).then(function(_progress) {
+      console.log("...."+_progress);
+			fetch(url[1])
+		    .then(function(res) {
+		         return res.json();
+		    }).then(function(_epics) {
+		        console.log("...."+_epics);
+						portfolioService.getCurrentApprovedInitiatives(function(err,approved){
+							// parsed response body as js object
+							//console.log(data);
+							// raw response
+							//console.log(response);
+							// and insert
+							//var _epics = JSON.parse(data);
+							var v1epics =  db.collection(_syncName);
+							v1epics.drop();
 
-				_enrichEpics(_epics,_progress,approved);
+							_enrichEpics(_epics,_progress,approved);
 
-				v1epics.insert(_epics, function(err , success){
-					//console.log('Response success '+success);
-					if (err) {
-						logger.error('Response error '+err.message);
-					}
-					if(success){
-						var _message = "syncv1 [DONE]: "+_epics.length+" epics";
-						logger.info(_message);
-						app.io.emit('syncUpdate', {status:"[SUCCESS]",from:_syncName,timestamp:_timestamp,info:_epics.length+" epics",type:type});
-						_syncStatus.saveLastSync(_syncName,_timestamp,_message,_statusSUCCESS,type);
-						callback(null,"syncv1 [DONE]: "+_epics.length+ " epics synced")
-					}
-			})
-		})
-	})
-	}).on('error',function(err){
-			var _message = err.message;
-			logger.warn('[V1EpicSyncService] says: something went wrong on the request', err.request.options,err.message);
-			app.io.emit('syncUpdate', {status:"[ERROR]",from:_syncName,timestamp:_timestamp,info:err.message,type:type});
-			_syncStatus.saveLastSync(_syncName,_timestamp,_message,_statusERROR,type);
-			callback(err);
+							v1epics.insert(_epics, function(err , success){
+								//console.log('Response success '+success);
+								if (err) {
+									logger.error('Response error '+err.message);
+								}
+								if(success){
+									var _message = "syncv1 [DONE]: "+_epics.length+" epics";
+									logger.info(_message);
+									app.io.emit('syncUpdate', {status:"[SUCCESS]",from:_syncName,timestamp:_timestamp,info:_epics.length+" epics",type:type});
+									_syncStatus.saveLastSync(_syncName,_timestamp,_message,_statusSUCCESS,type);
+									callback(null,"syncv1 [DONE]: "+_epics.length+ " epics synced")
+								}
+							})
+						})
+				})
 	});
 }
 
