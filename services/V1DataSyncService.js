@@ -43,8 +43,7 @@ function _sync(url,type,callback){
 	var _statusERROR = "[ERROR]";
 	var _statusSUCCESS = "[SUCCESS]";
 
-  var Client = require('node-rest-client').Client;
-	client = new Client();
+  var fetch = require('node-fetch');
 
 	var _cache ={};
 
@@ -52,9 +51,13 @@ function _sync(url,type,callback){
 	v1Service.findBacklogsCapacity(function(err,backlogscapacity){
 		async.eachSeries(url,function(_url,done){
 			//var _url = url[0];
-			client.get(_url, function(data, response){
+				fetch(_url)
+				  .then(function(res) {
+				       return res.json();
+				  }).then(function(_data) {
+
 				logger.debug(">>>> calling "+_url);
-				var _data = JSON.parse(data);
+				//var _data = JSON.parse(data);
 				var _collection = "v1"+_.last(_url.split("/"));
 				_cache[_collection]=_data;
 
@@ -95,8 +98,8 @@ function _sync(url,type,callback){
 					_syncStatus.saveLastSync(_syncName,_timestamp,_message,_statusSUCCESS,type);
 					callback(null,_message)
 			});
-	});
 
+	});
 }
 
 
