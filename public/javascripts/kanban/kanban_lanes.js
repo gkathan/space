@@ -41,11 +41,22 @@ function drawLanes(board){
 	if (board.viewConfig.contextboxWidth)
 		CONTEXTBOX_WIDTH = parseInt(board.viewConfig.contextboxWidth);
 
-	var laneConfig={contextbox:{
-			orientation:"vertical",
-			height:20
-		},
-		board:board
+	var laneConfig={
+									contextbox:{
+										orientation:"vertical",
+										height:20
+									},
+									lane:{
+										orientation:"vertical",
+										size:"5px",
+										anchor:"start"
+									},
+									sublane:{
+										orientation:"horizontal",
+										size:"4px",
+										anchor:"end"
+									},
+									board:board
 	};
 
 //experiment
@@ -124,7 +135,13 @@ function _drawLane(d,svg,lanesLeft,lanesRight,_xRightStart,laneConfig,count){
 	// laneside descriptors
 	if (_.last(CONTEXT.split(FQ_DELIMITER))=="drill-in"){
 		var _laneName = _.last(_lane.split(FQ_DELIMITER))
-		_drawLaneSideText(lanesLeft,_laneName,-LANE_LABELBOX_LEFT_WIDTH-2,_y+3,"5px","start");
+
+		var _mode="";
+		if (laneConfig.lane.orientation=="vertical")
+			_mode="tb";
+		else if (laneConfig.lane.orientation=="horizontal")
+			_mode="";
+		_drawLaneSideText(lanesLeft,_laneName,-LANE_LABELBOX_LEFT_WIDTH-2,_y+3,laneConfig.lane.size,laneConfig.lane.anchor,_mode);
 	}
 }
 
@@ -138,7 +155,12 @@ function _drawSublanes(d,svg,laneConfig){
 		// strip only the sublane name if name is fully qualified like "topline.bwin.touch"
 		var _sublane = _.last((_sublanes[s].name).split(FQ_DELIMITER))
 		if (laneConfig.board.viewConfig.sublaneText!="off"){
-			_drawLaneSideText(svg,_sublane,1,_y+_h/2,"4px","middle");
+			var _mode="";
+			if (laneConfig.sublane.orientation=="vertical")
+				_mode="tb";
+			else if (laneConfig.sublane.orientation=="horizontal")
+				_mode="";
+			_drawLaneSideText(svg,_sublane,1,_y+_h/2,laneConfig.sublane.size,laneConfig.sublane.anchor,_mode);
 		}
 		if (laneConfig.board.viewConfig.sublaneLine!="off"){
 			//no lines for first and last sublane
@@ -395,8 +417,8 @@ function _drawLaneArea(svg,x,y,width,height,i){
 
 /**
  */
-function _drawLaneSideText(svg,text,x,y,size,anchor){
-	_drawText(svg,text,x,y,{"size":size,"color":"grey","weight":"normal","mode":"tb","anchor":anchor});
+function _drawLaneSideText(svg,text,x,y,size,anchor,mode){
+		_drawText(svg,text,x,y,{"size":size,"color":"grey","weight":"normal","mode":mode,"anchor":anchor});
 }
 
 /* ------------------------------------------------- END drawLanes() helper functions ----------------------------------------------------------- */

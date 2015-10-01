@@ -16,11 +16,12 @@
  * createLaneHierarchy(initiativeData,ITEMDATA_FILTER,ITEMDATA_NEST.length)
  * createLaneHierarchy(targetData,ITEMDATA_FILTER,ITEMDATA_NEST.length)
  */
-function createLaneHierarchy(boardItems,dataFilter,groupby,context){
+function createLaneHierarchy(board,dataFilter,groupby,context){
 	// create hierarchical base data from list
 	// number of max levels in the lanePath
-	var _level =3;
+	var _level =board.groupby.split(",").length;
 
+	var boardItems=board.items;
 	var items = boardItems.map(function(d) { return d.lanePath.split('/'); });
 	// emulate legacy behavior to get the first level below the "bm"="b2c gaming" node ...
 	var _hierarchy = buildTreeFromPathArray(items)[0];

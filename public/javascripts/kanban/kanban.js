@@ -385,7 +385,7 @@ function drawAll(board){
 		boardItems.sort(s);
 		// ------------------------------------------------------------------------------------------------
 		var _context = {"yMin":Y_MIN,"yMax":Y_MAX,"name":CONTEXT};
-		itemTree = createLaneHierarchy(boardItems,ITEMDATA_FILTER,board.groupby.split(","),_context);
+		itemTree = createLaneHierarchy(board,ITEMDATA_FILTER,board.groupby.split(","),_context);
 		//targetTree = createLaneHierarchy(targetData,ITEMDATA_FILTER,BOARD.groupby,_context);
 		// kanban_items.js
 		if (board.viewConfig.initiatives!="off") drawInitiatives(board);
@@ -428,15 +428,35 @@ function _createItem(epic,groupby,boardName){
 	//console.log("======== _createItem: epic: "+epic.Number+ " - groupby: "+groupby);
 	//console.log("====== epic:PlanningBacklog: "+epic.PlanningBacklog);
 	//split / join needed e.g. if businessbacklog is used we need to replace "/"
+	var _maxDepth = groupby.length;
+	var _path="";
+
+	var _levels=[];
+	for (var i in groupby){
+		if (!epic[groupby[i]]) epic[groupby[i]]="empty";
+		_levels.push(epic[groupby[i]].toString().split("/").join("|"));
+	}
+
+	/*
 	if (!epic[groupby[0]]) epic[groupby[0]]=boardName;
 	if (!epic[groupby[1]]) epic[groupby[1]]="empty";
 	if (!epic[groupby[2]]) epic[groupby[2]]="empty";
+	if (!epic[groupby[3]]) epic[groupby[3]]="empty";
 
 	var _group1 = epic[groupby[0]].toString().split("/").join("|");
 	var _group2 = epic[groupby[1]].toString().split("/").join("|");
 	var _group3 = epic[groupby[2]].toString().split("/").join("|");
+	var _group4 = epic[groupby[3]].toString().split("/").join("|");
+	*/
 	var _product = epic.Product;
-	var _path = boardName+"/"+_group1+"/"+_group2+"/"+_group3;
+	//var _path = boardName+"/"+_group1+"/"+_group2+"/"+_group3+"/"+_group4;
+
+	var _path = boardName;
+	for (var i in _levels){
+		_path+="/"+_levels[i]
+	}
+	//var _path = boardName+"/"+_levels[0]+"/"+_levels[1]+"/"+_levels[2];
+
 	//console.log("====== epic:lanePath: "+_path);
 
 	// !!!! path needs 3 levels right now at least

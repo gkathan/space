@@ -101,7 +101,7 @@ function drawItems(board){
 		var _size = d.size*ITEM_SCALE;
 		if (!d.isCorporate) _size = _size * TACTIC_SCALE;
 
-		console.log("** item: id="+d.id+"."+d.name+" FQName(): "+getFQName(d));
+		//console.log("** item: id="+d.id+"."+d.name+" FQName(): "+getFQName(d));
 
 		var _itemXPlanned;
 		var _itemXActual;
@@ -122,10 +122,18 @@ function drawItems(board){
 		if (!d.actualDate) _itemX =_itemXPlanned;
 		else _itemX = _itemXActual
 
-		var _yOffset = getSublaneCenterOffset(getFQName(d));
-		var _sublane = getSublaneByNameNEW(getFQName(d));
+		console.log("FQ: "+getFQName(d));
+
+		var _maxDepth = board.groupby.split(",").length;
+
+		var _yOffset = getSublaneCenterOffset(getFQName(d),_maxDepth);
+		var _sublane = getSublaneByNameNEW(getFQName(d),_maxDepth);
 		var _sublaneHeigth = _sublane.yt2-_sublane.yt1;
+
+		//how many items do we have to fit into a sublane ??
+
 		var _itemY = y(_sublane.yt1-_yOffset)+getInt(d.sublaneOffset);
+
 		// ------------  line if delayed  before plan--------------
 		var _lineX1= _itemXPlanned;
 		var _lineX2= _itemX-_size-(_size/2);
@@ -159,7 +167,7 @@ function drawItems(board){
 		if (!d.startDate){
 			_startDate=new Date();
 		}
-		console.log("____startDate: "+_startDate+" item: "+d.name+" plan: "+d.planDate);
+		//console.log("____startDate: "+_startDate+" item: "+d.name+" plan: "+d.planDate);
 		var _startVisibility ="hidden";
 		if (board.viewConfig.start=="show"){
 			_startVisibility="visible";
@@ -239,7 +247,7 @@ function drawItems(board){
 
 			_drawItemName(d3.select(this),d,_textX,(_itemY)+ parseInt(_size)+(5+(_size/5)*ITEM_FONTSCALE),null,null,_getVisibility("drawItemName.end",board),"end");
 			// kanban_postits.js
-			_drawPostit(d3.select(this),d);
+			_drawPostit(d3.select(this),d,board);
 		} // end KANBAN_START check
 		// if plandate is beyon KANBAN_START - we have to draw the name below the circle (a bit smaller)
 		else if (moment(d.actualDate).toDate()>KANBAN_START && (d.state =="done" || d.state =="planned")){
@@ -281,10 +289,10 @@ function drawItems(board){
 				//lookup the concrete item
 				var _dependingItem = getItemByID(filteredInitiativeData,_d);
 				if (_dependingItem){
-					var _depYOffset = getSublaneCenterOffset(getFQName(_dependingItem));
+					var _depYOffset = getSublaneCenterOffset(getFQName(_dependingItem),_maxDepth);
 					//console.log("found depending item id: "+_dependingItem.id+ " "+_dependingItem.name);
 					var _toX = x(moment(_dependingItem.planDate).toDate())
-					var _toY = y(getSublaneByNameNEW(getFQName(_dependingItem)).yt1-_depYOffset)+getInt(_dependingItem.sublaneOffset);
+					var _toY = y(getSublaneByNameNEW(getFQName(_dependingItem),_maxDepth).yt1-_depYOffset)+getInt(_dependingItem.sublaneOffset);
 
 					// put lines in one layer to turn on off globally
 					_drawLine(dep,_itemXPlanned,_itemY,_toX,_toY,"dependLine",[{"end":"arrow_grey"}]);
@@ -779,6 +787,7 @@ function _registerDragDrop(board){
 	// test drag item start
 	var baseY;
 
+
 		var drag_item = d3.behavior.drag()
 			.on("dragstart", function(d,i) {
 
@@ -793,7 +802,7 @@ function _registerDragDrop(board){
 					})
 					// and highlight the sublane we are in
 					var _item = getItemByKey(board.items,"_id",d._id);
-					var _sublane = getSublaneByNameNEW(_item.lanePath);
+					var _sublane = getSublaneByNameNEW(_item.lanePath,board.groupby.split(",").length);
 					console.log(">>>> highlight sublane: "+_sublane.name);
 					highlightLane(d3.select("#lanes"),_sublane);
 				}
@@ -873,7 +882,7 @@ function _registerDragDrop(board){
 
 					var _themes = getThemesNEW();
 					var _lanes = getLanesNEW();
-					var _sublanes = getSublanesNEW();
+					var _sublanes = getSublanesNEW(null,board.groupby.split(",").length);
 					for (var l in _lanes){
 						if (_y >= y(_lanes[l].yt1) && _y <= y(_lanes[l].yt2)) {
 							_lane =_lanes[l];
@@ -930,7 +939,7 @@ function _registerDragDrop(board){
 					// and highlight the sublane we are in
 					var _item = getItemByKey(board.items,"Number",d.Number);
 
-					var _sublane = getSublaneByNameNEW(_item.lanePath);
+					var _sublane = getSublaneByNameNEW(_item.lanePath,board.groupby.split(",").length);
 
 
 					console.log(">>>> highlight sublane: "+_sublane.name);

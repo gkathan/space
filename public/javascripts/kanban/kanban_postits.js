@@ -24,18 +24,20 @@ var CUSTUM_POSTIT_SCALE=1;
  * @svg d3 reference
  * @d data
  */
-function _drawPostit(svg,d){
+function _drawPostit(svg,d,board){
 
 	var gPostit= svg.append("g")
 	.attr("id",function(d){return "postit_"+d.id})
+
+	var _maxDepth = board.groupby.split(",").length;
 
 	var _size = d.size*ITEM_SCALE;
 	var _itemXPlanned = x(new Date(d.planDate));
 	var _itemXActual = x(new Date(d.actualDate));
 	var _itemXStart = x(new Date(d.startDate));
-	var _yOffset = getSublaneCenterOffset(getFQName(d));
+	var _yOffset = getSublaneCenterOffset(getFQName(d),_maxDepth);
 	//d.sublaneOffset = override for positioning of otherwise colliding elements => manual !
-	var _itemY = y(getSublaneByNameNEW(getFQName(d)).yt1-_yOffset)+getInt(d.sublaneOffset);
+	var _itemY = y(getSublaneByNameNEW(getFQName(d),_maxDepth).yt1-_yOffset)+getInt(d.sublaneOffset);
 
 	// ------------  postits --------------
 	if(d.state=="todo")

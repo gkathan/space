@@ -49,9 +49,9 @@ function getConfigByName(name){
 /**
 calculates the offset to center elements / text per sublane
 */
-function getSublaneCenterOffset(sublane){
+function getSublaneCenterOffset(sublane,maxDepth){
 	if(sublane){
-		var _sublane = getSublaneByNameNEW(sublane);
+		var _sublane = getSublaneByNameNEW(sublane,maxDepth);
 		if (_sublane){
 			var _height = _sublane.yt2-_sublane.yt1;
 			return -(_height/2);
@@ -82,8 +82,8 @@ function getItemByID(data,id){
 	}
 }
 
-function getItemsBySublane(sublane){
-	var _sub = getSublaneByNameNEW(sublane);
+function getItemsBySublane(sublane,maxDepth){
+	var _sub = getSublaneByNameNEW(sublane,maxDepth);
 	if (_sub && _sub.children){
 		return _sub.children;
 	}
@@ -110,17 +110,19 @@ function getLaneByNameNEW(name){
 }
 
 
-
-function getSublanesNEW(lane){
+/*
+looks like this is more about the LEAF level = max depth
+*/
+function getSublanesNEW(lane,maxDepth){
 	if (lane)
 		return getLaneByNameNEW(lane).children;
 	else{
-			return getElementsByDepth(3);
+			return getElementsByDepth(maxDepth);
 	}
 }
 
-function getSublaneByNameNEW(name){
-	var _sublanes = getSublanesNEW();
+function getSublaneByNameNEW(name,maxDepth){
+	var _sublanes = getSublanesNEW(null,maxDepth);
 	for (var i in _sublanes){
 		if (_sublanes[i].name===name) return _sublanes[i];
 	}
