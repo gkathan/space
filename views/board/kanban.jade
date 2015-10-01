@@ -188,6 +188,9 @@ include ../includes/material
 		function refresh(BOARD){
 			console.log("...refresh ");
 			_updateBoardFromFormData(BOARD);
+			
+			//initiativeData = _.filter(initiativeData,function(i){if (_.findIndex(i.Targets,function(t){if (t.match(new RegExp(BOARD.filter.Targets))) return true;})>-1) return true; })
+			
 			renderBoard("#{board._id}");
 		}
 
