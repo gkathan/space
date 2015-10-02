@@ -54,7 +54,7 @@ function ajaxCall(verb,action,itemList,_type,afterHandlerCallback){
 		success: function(msg)
 			{
 				console.log("[space_utils.ajaxCall] ==== success handler...");
-				if (afterHandlerCallback !=undefined) afterHandlerCallback(_type);
+				if (afterHandlerCallback !=undefined) afterHandlerCallback(null,msg);
 				console.log("==== and now lets notify...");
 
 				$(function(){
@@ -73,7 +73,7 @@ function ajaxCall(verb,action,itemList,_type,afterHandlerCallback){
 		error: function(msg)
 			{
 				console.log("[space_utils.ajaxCall] ==== error handler..."+msg);
-				if (afterHandlerCallback !=undefined) afterHandlerCallback(_type);
+				if (afterHandlerCallback !=undefined) afterHandlerCallback("error occured: "+msg);
 
 				$(function(){
 					PNotify.desktop.permission();
