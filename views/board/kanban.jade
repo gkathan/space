@@ -112,9 +112,9 @@ block content
 						script $("#table_roadmapitems").tablesorter();				
 		
 		//Modal
-		div.modal.fade(id="createBoardModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" )
+		div.modal.fade(id="createBoardModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"  )
 			div.modal-dialog
-				div.modal-content(style="opacity:1;")
+				div.modal-content(style="opacity:.9;width:800px")
 					div.modal-header
 						button.close(type="button" data-dismiss="modal" aria-label="Close")
 							span(aria-hidden="true") &times
@@ -124,7 +124,7 @@ block content
 									img.img-thumbnail(src="/images/boards/thumbs/#{board._id}.png"  style=" height:50px" )
 								td 
 									span(style="font-size:20px") #{formBoardTitle}
-					div.modal-body
+					div.modal-body(style="width:800px")
 						include includes/form_board
 									
 include ../includes/material
