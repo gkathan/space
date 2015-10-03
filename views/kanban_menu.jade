@@ -278,19 +278,24 @@ block content
 
 		// if we get an "info" emit from the socket server then console.log the data we recive
 		socket.on('message', function (data) {
-			if (!data.msg.type) data.msg.type="info";
-			console.log("socket emit message: "+JSON.stringify(data.msg));
-			$(function(){
-				PNotify.desktop.permission();
-				new PNotify({
-					title: data.msg.title,
-					text: data.msg.body,
-					type: data.msg.type,
-					desktop: data.msg.desktop,
-					shadow: true,
-					history: data.msg.history
+			if (data.msg){
+				if (!data.msg.type) data.msg.type="info";
+				console.log("socket emit message: "+JSON.stringify(data.msg));
+				$(function(){
+					PNotify.desktop.permission();
+					new PNotify({
+						title: data.msg.title,
+						text: data.msg.body,
+						type: data.msg.type,
+						desktop: data.msg.desktop,
+						shadow: true,
+						history: data.msg.history
+					});
 				});
-			});
+			}
+			else{
+				console.log("s p a c e socket listener says: ---------- got non-space compatible message.....");
+			}
 		
 		//	$('#alert').css("visibility","visible");
 		//	$('#alert').delay(500);
