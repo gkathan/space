@@ -48,6 +48,20 @@ body {
     margin-bottom: 0px;
 }
 
+th.rotate{
+	height:120px;
+	white-space:nowrap;
+}
+th.rotate > div{
+	width:30px;
+	transform:
+		translate(10px,81px)
+		rotate(315deg)
+
+}
+th.rotate > div > span{
+	padding:30px -50px;
+}
 
 /* custome bootstrap3 file input
  * http://stackoverflow.com/questions/11235206/twitter-bootstrap-form-file-element-upload-button

@@ -195,9 +195,12 @@ script(type='text/javascript').
 	_board.viewConfig.targets=form.view_targets.value;
 	_board.viewConfig.lanes=form.view_lanes.value;
 	_board.viewConfig.axes=form.view_axes.value;
-
-	_board.viewConfig.qmetrics=form.view_qmetrics.value;
-	_board.viewConfig.metrics=form.view_metrics.value;
+	_board.viewConfig.lanes = form.view_lanes.value;
+	_board.viewConfig.guides = form.view_guides.value;
+	_board.viewConfig.queuesmetrics = form.view_qmetrics.value;
+	_board.viewConfig.sublaneText = form.view_sublaneText.value;
+	_board.viewConfig.sublaneLine = form.view_sublaneLine.value;
+	_board.viewConfig.metrics = form.view_metrics.value;
 	_board.viewConfig.releases=form.view_releases.value;
 	_board.viewConfig.NGR=form.view_NGR.value;
 		
@@ -216,6 +219,9 @@ script(type='text/javascript').
 		}
 		if (form.filter_Product.value){
 			_board.filter.Product = form.filter_Product.value;
+		}
+		if (form.filter_Value.value){
+			_board.filter.Value = form.filter_Value.value;
 		}
 		var _json = JSON.stringify(_board);
 
