@@ -6,20 +6,21 @@ var boardInitialized = false;
 var keyTrap = null;
 
 var baseurl = location.pathname.substring(0, location.pathname.lastIndexOf('/'));
-var socket = io.connect();
+//var scrumblrsocket = io.connect({path: baseurl + "/socket.io"});
+var scrumblrsocket = io.connect();
 
 //an action has happened, send it to the
 //server
 function sendAction(a, d) {
-    console.log('--> ' + a);
+  //console.log('--> ' + a);
   var message = {
         action: a,
         data: d
     };
-    socket.json.send(message);
+    scrumblrsocket.json.send(message);
 }
 
-socket.on('connect', function() {
+scrumblrsocket.on('connect', function() {
     //console.log('successful socket.io connect');
     //let the final part of the path be the room name
     var room = location.pathname.substring(location.pathname.lastIndexOf('/'));
@@ -27,12 +28,12 @@ socket.on('connect', function() {
     sendAction('joinRoom', room);
 });
 
-socket.on('disconnect', function() {
+scrumblrsocket.on('disconnect', function() {
     blockUI("Server disconnected. Refresh page to try and reconnect...");
     //$('.blockOverlay').click($.unblockUI);
 });
 
-socket.on('message', function(data) {
+scrumblrsocket.on('message', function(data) {
     getMessage(data);
 });
 
@@ -42,10 +43,8 @@ function unblockUI() {
 
 function blockUI(message) {
     message = message || 'Waiting...';
-
     $.blockUI({
         message: message,
-
         css: {
             border: 'none',
             padding: '15px',
@@ -56,7 +55,6 @@ function blockUI(message) {
             color: '#fff',
             fontSize: '20px'
         },
-
         fadeOut: 0,
         fadeIn: 10
     });
@@ -123,7 +121,7 @@ function getMessage(m) {
             addSticker(message.data.cardId, message.data.stickerId);
             break;
         case 'setBoardSize':
-            console.log("setBoardSize: "+message.data);
+            //console.log("setBoardSize: "+message.data);
             resizeBoard(message.data);
             break;
         default:
@@ -189,13 +187,11 @@ function drawNewCard(id, text, x, y, rot, colour, sticker, animationspeed) {
             keyTrap = null;
             return;
         }
-
         var data = {
             id: this.id,
             position: ui.position,
             oldposition: ui.originalPosition,
         };
-
         sendAction('moveCard', data);
     });
 
@@ -204,15 +200,12 @@ function drawNewCard(id, text, x, y, rot, colour, sticker, animationspeed) {
         drop: function(event, ui) {
             var stickerId = ui.draggable.attr("id");
             var cardId = $(this).parent().attr('id');
-
             addSticker(cardId, stickerId);
-
             var data = {
                 cardId: cardId,
                 stickerId: stickerId
             };
             sendAction('addSticker', data);
-
             //remove hover state to everything on the board to prevent
             //a jquery bug where it gets left around
             $('.card-hover-draggable').removeClass('card-hover-draggable');
@@ -275,7 +268,6 @@ function drawNewCard(id, text, x, y, rot, colour, sticker, animationspeed) {
         onblur: 'submit',
         event: 'dblclick', //event: 'mouseover'
     });
-
     //add applicable sticker
     if (sticker !== null)
         addSticker(id, sticker);
@@ -320,9 +312,7 @@ function addSticker(cardId, stickerId) {
 //----------------------------------
 function createCard(id, text, x, y, rot, colour) {
     drawNewCard(id, text, x, y, rot, colour, null);
-
     var action = "createCard";
-
     var data = {
         id: id,
         text: text,
@@ -331,16 +321,12 @@ function createCard(id, text, x, y, rot, colour) {
         rot: rot,
         colour: colour
     };
-
     sendAction(action, data);
-
 }
 
 function randomCardColour() {
     var colours = ['yellow', 'green', 'blue', 'white'];
-
     var i = Math.floor(Math.random() * colours.length);
-
     return colours[i];
 }
 
@@ -378,7 +364,6 @@ function drawNewColumn(columnName) {
     if (totalcolumns === 0) {
         cls = "col first";
     }
-
     $('#icon-col').before('<td class="' + cls +
         '" width="10%" style="display:none"><h2 id="col-' + (totalcolumns + 1) +
         '" class="editable">' + columnName + '</h2></td>');
@@ -397,9 +382,7 @@ function drawNewColumn(columnName) {
         xindicator: '<img src="/images/scrumblr/ajax-loader.gif">',
         event: 'dblclick', //event: 'mouseover'
     });
-
     $('.col:last').fadeIn(1500);
-
     totalcolumns++;
 }
 
@@ -421,13 +404,11 @@ function onColumnChange(id, text) {
 
 function displayRemoveColumn() {
     if (totalcolumns <= 0) return false;
-
     $('.col:last').fadeOut(150,
         function() {
             $(this).remove();
         }
     );
-
     totalcolumns--;
 }
 
@@ -473,7 +454,6 @@ function initColumns(columnArray) {
     }
 }
 
-
 function changeThemeTo(theme) {
     currentTheme = theme;
     console.log("changeTheme: "+theme);
@@ -510,7 +490,6 @@ function getCookie(c_name) {
 
 function setName(name) {
     sendAction('setUserName', name);
-
     setCookie('scrumscrum-username', name, 365);
 }
 
@@ -527,8 +506,6 @@ function displayUserJoined(sid, user_name) {
         name = user_name;
     else
         name = sid.substring(0, 5);
-
-
     $('#names-ul').append('<li id="user-' + sid + '">' + name + '</li>');
 }
 
@@ -538,9 +515,7 @@ function displayUserLeft(sid) {
         name = user_name;
     else
         name = sid;
-
     var id = '#user-' + sid.toString();
-
     $('#names-ul').children(id).fadeOut(1000, function() {
         $(this).remove();
     });
@@ -549,7 +524,6 @@ function displayUserLeft(sid) {
 
 function updateName(sid, name) {
     var id = '#user-' + sid.toString();
-
     $('#names-ul').children(id).text(name);
 }
 
@@ -632,18 +606,11 @@ function adjustCard(offsets, doSync) {
 //////////////////////////////////////////////////////////
 
 $(function() {
-
-
 	//disable image dragging
 	//window.ondragstart = function() { return false; };
-
-
     if (boardInitialized === false)
         blockUI('<img src="/images/scrumblr/ajax-loader.gif" width=43 height=11/>');
-
     //setTimeout($.unblockUI, 2000);
-
-
     $("#create-card")
         .click(function() {
             var rotation = Math.random() * 10 - 5; //add a bit of random rotation (+/- 10deg)
@@ -656,9 +623,6 @@ $(function() {
                 rotation,
                 randomCardColour());
         });
-
-
-
     // Style changer
     $("#smallify").click(function() {
         console.log("smallify called...currentTheme: "+currentTheme);
@@ -702,12 +666,9 @@ $(function() {
             return false;
         }
     );
-
-
     // $('#cog-button').click( function(){
     // 	$('#config-dropdown').fadeToggle();
     // } );
-
     // $('#config-dropdown').hover(
     // 	function(){ /*$('#config-dropdown').fadeIn()*/ },
     // 	function(){ $('#config-dropdown').fadeOut() }
@@ -715,16 +676,11 @@ $(function() {
     //
 
     var user_name = getCookie('scrumscrum-username');
-
-
-
     $("#yourname-input").focus(function() {
         if ($(this).val() == 'unknown') {
             $(this).val("");
         }
-
         $(this).addClass('focused');
-
     });
 
     $("#yourname-input").blur(function() {
@@ -732,15 +688,12 @@ $(function() {
             $(this).val('unknown');
         }
         $(this).removeClass('focused');
-
         setName($(this).val());
     });
 
     $("#yourname-input").val(user_name);
     $("#yourname-input").blur();
-
     $("#yourname-li").hide();
-
     $("#yourname-input").keypress(function(e) {
         code = (e.keyCode ? e.keyCode : e.which);
         if (code == 10 || code == 13) {
@@ -748,13 +701,10 @@ $(function() {
         }
     });
 
-
-
     $(".sticker").draggable({
         revert: true,
         zIndex: 1000
     });
-
 
     $(".board-outline").resizable({
         ghost: false,
@@ -767,7 +717,6 @@ $(function() {
     //A new scope for precalculating
     (function() {
         var offsets;
-
         $(".board-outline").bind("resizestart", function() {
             offsets = calcCardOffset();
         });
@@ -780,8 +729,6 @@ $(function() {
         });
     })();
 
-
-
     $('#marker').draggable({
         axis: 'x',
         containment: 'parent'
@@ -791,6 +738,4 @@ $(function() {
         axis: 'x',
         containment: 'parent'
     });
-
-
 });

@@ -1,6 +1,6 @@
 var conf = require('./config.js').database;
 
-exports.db = require('./data/'+conf.type+'.js').db;
+exports.db = require('./'+conf.type+'.js').db;
 
 /*
 var db = function(callback) { }

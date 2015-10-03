@@ -26,8 +26,10 @@ router.get('/demo', function(req, res) {
 });
 
 router.get('/:id', function(req, res){
+	res.locals.board=req.params.id;
 	res.render('scrumblr/index.jade', {
 		pageTitle: ('scrumblr - ' + req.params.id)
+
 	});
 });
 
