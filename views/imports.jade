@@ -1,19 +1,16 @@
-
 script(src='/javascripts/components/jquery/dist/jquery.min.js')
+
+
 script(src="/javascripts/components/moment/min/moment.min.js")
 script(src="/javascripts/components/moment-duration-format/lib/moment-duration-format.js")
 
-
 script(src='/javascripts/components/bootstrap/dist/js/bootstrap.min.js')
 script(src='/javascripts/components/jasny-bootstrap/dist/js/jasny-bootstrap.min.js')
-
 
 script(src="/javascripts/components/bootstrap-multiselect/dist/js/bootstrap-multiselect.js")
 script(src='/javascripts/components/bootstrap-notify/js/bootstrap-notify.js')
 
 script(src='/javascripts/components/bootstrap3-wysiwyg/dist/bootstrap3-wysihtml5.all.min.js')
-
-
 script(src="/javascripts/components/d3/d3.min.js")
 //script(src="/javascripts/components/datejs/build/production/date.min.js")
 
@@ -21,10 +18,8 @@ script(src="/javascripts/components/lodash/lodash.min.js")
 //script(src="/javascripts/components/underscore/underscore-min.js")
 script(src="/javascripts/components/underscore.nest/underscore.nest.min.js")
 
-
 //script(src='/javascripts/components/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js')
 script(src='/javascripts/components/bootstrap-daterangepicker/daterangepicker.js')
-
 
 script(src="/javascripts/components/Sortable/Sortable.min.js")
 
@@ -32,37 +27,29 @@ script(src="/javascripts/components/tablesorter/jquery.tablesorter.min.js")
 script(src="/javascripts/components/jqueryui/jquery-ui.min.js")
 
 script(type='text/javascript', src="/javascripts/components/socket.io-client/socket.io.js")
-
-
 script(type='text/javascript', src="/javascripts/components/accountingjs/accounting.min.js")
-
-
 script(type='text/javascript', src="/javascripts/extensions/pnotify/pnotify.custom.min.js")
 
-
-
-
 script(src="/javascripts/kanban/d3_util.js")
-
 script(src="/javascripts/space/space_utils.js")
 
+//scrumblr 
+script(src='/javascripts/components/blockUI/jquery.blockUI.js')
+script(src="/javascripts/components/jeditable/jquery.jeditable.js")
+script(src="/javascripts/components/jquery-ui-touch-punch/jquery.ui.touch-punch.min.js")
 
 
 //stylesheets
-
 link(rel='stylesheet', href='/javascripts/components/font-awesome/css/font-awesome.min.css')
 link(rel='stylesheet', href='/javascripts/components/bootstrap/dist/css/bootstrap.min.css')
 link(rel='stylesheet', href='/javascripts/components/jasny-bootstrap/dist/css/jasny-bootstrap.min.css')
 // Load c3.css
 link(href='/javascripts/components/c3/c3.css', rel='stylesheet', type='text/css')
 link(href='/javascripts/components/nvd3/build/nv.d3.min.css', rel='stylesheet', type='text/css')
-
 link(href='/javascripts/components/bootstrap3-wysiwyg/dist/bootstrap3-wysihtml5.min.css', rel='stylesheet', type='text/css')
-
 
 // material bootstrap
 //link(href="/javascripts/components/bootstrap-material-design/dist/css/material-wfont.min.css" rel="stylesheet")
-
 if session.CONTEXT
 	link(rel="stylesheet"  href="/stylesheets/#{session.CONTEXT}-material.css")
 else

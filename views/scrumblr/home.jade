@@ -1,0 +1,60 @@
+include ../kanban_menu
+
+link(rel="stylesheet" type="text/css" href="/stylesheets/scrumblr/style.css")
+link(rel="stylesheet" title="cardsize" href="/stylesheets/scrumblr/bigcards.css" type="text/css" media="all")
+link(href='//fonts.googleapis.com/css?family=Rock+Salt' rel='stylesheet' type='text/css')
+link(href='//fonts.googleapis.com/css?family=Covered+By+Your+Grace' rel='stylesheet' type='text/css')
+
+script(src="/javascripts/scrumblr/scrumblr.js")
+
+block content
+	div.container-fluid
+		div.board-outline(style="margin:auto;max-width:1400px;text-align:center") 
+			div#board
+				div#board-doodles
+				table#board-table.board-table
+					tr
+						td
+							h1.home scrumblr.
+							form.home(onsubmit="return go();")
+								label name your new board:
+								br
+								input.text(id="new_board" type="text", name="name")
+								a#go(onclick="return go();") &nbsp;go.
+							<br><br>
+							p.home example board:
+							p.home!= '<a href="http://' + locals.url + '/demo">' + locals.url + '/demo</a>'
+							<br><br><br>
+
+		div.stickers
+			div.sticker#sticker-red
+			div.sticker#sticker-blue
+			div.sticker#sticker-yellow
+			div.sticker#sticker-green
+			br
+			div.sticker#sticker-pink
+			div.sticker#sticker-lightblue
+			div.sticker#sticker-orange
+			div.sticker#sticker-purple
+			br
+			div.sticker#sticker-gold
+			div.sticker#sticker-bluestar
+			div.sticker#sticker-silverstar
+			div.sticker#sticker-redstar
+
+
+		//display # of active users here
+		div.active-connections= "connections: " + connected
+
+		//<div style="width: 980px; height: 450px; border: solid 2px; opacity:.1; margin-top: 100px"> this will be the backlog that only appears on drag or perhaps not at all</div>
+
+script.
+	function go(){
+		var value = $('#new_board').val(); 
+		value = escape(value); 
+		console.log("go: "+value);
+		window.location.href = "scrumblr/"+value; 
+		return false;
+	}
+
+	

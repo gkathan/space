@@ -10,7 +10,7 @@ var http = require('http');
 var https = require('https');
 
 http.globalAgent.maxSockets = Infinity;
-https.globalAgent.maxSockets = Infinity; 
+https.globalAgent.maxSockets = Infinity;
 
 /**
  * Get port from environment and store in Express.
@@ -60,6 +60,10 @@ server_https.on('listening', onListeningHttps);
 
 //var io = require('socket.io').listen(server_http);
 app.io.attach(server_http);
+
+//app.io.attach(server_http, {path: "/space.io"});
+//app.io_scrumblr.attach(server_http, {path: "/scrumblr/scrumblr.io"});
+
 
 /**
  * Normalize a port into a number, string, or false.
