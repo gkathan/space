@@ -14,6 +14,10 @@ var sids_to_user_names = [];
 
 var app=require('../../app');
 
+// logger
+var winston = require('winston');
+var logger = winston.loggers.get('space_log');
+
 exports.start = _start;
 
 /**************

@@ -3,8 +3,11 @@ var router = express.Router();
 
 var app=require('../app');
 
+var winston=require('winston');
+var logger = winston.loggers.get('space_log');
 
 router.get('/', function(req, res) {
+	ensureAuthenticated(req,res);
 	//console.log(req.header('host'));
 	url = req.header('host') + req.baseUrl;
 
@@ -15,6 +18,7 @@ router.get('/', function(req, res) {
 		url: url,
 		connected: clientsCount
 	});
+
 });
 
 
@@ -34,3 +38,15 @@ router.get('/:id', function(req, res){
 });
 
 module.exports = router;
+
+
+function ensureAuthenticated(req, res) {
+	logger.debug("[CHECK AUTHENTICATED]");
+  if (!req.session.AUTH){
+		  logger.debug("[*** NOT AUTHENTICATED **]");
+      req.session.ORIGINAL_URL = req.originalUrl;
+		  res.redirect("/login");
+      return false
+	}
+  return true;
+}
