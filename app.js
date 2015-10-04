@@ -141,7 +141,7 @@ app.use('/content', content);
 app.use('/admin', admin);
 app.use('/boards', boards);
 
-app.use('/scrumblr', scrumblr);
+app.use('/pinboards', scrumblr);
 
 
 
