@@ -5,7 +5,6 @@ var config = require('config');
 var schedule = require('node-schedule');
 var _ = require('lodash');
 
-var app=require('../app');
 
 var mongojs = require("mongojs");
 var DB="space";

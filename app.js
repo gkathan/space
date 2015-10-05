@@ -120,7 +120,7 @@ app.use(function(req, res, next) {
 
 
 // adds config object to all responses
-var addconfig = require('./services/middleware/addconfig.js');
+var addconfig = require('./middlewares/addconfig.js');
 app.use(addconfig());
 
 logger.debug("**** ENV: "+app.get('env'));
