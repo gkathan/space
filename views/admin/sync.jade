@@ -59,6 +59,9 @@ div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;back
 	.panel-heading
 		i.glyphicon.glyphicon-refresh(style="font-size:15px")
 		span(style="font-size:20px") &nbsp;SYNC PROCESSES
+		if config.sync.socketserver
+			div
+				|syncserver: #{config.sync.socketserver}
 	.panel-body(style="font-size:12px")
 		table.table.table-striped.table-hover.table-condensed
 			thead
@@ -281,7 +284,9 @@ script.
 	});
 	// connect to the socket server
 	//var socket = io.connect('http://localhost:3333'); 
-	var socket = io.connect(); 
+	var _socketserver = '#{config.sync.socketserver}';
+	console.log("----- _socketserver: "+_socketserver);
+	var socket = io.connect(_socketserver); 
 	// if we get an "info" emit from the socket server then console.log the data we recive
 	socket.on('syncUpdate', function (data) {
 		console.log("*********** got a websocket synUpdate: "+data.from+" "+data.status+" "+data.timestamp)
@@ -330,3 +335,17 @@ script.
 		
 		//$("#ticker").html(JSON.stringify(data));
 	});
+	
+	
+	// testing external space.sync connect
+	/*
+	var socket_spacesyncer = io.connect("localhost:8001"); 
+	if (socket_spacesyncer){
+		socket_spacesyncer.on('message', function (data) {
+			console.log("------------- message from: space.syncer: "+data);
+		});
+		socket_spacesyncer.on('syncUpdate', function (message) {
+			console.log("------------- message from: space.syncer: "+JSON.stringify(message));
+		});
+	}
+	*/

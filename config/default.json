@@ -190,6 +190,7 @@
 	},
 
 	"sync": {
+		"socketserver" : "",
 		"v1epics" : {
 			"mode": "off",
 			"intervalMinutes" :60,
