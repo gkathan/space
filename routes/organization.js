@@ -13,6 +13,8 @@ var HOST = config.database.host;
 var connection_string = HOST+'/'+DB;
 var db = mongojs(connection_string, [DB]);
 
+var spaceServices=require('space.services');
+
 var winston=require('winston');
 var logger = winston.loggers.get('space_log');
 
@@ -21,7 +23,7 @@ router.get("/", function(req, res, next) {
 });
 
 router.get("/facebook", function(req, res, next) {
-	var orgService = require('../services/OrganizationService');
+	var orgService = spaceServices.OrganizationService;
 	orgService.findEmployeesByFunction("Studios",function(employees){
 
 		res.locals.employees = employees;
@@ -108,7 +110,7 @@ router.get("/simple", function(req, res, next) {
 
 router.get("/trend", function(req, res, next) {
 	if (ensureAuthenticated(req,res)){
-		var orgService = require('../services/OrganizationService');
+		var orgService = spaceServices.OrganizationService;
 		orgService.getOrganizationTrend({},function(err,trend){
 			res.locals.trend = trend;
 				res.render("organization/trend");

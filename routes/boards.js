@@ -17,11 +17,16 @@ var db = mongojs(connection_string, [DB]);
 var winston=require('winston');
 var logger = winston.loggers.get('space_log');
 
+var spaceServices=require('space.services');
+var v1Service =  spaceServices.V1Service;
+
+var boardService =  require('../services/BoardService');
+
 module.exports = router;
 
 router.get('/', function(req, res) {
   if (ensureAuthenticated(req,res)){
-  	var boardService =  require('../services/BoardService');
+
   	boardService.find({}, function (err, docs){
   		res.locals.boards=docs;
       res.locals.formBoardTitle="CREATE NEW BOARD"
@@ -37,8 +42,8 @@ router.get('/', function(req, res) {
 
 router.get('/kanban/:id', function(req, res) {
 	var id = req.params.id;
-  	var v1Service =  require('../services/V1Service');
-    var boardService = require('../services/BoardService');
+
+
   		boardService.findById(id,function(err,board){
         if (!board){
           res.send("sorry no board for id: "+id);

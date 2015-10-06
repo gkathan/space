@@ -19,14 +19,9 @@ else _loggerconfig = config.logger.dev;
 
 winston.loggers.add('space_log',_loggerconfig);
 
-
-
 var logger = winston.loggers.get('space_log');
 
-
-
 var app = express();
-
 
 // passport stuff
 var passport = require('passport'),
@@ -65,7 +60,9 @@ app.set('view engine', 'jade');
 
 app.locals.title="s p a c e ";
 
-orgService = require('./services/OrganizationService');
+var spaceServices=require('space.services');
+
+orgService = spaceServices.OrganizationService;
 orgService.getOrganizationHistoryDates(function(err,data){
 	app.locals.organizationhistoryDates=data;
  });
@@ -90,6 +87,7 @@ app.use(flash());
 app.use(function(req,res,next){
 	res.locals.session = req.session;
 	res.locals.config = config;
+  res.locals._=require('lodash');
 
 	next();
 });
@@ -145,6 +143,8 @@ app.use('/pinboards', scrumblr);
 
 
 
+
+
 var sockets=[];
 app.io = require('socket.io')();
 
@@ -158,7 +158,7 @@ app.io.sockets.on('connection', function (socket) {
 
 module.exports = app;
 exports.io = app.io;
-
+/*
 
 // services
 
@@ -226,7 +226,7 @@ problemSyncService.init(function(err,result){
 
 var apmSyncService = require('./services/ApmSyncService');
 apmSyncService.init();
-
+*/
 
 // https
 // Enable reverse proxy support in Express. This causes the

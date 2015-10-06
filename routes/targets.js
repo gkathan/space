@@ -12,8 +12,11 @@ var db = mongojs(connection_string, [DB]);
 var winston=require('winston');
 var logger = winston.loggers.get('space_log');
 
-var avService = require('../services/AvailabilityService');
-var targetService = require('../services/TargetService');
+var spaceServices=require('space.services');
+var avService = spaceServices.AvailabilityService;
+var targetService = spaceServices.TargetService;
+var orgService = spaceServices.OrganizationService;
+
 var moment = require('moment');
 var config = require('config');
 
@@ -57,10 +60,6 @@ router.get('/employee2target/:period', function(req, res, next) {
 	var showEmployeeTree = req.query.showEmployeeTree;
 
 	if (period != targetService.getPeriod()) ensureAuthenticated(req,res);
-
-
-	var orgService = require('../services/OrganizationService');
-
 	targetService.getL2ByIdByPeriod(config.context,pickL2,period,function(err,L2Target){
 		var _first = L2Target.sponsor.split(" ")[0];
 		var _last = _.rest(L2Target.sponsor.split(" ")).join(" ");
@@ -102,7 +101,6 @@ router.get('/employee2targetall/:period', function(req, res, next) {
 router.get('/target2outcomes/:period/:L2TargetId', function(req, res, next) {
 	var L2TargetId = req.params.L2TargetId;
 	var period =req.params.period;
-	var orgService = require('../services/OrganizationService');
 
 	if (period != targetService.getPeriod()) ensureAuthenticated(req,res);
 
@@ -155,9 +153,7 @@ router.get('/employeeoutcomes/:period/:employeeId', function(req, res, next) {
 	var _employee;
 
 	if (period != targetService.getPeriod()) ensureAuthenticated(req,res);
-
-	var orgService = require('../services/OrganizationService');
-	orgService.findEmployeeById(employeeId,function(err,employee){
+		orgService.findEmployeeById(employeeId,function(err,employee){
 		_employee= employee;
 		logger.debug("--------------------------------------------------");
 

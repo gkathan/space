@@ -121,8 +121,7 @@
 				"baseline": {
 					"openedAt" : ["2014-10-01", "2015-01-01"],
 					"categoryExclude":["Request","Misplaced Call"],
-
-					"totalsOverride": {"P01":85,"P08":584}
+					"totalsOverride": {"P01":94,"P08":524}
 
 				},
 				"target": {
@@ -190,60 +189,7 @@
 	},
 
 	"sync": {
-		"socketserver" : "",
-		"v1epics" : {
-			"mode": "off",
-			"intervalMinutes" :60,
-			"url" : ["http://knbnprxy.ea.bwinparty.corp/rest/epicsprogress","http://knbnprxy.ea.bwinparty.corp/rest/epics"]
-		},
-
-		"v1data" : {
-			"mode": "off",
-			"intervalMinutes" :30,
-			"url" : ["http://knbnprxy.ea.bwinparty.corp/rest/members","http://knbnprxy.ea.bwinparty.corp/rest/teams","http://knbnprxy.ea.bwinparty.corp/rest/backlogs","http://knbnprxy.ea.bwinparty.corp/rest/programs"]
-		},
-
-		"availability" : {
-			"mode": "off",
-			"intervalMinutes" :1440,
-			"url" : ["http://avreport.bwinparty.corp/API/AvReportingService.svc/getYTDDatapoint","http://avreport.bwinparty.corp/API/AvReportingService.svc/GetAVGraphDatapoints"]
-		},
-		"incidents" : {
-			"mode": "off",
-			"intervalMinutes" :1 	,
-			"includePriority" : 2,
-			"url" : "https://bwinparty.service-now.com/incident_list.do?JSONv2&sysparm_action=getRecords"
-		},
-
-
-
-		"soc_outages" : {
-			"mode": "off",
-			"intervalMinutes" :1,
-			"url" : "http://avreport.bwinparty.corp/API/AvReportingService.svc/GetIncidentsDatapoints/?from=2014-01-01"
-		},
-
-		"soc_services" : {
-			"mode": "off",
-			"intervalMinutes" :3600,
-			"url" : "http://avreport.bwinparty.corp/API/AvReportingService.svc/GetServicesDatapoints"
-		},
-
-
-		"problems" : {
-			"mode": "off",
-			"intervalMinutes" :60 	,
-			"url" : "https://bwinparty.service-now.com/problem_list.do?JSONv2&sysparm_action=getRecords&sysparm_query="
-		},
-		"apm" : {
-			"login" :{
-				"mode": "off",
-				"intervalMinutes" :5,
-				"url" : "https://apm.bwinparty.corp/controller/rest/applications/bwin.party/metric-data",
-				"timimg" : "&time_range_type=BEFORE_NOW&duration-in-mins=5",
-				"metricPath" : "Business%20Transaction%20Performance%7CBusiness%20Transactions%7CPosApi/v3%7CAuthenticationService.Login%7CAverage%20Response%20Time%20%28ms%29"
-			}
-		}
+		"socketserver" : "http://localhost:8001/"
 	},
 
 

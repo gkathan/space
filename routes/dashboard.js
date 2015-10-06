@@ -6,9 +6,12 @@ var config = require('config');
 var moment = require('moment');
 var accounting = require('accounting');
 
-var avService = require('../services/AvailabilityService');
-var targetService = require('../services/TargetService');
-var incService=require('../services/IncidentService');
+
+var spaceServices=require('space.services');
+
+var avService = spaceServices.AvailabilityService;
+var targetService = spaceServices.TargetService;
+var incService=spaceServices.IncidentService;
 
 var winston=require('winston');
 var logger = winston.loggers.get('space_log');
@@ -44,6 +47,7 @@ router.get('/', function(req, res) {
 				res.locals.leftdowntime = avService.getDowntimeYTD(av,52);
 			}
 			res.locals.moment = moment;
+			logger.debug("------------------------ ");
 			targetService.getL1(target_context,function(err,l1targets){
 					res.locals.l1targets=l1targets;
 					logger.debug("l1 targets: "+ l1targets);
@@ -97,8 +101,8 @@ router.get('/qos', function(req, res) {
 
 router.get('/itservicereport', function(req, res) {
 		var avc = require ('../services/AvailabilityCalculatorService');
-		var inc = require ('../services/IncidentService');
-		var prob = require ('../services/ProblemService');
+		var inc = spaceServices.IncidentService;
+		var prob = spaceServices.ProblemService;
 
 		//default is in config
 		var _from = moment().startOf('month').format("YYYY-MM-DD");
@@ -160,8 +164,8 @@ router.get('/opsreport', function(req, res) {
 		ensureAuthenticated(req, res);
 
 		var avc = require ('../services/AvailabilityCalculatorService');
-		var inc = require ('../services/IncidentService');
-		var prob = require ('../services/ProblemService');
+		var inc = spaceServicesIncidentService;
+		var prob = spaceServices.ProblemService;
 
 		//sess.AUTH = user.role;
 
@@ -188,7 +192,7 @@ router.get('/opsreport', function(req, res) {
 
 		if (req.query.excludeNOLABEL) _excludeNOLABEL = req.query.excludeNOLABEL;
 
-		var labelService = require('../services/LabelService');
+		var labelService = spaceServices.LabelService;
 
 		prob.find({},function(err,problems){
 			avc.calculateOverall(_from,_to,_filter,function(avDataOverall){

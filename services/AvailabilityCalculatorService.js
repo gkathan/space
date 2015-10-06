@@ -10,6 +10,10 @@ var HOST = config.database.host;
 var connection_string = HOST+'/'+DB;
 var db = mongojs(connection_string, [DB]);
 
+var spaceServices=require('space.services');
+var socService=spaceServices.SOCService;
+
+
 var winston=require('winston');
 var logger = winston.loggers.get('space_log');
 
@@ -31,7 +35,6 @@ var _endUserAffected = true;
 function _calculateOverall(from, to, filter,done){
 	if (!filter || filter.customer=="* ALL *") filter = null;
 
-	var socService=require('./SOCService');
 	//first we grab the external services as we need them to calculate the "ProductIntegration" service
 	socService.findServicesExternal(function(err,servicesExt){
 		_processServices("EXTERNAL",servicesExt,null,from,to,filter,_endUserAffected,function(data){
@@ -69,8 +72,6 @@ function _calculateOverall(from, to, filter,done){
 **/
 function _calculateExternal(from, to,filter,done){
 	if (!filter || filter.customer=="* ALL *") filter = null;
-
-	var socService=require('./SOCService');
 	socService.findServicesExternal(function(err,servicesExt){
 		_processServices("EXTERNAL",servicesExt,null,from,to,filter,_endUserAffected,function(data){
 			done(data);
@@ -89,9 +90,7 @@ function _processServices(type,services,injectedServices,from,to,filter,endUserA
 	totalTime.all = new Date(to)-new Date(from);
 	totalTime.core = _calculateTotalCoreTime(new Date(from),new Date(to));
 	totalTime.nonCore = totalTime.all - totalTime.core;
-
-	var _socService = require('./SOCService');
-	_socService.findLabel2Customer(null,function(err,mapping){
+	socService.findLabel2Customer(null,function(err,mapping){
 		//{customer:"bwin"};
 		var _filterLabels=[];
 		if (testMapping) mapping = testMapping;
@@ -105,7 +104,7 @@ function _processServices(type,services,injectedServices,from,to,filter,endUserA
 			_filterLabels =  _.pluck(_.where(mapping,{"customer":filter.customer}),"label");
 		}
 		// grab the SOC incidents for the intervall (from to)
-			_socService.findOutages(null,function(err,data){
+			socService.findOutages(null,function(err,data){
 			if (testOutages) data = testOutages;
 			//logger.debug("***** SOCOutages: "+JSON.stringify(data));
 

@@ -11,6 +11,8 @@ var HOST = config.database.host;
 var connection_string = HOST+'/'+DB;
 var db = mongojs(connection_string, [DB]);
 
+var spaceServices = require('space.services');
+
 var winston=require('winston');
 var logger = winston.loggers.get('space_log');
 
@@ -104,7 +106,7 @@ exports.convertXlsx2Json = function convertXlsx2Json (filename,req,done) {
 									_orghistory.oItems = _data;
 									db.collection(_collection).insert(_orghistory,function(){
 										// and update the app.locals.organizationhistoryDates for the menu
-										orgService = require('../services/OrganizationService');
+										orgService = spaceServices.OrganizationService;
 										orgService.getOrganizationHistoryDates(function(err,data){
 											req.app.locals.organizationhistoryDates=data;
 											callback();
@@ -179,7 +181,7 @@ function _validateName(fileName){
  * takes a json object and does some processing before it gets stored
  */
 function _handlePortfolioGate(json,date,fillblanks,callback){
-	var v1Service = require('../services/V1Service');
+	var v1Service = spaceServices.V1Service;
 
 	v1Service.findPortfolioApprovalEpics(function(err,_epics){
 		logger.debug("*************** epics.length: "+_epics.length);

@@ -18,8 +18,11 @@ var HOST = config.database.host;
 var connection_string = HOST+'/'+DB;
 var db = mongojs(connection_string, [DB]);
 
+var spaceServices=require('space.services');
+var incidentService = spaceServices.IncidentService;
+var incidentTrackerService = spaceServices.IncidentTrackerService;
 
-var incidentService = require('../services/IncidentService');
+
 var exporter = require('../services/ExcelExportService');
 
 var BASE = "";
@@ -89,6 +92,8 @@ var PATH = {
 						REST_FIREREPORT : BASE+'/space/rest/firereport',
 						REST_CONTENT : BASE+'/space/rest/content',
 						REST_SYNCEMPLOYEEIMAGES : BASE+'/space/rest/sync/employeeimages',
+
+/*
 						REST_SYNCAVAILABILITY : BASE+'/space/rest/sync/availability',
 						REST_SYNCINCIDENTS : BASE+'/space/rest/sync/incidents',
 						REST_SYNCSOCOUTAGES : BASE+'/space/rest/sync/soc_outages',
@@ -97,6 +102,7 @@ var PATH = {
 						REST_SYNCAPM_LOGIN : BASE+'/space/rest/sync/apm/login',
 						REST_SYNCV1EPICS : BASE+'/space/rest/sync/v1epics',
 						REST_SYNCV1DATA : BASE+'/space/rest/sync/v1data',
+*/
 
 						REST_APM_LOGIN : BASE+'/space/rest/apm/login',
 
@@ -260,6 +266,9 @@ router.post(PATH.REST_MAIL, function(req, res, next) {mail(req,res,next); });
 router.post(PATH.REST_MESSAGE, function(req, res, next) {message(req,res,next); });
 
 router.post(PATH.REST_SYNCEMPLOYEEIMAGES, function(req, res, next) {syncEmployeeImages(req,res,next); });
+
+
+/*
 router.post(PATH.REST_SYNCAVAILABILITY, function(req, res, next) {syncAvailability(req,res,next); });
 router.get(PATH.REST_SYNCAVAILABILITY, function(req, res, next) {syncAvailability(req,res,next); });
 router.post(PATH.REST_SYNCINCIDENTS, function(req, res, next) {syncIncidents(req,res,next); });
@@ -281,6 +290,7 @@ router.get(PATH.REST_SYNCPROBLEMS, function(req, res, next) {syncProblems(req,re
 
 router.post(PATH.REST_SYNCAPM_LOGIN, function(req, res, next) {syncApm("login",req,res,next); });
 router.get(PATH.REST_SYNCAPM_LOGIN, function(req, res, next) {syncApm("login",req,res,next); });
+*/
 
 router.get(PATH.REST_APM_LOGIN, function(req, res, next) {findAllByName(req,res,next); });
 
@@ -426,7 +436,6 @@ function findIncidentTracker(req, res , next){
 	if (_prio) _prios=_prio.split(",");
 	if (_from && _to) _period={from:new Date(_from),to:new Date(_to)};
 
-	var incidentTrackerService = require('../services/IncidentTrackerService');
 	// just read from DB
 	if (!_customer || _customer==":customer"){
 		logger.debug("**********!! NO CUSTOMER !!*********** findIncidentTracker(): _aggregate= "+_aggregate+" _period = "+_period);
@@ -514,7 +523,7 @@ function findBy_id(req, res , next){
 function getItemsBacklogPlanningEpics(req,res,next){
 	var context = config.context;
 	logger.debug("------ getItemsPlanningEpics called: ");
-	var v1Service = require('../services/V1Service');
+	var v1Service = spaceServices.V1Service;
 	if (req.query.context) context=req.query.context;
 
 	v1Service.getPlanningBacklogsByEpics({},function(err,planningepics){
@@ -531,7 +540,7 @@ function getItemsBacklogPlanningEpics(req,res,next){
 function getItemsBacklogInitiatives(req,res,next){
 	var context = config.context;
 	logger.debug("------ getItemsInitiatives called: ");
-	var v1Service = require('../services/V1Service');
+	var v1Service = spaceServices.V1Service;
 	if (req.query.context) context=req.query.context;
 
 	v1Service.getPlanningBacklogsByInitiatives({},function(err,initiatives){
@@ -571,7 +580,7 @@ function getItemsRoadmapInitiatives(req,res,next){
 	var _filter=_extractFilter(_filterTypes,req);
 
 	logger.debug("------ api.getItemsRoadmapInitiatives called: filter: "+_filter);
-	var v1Service = require('../services/V1Service');
+	var v1Service = spaceServices.V1Service;
 	if (req.query.context) context=req.query.context;
 	// example for mobile first roadmap
 	v1Service.getRoadmapInitiatives(_filter,function(err,roadmapinitiatves){
@@ -592,7 +601,7 @@ function getItemsRoadmapInitiatives(req,res,next){
 function findIncidents(req,res,next){
 	  logger.debug("findIncidents() called");
 
-		var incService = require("../services/IncidentService");
+		var incService = spaceServices.IncidentService;
 		incService.find({},{openedAt:-1},function(err,data){
 				if (err){
 					logger.error("[error] findincidents says: "+err)
@@ -606,7 +615,7 @@ function findIncidents(req,res,next){
 function findIncidentsOldSnow(req,res,next){
 	  logger.debug("findIncidents() called");
 
-		var incService = require("../services/IncidentService");
+		var incService = spaceServices.IncidentService;
 		incService.findOld({},{openedAt:-1},function(err,data){
 				if (err){
 					logger.error("[error] findincidentsOldSnow says: "+err)
@@ -623,7 +632,7 @@ function findIncidentsOldSnow(req,res,next){
 function findIncidentCommTrail(req,res,next){
 	  logger.debug("findIncidentCommTrail() called");
 
-		var incService = require("../services/IncidentService");
+		var incService = spaceServices.IncidentService;
 		/*incService.find({},{openedAt:-1},function(err,data){
 				if (err){
 					logger.error("[error] findincidents says: "+err)
@@ -643,7 +652,7 @@ function findIncidentChangeLog(req,res,next){
 
 		logger.debug("findIncidentChangeLog() called: id = "+_id);
 
-		var incService = require("../services/IncidentService");
+		var incService =spaceServices.IncidentService;
 		incService.findChangeLog(_id,function(err,data){
 				if (err){
 					logger.error("[error] findincidents says: "+err)
@@ -693,7 +702,7 @@ function _transformDomains(data){
 
 
 function getRoadmapInitiatives(req,res,next){
-	var v1Service = require("../services/V1Service");
+	var v1Service = spaceServices.V1Service;
 	var _start = req.params.start;
 
 	if (_start) _start = new Date(_start);
@@ -705,11 +714,15 @@ function getRoadmapInitiatives(req,res,next){
 }
 
 function getIncidentKPIs(req,res,next){
-	var baseline = {type:"baseline",range:config.targets.kpis.incidents.baseline.openedAt};
-	var target = {type:"target",range:config.targets.kpis.incidents.target.openedAt};
+  logger.debug("getIncidentKPIs ------------");
+
+  var baseline = {type:"baseline",range:config.targets.kpis.incidents.baseline.openedAt};
+  logger.debug("baseline: "+JSON.stringify(baseline));
+  var target = {type:"target",range:config.targets.kpis.incidents.target.openedAt};
+  logger.debug("target: "+JSON.stringify(target));
 
 	incidentService.getKPIs(baseline,target,function(err,kpis){
-			logger.debug("KPIs: "+JSON.stringify(kpis));
+			logger.debug("XXXXXXXXXXXXXXXXXXXXXXXXXXXX ----------------------- KPIs: "+JSON.stringify(kpis));
 			res.send(kpis);
 	});
 
@@ -717,7 +730,7 @@ function getIncidentKPIs(req,res,next){
 
 
 function findTargetsByType(type,req,res,next){
-	var targetService = require('../services/TargetService');
+	var targetService = spaceServices.TargetService;
 	var context = config.context;
 	if (req.query.context) context=req.query.context;
 	var _period;
@@ -742,7 +755,7 @@ function findTargetsByType(type,req,res,next){
 
 
 function findTargets(req,res,next){
-	var targetService = require('../services/TargetService');
+	var targetService = spaceServices.TargetService;
 	var context = config.context;
 	if (req.query.context) context=req.query.context;
 	var _period;
@@ -770,7 +783,7 @@ function getTargetsTree(req,res,next){
 	if (req.query.context) context=req.query.context;
 	logger.debug("[api.getTargetsTree] context: "+context);
 
-	var targetService =require('../services/TargetService');
+	var targetService =spaceServices.TargetService;
 	targetService.getL2Tree(context,function(err,result){
 		if(err){
 			logger.error("error: "+err.message);
@@ -821,7 +834,7 @@ function findEmployeeByName(req, res , next){
  * find single object by Id
  */
 function findEmployeeById(req, res , next){
-    var orgService = require('../services/OrganizationService');
+    var orgService = spaceServices.OrganizationService;
 
 		var _employeeId="";
 
@@ -847,14 +860,14 @@ function findEmployeeById(req, res , next){
 
 function getTarget2EmployeeClustered(req, res , next){
   var period = req.params.period;
-	var orgService = require('../services/OrganizationService');
+	var orgService = spaceServices.OrganizationService;
 	orgService.findTarget2EmployeeMappingClusteredByPeriod(period,function(err,result){
 		res.send(result);
 	})
 }
 
 function getOutcomesForEmployee(req,res,next){
-	var orgService = require('../services/OrganizationService');
+	var orgService = spaceServices.OrganizationService;
 	var period = req.params.period;
 	var _employeeId = req.params.employeeId;
 	orgService.findOutcomesForEmployeeByPeriod(_employeeId,period,function(err,result){
@@ -865,7 +878,7 @@ function getOutcomesForEmployee(req,res,next){
 }
 
 function getEmployeesByTarget(req, res , next){
-  var orgService = require('../services/OrganizationService');
+  var orgService = spaceServices.OrganizationService;
 	var period = req.params.period;
 
 	// to just pick a specific L2 target pass it via query
@@ -1167,131 +1180,13 @@ function message(req,res,next){
 function syncEmployeeImages(req,res,next){
     logger.debug("*********************** lets sync images of employees... ");
 
-    var orgService = require ('../services/OrganizationService');
+    var orgService = spaceServices.OrganizationService;
     orgService.syncEmployeeImages(req,res,function(){
 
 		logger.debug("???");
 	});
 }
 
-function syncAvailability(req,res,next){
-    var avSyncService = require ('../services/AvailabilitySyncService');
-		var _urls = config.sync.availability.url;
-		var _type = "API - manual";
-		logger.debug("*********************** lets sync availability from avreports service... urls: "+_urls);
-	  avSyncService.sync(_urls,_type,function(err,av){
-			if(err){
-				res.send("syncAvailability says: "+err.message);
-			}
-			if (av){
-				logger.debug("av:"+JSON.stringify(av));
-				res.send("availability: "+JSON.stringify(av));
-			}
-			return;
-
-	});
-}
-
-function syncV1Epics(req,res,next){
-    var v1EpicSyncService = require ('../services/V1EpicSyncService');
-		var _url = config.sync.v1epics.url;
-		var _type = "API - manual";
-		logger.debug("*********************** lets sync v1 epics...: "+_url);
-	  v1EpicSyncService.sync(_url,_type,function(err,result){
-			if (err){
-				//res.send("syncV1Epics says: "+err.message);
-				return;
-			}
-			//res.send("syncV1Epics says: "+result);
-	});
-}
-
-
-function syncV1Data(req,res,next){
-	logger.debug("*********************** ");
-		var v1DataSyncService = require ('../services/V1DataSyncService');
-		var _url = config.sync.v1data.url;
-		var _type = "API - manual";
-		logger.debug("*********************** lets sync v1 data...: "+_url);
-	  v1DataSyncService.sync(_url,_type,function(err,result){
-			if (err){
-				//res.send("syncV1Data says: "+err.message);
-				return;
-			}
-			//res.send("syncV1Data says: "+result);
-	});
-}
-
-
-
-function syncIncidents(req,res,next){
-  logger.debug("*********************** lets sync incidents from snow... ");
-	var _url = config.sync.incidents.url;
-  var incSyncService = require ('../services/IncidentSyncService');
-  logger.debug("*********************** incservice instantiated ");
-	var _type = "API - manual";
-  incSyncService.sync(_url,_type,function(err,data){
-		if (err){
-			res.send("syncIncidents says: "+err.message);
-			return;
-		}
-		else
-		{
-			res.send("incidents: "+JSON.stringify(data));
-		}
-	});
-}
-
-function syncSOCOutages(req,res,next){
-  logger.debug("*********************** lets sync SOC outages from avreport... ");
-	var _url = config.sync.soc_outages.url;
-  var _type = "API - manual";
-	var socOutSyncService = require ('../services/SOCOutagesSyncService');
-  logger.debug("*********************** SOCOutagesSyncService instantiated ");
-  socOutSyncService.sync(_url,_type,function(err,data){
-		if (err){
-			res.send("syncSOCOutages says: "+err.message);
-			return;
-		}
-		else
-		{
-			res.send("SOC outages: "+data.length+" items synced");
-		}
-	});
-}
-
-function syncSOCServices(req,res,next){
-		logger.debug("*********************** lets sync SOC services from avreport... ");
-		var _url = config.sync.soc_services.url;
-    var soc_servicesSyncService = require ('../services/GenericSyncService');
-		var _type = "API - manual";
-    logger.debug("*********************** SOC services Sync instantiated ");
-	  soc_servicesSyncService.sync("soc_services",_url,_type,function(data){
-		res.send("SOC services: "+JSON.stringify(data));
-	});
-}
-
-
-function syncProblems(req,res,next){
-		logger.debug("*********************** lets sync problems from snow... ");
-		var _url = config.sync.problems.url;
-			var _type = "API - manual";
-    var probSyncService = require ('../services/ProblemSyncService');
-    logger.debug("*********************** probservice instantiated ");
-	  probSyncService.sync(_url,_type,function(err,data){
-			res.send("problems: "+JSON.stringify(data));
-	});
-}
-
-function syncApm(process,req,res,next){
-    logger.debug("*********************** lets sync appdynamics process: "+process);
-    var apmSyncService = require ('../services/ApmSyncService');
-
-	  apmSyncService.sync(function(data){
-			logger.debug("------------------------------------------------------ data.snapShotDate: "+data.snapshotDate);
-			res.send("apm says: "+JSON.stringify(data));
-	});
-}
 
 function calculateAvailability(req,res,next){
     logger.debug("*********************** calculate availabilty: ");
@@ -1322,7 +1217,7 @@ function calculateAvailability(req,res,next){
 }
 
 function getOrganizationTrend(req,res,next){
-		orgService = require('../services/OrganizationService');
+		orgService = spaceServices.OrganizationService;
 		orgService.getOrganizationTrend({},function(err,data){
 			logger.debug("data: "+data);
 			res.send(data);
@@ -1334,7 +1229,7 @@ function getOrganizationSnapshotDates(req,res,next){
 	// get all org instance dates for the menu
 	// ** this should go somewhere else ;-)
 	logger.debug("getsnapshot dates....");
-	orgService = require('../services/OrganizationService');
+	orgService = spaceServicesOrganizationService;
 	orgService.getOrganizationHistoryDates(function(err,data){
 		logger.debug("data: "+data);
 		res.send(data);

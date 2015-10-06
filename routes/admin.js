@@ -17,6 +17,7 @@ var db = mongojs(connection_string, [DB]);
 var winston=require('winston');
 var logger = winston.loggers.get('space_log');
 
+var spaceServices=require('space.services');
 
 /* GET the admin page. */
 router.get('/', function(req, res) {
@@ -111,39 +112,55 @@ router.get('/traffic/:period', function(req, res) {
 /* GET the admin page. */
 router.get('/sync', function(req, res) {
 	if (ensureAuthenticated(req,res)){
+		var syncService = spaceServices.SyncService;
 
-		var syncService = require('../services/SyncService');
+		var _syncServer=config.sync.socketserver;
 
-		var sync=config.sync;
+		//_syncServer="http://localhost:8001/"
 
-		var syncers =[];
-		_.forEach(sync,function(n,key){
-			if(key=="apm"){
-					_.forEach(n,function(sub,subkey){
-							syncers.push({name:key+"."+subkey,sync:sub});
-					})
-			}
-			else syncers.push({name:key,sync:n})
-		});
+		// and get sync config from space.syncers
+		var Client = require('node-rest-client').Client;
+		var _options = {timeout:1000};
+		logger.debug("------ admin fetches space.syncer config from: "+_syncServer);
+		client = new Client(_options);// direct way
+		// direct way
+		client.get(_syncServer, function(data, response,done){
 
+				var _syncConfig = data;
 
-		res.locals.moment = moment;
-
-		syncService.getLastSyncs(syncers,function(err,syncInfos){
-
-				for (var i in syncInfos){
-					if (syncInfos[i]){
-						logger.debug("+++++++++++++ syncInfo: "+JSON.stringify(syncInfos[i]));
-						logger.debug("+++++++++++++ syncInfo.name: "+syncInfos[i].name);
-
-						_.findWhere(syncers,{"name":syncInfos[i].name}).syncInfo= syncInfos[i];
+				var syncers =[];
+				_.forEach(_syncConfig,function(n,key){
+					if(key=="apm"){
+							_.forEach(n,function(sub,subkey){
+									syncers.push({name:key+"."+subkey,sync:sub});
+							})
 					}
-				}
-				//res.locals.syncInfos=syncInfos;
-				res.locals.syncers=syncers;
+					else syncers.push({name:key,sync:n})
+				});
 
+				res.locals.moment = moment;
+
+				syncService.getLastSyncs(syncers,function(err,syncInfos){
+						for (var i in syncInfos){
+							if (syncInfos[i]){
+								logger.debug("+++++++++++++ syncInfo: "+JSON.stringify(syncInfos[i]));
+								logger.debug("+++++++++++++ syncInfo.name: "+syncInfos[i].name);
+								_.findWhere(syncers,{"name":syncInfos[i].name}).syncInfo= syncInfos[i];
+							}
+						}
+						//res.locals.syncInfos=syncInfos;
+						res.locals.syncers=syncers;
+						res.render('admin/sync', { title: 's p a c e - admin.sync' });
+						return;
+				})
+
+			}).on('error',function(err){
+				logger.error("something went wrong: "+err.message);
+				res.locals.error=err.message;
 				res.render('admin/sync', { title: 's p a c e - admin.sync' });
-		})
+
+
+			})
 
 
 

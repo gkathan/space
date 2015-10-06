@@ -6,16 +6,7 @@
 		"proxy" : "/local/proxy"
 },
 
-		"sync": {
-			"v1epics" : {
-				"mode": "off",
-				"intervalMinutes" :60,
-				"url" : "http://knbnprxy.ea.bwinparty.corp/rest/epics"
-
-			}
-		},
-
-
+	
 
 
 	"gulp":{

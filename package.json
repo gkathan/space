@@ -52,6 +52,7 @@
     "sha1": "^1.1.0",
     "simplesets": "^1.2.0",
     "socket.io": "^1.3.5",
+    "space.services": "^1.1.1",
     "supergroup": "0.0.4",
     "tablesorter": "^2.20.1",
     "underscore": "^1.8.2",

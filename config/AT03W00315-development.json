@@ -3,56 +3,7 @@
 
 
 
-  "sync": {
-		"v1epics" : {
-			"mode": "on",
-			"intervalMinutes" :240,
-			"url" : ["http://knbnprxy.ea.bwinparty.corp/rest/epicsprogress","http://knbnprxy.ea.bwinparty.corp/rest/epics"]
-			
-		},
-		"availability" : {
-			"mode": "on",
-			"intervalMinutes" :60 	,
-			"url" : ["http://avreport.bwinparty.corp/API/AvReportingService.svc/getYTDDatapoint","http://avreport.bwinparty.corp/API/AvReportingService.svc/GetAVGraphDatapoints"]
-		},
-		"incidents" : {
-			"mode": "on",
-			"intervalMinutes" :1 	,
-			"includePriority" : 4,
-			"url" : "https://bwinparty.service-now.com/incident_list.do?JSONv2&sysparm_action=getRecords"
-		},
-
-		"soc_outages" : {
-			"mode": "on",
-			"intervalMinutes" :240,
-			"url" : "http://avreport.bwinparty.corp/API/AvReportingService.svc/GetIncidentsDatapoints/?from=2014-01-01"
-		},
-
-		"soc_services" : {
-			"mode": "on",
-			"intervalMinutes" :240,
-			"url" : "http://avreport.bwinparty.corp/API/AvReportingService.svc/GetServicesDatapoints"
-		},
-
-		"problems" : {
-			"mode": "on",
-			"intervalMinutes" :60 	,
-			"url" : "https://bwinparty.service-now.com/problem_list.do?JSONv2&sysparm_action=getRecords&sysparm_query="
-		},
-		"apm" : {
-			"login" :{
-				"mode": "off",
-				"intervalMinutes" :5,
-				"url" : "https://apm.bwinparty.corp/controller/rest/applications/bwin.party/metric-data",
-				"timing" : "&time-range-type=BEFORE_NOW&duration-in-mins=5",
-				"metricPath" : "Business%20Transaction%20Performance%7CBusiness%20Transactions%7CPosApi/v3%7CAuthenticationService.Login%7CAverage%20Response%20Time%20%28ms%29"
-			}
-		}
-
-
-	},
-
-
+  
 
 	"v1" : {
 		"url" : "http://v1.bwinparty.corp/V1-Production/",

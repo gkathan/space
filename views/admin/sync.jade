@@ -61,7 +61,8 @@ div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;back
 		span(style="font-size:20px") &nbsp;SYNC PROCESSES
 		if config.sync.socketserver
 			div
-				|syncserver: #{config.sync.socketserver}
+				|syncserver: 
+				a(href="#{config.sync.socketserver}" target="_new") #{config.sync.socketserver}
 	.panel-body(style="font-size:12px")
 		table.table.table-striped.table-hover.table-condensed
 			thead
@@ -83,38 +84,44 @@ div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;back
 					th(style="width:80px")
 						|force sync
 			tbody
-				each sync in syncers
-					-if (!sync.syncInfo) sync["syncInfo"]={status:"[UNDEFINED]"}
-					tr(style="line-height:18px")
-						td 
-							+statusLight(sync.sync.mode,12,sync.name,sync.syncInfo.status)
-						td 
-							a(href="#{sync.sync.url}" target="_new")|#{sync.name}
-						td 
-							|#{formatTime(sync.sync.intervalMinutes*60*1000)}
-						td(style="font-size:10px")
-							span(id="#{sync.name}_timestamp")  
-								if sync.syncInfo
-									|#{moment(sync.syncInfo.lastSync).format("YYYY-MM-DD HH:mm:ss")}
-							
-							
-						td(style="font-size:10px;font-weight:bold") 
-							span(id="#{sync.name}_status")
-								if sync.syncInfo
-									|#{sync.syncInfo.status}
+				if syncers
+					each sync in syncers
+						-if (!sync.syncInfo) sync["syncInfo"]={status:"[UNDEFINED]"}
+						tr(style="line-height:18px")
+							td 
+								+statusLight(sync.sync.mode,12,sync.name,sync.syncInfo.status)
+							td 
+								a(href="#{sync.sync.url}" target="_new")|#{sync.name}
+							td 
+								|#{formatTime(sync.sync.intervalMinutes*60*1000)}
+							td(style="font-size:10px")
+								span(id="#{sync.name}_timestamp")  
+									if sync.syncInfo
+										|#{moment(sync.syncInfo.lastSync).format("YYYY-MM-DD HH:mm:ss")}
+								
+								
+							td(style="font-size:10px;font-weight:bold") 
+								span(id="#{sync.name}_status")
+									if sync.syncInfo
+										|#{sync.syncInfo.status}
 
-						td(style="font-size:10px;font-weight:bold;text-align:center") 
-							span(id="#{sync.name}_type")
-								if sync.syncInfo
-									|#{sync.syncInfo.type}
-							
-						td(style="font-size:10px") 
-							span(id="#{sync.name}_info")
-								if sync.syncInfo
-									|#{sync.syncInfo.message}
-							
-						td(style="font-size:10px")
-							a(id="sync_#{sync.name}" href="#" ) -- force sync --
+							td(style="font-size:10px;font-weight:bold;text-align:center") 
+								span(id="#{sync.name}_type")
+									if sync.syncInfo
+										|#{sync.syncInfo.type}
+								
+							td(style="font-size:10px") 
+								span(id="#{sync.name}_info")
+									if sync.syncInfo
+										|#{sync.syncInfo.message}
+								
+							td(style="font-size:10px")
+								a.btn.btn-xs.btn-warning(id="sync_#{sync.name}" href="#" ) -- force sync --
+				else
+					|--- no syncers found ---
+					if error
+						div(style="font-size:12px;color:red")
+							|error: #{error}
 		br
 		div(id="ticker" style="font-size:8px")
 
@@ -132,156 +139,48 @@ script.
 
 	$('#sync_availability').on('click', function () {
 		console.log("avreport request called...");
-		$.ajax({
-			url: '/api/space/rest/sync/availability',
-			type: 'POST',
-			data: {
-				},
-			success: function(data){
-				console.log("[SUCCESS] synced:"+JSON.stringify(data));
-			},
-			error: function(err){
-				console.log("[ERROR] :"+err.message);
-			}
-		});
+		socket.emit("forceSync",{syncer:"availability"});
 	});
 	
 	$('#sync_incidents').on('click', function () {
 		console.log("incidentsync request called...");
-		$.ajax({
-			url: '/api/space/rest/sync/incidents',
-			type: 'POST',
-			data: {
-
-				},
-			success: function(data){
-				console.log("[SUCCESS] synced:"+JSON.stringify(data));
-			},
-			error: function(err){
-				console.log("[ERROR] :"+err.message);
-			}
-		});
+		socket.emit("forceSync",{syncer:"incidents"});
 	});
 	
 	$('#sync_soc_outages').on('click', function () {
 		console.log("soc outagessync request called...");
-		$.ajax({
-			url: '/api/space/rest/sync/soc_outages',
-			type: 'POST',
-			data: {
-
-				},
-			success: function(data){
-				console.log("[SUCCESS] synced:"+JSON.stringify(data));
-			},
-			error: function(err){
-				console.log("[ERROR] :"+err.message);
-			}
-		});
+		socket.emit("forceSync",{syncer:"soc_outages"});
 	});
 	
 	$('#sync_soc_services').on('click', function () {
 		console.log("soc servicessync request called...");
-		$.ajax({
-			url: '/api/space/rest/sync/soc_services',
-			type: 'POST',
-			data: {
-
-				},
-			success: function(data){
-				console.log("[SUCCESS] synced:"+JSON.stringify(data));
-			},
-			error: function(err){
-				console.log("[ERROR] :"+err.message);
-			}
-		});
+		socket.emit("forceSync",{syncer:"soc_services"});
 	});
 
 
 	$('#sync_problems').on('click', function () {
 		console.log("problemsync request called...");
-		$.ajax({
-			url: '/api/space/rest/sync/problems',
-			type: 'POST',
-			data: {
-
-				},
-			success: function(data){
-				console.log("[SUCCESS] synced:"+JSON.stringify(data));
-			},
-			error: function(err){
-				console.log("[ERROR] :"+err.message);
-			}
-		});
+			socket.emit("forceSync",{syncer:"problems"});
 	});
 
 	$('#sync_v1epics').on('click', function () {
 		console.log("v1EpicsSync request called...");
-		$.ajax({
-			url: '/api/space/rest/sync/v1epics',
-			type: 'POST',
-			data: {
+		socket.emit("forceSync",{syncer:"v1epics"});
 
-				},
-			success: function(data){
-				console.log("[SUCCESS] synced:"+JSON.stringify(data));
-			},
-			error: function(err){
-				console.log("[ERROR] :"+err.message);
-			}
-		});
 	});
 	
 		$('#sync_v1data').on('click', function () {
 			console.log("v1DataSync request called...");
-			$.ajax({
-				url: '/api/space/rest/sync/v1data',
-				type: 'POST',
-				data: {
-	
-					},
-				success: function(data){
-					console.log("[SUCCESS] synced:"+JSON.stringify(data));
-				},
-				error: function(err){
-					console.log("[ERROR] :"+err.message);
-				}
-			});
+			socket.emit("forceSync",{syncer:"v1data"});
+			console.log("socket emitted...");
 		});
 
 	$('#sync_apm_login').on('click', function () {
 		console.log("sync_apm_betplacement request called...");
-		$.ajax({
-			url: '/api/space/rest/sync/apm/login',
-			type: 'POST',
-			data: {
+		socket.emit("forceSync",{syncer:"apm.login"});
 
-				},
-			success: function(data){
-				console.log("[SUCCESS] synced:"+JSON.stringify(data));
-			},
-			error: function(err){
-				console.log("[ERROR] :"+err.message);
-			}
-		});
 	});
-	
-	$('#calc_availability').on('click', function () {
-		console.log("calc_availability request called...");
-		$.ajax({
-			url: '/api/space/rest/availability/calculate',
-			type: 'GET',
-			data: {
 
-				},
-			success: function(data){
-				alert("data: "+JSON.stringify(data));
-			},
-			error: function(err){
-				alert("err: "+JSON.stringify(err));
-			}
-		});
-	});
 	// connect to the socket server
 	//var socket = io.connect('http://localhost:3333'); 
 	var _socketserver = '#{config.sync.socketserver}';
@@ -289,7 +188,8 @@ script.
 	var socket = io.connect(_socketserver); 
 	// if we get an "info" emit from the socket server then console.log the data we recive
 	socket.on('syncUpdate', function (data) {
-		console.log("*********** got a websocket synUpdate: "+data.from+" "+data.status+" "+data.timestamp)
+		console.log("*********** got a websocket synUpdate: "+data.from+" "+data.status+" "+data.timestamp);
+		
 		var _idTimestamp = '#'+data.from+'_timestamp';
 		var _idStatus = '#'+data.from+'_status';
 		var _idInfo = '#'+data.from+'_info';
@@ -327,7 +227,9 @@ script.
 		$(_idInfo).effect( "highlight", "slow" );
 		if (data.status=="[ERROR]") $(_idInfo).animate({color: "red"}, 1000 );
 		else if (data.status=="[SUCCESS]") $(_idInfo).animate({color: "green"}, 1000 );
-
+		
+		
+		
 	});
 	
 	socket.on('incidentTickerUpdate', function (data) {
@@ -338,7 +240,7 @@ script.
 	
 	
 	// testing external space.sync connect
-	/*
+	
 	var socket_spacesyncer = io.connect("localhost:8001"); 
 	if (socket_spacesyncer){
 		socket_spacesyncer.on('message', function (data) {
@@ -348,4 +250,4 @@ script.
 			console.log("------------- message from: space.syncer: "+JSON.stringify(message));
 		});
 	}
-	*/
+	

@@ -15,14 +15,20 @@ var db = mongojs(connection_string, [DB]);
 var winston = require('winston');
 var logger = winston.loggers.get('space_log');
 
+var spaceServices=require('space.services');
+var portfolioService =spaceServices.PortfolioService;
+var v1Service = spaceServices.V1Service;
+var syncService =spaceServices.SyncService;
+
+var boardService= require('../services/BoardService');
+
+
 module.exports = router;
 
 
 router.get('/', function(req, res) {
 	// join pgates with epics
-	var portfolioService =require('../services/PortfolioService');
 	var _type = "current";
-
 	portfolioService.getPortfolioMeetings(_type,function(err,result){
 		//slogger.debug("---------------------------------------- targetContributionBucket: "+JSON.stringify(_gates));
 		// do not show the "first" as this is just needed to be the baseline of the delat informations
@@ -38,7 +44,6 @@ router.get('/', function(req, res) {
 
 router.get('/history', function(req, res) {
 	// join pgates with epics
-	var portfolioService =require('../services/PortfolioService');
 	var _type = "history";
 	portfolioService.getPortfolioMeetings(_type,function(err,result){
 		//slogger.debug("---------------------------------------- targetContributionBucket: "+JSON.stringify(_gates));
@@ -55,11 +60,7 @@ router.get('/history', function(req, res) {
 
 
 router.get('/planningepics', function(req, res) {
-	var v1Service = require('../services/V1Service');
 	var _filter = {};
-	var boardService= require('../services/BoardService');
-	var syncService =require('../services/SyncService');
-
 	syncService.getLastSync("v1epics",function(err,sync){
 		v1Service.getPlanningInitiatives(_filter,function(err,result){
 			boardService.find({},function(err,boards){
@@ -91,12 +92,7 @@ router.get('/planningepics', function(req, res) {
 });
 
 router.get('/planningbacklogs', function(req, res) {
-	var v1Service = require('../services/V1Service');
-	var boardService= require('../services/BoardService');
-	var syncService =require('../services/SyncService');
-
 	var _filter = {};
-
 	syncService.getLastSync("v1epics",function(err,sync){
 		v1Service.getPlanningBacklogs(_filter,function(err,result){
 			boardService.find({},function(err,boards){
@@ -117,7 +113,7 @@ router.get('/planningbacklogs', function(req, res) {
 				res.locals.roadmapBoardId = _roadmapBoardId;
 				res.locals.lastSync = sync.lastSync;
 
-				
+
 
 				res.render('portfolio/planningbacklogs'), { title: 's p a c e - planning backlogs overview ' }
 
@@ -128,10 +124,7 @@ router.get('/planningbacklogs', function(req, res) {
 
 router.get('/planningbacklogdetail/:id', function(req, res) {
 	var _backlogId = req.params.id;
-	var v1Service = require('../services/V1Service');
 	var _filter = {};
-	var syncService =require('../services/SyncService');
-
 	syncService.getLastSync("v1epics",function(err,sync){
 		v1Service.getPlanningBacklogs(_filter,function(err,result){
 			var _backlog = _.findWhere(result.backlogs,{ID:_backlogId});
