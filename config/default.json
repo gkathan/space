@@ -9,7 +9,7 @@
 
     "locale": "en",
 
-    "version" : "1.2.0-beta",
+    "version" : "1.3.0-beta",
 
     "build" : "---should be dynamically assigned",
 
@@ -170,9 +170,6 @@
 
   "context" : "bpty.studios",
 
-
-
-
   "v1" : {
 		"url" : "http://v1.bwinparty.corp/V1-Production/",
 		"proxy" : "http://knbnprxy.ea.bwinparty.corp/rest/epics"
@@ -189,7 +186,8 @@
 	},
 
 	"sync": {
-		"socketserver" : "http://localhost:8001/"
+		"socketserver" : "http://localhost:3001/",
+		"socketserverSSL" : "https://localhost:3444/"
 	},
 
 

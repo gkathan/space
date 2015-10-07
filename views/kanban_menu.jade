@@ -5,14 +5,17 @@ block content
 		div.row(style="margin-left:10px;margin-bottom:10px;margin-top:10px")
 			if session.CONTEXT
 				img(src='/images/#{session.CONTEXT}_logo.png'  height='20px')
-				span(style="font-size:10px;margin-left:20px;color:grey")  context: <b> #{session.CONTEXT}</b>
+				span(style="font-size:10px;margin-left:20px;color:grey")  context: <b> #{session.CONTEXT}</b> 
 			else
 				img(src='/images/#{config.context}_logo.png'  height='20px')
 
 			if session.AUTH
 				span(style="font-size:10px;margin-left:20px;color:grey")  logged in as: <b> #{session.AUTH}/#{session.USER} </b>
-
-
+			
+			span(style="font-size:10px;margin-left:20px;color:grey") s p a c e.syncer: 
+			span(id="space_syncerstatus" style="font-size:10px;font-weight:bold;margin-left:3px;color:grey")
+			
+				
 			.div(class='notifications top-left')
 		
 
@@ -273,35 +276,61 @@ block content
 	include includes/material
 
 	script.
-		// connect to the socket server
-		var socket = io.connect(); 
-
-		// if we get an "info" emit from the socket server then console.log the data we recive
-		socket.on('message', function (data) {
-			if (data.msg){
-				if (!data.msg.type) data.msg.type="info";
-				console.log("socket emit message: "+JSON.stringify(data.msg));
-				$(function(){
-					PNotify.desktop.permission();
-					new PNotify({
-						title: data.msg.title,
-						text: data.msg.body,
-						type: data.msg.type,
-						desktop: data.msg.desktop,
-						shadow: true,
-						history: data.msg.history
-					});
-				});
-			}
-			else{
-				console.log("s p a c e socket listener says: ---------- got non-space compatible message.....");
+		var _server;
+		var _socketConnect=false;
+		// check whether we run in SSL 
+		if (window.location.protocol == "https:")
+		 	_server= '#{config.sync.socketserverSSL}';
+		else 
+			_server= '#{config.sync.socketserver}';
+		
+		$.ajax({
+			url:_server,
+			cache:false,
+			success: function(err,data){
+				console.log("OK "+_server+" is reachable");
+				_socketConnect=true;
+				$('#space_syncerstatus').text("[ONLINE]");
+				$('#space_syncerstatus').css("color","green");
+				initSockets(_server);
+			},
+			error: function(err,data){
+				console.log("FAILURE "+_server+" is NOT reachable");
+				_socketConnect=false;
+				$('#space_syncerstatus').text("[OFFLINE]");
+				$('#space_syncerstatus').css("color","red");
+				
 			}
 		
-		//	$('#alert').css("visibility","visible");
-		//	$('#alert').delay(500);
-			
-		//	$('#space_notification_title').text(data.msg.title);
-		//	$('#space_notification_body').text(data.msg.body);
-			
-			 
-		});
+		})
+		
+		
+		
+		
+		function initSockets(server){
+			// connect to the socket server
+			console.log("initSockets: "+server);		
+			var socket = io.connect(server); 
+			// if we get an "info" emit from the socket server then console.log the data we recive
+			socket.on('message', function (data) {
+				_socketConnect=true;
+				if (data.msg){
+					if (!data.msg.type) data.msg.type="info";
+					console.log("socket emit message: "+JSON.stringify(data.msg));
+					$(function(){
+						PNotify.desktop.permission();
+						new PNotify({
+							title: data.msg.title,
+							text: data.msg.body,
+							type: data.msg.type,
+							desktop: data.msg.desktop,
+							shadow: true,
+							history: data.msg.history
+						});
+					});
+				}
+				else{
+					console.log("s p a c e socket listener says: ---------- got non-space compatible message.....");
+				}
+			});
+		}

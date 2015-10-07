@@ -160,6 +160,9 @@ gulp.task('remotestart', function () {
 gulp.task('done', function () {
   gutil.log("[s p a c e - done] ****** S U C C E S S F U L *******");
   gutil.beep();
+  gutil.beep();
+  gutil.beep();
+  
    return;
 });
 
@@ -183,10 +186,7 @@ gulp.task('deploy',function(callback){
     gutil.beep();
     gutil.log("[s p a c e -deploy] ************************************************************");
     gutil.log("[s p a c e -deploy] ****** going to deploy to: "+SERVER.host+" -> "+SERVER.env);
-
-
 	runSequence('changelog','setup','buildfile','package','copy','transfer','remotedeploy','remotestart','done',callback);
-
 });
 
 /**

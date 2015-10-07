@@ -9,9 +9,14 @@ temp
 .git
 *.build
 config/secret.json
+config/sslcert
 Dockerfile
 public/files
 public/images
 change.log
 !.gitignore
 caspertest.js
+getSnowIncidents.js
+syncIncidents.js
+syncTracker.js
+udplistener.js

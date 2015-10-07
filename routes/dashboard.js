@@ -162,9 +162,8 @@ router.get('/itservicereport', function(req, res) {
 router.get('/opsreport', function(req, res) {
 		var _customer = req.session.USER;
 		ensureAuthenticated(req, res);
-
 		var avc = require ('../services/AvailabilityCalculatorService');
-		var inc = spaceServicesIncidentService;
+		var inc = spaceServices.IncidentService;
 		var prob = spaceServices.ProblemService;
 
 		//sess.AUTH = user.role;
