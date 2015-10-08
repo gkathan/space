@@ -12,8 +12,9 @@ block content
 			if session.AUTH
 				span(style="font-size:10px;margin-left:20px;color:grey")  logged in as: <b> #{session.AUTH}/#{session.USER} </b>
 			
-			span(style="font-size:10px;margin-left:20px;color:grey") s p a c e.syncer: 
-			span(id="space_syncerstatus" style="font-size:10px;font-weight:bold;margin-left:3px;color:grey")
+		
+				
+			// span(id="space_syncerstatus" style="font-size:9px;font-weight:bold;margin-left:3px;color:grey")
 			
 				
 			.div(class='notifications top-left')
@@ -278,11 +279,13 @@ block content
 	script.
 		var _server;
 		var _socketConnect=false;
+		
 		// check whether we run in SSL 
 		if (window.location.protocol == "https:")
 		 	_server= '#{config.sync.socketserverSSL}';
 		else 
 			_server= '#{config.sync.socketserver}';
+		
 		
 		$.ajax({
 			url:_server,
@@ -313,10 +316,11 @@ block content
 			var socket = io.connect(server); 
 			// if we get an "info" emit from the socket server then console.log the data we recive
 			socket.on('message', function (data) {
+				console.log("-------- got message ........");
 				_socketConnect=true;
 				if (data.msg){
 					if (!data.msg.type) data.msg.type="info";
-					console.log("socket emit message: "+JSON.stringify(data.msg));
+					console.log("message: "+JSON.stringify(data.msg));
 					$(function(){
 						PNotify.desktop.permission();
 						new PNotify({

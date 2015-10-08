@@ -47,12 +47,24 @@
 	},
 
 
-	"test":{
-		"user":{
-			"firstname":"Marc-Alexander",
-			"lastname":"Lange"
+	"heartbeat": {
+		"space.syncer" : {
+			"mode": "on",
+			"intervalMinutes" :1,
+			"url" : "http://localhost:3001/"
 		}
 	},
+
+	"sync": {
+		"socketserver" : "http://localhost:3001/",
+		"socketserverSSL" : "https://localhost:3444/"
+	},
+
+
+	"emit": {
+		"space_messages" : "on"
+	},
+
 
 	"content":{
 		"spacenews" : {
@@ -176,19 +188,9 @@
 	},
 
 
-	"emit": {
-		"snow_incidents_prios":["P01","P08"],
-		"snow_incidents_new": "on",
-		"snow_incidents_new_exclude_businessservices":"Workplace",
-		"snow_incidents_changes": "on",
-		"snow_incidents_changes_exclude_businessservices":"Workplace",
-		"space_messages" : "on"
-	},
 
-	"sync": {
-		"socketserver" : "http://localhost:3001/",
-		"socketserverSSL" : "https://localhost:3444/"
-	},
+
+
 
 
 

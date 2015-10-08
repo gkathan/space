@@ -3,44 +3,21 @@
 /**
  * Module dependencies.
  */
-
 var app = require('../app');
 var debug = require('debug')('space:server');
 var http = require('http');
-var https = require('https');
 
 http.globalAgent.maxSockets = Infinity;
-https.globalAgent.maxSockets = Infinity;
-
 /**
  * Get port from environment and store in Express.
  */
-
 var port = normalizePort(process.env.PORT || '3000');
 app.set('port', port);
-
-var portssl = normalizePort(process.env.PORT || '3443');
-app.set('portssl', portssl);
-
-
-/**
-* SSL certificates
-*/
-var fs = require('fs');
-
-var privateKey = fs.readFileSync('config/sslcert/server.key');
-var certificate = fs.readFileSync('config/sslcert/server.crt');
-var ca = fs.readFileSync('config/sslcert/ca.crt');
-
-var credentials = {key: privateKey, cert: certificate,ca:ca,requestCert:true,rejectUnauthorized: false};
-
 
 
 /**
  * Create HTTP server.
  */
-
-var server_https = https.createServer(credentials,app);
 var server_http = http.createServer(app);
 
 /**
@@ -54,21 +31,13 @@ server_http.on('listening', onListening);
 /**
  * Listen on provided port, on all network interfaces.
  */
-server_https.listen(portssl);
-server_https.on('error', onError);
-server_https.on('listening', onListeningHttps);
-
 //var io = require('socket.io').listen(server_http);
 app.io.attach(server_http);
-
-//app.io.attach(server_http, {path: "/space.io"});
-//app.io_scrumblr.attach(server_http, {path: "/scrumblr/scrumblr.io"});
 
 
 /**
  * Normalize a port into a number, string, or false.
  */
-
 function normalizePort(val) {
   var port = parseInt(val, 10);
 

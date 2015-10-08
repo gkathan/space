@@ -22,7 +22,14 @@ html(lang='en')
 	footer.footer
 		div(style="font-size:8px;color:grey;text-align:center;")
 			| s p a c e  
-			| :: version: <b>#{config.version}</b> :: build: <b>#{config.build}</b> :: env: <b>#{config.env}</b>   
+			| :: version: <b>#{config.version}</b> :: build: <b>#{config.build}</b> :: env: <b>#{config.env}</b>
+			span(style="font-size:8px;color:grey;") ::  s p a c e.syncer: 
+			if heartbeat.spacesyncer.status =="ERROR"
+				span(style="font-size:8px;color:red;font-weight:bold")  - OFFLINE - 
+				span(style="font-size:8px;color:grey;") [ #{heartbeat.spacesyncer.message}]
+			else if heartbeat.spacesyncer.status =="OK"
+				span(style="font-size:8px;color:green;font-weight:bold")  - ONLINE - 
+
 			br
 			| :: 
 			a(href="/pinboards/backlog") backlog kanban board ::

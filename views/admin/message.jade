@@ -21,10 +21,7 @@ div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;back
 					option warning
 					option error
 					option success
-			
 			br
-			
-
 			button.btn.btn-default.btn-xs(type="button" )
 				span cancel
 			button.btn.btn-info.btn-xs(id="messagesubmit" type="button")
@@ -39,11 +36,27 @@ script.
 		_msg.body=$('#messagebody').val();
 		_msg.type=$('#messagetype').val();
 		
+		var _socketserver//;= '#{config.sync.socketserver}';
+		// check whether we run in SSL 
+		if (window.location.protocol == "https:")
+		 	_socketserver= '#{config.sync.socketserverSSL}';
+		else 
+			_socketserver= '#{config.sync.socketserver}';
+
 		
-		console.log("socket:"+socket);
+		var socket = io.connect(_socketserver); 
+		console.log("socket:"+socket+" socketserver: "+_socketserver);
+
+		_msg.desktop={
+			desktop:true,
+			icon:"/images/messages/msg_"+_msg.type+".png"
+		};
+		_msg.history={menu:true};
+
+		socket.emit("message",{msg:_msg});
+
 		
-		var socket = io.connect(); 
-		
+		/*
 		$.ajax({
 			url : "/api/space/rest/message",
 			type: "POST",
@@ -58,7 +71,7 @@ script.
 			console.log("error: "+errorThrown);
 			}
 	});
-		
+		*/
 		//console.log("socket:"+socket);
 		
 		//socket.emit('message',{msg:_msg});

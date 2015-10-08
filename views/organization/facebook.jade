@@ -9,12 +9,13 @@ div.btn-group-xs(style="margin-left:20px;")
 	span(style="font-size:32px")
 		span(style="font-family:arial;font-weight:bold;color:lightgrey") . 
 		span(id="countitems" style="font-family:arial;font-weight:bold;color:lightgrey") #{employees.length}
-		span(style="font-family:arial;font-weight:normal;color:lightgrey") &nbsp;items
+		span(style="font-family:arial;font-weight:normal;color:lightgrey") &nbsp;people
 	br
 	
 	each employee in employees
-		img.img-circle(src='http://my.bwinparty.com/api/people/images/#{employee["Employee Number"]}' height="50" width="50")
-		a(href='https://my.bwinparty.com/People/#{_.first(employee["Last Name"])}/#{employee["First Name"]}#{employee["Last Name"]}#{employee["Employee Number"]}.aspx' target="_blank") #{employee["First Name"]} | 
+		img.img-circle(src='http://my.bwinparty.com/api/people/images/#{employee["Employee Number"]}' height="20" width="20")
+		a(href='https://my.bwinparty.com/People/#{_.first(employee["Last Name"])}/#{employee["First Name"]}#{employee["Last Name"]}#{employee["Employee Number"]}.aspx' target="_blank") 
+			span(style="font-size:9px") #{employee["First Name"]} | 
 		
 		
 

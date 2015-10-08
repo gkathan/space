@@ -60,7 +60,11 @@ app.set('view engine', 'jade');
 
 app.locals.title="s p a c e ";
 
+app.locals.heartbeat={};
+
 var spaceServices=require('space.services');
+
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
 orgService = spaceServices.OrganizationService;
 orgService.getOrganizationHistoryDates(function(err,data){
@@ -88,7 +92,6 @@ app.use(function(req,res,next){
 	res.locals.session = req.session;
 	res.locals.config = config;
   res.locals._=require('lodash');
-
 	next();
 });
 
@@ -106,7 +109,6 @@ app.use(function(req, res, next){
   if (success) res.locals.success = success;
   next();
 });
-
 
 // get access to URL of running app
 app.use(function(req, res, next) {
@@ -138,11 +140,7 @@ app.use('/authenticate', authenticate);
 app.use('/content', content);
 app.use('/admin', admin);
 app.use('/boards', boards);
-
 app.use('/pinboards', scrumblr);
-
-
-
 
 
 var sockets=[];
@@ -158,75 +156,7 @@ app.io.sockets.on('connection', function (socket) {
 
 module.exports = app;
 exports.io = app.io;
-/*
 
-// services
-
-var v1EpicSyncService = require('./services/V1EpicSyncService');
-v1EpicSyncService.init(function(err,result){
-    if (err) logger.error("error: "+err.message);
-    else logger.info("init ok: "+result);
-});
-
-var v1DataSyncService = require('./services/V1DataSyncService');
-v1DataSyncService.init(function(err,result){
-    if (err) logger.error("error: "+err.message);
-    else logger.info("init ok: "+result);
-});
-
-
-var avSyncService = require('./services/AvailabilitySyncService');
-avSyncService.init(function(err,av){
-  if (err) logger.error("[error]: "+err.message);
-  else logger.info("[ok]: "+JSON.stringify(av));
-});
-
-var incidentSyncService = require('./services/IncidentSyncService');
-incidentSyncService.init(function(err,result){
-  if (err){
-    logger.error("[error]: "+err.message);
-  }
-  else{
-    logger.info("IncidentSyncService.init() says: "+result);
-  }
-});
-
-var soc_outagesSyncService = require('./services/SOCOutagesSyncService');
-soc_outagesSyncService.init(function(err,data){
-    if (err){
-        logger.error("error: "+err.message);
-    }
-    else{
-      logger.debug("soc_outagesSyncService.init() says: "+data.length+" items synced");
-    }
-});
-
-var soc_servicesSyncService = require('./services/GenericSyncService');
-soc_servicesSyncService.init("soc_services",function(err, data){
-  if (err){
-      logger.error("error: "+err.message);
-  }
-  else{
-    logger.debug("soc_servicesSyncService.init() says: "+data.length+" items synced");
-  }
-});
-
-
-
-var problemSyncService = require('./services/ProblemSyncService');
-problemSyncService.init(function(err,result){
-  if (err){
-    logger.error("error: "+err.message);
-  }
-  else
-  {
-    logger.info("init ok: "+result);
-  }
-});
-
-var apmSyncService = require('./services/ApmSyncService');
-apmSyncService.init();
-*/
 
 // https
 // Enable reverse proxy support in Express. This causes the
@@ -281,6 +211,17 @@ app.use(function(err, req, res, next) {
         message: err.message,
         error: {}
     });
+});
+
+
+var heartbeatService = require('./services/HeartbeatService');
+heartbeatService.init(app,"space.syncer",function(err,result){
+  if (err){
+    logger.error("[error]: "+err.message);
+  }
+  else{
+    logger.info("heartbeatService.init() says: "+result);
+  }
 });
 
 // start scrumblr

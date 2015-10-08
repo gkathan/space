@@ -24,6 +24,19 @@
 	},
 
 
+	"sync": {
+		"socketserver" : "http://syncer.space.bwinparty.corp",
+		"socketserverSSL" : "https://syncer.space.bwinparty.corp"
+	},
+
+	"heartbeat": {
+		"space.syncer" : {
+			"mode": "on",
+			"intervalMinutes" :1,
+			"url" : "http://syncer.space.bwinparty.corp/"
+		}
+	},
+
   "logger": {
 		"production":{
 	    "DailyRotateFile":{
@@ -41,12 +54,6 @@
   		"proxy" : "http://knbnprxy.ea.bwinparty.corp/rest/epics"
     },
 
-  	"emit": {
-  		"snow_incidents_new": "on",
-  		"snow_incidents_new_exclude_businessservices":"Workplace",
-  		"snow_incidents_changes": "off",
-  		"space_messages" : "on"
-  	},
 
 
 

@@ -24,8 +24,8 @@ router.get("/", function(req, res, next) {
 
 router.get("/facebook", function(req, res, next) {
 	var orgService = spaceServices.OrganizationService;
-	orgService.findEmployeesByFunction("Studios",function(employees){
-
+	orgService.findStudiosEmployees(function(err,employees){
+		logger.debug("-------------------/facebook: employees: "+employees.length);
 		res.locals.employees = employees;
 		res.render("organization/facebook");
 	});
