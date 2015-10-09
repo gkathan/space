@@ -12,23 +12,25 @@ var spaceServices = require('space.services');
 var winston = require('winston');
 var logger = winston.loggers.get('space_log');
 
+
 exports.init = _init;
 exports.heartbeat=_heartbeat;
 
 function _init(app,name,callback){
+	var _url = config.heartbeat[name].url;
+	var socketClient = require('socket.io-client')(_url);
+
 	var rule = new schedule.RecurrenceRule();
 	// every 10 minutes
-
-
 	if (config.heartbeat[name].mode=="on"){
     logger.info("[s p a c e] HeartbeatService for: "+name+" init(): "+config.heartbeat[name].intervalMinutes+" minutes - mode: "+config.heartbeat[name].mode );
     rule.minute = new schedule.Range(0, 59, config.heartbeat[name].intervalMinutes);
-    var _url = config.heartbeat[name].url;
+
     var j = schedule.scheduleJob(rule, function(){
 			logger.debug('...going to heartbeat '+name+'  stuff ....');
-			_heartbeat(name,_url,app,callback);
+			_heartbeat(name,socketClient,app,callback);
 		});
-    	_heartbeat(name,_url,app,callback);
+    	_heartbeat(name,socketClient,app,callback);
   }
 }
 
@@ -40,30 +42,24 @@ function _init(app,name,callback){
 * param prepareData: function pointer to map / prepare data before save in local DB
 * param callback
 */
-function _heartbeat(name,url,app,callback){
+function _heartbeat(name,socketClient,app,callback){
 	var heartbeatData={};
 	var _timestamp = new Date();
 	var _statusERROR = "[ERROR]";
 	var _statusSUCCESS = "[SUCCESS]";
 
-	logger.debug("************************************** HEARTBEAT "+name+ " - checking: "+url);
+  var heartbeatData={};
+	heartbeatData.status="ERROR";
+  heartbeatData.message="----";
+	app.locals.heartbeat.spacesyncer=heartbeatData;
 
-  var request = require('request');
-  request(url, function (err, response, body) {
-    if (!err && response.statusCode == 200) {
-      logger.debug("URL is OK") // Print the google web page.
-      heartbeatData.status="OK";
-      heartbeatData.message="all fine with: "+url;
-      app.locals.heartbeat.spacesyncer=heartbeatData;
-      callback(null,heartbeatData)
-    } else {
-      logger.debug("ERROR: "+err.message);
-      heartbeatData.status="ERROR";
-      heartbeatData.message=err.message;
-      app.locals.heartbeat.spacesyncer=heartbeatData;
-      callback(null,heartbeatData)
-    }
-  })
+	socketClient.emit("heartbeat","ping from s p a c e ");
 
+	socketClient.on("heartbeat",function(message){
+		console.log(".....got HEARTBET back: "+message);
+			heartbeatData.status="OK";
+      heartbeatData.message="all fine";
+      app.locals.heartbeat.spacesyncer=heartbeatData;
+		});
 
 }
