@@ -11,12 +11,15 @@ router.get('/', function(req, res) {
 	//console.log(req.header('host'));
 	url = req.header('host') + req.baseUrl;
 
+	var scrumblrService = require('../services/scrumblr/ScrumblrService');
+
+	/*
 	var connected = app.io.sockets.connected;
 	clientsCount = Object.keys(connected).length;
-
+*/
 	res.render('scrumblr/home.jade', {
 		url: url,
-		connected: clientsCount
+		connected: scrumblrService.getConnections()
 	});
 
 });

@@ -12,12 +12,26 @@ var sids_to_user_names = [];
 var winston = require('winston');
 var logger = winston.loggers.get('space_log');
 
+var io;
+
+
+
 exports.start = _start;
+exports.getConnections = _getConnections;
+
+
+function _getConnections(){
+  	var connected = this.io.sockets.connected;
+  	clientsCount = Object.keys(connected).length;
+    return clientsCount;
+}
+
 
 /**************
  SOCKET.I0
 **************/
 function _start(io){
+  this.io = io;
   io.sockets.on('connection', function (client) {
     console.log("******************** SCRUMBLER IO CONNECT !!!");
     //santizes text

@@ -31,7 +31,15 @@ function _init(app,name,callback){
 			_heartbeat(name,socketClient,app,callback);
 		});
     	_heartbeat(name,socketClient,app,callback);
-  }
+
+		socketClient.on("heartbeat",function(message){
+			console.log(".....got HEARTBET back: "+message);
+				var heartbeatData={status:"OK",message:"all fine"};
+	      app.locals.heartbeat.spacesyncer=heartbeatData;
+			});
+	}
+
+
 }
 
 
@@ -43,23 +51,17 @@ function _init(app,name,callback){
 * param callback
 */
 function _heartbeat(name,socketClient,app,callback){
-	var heartbeatData={};
 	var _timestamp = new Date();
 	var _statusERROR = "[ERROR]";
 	var _statusSUCCESS = "[SUCCESS]";
 
   var heartbeatData={};
 	heartbeatData.status="ERROR";
-  heartbeatData.message="----";
+  heartbeatData.message="--no reply from space.syncer socket server --";
 	app.locals.heartbeat.spacesyncer=heartbeatData;
 
 	socketClient.emit("heartbeat","ping from s p a c e ");
 
-	socketClient.on("heartbeat",function(message){
-		console.log(".....got HEARTBET back: "+message);
-			heartbeatData.status="OK";
-      heartbeatData.message="all fine";
-      app.locals.heartbeat.spacesyncer=heartbeatData;
-		});
+
 
 }
