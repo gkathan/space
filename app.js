@@ -142,21 +142,7 @@ app.use('/admin', admin);
 app.use('/boards', boards);
 app.use('/pinboards', scrumblr);
 
-
-var sockets=[];
-app.io = require('socket.io')();
-
-app.io.sockets.on('connection', function (socket) {
-    logger.debug('[socket.io] says: new user connected!');
-
-    socket.on('disconnect',function(){
-      logger.debug("[socket.io] says: someone disconnected")
-    })
-});
-
 module.exports = app;
-exports.io = app.io;
-
 
 // https
 // Enable reverse proxy support in Express. This causes the
@@ -223,10 +209,6 @@ heartbeatService.init(app,"space.syncer",function(err,result){
     logger.info("heartbeatService.init() says: "+result);
   }
 });
-
-// start scrumblr
-var scrumblr = require('./services/scrumblr/ScrumblrService');
-scrumblr.start();
 
 
 logger.info("[s p a c e] - app initializes DONE..");

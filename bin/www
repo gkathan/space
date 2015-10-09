@@ -4,6 +4,8 @@
  * Module dependencies.
  */
 var app = require('../app');
+var io = require('../io');
+
 var debug = require('debug')('space:server');
 var http = require('http');
 
@@ -31,8 +33,13 @@ server_http.on('listening', onListening);
 /**
  * Listen on provided port, on all network interfaces.
  */
-//var io = require('socket.io').listen(server_http);
-app.io.attach(server_http);
+io.attach(server_http);
+
+/**
+ * start scrumbl board service with io instnace
+ */
+var scrumblr = require('../services/scrumblr/ScrumblrService');
+scrumblr.start(io);
 
 
 /**

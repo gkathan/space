@@ -1,10 +1,4 @@
-
 // ------------------------ SCRUMBLR SERVER --------------------------------
-//exports.io_scrumbrl = app.io_scrumblr;
-
-//var sockets=[];
-//app.io_scrumblr = require('socket.io')();
-
 var sanitizer = require('sanitizer');
 
 var	rooms	= require('./rooms.js');
@@ -12,7 +6,7 @@ var	data	= require('./data.js').db;
 //Map of sids to user_names
 var sids_to_user_names = [];
 
-var app=require('../../app');
+//var app=require('../../app');
 
 // logger
 var winston = require('winston');
@@ -23,8 +17,8 @@ exports.start = _start;
 /**************
  SOCKET.I0
 **************/
-function _start(){
-  app.io.sockets.on('connection', function (client) {
+function _start(io){
+  io.sockets.on('connection', function (client) {
     console.log("******************** SCRUMBLER IO CONNECT !!!");
     //santizes text
   	function scrub( text ) {
