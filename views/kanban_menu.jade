@@ -279,46 +279,15 @@ block content
 	include includes/material
 
 	script.
-		var _server;
-		var _socketConnect=false;
+		initSockets()
 		
-		// check whether we run in SSL 
-		if (window.location.protocol == "https:")
-		 	_server= '#{config.sync.socketserverSSL}';
-		else 
-			_server= '#{config.sync.socketserver}';
-		
-		
-		$.ajax({
-			url:_server,
-			cache:false,
-			success: function(err,data){
-				console.log("OK "+_server+" is reachable");
-				_socketConnect=true;
-				$('#space_syncerstatus').text("[ONLINE]");
-				$('#space_syncerstatus').css("color","green");
-				initSockets(_server);
-			},
-			error: function(err,data){
-				console.log("FAILURE "+_server+" is NOT reachable");
-				_socketConnect=false;
-				$('#space_syncerstatus').text("[OFFLINE]");
-				$('#space_syncerstatus').css("color","red");
-				
-			}
-		
-		})
-		
-		
-		
-		
-		function initSockets(server){
+		function initSockets(){
 			// connect to the socket server
-			console.log("initSockets: "+server);		
-			var socket = io.connect(server); 
+			
+			var socket = io.connect(); 
 			// if we get an "info" emit from the socket server then console.log the data we recive
-			socket.on('message', function (data) {
-				console.log("-------- got message ........");
+			socket.on('space.message', function (data) {
+				console.log("-------- got space.message ........");
 				_socketConnect=true;
 				if (data.msg){
 					if (!data.msg.type) data.msg.type="info";

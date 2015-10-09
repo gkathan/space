@@ -55,10 +55,11 @@
 		}
 	},
 
-	"sync": {
-		"socketserver" : "http://localhost:3001/",
-		"socketserverSSL" : "https://localhost:3444/"
+	"syncUpdate": {
+			"url" : "http://localhost:3001/",
+			"urlSSL": "https://localhost:3443/"
 	},
+
 
 
 	"emit": {

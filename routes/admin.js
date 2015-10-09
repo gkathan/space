@@ -114,7 +114,7 @@ router.get('/sync', function(req, res) {
 	if (ensureAuthenticated(req,res)){
 		var syncService = spaceServices.SyncService;
 
-		var _syncServer=config.sync.socketserver;
+		var _syncServer=config.syncUpdate.url;
 
 		//_syncServer="http://localhost:8001/"
 

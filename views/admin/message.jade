@@ -36,16 +36,9 @@ script.
 		_msg.body=$('#messagebody').val();
 		_msg.type=$('#messagetype').val();
 		
-		var _socketserver//;= '#{config.sync.socketserver}';
-		// check whether we run in SSL 
-		if (window.location.protocol == "https:")
-		 	_socketserver= '#{config.sync.socketserverSSL}';
-		else 
-			_socketserver= '#{config.sync.socketserver}';
-
-		
-		var socket = io.connect(_socketserver); 
-		console.log("socket:"+socket+" socketserver: "+_socketserver);
+		//use same server
+		var socket = io.connect(); 
+		//console.log("socket:"+socket+" socketserver: "+_socketserver);
 
 		_msg.desktop={
 			desktop:true,
@@ -53,10 +46,10 @@ script.
 		};
 		_msg.history={menu:true};
 
-		socket.emit("message",{msg:_msg});
+		//socket.emit("message",{msg:_msg});
 
 		
-		/*
+		
 		$.ajax({
 			url : "/api/space/rest/message",
 			type: "POST",
@@ -71,7 +64,7 @@ script.
 			console.log("error: "+errorThrown);
 			}
 	});
-		*/
+		
 		//console.log("socket:"+socket);
 		
 		//socket.emit('message',{msg:_msg});

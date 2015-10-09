@@ -116,7 +116,7 @@ var PATH = {
 
 						REST_MAIL : BASE+'/space/rest/mail',
 						REST_SWITCHCONTEXT : BASE+'/space/rest/switchcontext',
-					//	REST_MESSAGE : BASE+'/space/rest/message',
+						REST_MESSAGE : BASE+'/space/rest/message',
 
 
 						EXPORT_TARGETS : BASE+'/space/export/xlsx/targets',
@@ -263,7 +263,7 @@ router.delete(PATH.REST_CONTENT, function(req, res, next) {remove(req,res,next);
 
 
 router.post(PATH.REST_MAIL, function(req, res, next) {mail(req,res,next); });
-//router.post(PATH.REST_MESSAGE, function(req, res, next) {message(req,res,next); });
+router.post(PATH.REST_MESSAGE, function(req, res, next) {message(req,res,next); });
 
 router.post(PATH.REST_SYNCEMPLOYEEIMAGES, function(req, res, next) {syncEmployeeImages(req,res,next); });
 
@@ -1157,12 +1157,9 @@ function mail(req,res,next){
 }
 
 
-/*
+
 function message(req,res,next){
   logger.debug("*********************** real-time message emit: "+JSON.stringify(req.body));
-
-
-
 	if (config.emit.space_messages =="on"){
 		var _message=req.body;
 		_message.desktop={
@@ -1171,13 +1168,14 @@ function message(req,res,next){
 		};
 		_message.history={menu:true};
 
-		req.app.io.emit("message",{msg:_message});
+		var io = require('../io.js');
+		io.sockets.emit("space.message",{msg:_message});
 	}
 
 	res.send({});
 	return;
 }
-*/
+
 
 function syncEmployeeImages(req,res,next){
     logger.debug("*********************** lets sync images of employees... ");

@@ -104,8 +104,8 @@ mixin renderL1Target(target)
 								+ragStatus(target.rag,15)
 							div(style="line-height:8px") &nbsp;
 								//span(style="line-height:16px;font-weight:normal;font-size:10px") #{target.directTime}
-		div(style="margin-top:10px;margin-bottom:10px")
-			img(src="/images/space_triangle_grey_up.png" style="vertical-align:middle;display:block;margin: auto auto" height="10px" width="120px"	)
+		//div(style="margin-top:10px;margin-bottom:10px")
+			//img(src="/images/space_triangle_grey_up.png" style="vertical-align:middle;display:block;margin: auto auto" height="10px" width="120px"	)
 
 // -----------------------------------------------------------------------
 // ------------------ mixin target lane start ----------------------------
@@ -368,14 +368,10 @@ div.container-fluid(style="max-width:1600px")
 		div(style="font-weight:normal;font-size:12px;color:#{color_PL};text-align:center") as of: <b>#{lastUpdate}</b>
 		div(style="font-weight:normal;font-size:12px;color:#{color_PL};text-align:center") status: <b>#{state}</b>
 		
-		
-		
 		br
 		div(style=";color:white;background-color:#{color_PL};text-align:center;font-size:16px;font-weight:normal;margin-left:10px;margin-right:10px;line-height:32px") 
 			span(style="line-height:28px;font-size:16px;font-weight:normal;color:white") #{_.capitalize(_.last(context.split(".")))} P&L
 				//a(href="/targets/rollup" style="line-height:28px;font-size:16px;font-weight:normal;color:white") #{context} group
-			
-		
 		
 	div.row(style="text-align:center")
 		table.table.table-borderless(style="background-color:transparent")

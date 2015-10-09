@@ -59,10 +59,10 @@ div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;back
 	.panel-heading
 		i.glyphicon.glyphicon-refresh(style="font-size:15px")
 		span(style="font-size:20px") &nbsp;SYNC PROCESSES
-		if config.sync.socketserverSSL
+		if config.syncUpdate.urlSSL
 			div
 				|syncserver: 
-				a(href="#{config.sync.socketserver}" target="_new") #{config.sync.socketserverSSL}
+				a(href="#{config.syncUpdate.urlSSL}" target="_new") #{config.syncUpdate.urlSSL}
 	.panel-body(style="font-size:12px")
 		table.table.table-striped.table-hover.table-condensed
 			thead
@@ -139,45 +139,45 @@ script.
 
 	$('#sync_availability').on('click', function () {
 		console.log("avreport request called...");
-		socket.emit("forceSync",{syncer:"availability"});
+		spaceSyncerSocket.emit("forceSync",{syncer:"availability"});
 	});
 	
 	$('#sync_incidents').on('click', function () {
 		console.log("incidentsync request called...");
-		socket.emit("forceSync",{syncer:"incidents"});
+		spaceSyncerSocket.emit("forceSync",{syncer:"incidents"});
 	});
 	
 	$('#sync_soc_outages').on('click', function () {
 		console.log("soc outagessync request called...");
-		socket.emit("forceSync",{syncer:"soc_outages"});
+		spaceSyncerSocket.emit("forceSync",{syncer:"soc_outages"});
 	});
 	
 	$('#sync_soc_services').on('click', function () {
 		console.log("soc servicessync request called...");
-		socket.emit("forceSync",{syncer:"soc_services"});
+		spaceSyncerSocket.emit("forceSync",{syncer:"soc_services"});
 	});
 
 
 	$('#sync_problems').on('click', function () {
 		console.log("problemsync request called...");
-			socket.emit("forceSync",{syncer:"problems"});
+			spaceSyncerSocket.emit("forceSync",{syncer:"problems"});
 	});
 
 	$('#sync_v1epics').on('click', function () {
 		console.log("v1EpicsSync request called...");
-		socket.emit("forceSync",{syncer:"v1epics"});
+		spaceSyncerSocket.emit("forceSync",{syncer:"v1epics"});
 
 	});
 	
 		$('#sync_v1data').on('click', function () {
 			console.log("v1DataSync request called...");
-			socket.emit("forceSync",{syncer:"v1data"});
+			spaceSyncerSocket.emit("forceSync",{syncer:"v1data"});
 			console.log("socket emitted...");
 		});
 
 	$('#sync_apm_login').on('click', function () {
 		console.log("sync_apm_betplacement request called...");
-		socket.emit("forceSync",{syncer:"apm.login"});
+		spaceSyncerSocket.emit("forceSync",{syncer:"apm.login"});
 
 	});
 
@@ -186,15 +186,15 @@ script.
 	var _server;
 	// check whether we run in SSL 
 	if (window.location.protocol == "https:")
-		_server= '#{config.sync.socketserverSSL}';
+		_server= '#{config.syncUpdate.urlSSL}';
 	else 
-		_server= '#{config.sync.socketserver}';
+		_server= '#{config.syncUpdate.url}';
 	
 	
 	console.log("----- _socketserver: "+_server);
-	var socket = io.connect(_server); 
+	var spaceSyncerSocket = io.connect(_server); 
 	// if we get an "info" emit from the socket server then console.log the data we recive
-	socket.on('syncUpdate', function (data) {
+	spaceSyncerSocket.on('syncUpdate', function (data) {
 		console.log("*********** got a websocket synUpdate: "+data.from+" "+data.status+" "+data.timestamp);
 		
 		var _idTimestamp = '#'+data.from+'_timestamp';
@@ -239,7 +239,7 @@ script.
 		
 	});
 	
-	socket.on('incidentTickerUpdate', function (data) {
+	spaceSyncerSocket.on('incidentTickerUpdate', function (data) {
 		console.log("ticker update: "+data);
 		
 		//$("#ticker").html(JSON.stringify(data));

@@ -24,10 +24,11 @@
 	},
 
 
-	"sync": {
-		"socketserver" : "http://syncer.space.bwinparty.corp",
-		"socketserverSSL" : "https://syncer.space.bwinparty.corp"
+	"syncUpdate": {
+			"url" : "http://syncer.space.bwinparty.corp",
+			"urlSSL": "https://syncer.space.bwinparty.corp"
 	},
+
 
 	"heartbeat": {
 		"space.syncer" : {
