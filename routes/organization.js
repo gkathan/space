@@ -31,6 +31,19 @@ router.get("/facebook", function(req, res, next) {
 	});
 });
 
+router.get("/facebook/:costcenter", function(req, res, next) {
+	var orgService = spaceServices.OrganizationService;
+	var costcenter=req.params.costcenter;
+
+	orgService.findStudiosEmployees(function(err,employees){
+		logger.debug("-------------------/facebook: employees: "+employees.length);
+		res.locals.employees = _.where(employees,{"Cost Centre":costcenter});
+		res.locals.costcenter = costcenter;
+		res.render("organization/facebook");
+	});
+});
+
+
 
 router.get("/history/tree/:date", function(req, res, next) {
 	if (ensureAuthenticated(req,res)){

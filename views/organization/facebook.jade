@@ -4,7 +4,11 @@ include ../kanban_menu
 block content
 	
 div.btn-group-xs(style="margin-left:20px;")
-	span(style="font-family:arial;font-weight:normal;font-size:50px;color:lightgrey") #{config.context} FACEBOOK 
+	if costcenter
+		span(style="font-family:arial;font-weight:normal;font-size:50px;color:lightgrey") #{costcenter} FACEBOOK 
+	else
+		span(style="font-family:arial;font-weight:normal;font-size:50px;color:lightgrey") #{config.context} FACEBOOK 
+		
 	span(id="admintype" style="font-family:arial;font-weight:bold;font-size:50px;color:lightgrey")
 	span(style="font-size:32px")
 		span(style="font-family:arial;font-weight:bold;color:lightgrey") . 
@@ -12,15 +16,16 @@ div.btn-group-xs(style="margin-left:20px;")
 		span(style="font-family:arial;font-weight:normal;color:lightgrey") &nbsp;people
 	br
 	
+	- var size = 20;
+	- if (employees.length<=20) size=50;
+	- else if (employees.length>20 && employees.length<=200 ) size=40;
+	- else if (employees.length>200 && employees.length<=500 ) size=30;
+	
+	
 	each employee in employees
-		img.img-circle(src='http://my.bwinparty.com/api/people/images/#{employee["Employee Number"]}' height="20" width="20")
+		img.img-circle(src='/images/employees/circle/#{employee["Employee Number"]}_square.png_circle.png' height="#{size}px" width="#{size}px")
 		a(href='https://my.bwinparty.com/People/#{_.first(employee["Last Name"])}/#{employee["First Name"]}#{employee["Last Name"]}#{employee["Employee Number"]}.aspx' target="_blank") 
 			span(style="font-size:9px") #{employee["First Name"]} | 
-		
-		
-
-
-
-							
+						
 	include ../includes/material					
 	
