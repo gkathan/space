@@ -70,6 +70,7 @@
     "gulp-git": "^1.2.1",
     "gulp-gunzip": "0.0.2",
     "gulp-gzip": "~1.0.0",
+    "gulp-jade": "^1.1.0",
     "gulp-jshint": "^1.10.0",
     "gulp-mocha": "^2.0.1",
     "gulp-rename": "^1.2.0",

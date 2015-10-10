@@ -11,6 +11,7 @@ var unzip = require('gulp-unzip');
 var mocha = require('gulp-mocha');
 var git = require('gulp-git');
 var mongojs = require('mongojs');
+var jade = require('gulp-jade');
 
 var jshint = require('gulp-jshint');
 var stylish = require('jshint-stylish');
@@ -90,6 +91,19 @@ var options = minimist(process.argv.slice(2),knownOptions);
 
 gutil.log("knownoptions: "+JSON.stringify(knownOptions));
 
+
+gulp.task("jadegen",function(){
+  gutil.log("generating client side jade functions.... ");
+  gulp.src('./views/_*.jade')
+    .pipe(jade({
+      client: true
+    }))
+    .pipe(gulp.dest('./public/javascripts/_jade/'))
+});
+
+
+
+
 gulp.task('minorrelease', function () {
 	gutil.log("current version: "+VERSION);
 	gutil.log("increment maintenance: "+incrementVersion("maintenance",VERSION));
@@ -162,7 +176,7 @@ gulp.task('done', function () {
   gutil.beep();
   gutil.beep();
   gutil.beep();
-  
+
    return;
 });
 

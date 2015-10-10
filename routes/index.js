@@ -41,7 +41,7 @@ router.get('/test/carousel', function(req, res) {
 
 /* GET the elements test  page. */
 router.get('/test/elements', function(req, res) {
-	res.render('_elements');
+	res.render('elements');
 });
 
 router.get('/test/partition', function(req, res) {
@@ -86,14 +86,18 @@ router.get('/itservicereports', function(req, res) {
 });
 
 router.get('/customers', function(req, res) {
-	//res.locals.customers = CustomerService.findCustomers();
-	var customers =  db.collection('customers');
+	// EXAMPLE of client side ajax based jade rendering
+  res.render('customers', { title: 's p a c e - customers' })
+
+  /*
+  var customers =  db.collection('customers');
 		customers.find({}, function (err, docs){
 			//sort
 			customers=_.sortBy(docs, "type")
 			res.locals.customers=docs;
 			res.render('customers', { title: 's p a c e - customers' })
 	});
+  */
 });
 
 

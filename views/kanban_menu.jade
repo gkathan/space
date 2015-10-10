@@ -1,7 +1,7 @@
 extends layout
 
 block content
-	div.container-fluid
+	div.container-fluid(id="spacemenu")
 		div.row(style="margin-left:10px;margin-bottom:10px;margin-top:10px")
 			if session.CONTEXT
 				img(src='/images/#{session.CONTEXT}_logo.png'  height='30px')
