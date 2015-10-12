@@ -21,6 +21,7 @@ var db = mongojs(connection_string, [DB]);
 var spaceServices=require('space.services');
 var incidentService = spaceServices.IncidentService;
 var incidentTrackerService = spaceServices.IncidentTrackerService;
+var organizationService = spaceServices.OrganizationService;
 
 
 var exporter = require('../services/ExcelExportService');
@@ -113,6 +114,10 @@ var PATH = {
 						REST_ORGANIZATIONHISTORY : BASE+'/space/rest/organization/history/:date',
 						REST_ORGANIZATIONSNAPSHOTDATES : BASE+'/space/rest/organization/snapshotdates',
 						REST_ORGANIZATIONTREND : BASE+'/space/rest/organization/trend',
+						REST_ORGANIZATIONTREE : BASE+'/space/rest/organizationtree',
+						REST_ORGANIZATIONTREEBYNAME : BASE+'/space/rest/organizationtree/:name',
+						REST_ORGANIZATIONTREEHISTORY : BASE+'/space/rest/organizationtree/history/:date',
+
 
 						REST_MAIL : BASE+'/space/rest/mail',
 						REST_SWITCHCONTEXT : BASE+'/space/rest/switchcontext',
@@ -304,8 +309,14 @@ router.get(PATH.REST_ORGANIZATION_EMPLOYEE, function(req, res, next) {findEmploy
 router.get(PATH.REST_ORGANIZATION_EMPLOYEEBYID, function(req, res, next) {findEmployeeById(req,res,next); });
 router.get(PATH.REST_ORGANIZATIONSNAPSHOTDATES, function(req, res, next) {getOrganizationSnapshotDates(req,res,next); });
 router.get(PATH.REST_ORGANIZATIONTREND, function(req, res, next) {getOrganizationTrend(req,res,next); });
+
+router.get(PATH.REST_ORGANIZATIONTREE, function(req, res, next) {getOrganizationTree(req,res,next); });
+router.get(PATH.REST_ORGANIZATIONTREEBYNAME, function(req, res, next) {getOrganizationTreeByName(req,res,next); });
+router.get(PATH.REST_ORGANIZATIONTREEHISTORY, function(req, res, next) {getOrganizationTreeHistory(req,res,next); });
+
+
 router.get(PATH.REST_ORGANIZATIONHISTORY, function(req, res, next) {
-	db.collection("organizationhistory").findOne({oDate:req.params.date} , function(err , success){
+	organizationService.findEmployeesHistory(req.params.date,function(err,success){
         if(success){
             res.send(success);
             return;
@@ -1223,6 +1234,46 @@ function getOrganizationTrend(req,res,next){
 			res.send(data);
 		});
 }
+
+function getOrganizationTree(req,res,next){
+	orgService = spaceServices.OrganizationService;
+	orgService.getTree(function(err,data){
+
+		res.send(data);
+	});
+}
+
+
+function getOrganizationTreeHistory(req,res,next){
+	var _date = req.params.date;
+
+	orgService = spaceServices.OrganizationService;
+	orgService.getTreeByDate(_date,function(err,data){
+		if (err){
+			res.send(err.message);
+		}
+		else if (data){
+				res.send(data);
+		}
+
+
+	});
+}
+
+
+function getOrganizationTreeByName(req,res,next){
+		var _name =req.params.name;
+
+		if (_name && _name!=":name"){
+			orgService = spaceServices.OrganizationService;
+			orgService.getTreeBelow(_name,function(err,data){
+
+				res.send(data);
+			});
+		}
+		else res.send("nope");
+}
+
 
 
 function getOrganizationSnapshotDates(req,res,next){

@@ -54,11 +54,11 @@ var vis = d3.select("#body").append("div")
     .attr("height", h);
 
 var partition = d3.layout.partition()
-    .value(function(d) { return d.size; });
+    .value(function(d) { return d.companyYears; });
     //.value(function(d) { if (d.children) return d.children.length; else return 1;});
 
-//d3.json("/api/space/rest/targetstree", function(root) {
-d3.json("flare.json", function(root) {
+d3.json("/api/space/rest/organizationtree", function(root) {
+//d3.json("flare.json", function(root) {
   var g = vis.selectAll("g")
       .data(partition.nodes(root))
     .enter().append("svg:g")
@@ -77,7 +77,7 @@ d3.json("flare.json", function(root) {
       .attr("transform", transform)
       .attr("dy", ".35em")
       .style("opacity", function(d) { return d.dx * ky > 12 ? 1 : 0; })
-      .text(function(d) { return d.name; })
+      .text(function(d) { return d.name+" - "+d.employee; })
 
   d3.select(window)
       .on("click", function() { click(root); })

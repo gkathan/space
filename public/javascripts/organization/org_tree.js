@@ -3,13 +3,10 @@
 var CONTEXT="CONTEXT";
 
 var orgData;
-var orgTree;
-var orgLevels;
-var statLevels;
 
 var SIZE ;
-var MARGIN_LEFT = 800;
-var MARGIN_TOP = 150;
+var MARGIN_LEFT = 250;
+var MARGIN_TOP = 100;
 
 //default is "hr" ... HR line superivisor
 // alternative is "bp" ...business process / functional superivisor
@@ -23,18 +20,16 @@ var MAX_COUNT;
 
 // set by multiselect box to switch data
 // default
-//var ORG_DATA="organization/history/";
-var ORG_DATA="organization/";
 
 //fixed distance between depth levels
 var DEPTH_WIDTH = 200;
 
 //input field to redefine root node (must match PI "Full Name")
 var ROOT_NAME;// = "Mr. Thomas Priglinger";
+var ORG_DATE;
 
 var LEAF_NAMES = 1;
-var LEAF_NODES = 0;
-
+var LEAF_NODES = 1;
 var WIDTH =SIZE;
 var HEIGHT = SIZE;
 var HEIGHT_OVERRIDE;
@@ -47,12 +42,10 @@ var x,y,svg,tree,diagonal;
 
 var COLOR_BPTY="#174D75";
 var COLOR_TARGET = COLOR_BPTY;
-
 var color;
 var pack;
 var nodes;
 
-var org_date;
 var _tree;
 
 
@@ -61,15 +54,12 @@ function _init(){
 	var margin = {top: MARGIN_TOP, right: 120, bottom: 20, left: MARGIN_LEFT},
 		width = WIDTH - margin.right - margin.left,
 		height = HEIGHT - margin.top - margin.bottom;
-
 	tree = d3.layout.tree()
 		.size([height, width]);
-
 	diagonal = d3.svg.diagonal()
 		.projection(function(d) { return [d.y, d.x]; });
 		//.projection(function(d) { return [d.x, d.y]; });
-
-	svg = d3.select("body").append("svg")
+	svg = d3.select("#orgTree").append("svg")
 		.attr("width", width + margin.right + margin.left)
 		.attr("height", height + margin.top + margin.bottom)
 		.style("background","white")
@@ -80,70 +70,38 @@ function _init(){
 /** main entry
 * called from .jade views
 */
-function render(date){
-	org_date = date;
+function render(baseRoot,date){
+	var _url="/api/space/rest/";
 	if (date){
-		 ORG_DATA="organization/history/";
+		 _url+="organizationtree/history/"+date;
+		ORG_DATE=date;
 	}
 	else{
-		 ORG_DATA="organization";
+		 _url+="organizationtree";
 	}
-	console.log("** render(): date = "+date);
+	if (baseRoot){
+		_url+="/"+baseRoot;
+	}
+	$('#orgRoot').text(baseRoot);
 
-	d3.json(dataSourceFor(ORG_DATA+date),function(data){
-		// that is needed for historized orgdata
-		if (ORG_DATA=="organization/history/"){
-			orgData = data.oItems;
-		}
-		else if (ORG_DATA=="organization"){
-			orgData = data;
-		}
-		console.log("dataSourceFor(ORG_DATA+date):  "+dataSourceFor(ORG_DATA+date));
+	console.log("** render(): date = "+date+" - root: "+baseRoot+" -- url: "+_url);
 
-		var _parent,_parentBase;
-		if (HIERARCHY_TYPE=="hr") _parent = "Supervisor Employee Number";
-		else if (HIERARCHY_TYPE=="bp") {
-			_parent = "Business Process Flow Manager Employee Number";
-			_parentBase = "Supervisor Employee Number";
-		}
-
-		var _list = createList(orgData,"Employee Number",_parent,_parentBase);
-		console.log("[OK] createList()");
-		_tree = makeTree(_list);
-
-		if (_tree.length>0){
-			console.log("[OK] makeTree()");
-		}
-		else{
-			console.log("[FAILED] makeTree()");
-		}
-
-		root = findNorbert(_tree);
-		console.log("[OK] findNorbert()"+root);
-
-		orgTree = root;
-
-		if (ROOT_NAME) root = searchBy(orgTree,"employee",ROOT_NAME);
-
-		console.log("***** before count");
-
-		if (root){
-			MAX_COUNT=count(root,0);
-			enrich(root);
-
-			statLevels = calculateTreeStats(root);
-
-			SIZE=300+MAX_COUNT+(MAX_LEVEL*300);
+	d3.json(_url,function(data){
+		if (data){
+			var root = data.tree;
+			orgTree = root;
+			MAX_COUNT=data.stats.total;//count(root,0);
+			//enrich(root);
+			console.log("------------------------------------------------------------------ MAX_COUNT ="+MAX_COUNT);
+			statLevels = data.stats.levels;//calculateTreeStats(root);
+			MAX_LEVEL=statLevels.length;
+			SIZE=300+MAX_COUNT+(MAX_LEVEL*200);
 			console.log("***** MAX_LEVEL: "+MAX_LEVEL);
-			WIDTH=4000;
+			WIDTH=MAX_LEVEL*300;
 			HEIGHT=SIZE;
 
-			//set current size in orgmenu
-			//if (!HEIGHT_OVERRIDE) document.getElementById("input_height").value=HEIGHT;
-			//else HEIGHT = getInt(HEIGHT_OVERRIDE);
-
 			_init();
-			_renderBackground(root);
+			_renderBackground(data.stats);
 			_render(root);
 		}
 		else{
@@ -155,60 +113,25 @@ function render(date){
 var _links;
 
 
-function _renderBackground(source){
+function _renderBackground(stats){
 	//getting tree clustered by levels
-	var levels = traverseBF(source);
+	var levels = stats.levels
 	MAX_LEVEL = levels.length;
-
-	var _total = 0;
-	for (var i in levels){_total+=levels[i].length;};
-
+	var _total = stats.total;
 	console.log("* MAX DEPTH: "+levels.length+" DISTRIBUTION - TOTAL: "+_total);
-
 	var gBack = d3.select("svg").append("g").attr("id","background");
-	var _sum =0;
-	var _sumFemale=0;
-	var _sumLeaf =0;
-	var _sumTermination = 0;
 	for (var i in levels){
-
 		var _x = (i*DEPTH_WIDTH)+MARGIN_LEFT;
 		_drawLine(gBack,_x,MARGIN_TOP-50,_x,SIZE,"dashedLine");
-
-		var _perLevel = levels[i].length;
-		var _percentage = Math.round((_perLevel/_total)*100);
-		var _female = getFemaleQuotient(levels[i]);
-		var _internal = getInternalQuotient(levels[i]);
-		var _children =0;
-		var _leaf =0;
-		var _terminationPercentage = 0;
-
-		var _leafPercentage;
-
-		_leaf = statLevels[i].leafOnly;
-		_leafPercentage = Math.round((_leaf/_perLevel)*100);
-		_terminationPercentage = Math.round((statLevels[i].termination/_perLevel)*100);
-
-		_sumLeaf+=statLevels[i].leafOnly;
-		_sumTermination+=statLevels[i].termination;
-		_sum+=_perLevel;
-		_sumFemale+=_female;
-
 		_drawText(gBack,"N"+(MAX_LEVEL-i),_x,MARGIN_TOP-70,{"size":"24px","color":"red","opacity":1,"anchor":"middle","weight":"normal"});
-		_drawText(gBack,"#"+levels[i].length,_x,MARGIN_TOP-53,{"size":"16px","color":"red","opacity":1,"anchor":"middle","weight":"bold"});
-		_drawText(gBack,_percentage+"%"+"|f:"+_female+"%"+"|i:"+_internal+"%"+"|l:"+_leafPercentage+"%"+"|t:"+_terminationPercentage+"%",_x,MARGIN_TOP-40,{"size":"12px","color":"red","opacity":1,"anchor":"middle","weight":"normal"});
-
+		_drawText(gBack,"#"+levels[i].total,_x,MARGIN_TOP-53,{"size":"16px","color":"red","opacity":1,"anchor":"middle","weight":"bold"});
+		_drawText(gBack,levels[i].percentage+"%"+"|f:"+levels[i].femalePercentage+"%"+"|i:"+levels[i].internalPercentage+"%"+"|l:"+levels[i].leafPercentage+"%"+"|t:"+levels[i].terminationPercentage+"%",_x,MARGIN_TOP-40,{"size":"12px","color":"red","opacity":1,"anchor":"middle","weight":"normal"});
 		console.log(levels[i].length+" - ");
 	}
-
 	//sum
-
 	_drawText(gBack,"SUM",MARGIN_LEFT-DEPTH_WIDTH,MARGIN_TOP-70,{"size":"24px","color":"red","opacity":1,"anchor":"middle","weight":"normal"});
-	_drawText(gBack,"#"+_sum,MARGIN_LEFT-DEPTH_WIDTH,MARGIN_TOP-53,{"size":"16px","color":"red","opacity":1,"anchor":"middle","weight":"bold"});
-	_drawText(gBack,"100%"+"|f:"+getFemaleQuotient(orgData,"Gender")+"%|i:"+getInternalQuotient(orgData,"Contract Type")+"%|l:"+Math.round((_sumLeaf/_sum)*100)+"%|t:"+Math.round((_sumTermination/_sum)*100)+"%",MARGIN_LEFT-DEPTH_WIDTH,MARGIN_TOP-40,{"size":"12px","color":"red","opacity":1,"anchor":"middle","weight":"normal"});
-
-
-
+	_drawText(gBack,"#"+stats.total,MARGIN_LEFT-DEPTH_WIDTH,MARGIN_TOP-53,{"size":"16px","color":"red","opacity":1,"anchor":"middle","weight":"bold"});
+	_drawText(gBack,"100%"+"|f:"+stats.overAll.femalePercentage+"%|i:"+stats.overAll.internalPercentage+"%|l:"+stats.overAll.leafPercentage+"%|t:"+stats.overAll.terminationPercentage+"%",MARGIN_LEFT-DEPTH_WIDTH,MARGIN_TOP-40,{"size":"12px","color":"red","opacity":1,"anchor":"middle","weight":"normal"});
 }
 
 function _render(source){
@@ -225,15 +148,12 @@ function _render(source){
 		}
 	}),
  	links = tree.links(nodes);
-
   // Normalize for fixed-depth.
   nodes.forEach(function(d) { d.y = d.depth * DEPTH_WIDTH; });
   //nodes.forEach(function(d) { d.y = d.depth * 100; });
-
   // Declare the nodes…
   var node = svg.selectAll("g.node")
 	  .data(nodes, function(d) { return d.id || (d.id = ++i); });
-
   // Enter the nodes.
   var nodeEnter = node.enter().append("g")
 	  .attr("class", "node")
@@ -241,17 +161,22 @@ function _render(source){
 	  .attr("transform", function(d) {
 		  return "translate(" + d.y + "," + d.x + ")"; });
 		  //return "translate(" + d.x + "," + d.y + ")"; });
-
   nodeEnter.append("circle")
 	  .attr("r",function(d){
 		   return getSize(d,50,2)/2+"px";
 		})
 	  .style("fill", "#fff");
 
-
+	nodeEnter.append("svg:image")
+		.attr("xlink:href",function(d){return "/images/employees/circle/"+d.name+"_square.png_circle.png";})
+		.attr("width",function(d){
+		   return getSize(d,30,10)+"px";
+		})
+		.attr("height",function(d){
+		   return getSize(d,30,10)+"px";
+		})
 	//***** NAME ********
 	// needed when we use _nest stuff instead of maketree stuff
-
 	/*
 	nodeEnter.append("text")
 	  .attr("x", function(d) {
@@ -270,7 +195,6 @@ function _render(source){
 	  .style("font-size",function(d){
 		   return getSize(d)+"px";
 		});
-
 	*/
 
 	//***** POSITION ********
@@ -288,18 +212,13 @@ function _render(source){
 			else return "normal";
 		  })
 	  .style("font-size",function(d){
-		   return getSize(d,25,5)+"px";
+		   return getSize(d,20,5)+"px";
 		})
  	  .style("fill",function(d){
 		   var _color ="black";
 		   if (d.terminationDate) _color="lightgrey";
 		   return _color;
 		});
-
-
-
-
-
 	//***** EMPLOYEE ********
 		nodeEnter.append("text")
 	  .attr("x", function(d) {
@@ -312,7 +231,7 @@ function _render(source){
 	  .style("fill-opacity", 1)
 	  .style("font-weight", "normal")
 	  .style("font-size",function(d){
-		   return getSize(d,50,5)/1.2+"px";
+		   return getSize(d,16,5)/1.2+"px";
 		})
 	  .style("fill",function(d){
 		   var _color ="black";
@@ -336,7 +255,7 @@ function _render(source){
 	  .style("font-weight", "bold")
 	  .style("fill","red")
 	  .style("font-size",function(d){
-		  return getSize(d,100,6)*2+"px";
+		  return getSize(d,20,6)*2+"px";
 		})
 		.style("text-anchor","end")
 	  ;
@@ -349,7 +268,7 @@ function _render(source){
 		  return d.children || d._children ? 0 : 0; })
 		 // return d.children || d._children ? -18 : 18; })
 	  .attr("dy", function(d){
-		  return getSize(d,100,4)*.9+"px";
+		  return getSize(d,12,4)*.9+"px";
 		})
 	  .attr("text-anchor", function(d) {
 		  return d.children || d._children ? "end" : "start"; })
@@ -358,18 +277,14 @@ function _render(source){
 	  .style("font-weight", "normal")
 	  .style("fill","red")
 	  .style("font-size",function(d){
-		  return getSize(d,100)*.9+"px";
+		  return getSize(d,12)*.9+"px";
 		})
-
 		.style("text-anchor","end")
 	  ;
-
 	  //.style("writing-mode", "tb");
-
   // Declare the links…
   var link = svg.selectAll("path.link")
 	  .data(links, function(d) { return d.target.id; });
-
   // Enter the links.
   link.enter().insert("path", "g")
 	  .attr("class", "link")
@@ -380,23 +295,11 @@ function _render(source){
 // Toggle children on click.
 function click(d) {
   console.log("** click:"+d.employee+ "--------------------- overall: "+d.overallReports);
-  ROOT_NAME = d.employee;
-
+  var _root = d.employee;
   // ~ rough formula
   HEIGHT = 500+d.overallReports*3;
-
   d3.select("svg").remove();
-  render(org_date);
-  return;
-
-  if (d.children) {
-    d._children = d.children;
-    d.children = null;
-  } else {
-    d.children = d._children;
-    d._children = null;
-  }
-  _render(d);
+  render(_root,ORG_DATE);
 }
 
 

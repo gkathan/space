@@ -8,45 +8,44 @@ script(src="/javascripts/organization/org_tree.js")
 
 block content
 	script(type="text/javascript").
-	
 	div.notifications.top-left
 	div.row(style="margin-left:10px;margin-bottom:10px")
-			
-
-		// Button trigger modal
-		button.btn.btn-primary.btn-xs(type="button" data-toggle="modal" data-target="#myModal")
-			span demo modal
+		div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;background-color:white;width:1200px;text-align: center;margin: 10px auto;")
+			.panel-heading
+				h4 orgtree from <b>#{ORG_DATE}</b> - root:
+					span(id="orgRoot" style="font-size:24px")
+				br
+			.panel-body
+				// Button trigger modal
+				button.btn.btn-primary.btn-xs(type="button" data-toggle="modal" data-target="#myModal")
+					span demo modal
+				div.row(style="margin-left:10px;margin-bottom:10px")
+					div(id="orgTree")
+				//Modal
+				div.modal.fade(id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" )
+					div.modal-dialog
+						div.modal-content(style="opacity:1")
+							div.modal-header
+								button.close(type="button" data-dismiss="modal" aria-label="Close")
+									span(aria-hidden="true") &times
+								h3.modal-title(id="myModalLabel")
+									| orgchart options
+							div.modal-body
+								include includes/menu_org_switches.jade
+								include ../board/includes/menu_svg_export.jade
+							div.modal-footer
+								button.btn.btn-default.btn-xs(type="button" data-dismiss="modal")
+									span Close
+								button.btn.btn-primary.btn-xs(type="button")
+									span Save changes
 				
-		div.row(style="margin-left:10px;margin-bottom:10px")
-		h4 orgtree from <b>#{orgdate}</b>
-
-		//Modal
-		div.modal.fade(id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" )
-			div.modal-dialog
-				div.modal-content(style="opacity:1")
-					div.modal-header
-						button.close(type="button" data-dismiss="modal" aria-label="Close")
-							span(aria-hidden="true") &times
-						h3.modal-title(id="myModalLabel")
-							| orgchart options
-					div.modal-body
-						include includes/menu_org_switches.jade
+			
+				
+				script(type="text/javascript").
+					var _date = '#{ORG_DATE}'
+					CONTEXT="orgtree";
+					// in public/javascripts/organization/org_tree.js
+					render(_date);
 						
-						include ../board/includes/menu_svg_export.jade
-						
-					div.modal-footer
-						button.btn.btn-default.btn-xs(type="button" data-dismiss="modal")
-							span Close
-						button.btn.btn-primary.btn-xs(type="button")
-							span Save changes
-		
-	
-		
-		script(type="text/javascript").
-			var _date = '#{orgdate}'
-			CONTEXT="orgtree";
-			// in public/javascripts/organization/org_tree.js
-			render(_date);
-							
 	include ../includes/material					
 	
