@@ -115,7 +115,6 @@ var PATH = {
 						REST_ORGANIZATIONSNAPSHOTDATES : BASE+'/space/rest/organization/snapshotdates',
 						REST_ORGANIZATIONTREND : BASE+'/space/rest/organization/trend',
 						REST_ORGANIZATIONTREE : BASE+'/space/rest/organizationtree',
-						REST_ORGANIZATIONTREEBYNAME : BASE+'/space/rest/organizationtree/:name',
 						REST_ORGANIZATIONTREEHISTORY : BASE+'/space/rest/organizationtree/history/:date',
 
 
@@ -311,7 +310,6 @@ router.get(PATH.REST_ORGANIZATIONSNAPSHOTDATES, function(req, res, next) {getOrg
 router.get(PATH.REST_ORGANIZATIONTREND, function(req, res, next) {getOrganizationTrend(req,res,next); });
 
 router.get(PATH.REST_ORGANIZATIONTREE, function(req, res, next) {getOrganizationTree(req,res,next); });
-router.get(PATH.REST_ORGANIZATIONTREEBYNAME, function(req, res, next) {getOrganizationTreeByName(req,res,next); });
 router.get(PATH.REST_ORGANIZATIONTREEHISTORY, function(req, res, next) {getOrganizationTreeHistory(req,res,next); });
 
 
@@ -1236,49 +1234,40 @@ function getOrganizationTrend(req,res,next){
 }
 
 function getOrganizationTree(req,res,next){
-	orgService = spaceServices.OrganizationService;
-	orgService.getTree(function(err,data){
-
-		res.send(data);
-	});
+	var _employee =req.query.employee;
+	if (_employee){
+			organizationService.getTreeBelow(_employee,function(err,data){
+			if (err) res.send(err.message);
+			else if (data) res.send(data)
+		});
+	}
+	else{
+		organizationService.getTree(function(err,data){
+			if (err) res.send(err.message);
+			else if (data) res.send(data)
+		});
+	}
 }
 
 
 function getOrganizationTreeHistory(req,res,next){
 	var _date = req.params.date;
-
-	orgService = spaceServices.OrganizationService;
-	orgService.getTreeByDate(_date,function(err,data){
-		if (err){
-			res.send(err.message);
-		}
-		else if (data){
-				res.send(data);
-		}
-
-
-	});
+	var _employee =req.query.employee;
+	if (_employee){
+		organizationService.getTreeHistoryBelow(_date,_employee,function(err,data){
+			if (err) res.send(err.message);
+			else if (data) res.send(data);
+		});
+	}
+	else{
+		organizationService.getTreeHistory(_date,function(err,data){
+			if (err) res.send(err.message);
+			else if (data) res.send(data);
+		});
+	}
 }
 
 
-function getOrganizationTreeByName(req,res,next){
-		var _name =req.params.name;
-
-		if (_name && _name!=":name"){
-			orgService = spaceServices.OrganizationService;
-			orgService.getTreeBelow(_name,function(err,data){
-				if (err){
-					res.send(err.message);
-					return;
-				}
-				if (data){
-					res.send(data);
-				}
-
-			});
-		}
-		else res.send("nope");
-}
 
 
 

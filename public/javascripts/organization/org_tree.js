@@ -5,7 +5,7 @@ var CONTEXT="CONTEXT";
 var orgData;
 
 var SIZE ;
-var MARGIN_LEFT = 250;
+var MARGIN_LEFT = 300;
 var MARGIN_TOP = 100;
 
 //default is "hr" ... HR line superivisor
@@ -80,9 +80,13 @@ function render(baseRoot,date){
 		 _url+="organizationtree";
 	}
 	if (baseRoot){
-		_url+="/"+baseRoot;
+		_url+="?employee="+baseRoot.employee;
+		$('#orgRoot').text(baseRoot.employee);
+		$('#orgRootDetails').text(baseRoot.job+" - "+baseRoot.location+" - "+baseRoot.costcenter);
+		$('#orgRootImage').attr("src","/images/employees/circle/"+baseRoot.name+"_square.png_circle.png");
 	}
-	$('#orgRoot').text(baseRoot);
+
+
 
 	console.log("** render(): date = "+date+" - root: "+baseRoot+" -- url: "+_url);
 
@@ -97,9 +101,9 @@ function render(baseRoot,date){
 			MAX_LEVEL=statLevels.length;
 			SIZE=300+MAX_COUNT+(MAX_LEVEL*200);
 			console.log("***** MAX_LEVEL: "+MAX_LEVEL);
-			WIDTH=MAX_LEVEL*300;
-			HEIGHT=SIZE;
-
+			WIDTH=300+MAX_LEVEL*200;
+			HEIGHT=200+MAX_COUNT*5;
+			$('#orgpanel').css("width",WIDTH+200+"px");
 			_init();
 			_renderBackground(data.stats);
 			_render(root);
@@ -123,15 +127,15 @@ function _renderBackground(stats){
 	for (var i in levels){
 		var _x = (i*DEPTH_WIDTH)+MARGIN_LEFT;
 		_drawLine(gBack,_x,MARGIN_TOP-50,_x,SIZE,"dashedLine");
-		_drawText(gBack,"N"+(MAX_LEVEL-i),_x,MARGIN_TOP-70,{"size":"24px","color":"red","opacity":1,"anchor":"middle","weight":"normal"});
-		_drawText(gBack,"#"+levels[i].total,_x,MARGIN_TOP-53,{"size":"16px","color":"red","opacity":1,"anchor":"middle","weight":"bold"});
-		_drawText(gBack,levels[i].percentage+"%"+"|f:"+levels[i].femalePercentage+"%"+"|i:"+levels[i].internalPercentage+"%"+"|l:"+levels[i].leafPercentage+"%"+"|t:"+levels[i].terminationPercentage+"%",_x,MARGIN_TOP-40,{"size":"12px","color":"red","opacity":1,"anchor":"middle","weight":"normal"});
+		_drawText(gBack,"N"+(MAX_LEVEL-i),_x,MARGIN_TOP-63,{"size":"10px","color":"red","opacity":1,"anchor":"middle","weight":"normal"});
+		_drawText(gBack,"#"+levels[i].total,_x,MARGIN_TOP-53,{"size":"10px","color":"red","opacity":1,"anchor":"middle","weight":"bold"});
+		_drawText(gBack,levels[i].percentage+"%"+"|f:"+levels[i].femalePercentage+"%"+"|i:"+levels[i].internalPercentage+"%"+"|l:"+(levels[i].leafPercentage?levels[i].leafPercentage+"%":'--')+"|t:"+levels[i].terminationPercentage+"%",_x,MARGIN_TOP-40,{"size":"9px","color":"red","opacity":1,"anchor":"middle","weight":"normal"});
 		console.log(levels[i].length+" - ");
 	}
 	//sum
-	_drawText(gBack,"SUM",MARGIN_LEFT-DEPTH_WIDTH,MARGIN_TOP-70,{"size":"24px","color":"red","opacity":1,"anchor":"middle","weight":"normal"});
-	_drawText(gBack,"#"+stats.total,MARGIN_LEFT-DEPTH_WIDTH,MARGIN_TOP-53,{"size":"16px","color":"red","opacity":1,"anchor":"middle","weight":"bold"});
-	_drawText(gBack,"100%"+"|f:"+stats.overAll.femalePercentage+"%|i:"+stats.overAll.internalPercentage+"%|l:"+stats.overAll.leafPercentage+"%|t:"+stats.overAll.terminationPercentage+"%",MARGIN_LEFT-DEPTH_WIDTH,MARGIN_TOP-40,{"size":"12px","color":"red","opacity":1,"anchor":"middle","weight":"normal"});
+	_drawText(gBack,"SUM",MARGIN_LEFT-DEPTH_WIDTH,MARGIN_TOP-63,{"size":"10px","color":"red","opacity":1,"anchor":"middle","weight":"normal"});
+	_drawText(gBack,"#"+stats.total,MARGIN_LEFT-DEPTH_WIDTH,MARGIN_TOP-53,{"size":"10px","color":"red","opacity":1,"anchor":"middle","weight":"bold"});
+	_drawText(gBack,"100%"+"|f:"+stats.overAll.femalePercentage+"%|i:"+stats.overAll.internalPercentage+"%|l:"+stats.overAll.leafPercentage+"%|t:"+stats.overAll.terminationPercentage+"%",MARGIN_LEFT-DEPTH_WIDTH,MARGIN_TOP-40,{"size":"9px","color":"red","opacity":1,"anchor":"middle","weight":"normal"});
 }
 
 function _render(source){
@@ -175,6 +179,9 @@ function _render(source){
 		.attr("height",function(d){
 		   return getSize(d,30,10)+"px";
 		})
+	  .attr("transform", function(d) {
+		  return "translate(" + -getSize(d,30,10)/2 + "," + -getSize(d,30,10)/2 + ")"; });
+
 	//***** NAME ********
 	// needed when we use _nest stuff instead of maketree stuff
 	/*
@@ -201,7 +208,7 @@ function _render(source){
 	nodeEnter.append("text")
 	  .attr("x", "0")
 	  .attr("dy",  function(d){
-		  return -getSize(d)+"px";
+		  return -getSize(d,14)+"px";
 		})
 	  .attr("text-anchor", function(d) {
 		  return d.children || d._children ? "end" : "start"; })
@@ -212,7 +219,7 @@ function _render(source){
 			else return "normal";
 		  })
 	  .style("font-size",function(d){
-		   return getSize(d,20,5)+"px";
+		   return getSize(d,14,5)+"px";
 		})
  	  .style("fill",function(d){
 		   var _color ="black";
@@ -227,7 +234,7 @@ function _render(source){
 		 //return d.children || d._children ? -18 : 18; })
 	  .attr("text-anchor", function(d) {
 		  return d.children || d._children ? "end" : "start"; })
-	  .text(function(d) { if (d.children) return d.employee; else {if (!LEAF_NAMES) return ""; else return d.employee;} })
+	  .text(function(d) { if (d.children) return d.employee; else {if (!LEAF_NAMES) return ""; else return d.employee+" ("+d.companyYears+")"+" - "+d.job+" - "+d.location;} })
 	  .style("fill-opacity", 1)
 	  .style("font-weight", "normal")
 	  .style("font-size",function(d){
@@ -245,9 +252,9 @@ function _render(source){
 	  //13px for on screen..
 	  //.attr("dx","-23px")
 	  .attr("x", function(d){
-		  return getSize(d)*3+"px";
+		  return getSize(d)+"px";
 		})
-	  .attr("dy", "0px")
+	  .attr("dy", function(d){return 5+getSize(d,20,6)*2+"px"})
 	  .attr("text-anchor", function(d) {
 		  return d.children || d._children ? "end" : "start"; })
 	  .text(function(d) { return d.overallReports ? d.overallReports : ""; })
@@ -272,7 +279,7 @@ function _render(source){
 		})
 	  .attr("text-anchor", function(d) {
 		  return d.children || d._children ? "end" : "start"; })
-	  .text(function(d) { return d.overallReports ? ("[d:"+d.directReports+",l:"+d.leafOnly+",a:"+d.averageSubordinates+",s:"+(d.averageDeviation?d.averageDeviation:"-")+"]") :"" })
+	  .text(function(d) { return d.overallReports ? ("[d:"+d.directReports+",l:"+d.leafOnlyReports+",a:"+d.averageSubordinates+",s:"+(d.averageDeviation?d.averageDeviation:"-")+"]") :"" })
 	  .style("fill-opacity", 1)
 	  .style("font-weight", "normal")
 	  .style("fill","red")
@@ -295,7 +302,7 @@ function _render(source){
 // Toggle children on click.
 function click(d) {
   console.log("** click:"+d.employee+ "--------------------- overall: "+d.overallReports);
-  var _root = d.employee;
+  var _root = d;
   // ~ rough formula
   HEIGHT = 500+d.overallReports*3;
   d3.select("svg").remove();

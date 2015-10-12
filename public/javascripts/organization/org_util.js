@@ -4,8 +4,8 @@
  *
  */
 function getSize(data,tresholdMax,tresholdMin){
-	if (!tresholdMax) tresholdMax = 30;
-	if (!tresholdMin) tresholdMin = 4;
+	if (!tresholdMax) tresholdMax = 20;
+	if (!tresholdMin) tresholdMin = 5;
 
 	var _size=data.overallReports?(Math.sqrt(data.overallReports)):tresholdMin;
 		  if (_size>tresholdMax) _size = tresholdMax;
