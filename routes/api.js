@@ -1267,8 +1267,11 @@ function getOrganizationTreeByName(req,res,next){
 		if (_name && _name!=":name"){
 			orgService = spaceServices.OrganizationService;
 			orgService.getTreeBelow(_name,function(err,data){
+				if (data)
+					res.send(data);
+				else if (err)
+					res.send(err.message);
 
-				res.send(data);
 			});
 		}
 		else res.send("nope");
