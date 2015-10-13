@@ -54,7 +54,7 @@ var svg = d3.select("body").append("svg")
 	.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 var treeData;
-d3.json("/api/space/rest/organizationtree/Marc-Alexander Lange", function(root) {
+d3.json("/api/space/rest/organizationtree?employee=Marc-Alexander Lange", function(root) {
 
   treeData=root;
   //root = treeData[0];
@@ -88,7 +88,7 @@ function update(root) {
 	  .style("fill", "#fff");
 */
   nodeEnter.append("svg:image")
-  .attr("xlink:href",function(d){return "/images/employees/circle/"+d.name+"_square.png_circle.png";})
+  .attr("xlink:href",function(d){return "/images/employees/circle/"+d.name+"_circle.png";})
   .attr("width","22px")
   .attr("height","22px")
   	  .attr("transform", function(d) {

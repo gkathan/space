@@ -83,7 +83,7 @@ function render(baseRoot,date){
 		_url+="?employee="+baseRoot.employee;
 		$('#orgRoot').text(baseRoot.employee);
 		$('#orgRootDetails').text(baseRoot.job+" - "+baseRoot.location+" - "+baseRoot.costcenter);
-		$('#orgRootImage').attr("src","/images/employees/circle/"+baseRoot.name+"_square.png_circle.png");
+		$('#orgRootImage').attr("src","/images/employees/circle/"+baseRoot.name+"_circle.png");
 	}
 
 
@@ -172,7 +172,7 @@ function _render(source){
 	  .style("fill", "#fff");
 
 	nodeEnter.append("svg:image")
-		.attr("xlink:href",function(d){return "/images/employees/circle/"+d.name+"_square.png_circle.png";})
+		.attr("xlink:href",function(d){return "/images/employees/circle/"+d.name+"_circle.png";})
 		.attr("width",function(d){
 		   return getSize(d,30,10)+"px";
 		})

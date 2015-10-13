@@ -14,6 +14,7 @@ var connection_string = HOST+'/'+DB;
 var db = mongojs(connection_string, [DB]);
 
 var spaceServices=require('space.services');
+var orgService = spaceServices.OrganizationService;
 
 var winston=require('winston');
 var logger = winston.loggers.get('space_log');
@@ -23,7 +24,6 @@ router.get("/", function(req, res, next) {
 });
 
 router.get("/facebook", function(req, res, next) {
-	var orgService = spaceServices.OrganizationService;
 	orgService.findStudiosEmployees(function(err,employees){
 		logger.debug("-------------------/facebook: employees: "+employees.length);
 		res.locals.employees = employees;
@@ -32,7 +32,6 @@ router.get("/facebook", function(req, res, next) {
 });
 
 router.get("/facebook/:costcenter", function(req, res, next) {
-	var orgService = spaceServices.OrganizationService;
 	var costcenter=req.params.costcenter;
 
 	orgService.findStudiosEmployees(function(err,employees){
@@ -84,6 +83,36 @@ router.get("/partition", function(req, res, next) {
 	}
 });
 
+router.get("/tree_vertical", function(req, res, next) {
+	if (ensureAuthenticated(req,res)){
+		var _employee=req.query.employee;
+		if (_employee){
+			var _split = _employee.split(" ");
+			var _first = _split[0];
+			var _last = _split[1];
+			orgService.findEmployeeByFirstLastName(_first,_last,function(err,employee){
+				res.locals.collection="organization";
+				if (employee){
+
+					res.locals.baseRoot=employee;
+					employee.employee=employee["First Name"]+" "+employee["Last Name"];
+					logger.debug("------------- "+employee);
+					res.render("organization/tree_vertical", { title: 's p a c e - vertical tree orgchart - current' });
+				}
+				else{
+					logger.debug("..sorry no employee found for "+_employee);
+					res.render("organization/tree_vertical", { title: 's p a c e - vertical tree orgchart - current' });
+				}
+			})
+		}else {
+				res.locals.collection="organization";
+				res.render("organization/tree_vertical", { title: 's p a c e - vertical tree orgchart - current' });
+
+		}
+
+	}
+});
+
 
 // for the other circlecontains....
 router.get("/circlecontain/:collection", function(req, res, next) {
@@ -123,7 +152,6 @@ router.get("/simple", function(req, res, next) {
 
 router.get("/trend", function(req, res, next) {
 	if (ensureAuthenticated(req,res)){
-		var orgService = spaceServices.OrganizationService;
 		orgService.getOrganizationTrend({},function(err,trend){
 			res.locals.trend = trend;
 				res.render("organization/trend");

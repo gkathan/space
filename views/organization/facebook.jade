@@ -26,7 +26,7 @@ div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;back
 		
 		
 		each employee in employees
-			img.img-circle(src='/images/employees/circle/#{employee["Employee Number"]}_square.png_circle.png' height="#{size}px" width="#{size}px")
+			img.img-circle(src='/images/employees/circle/#{employee["Employee Number"]}_circle.png' height="#{size}px" width="#{size}px")
 			a(href='https://my.bwinparty.com/People/#{_.first(employee["Last Name"])}/#{employee["First Name"]}#{employee["Last Name"]}#{employee["Employee Number"]}.aspx' target="_blank") 
 				span(style="font-size:9px") #{employee["First Name"]} | 
 							

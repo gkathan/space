@@ -35,30 +35,37 @@ function _convertToCirclePng(_source,size,callback){
 
 	  //lwip needs to know the type
 	  lwip.open(buffer,_type,function(err,image){
-	    var _w = image.width();
-	    var _h = image.height();
-	    logger.debug("3) lwip loaded buffer: "+_source+" width: "+_w+" - height: "+_h);
+			if (image){
+				var _w = image.width();
+		    var _h = image.height();
+		    logger.debug("3) lwip loaded buffer: "+_source+" width: "+_w+" - height: "+_h);
 
-			var _ratio = _w/size;
+				var _ratio = _w/size;
 
-			image.resize(_w/_ratio,_h/_ratio,"lanczos",function(err,image){
-				logger.debug("4) lwip images resize: [OK] width: "+(_w/_ratio)+" height: "+_h/_ratio);
-		    var _cropSize = size;
-		    image.crop(_cropSize,_cropSize,function(err,image){
-		      if (err){
-						logger.error("5) lwip image crop: [FAILED] "+err.message);
-					}
-					logger.debug("5) lwip image crop: [OK] "+_cropSize+" cropSize");
-					image.toBuffer("png",{},function(err,buffer){
-						logger.debug("6) lwip creates buffer...");
-						_toCircle(_source,buffer,function(err,result){
-			        logger.debug("7) lwip writes PNG file..."+_source+"_circle.png");
-							callback(err,"OK");
-	      		})
-	      	})
-		    })
-	  	})
-	  })
+				image.resize(_w/_ratio,_h/_ratio,"lanczos",function(err,image){
+					logger.debug("4) lwip images resize: [OK] width: "+(_w/_ratio)+" height: "+_h/_ratio);
+			    var _cropSize = size;
+			    image.crop(_cropSize,_cropSize,function(err,image){
+			      if (err){
+							logger.error("5) lwip image crop: [FAILED] "+err.message);
+						}
+						logger.debug("5) lwip image crop: [OK] "+_cropSize+" cropSize");
+						image.toBuffer("png",{},function(err,buffer){
+							logger.debug("6) lwip creates buffer...");
+							_toCircle(_source,buffer,function(err,result){
+				        logger.debug("7) lwip writes PNG file..."+_source+"_circle.png");
+								callback(err,"OK");
+		      		})
+		      	})
+			    })
+		  	})
+			}
+			else{
+				callback(null,null);
+			}
+		})
+
+
 	});
 }
 
