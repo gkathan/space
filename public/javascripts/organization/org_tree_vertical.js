@@ -31,7 +31,7 @@ if (baseRoot){
   _url+="?employee="+baseRoot.employee;
   $('#orgRoot').text(baseRoot.employee);
   $('#orgRootDetails').text(baseRoot.job+" - "+baseRoot.location+" - "+baseRoot.costcenter);
-  $('#orgRootImage').attr("src","/images/employees/circle/"+baseRoot.name+"_circle.png");
+  $('#orgRootImage').attr("src","/images/employees/circle/"+baseRoot.name+".png");
 }
 
 
@@ -61,7 +61,7 @@ function update(root) {
 	  .style("fill", "#fff");
 */
   nodeEnter.append("svg:image")
-  .attr("xlink:href",function(d){return "/images/employees/circle/"+d.name+"_circle.png";})
+  .attr("xlink:href",function(d){return "/images/employees/circle/"+d.name+".png";})
   .attr("width","22px")
   .attr("height","22px")
   	  .attr("transform", function(d) {

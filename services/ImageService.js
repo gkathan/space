@@ -1,4 +1,5 @@
 var config = require('config');
+var async = require('async');
 
 var fs = require('fs');
 var FileQueue = require('filequeue');
@@ -17,6 +18,60 @@ var logger = winston.loggers.get('space_log');
 
 exports.detectType = _detectType;
 exports.convertToCirclePng = _convertToCirclePng;
+exports.syncEmployeeImages = _syncEmployeeImages;
+
+
+
+
+/**
+ * http://my.bwinparty.com/api/people/images/e1000
+ */
+function _syncEmployeeImages(filter,callback) {
+	var fs = require('graceful-fs');
+  var request = require('request');
+	logger.debug("***** sync....");
+		organizationService.findEmployeesByFilter(filter, function (err, employees){
+			if (employees){
+				async.eachSeries(employees,
+			    function(_employee, done){
+			        console.log('processing: '+_employee["Employee Number"]);
+			        //simulate some async process like a db CRUD or http call...
+							logger.debug("E: "+_employee["First Name"]+" "+_employee["Last Name"]);
+							var _id = _employee["Employee Number"];
+							var _imageURL = config.organization.employees.imageURL+_id;//"http://my.bwinparty.com/api/people/images/"+_id;
+							// [TODO]
+							// 1) detect type (PngService.detectType)
+							// 2) convert everything to png which is not png
+							// 3) squarifyandcirclecrop
+							//Lets define a write stream for our destination file
+							var _destinationFile = config.organization.employees.imageSyncTempDir+_id;//'./temp/imagesync/'+_id;
+							var destination = fs.createWriteStream(_destinationFile);
+							//Lets save the modulus logo now
+							request(_imageURL)
+								.pipe(destination)
+								.on('error', function(error){
+								    console.log(error);
+								})
+								.on('finish',function(err,result){
+									console.log("OK done - fetching image from: "+_imageURL+" -- storing to: "+_destinationFile);
+									_convertToCirclePng(_destinationFile,100,function(err,result){
+										// and remove the original file
+										fs.unlink(_destinationFile);
+										console.log("_convertToCirclePng() done: "+result);
+				            done();
+									})
+								})
+			    },
+			    function(err){
+			        if(err){
+			            console.log('Got an error')
+			        }else{
+			            console.log('All tasks are done now...');
+			        }
+			    });
+				}
+		});
+	}
 
 /**
 *
@@ -53,7 +108,7 @@ function _convertToCirclePng(_source,size,callback){
 						image.toBuffer("png",{},function(err,buffer){
 							logger.debug("6) lwip creates buffer...");
 							_toCircle(_source,buffer,function(err,result){
-				        logger.debug("7) lwip writes PNG file..."+_source+"_circle.png");
+				        logger.debug("7) lwip writes PNG file..."+_source+".png");
 								callback(err,"OK");
 		      		})
 		      	})
@@ -93,7 +148,7 @@ function _toCircle(source,buffer,callback){
 		var _file = _.last(source.split("/"));
 		logger.debug("_dir: "+_dir);
 		logger.debug("_file: "+_file);
-		var _out = _dir+"/"+_file+"_circle.png";
+		var _out = _dir+"/"+_file+".png";
 		//logger.debug("_out: "+_out);
 		this.pack().pipe(fs.createWriteStream(_out));
 		callback(null,"ok");
@@ -108,7 +163,6 @@ function _detectType(buffer){
 	var magic = {
 	    jpg: 'ffd8ffe0',
 			jpg2: 'ffd8ffe1',
-
 	    png: '89504e47',
 	    gif: '47494638'
 	};

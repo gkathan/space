@@ -18,7 +18,7 @@ exports.detectType = _detectType;
 /**
 * clips (if not already) a square image
 * and circle crops it
-* and saves it as "source_circle.png"
+* and saves it as "source.png"
 */
 function _squarifyAndCircleCrop(source,callback) {
 	PNGImage.readImage(source, function (err,image) {

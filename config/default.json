@@ -66,6 +66,16 @@
 		"space_messages" : "on"
 	},
 
+	"organization":{
+		"employees" : {
+			"dataMapping":{
+				"id":"Employee Number"
+			},
+			"imageURL" :"http://my.bwinparty.com/api/people/images/",
+			"imageSyncTempDir" : "./temp/imagesync/"
+
+		}
+	},
 
 	"content":{
 		"spacenews" : {

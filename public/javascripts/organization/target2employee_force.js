@@ -47,7 +47,7 @@
 					d3.select(this).append("text").text(function(d){return d.name+" "+d.id}).style("font-size","6px").style("font-weight",_weight).style("font-family","arial").attr("dy",_h+8).style("text-anchor","middle");
 
 					var _imageSource="/images/employees/circle/";
-					var _imageExtension ="_circle.png";
+					var _imageExtension =".png";
 
 					d3.select(this).append("svg:image").attr("xlink:href", function(d){return _imageSource+d.id+_imageExtension;}).attr("imageID",d.id).attr("x", _x).attr("y", _y).attr("width", _w).attr("height", _h);
 				}

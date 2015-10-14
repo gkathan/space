@@ -2,7 +2,8 @@
 // http://www.d3noob.org/2014/01/tree-diagrams-in-d3js_11.html
 var CONTEXT="CONTEXT";
 
-var orgData;
+var orgTree;
+var baseRoot
 
 var SIZE ;
 var MARGIN_LEFT = 300;
@@ -50,6 +51,7 @@ var _tree;
 
 
 function _init(){
+	d3.selectAll("svg").remove();
 	// ************** Generate the tree diagram	 *****************
 	var margin = {top: MARGIN_TOP, right: 120, bottom: 20, left: MARGIN_LEFT},
 		width = WIDTH - margin.right - margin.left,
@@ -59,7 +61,7 @@ function _init(){
 	diagonal = d3.svg.diagonal()
 		.projection(function(d) { return [d.y, d.x]; });
 		//.projection(function(d) { return [d.x, d.y]; });
-	svg = d3.select("#orgTree").append("svg")
+	svg = d3.select("#orgTreeChart").append("svg")
 		.attr("width", width + margin.right + margin.left)
 		.attr("height", height + margin.top + margin.bottom)
 		.style("background","white")
@@ -71,6 +73,9 @@ function _init(){
 * called from .jade views
 */
 function render(baseRoot,date){
+
+	console.log("..............render(): baseRoot: "+baseRoot)
+	this.baseRoot=baseRoot;
 	var _url="/api/space/rest/";
 	if (date){
 		 _url+="organizationtree/history/"+date;
@@ -81,19 +86,23 @@ function render(baseRoot,date){
 	}
 	if (baseRoot){
 		_url+="?employee="+baseRoot.employee;
-		$('#orgRoot').text(baseRoot.employee);
-		$('#orgRootDetails').text(baseRoot.job+" - "+baseRoot.location+" - "+baseRoot.costcenter);
-		$('#orgRootImage').attr("src","/images/employees/circle/"+baseRoot.name+"_circle.png");
 	}
-
-
-
 	console.log("** render(): date = "+date+" - root: "+baseRoot+" -- url: "+_url);
 
 	d3.json(_url,function(data){
+		console.log("--- d3.json: _url: "+_url+" data: "+data.tree.employee);
 		if (data){
 			var root = data.tree;
-			orgTree = root;
+
+			// show the tree node
+			$('#orgRoot').text(root.employee);
+			$('#orgRootDetails').text(root.job+" - "+root.location+" - "+root.costcenter);
+			$('#orgRootImage').attr("src","/images/employees/circle/"+root.name+".png");
+
+
+
+			// keep the full tree as global
+			if (!orgTree) orgTree = root;
 			MAX_COUNT=data.stats.total;//count(root,0);
 			//enrich(root);
 			console.log("------------------------------------------------------------------ MAX_COUNT ="+MAX_COUNT);
@@ -172,7 +181,7 @@ function _render(source){
 	  .style("fill", "#fff");
 
 	nodeEnter.append("svg:image")
-		.attr("xlink:href",function(d){return "/images/employees/circle/"+d.name+"_circle.png";})
+		.attr("xlink:href",function(d){return "/images/employees/circle/"+d.name+".png";})
 		.attr("width",function(d){
 		   return getSize(d,30,10)+"px";
 		})
@@ -319,4 +328,31 @@ function expandAll(items){
 			items[i].children =null;
 		}
 	}
+}
+
+
+
+/**
+ * recursive search by name and value
+ * and returns the match as new root
+ */
+function searchTreeBy(node,searchName,searchValue){
+  	var children = node.children;
+  	if (children){
+  		for (var i in children){
+        if (children[i][searchName] == searchValue){
+          return children[i];
+        }
+        else{
+          var found = searchTreeBy(children[i],searchName,searchValue);
+          if (found){
+             //console.log("xxxxxx");
+             return found;
+          }
+        }
+  		}
+  	}
+    else{
+      return;
+    }
 }

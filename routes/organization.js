@@ -54,7 +54,21 @@ router.get("/history/tree/:date", function(req, res, next) {
 
 router.get("/tree", function(req, res, next) {
 	if (ensureAuthenticated(req,res)){
-		res.render("organization/org_tree", { title: 's p a c e - organizationchart - current' });
+		var _employee=req.query.employee;
+		if (_employee){
+			var _split = _employee.split(" ");
+			var _first = _split[0];
+			var _last = _split[1];
+			orgService.findEmployeeByFirstLastName(_first,_last,function(err,employee){
+				res.locals.root=employee["Employee Number"];
+				logger.debug("YYYYYYYYYYYYYYYYYYYY"+employee["Employee Number"]);
+				res.render("organization/org_tree", { title: 's p a c e - organizationchart - current' });
+			})
+		}
+		else {
+			res.render("organization/org_tree", { title: 's p a c e - organizationchart - current' });
+		}
+
 	}
 });
 
