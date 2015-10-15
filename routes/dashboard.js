@@ -10,6 +10,8 @@ var accounting = require('accounting');
 var spaceServices=require('space.services');
 
 var avService = spaceServices.AvailabilityService;
+var avCalculatorService = require('../services/AvailabilityCalculatorService');
+
 var targetService = spaceServices.TargetService;
 var incService=spaceServices.IncidentService;
 
@@ -42,14 +44,21 @@ router.get('/', function(req, res) {
 		avService.getLatest(function(av){
 			if (av){
 				res.locals.availability = av;
-				res.locals.downtime = avService.getDowntimeYTD(av.unplannedYTD,av.week);
-				res.locals.targetdowntime = avService.getDowntimeYTD(av,52);
-				res.locals.leftdowntime = avService.getDowntimeYTD(av,52);
+
+
 			}
 			res.locals.moment = moment;
 			logger.debug("------------------------ ");
 			targetService.getL1(target_context,function(err,l1targets){
 					res.locals.l1targets=l1targets;
+
+					/*
+					_targetAV = parseFloat(l1targets[0].directMetric);
+					_currentAV = parseFloat(av.avReport.getYTDDatapoint.unplanned);
+					logger.debug("XXXXXXXXXXXXXX av"+JSON.stringify(av));
+					res.locals.leftdowntime =  moment.duration(avCalculatorService.getTimeForAVPercentage(_currentAV,{value:365-moment().dayOfYear(),type:"days"})).format('HH:mm.ss');
+					res.locals.targetdowntime = moment.duration(avCalculatorService.getTimeForAVPercentage(_targetAV,{value:1,type:"year"})).format('HH:mm.ss');
+					*/
 					logger.debug("l1 targets: "+ l1targets);
 					res.render('dashboard', { title: 's p a c e - dashboards' });
 			})

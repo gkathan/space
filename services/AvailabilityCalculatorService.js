@@ -25,6 +25,8 @@ exports.checkLabels=checkLabels;
 exports.checkServiceToExclude= checkServiceToExclude;
 exports.processServices= _processServices;
 
+exports.getTimeForAVPercentage = _getTimeForAVPercentage;
+
 //sets global config to include endUserAffect flag from SocIncdients
 var _endUserAffected = true;
 
@@ -438,4 +440,15 @@ function _getDateForTimeString(_timeString,_datetime){
 */
 function _degrade(_time,_degradation){
 	return (_time*(parseFloat(_degradation)/100));
+}
+
+
+/** returns allowed off time for given AV percentage in a given period
+*
+*/
+function _getTimeForAVPercentage(percentage,period){
+	//ms
+	var _totalTime = moment.duration(period.value,period.type);
+	var _offtime = (1-(percentage/100))*_totalTime;
+	return _offtime;
 }

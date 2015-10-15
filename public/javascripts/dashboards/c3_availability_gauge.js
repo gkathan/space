@@ -16,6 +16,26 @@ $.get( "/api/space/rest/availability", function( data ) {
 
     console.log("===================== "+JSON.stringify(availability));
 
+    var _targetAV = parseFloat(_s1.directMetric);
+    var _currentAV = parseFloat(availability.unplannedYTD);
+
+    var _targetdowntimems = _getTimeForAVPercentage(_targetAV,{value:1,type:"year"});
+    var _leftdowntimems = _getTimeForAVPercentage(_currentAV,{value:365-moment().dayOfYear(),type:"days"});
+    var _spentdowntimems = _targetdowntimems-_leftdowntimems;
+
+    var _projectedAV = _getAVPercentageforDowntime(_spentdowntimems,{value:1,type:"year"});
+
+    var _targetdowntime = moment.duration(_targetdowntimems).format('HH:mm.ss');
+    var _leftdowntime =  moment.duration(_leftdowntimems).format('HH:mm.ss');
+    var _spentdowntime =  moment.duration(_spentdowntimems).format('HH:mm.ss');
+
+    console.log("--------------av projected: "+_projectedAV);
+    $('#targetdowntime').text(_targetdowntime);
+    $('#leftdowntime').text(_leftdowntime);
+    $('#spentdowntime').text(_spentdowntime);
+    $('#trendAV').text(_projectedAV+"%");
+    trendAV
+
 
     var chart1 = c3.generate({
         bindto : '#c3_availability_gauge',
@@ -85,3 +105,18 @@ $.get( "/api/space/rest/availability", function( data ) {
 
   });
 });
+
+
+function _getTimeForAVPercentage(percentage,period){
+	//ms
+	var _totalTime = moment.duration(period.value,period.type);
+	var _offtime = (1-(percentage/100))*_totalTime;
+	return _offtime;
+}
+
+function _getAVPercentageforDowntime(downtime,period){
+	//ms
+	var _totalTime = moment.duration(period.value,period.type);
+	var _avpercentage = parseFloat((1-(downtime/_totalTime))*100).toFixed(2);
+	return _avpercentage;
+}

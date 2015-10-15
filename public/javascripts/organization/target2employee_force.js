@@ -13,8 +13,8 @@
 	if(_pickL2){
 		width = 1000
 		height = 1000;
-		_charge = -80;
-		_distance = 120;
+		_charge = -50;
+		_distance = 100;
 	}
 	var force = d3.layout.force()
 		.charge(_charge)
@@ -26,13 +26,13 @@
 
 	var _dataUri = "/api/space/rest/employeebytargets/"+_period+"?pickL2="+_pickL2+"&showEmployeeTree="+_showEmployeeTree+"&showTargetTree="+_showTargetTree;
 	var _orgUri = "/api/space/rest/organization";
-	var _targetUri = "/api/space/rest/targets/"+_period;
+	//var _targetUri = "/api/space/rest/targets/"+_period;
 
 	console.log("...uri: "+_dataUri);
 
 	d3.json(_orgUri,function(organization){
 		d3.json(_dataUri,function(data){
-			root = data[0];
+			root = data[0].children[0];
 			nodes = flatten(root),
 			links = d3.layout.tree().links(nodes);
 			force.nodes(nodes).links(links).start();
@@ -75,23 +75,23 @@
 
 					if (d.type=="L2target") _weight="bold";
 					if (d.name=="bpty.studios") _color="grey";
-					if (_.startsWith(d.name,"R")) _circleColor="#00b8e4";
-					if (_.startsWith(d.name,"G")) _circleColor="#82cec1";
-					if (_.startsWith(d.name,"T")) _circleColor="#f99d1c";
 
-				 	if (d.name=="RUN" || d.name=="GROW" || d.name=="TRANSFORM"){
+
+					var _split = d.name.split(".");
+
+					//headnode
+					if (_split.length>1){
+						console.log("XXXXXXXXXXXXXXXXXXXXXXX split = "+_split+" from: "+d.name);
+						if (_.startsWith(_split[0],"R")) _circleColor="#00b8e4";
+						if (_.startsWith(_split[0],"G")) _circleColor="#82cec1";
+						if (_.startsWith(_split[0],"T")) _circleColor="#f99d1c";
 						_weight="bold";
 						_fontSize = 20;
 						_size=15;
-						_text = d.name;
+						_text = d.name+" - "+d.target;
 						_color =_circleColor;
 						_dy =-10;
 				 	}
-					else if (d.group) {
-						_text = d.name+" - "+d.target;
-						_fontSize=18;
-						_weight="bold";
-					}
 					else {
 						_text =d.name;
 						_fontSize=12;

@@ -36,11 +36,32 @@ block content
 								if target.id=="K1"
 									br
 									if availability
-										|last update: #{moment(availability.createDate).format('YYYY-MM-DD HH:mm:ss')}
+										table()
+											tr(style="font-size:9px;text-align:center;line-height:9px")
+												td target
+												td spent
+												td left
+											tr(style="font-size:12px")
+												td(style="padding:5px")
+													span(id="targetdowntime")
+												td(style="padding:5px")
+													span(id="spentdowntime")
+												td(style="padding:5px;font-weight:bold")
+													span(id="leftdowntime")
+											tr
+												td(colspan="3" style="text-align:center;font-size:8px")
+													|happy-path with no further downtime: 
+											tr
+												td(colspan="3" style="text-align:center;font-size:12px;font-weight:bold")
+													span(id="trendAV") 
+											tr
+												td(colspan="3" style="text-align:center;font-size:8px")
+													br
+													|last update: #{moment(availability.createDate).format('YYYY-MM-DD HH:mm:ss')}
 									else
-										|-- no data accessible --
-									br
-									a(href="http://dashboard.bwin.corp/" target="_blank") :: appdynamics dashboard
+										span(style="font-size:8px;text-align:center") -- no data accessible --
+									
+									
 								else if target.id =="K2"
 									span(id="baseline")
 									br
