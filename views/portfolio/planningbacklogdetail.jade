@@ -104,7 +104,7 @@ block content
 							
 							td(style="vertical-align:top;text-align:right;font-size:10px;vertical-align:top" title="Total Effort: #{Math.round(i.SwagPlanned)} PD") #{i.SwagPlanned}
 							td(style="vertical-align:top;text-align:right;font-size:10px;vertical-align:top" title="Progress (accumulated from underlying Planning Epics): #{Math.round(i.ProgressPlanned)} %") #{Math.round(i.ProgressPlanned)}
-							td(style="vertical-align:top;text-align:right;font-size:10px;vertical-align:top" title="Effort remaining: #{Math.round(i.SwagRemaining)} PD") #{i.SwagRemaining}
+							td(style="vertical-align:top;text-align:right;font-size:10px;vertical-align:top" title="Effort remaining: #{Math.round(i.SwagRemaining)} PD") #{Math.round(i.SwagRemaining)}
 							td(style="vertical-align:top;text-align:center;font-size:10px;vertical-align:top" title="Planned Start")
 								if i.PlannedStart
 									|#{moment(i.PlannedStart).format('YYYY-MM-DD')}
