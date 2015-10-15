@@ -1,11 +1,14 @@
 	var data,root;
 
+  var padding = 6, // separation between nodes
+   maxRadius = 12;
+
 	//default
 	var width=3000;
 	var height=3000;
 
-	var _charge=-50;
-	var _distance=50;
+	var _charge=0;
+	var _distance=20;
 
 	if(_pickL2){
 		width = 1000
@@ -13,7 +16,10 @@
 		_charge = -80;
 		_distance = 120;
 	}
-	var force = d3.layout.force().charge(_charge).linkDistance(_distance).size([width, height]);
+	var force = d3.layout.force()
+		.charge(_charge)
+		.linkDistance(_distance)
+		.size([width, height]);
 	var svg = d3.select("#broccoli").append("svg").attr("width", width).attr("height", height);
 
 	var nodes,links;
@@ -30,6 +36,9 @@
 			nodes = flatten(root),
 			links = d3.layout.tree().links(nodes);
 			force.nodes(nodes).links(links).start();
+
+			var drag = force.drag()
+    		.on("dragstart", dragstart);
 
 			var link = svg.selectAll(".link").data(links).enter().append("line").attr("class", "link").style("stroke-width", function(d) { return Math.sqrt(d.value); });
 
@@ -76,7 +85,7 @@
 						_size=15;
 						_text = d.name;
 						_color =_circleColor;
-						_dy =30;
+						_dy =-10;
 				 	}
 					else if (d.group) {
 						_text = d.name+" - "+d.target;
@@ -94,7 +103,10 @@
 					d3.select(this).append("text").text(_text).style("font-size",_fontSize+"px").style("font-family","arial").style("font-weight",_weight).attr("dy",_dy).style("text-anchor","middle").style("fill",_color);
 
 				}//end else not leaf
-				d3.select(this).call(force.drag);
+				d3.select(this)
+					.call(drag)
+					.on("dblclick", dblclick);
+
 				d3.select(this).append("title").text(function(d) { return d.name; });
 				i++;
 
@@ -109,15 +121,29 @@
 					});
 					 node.attr("cx", function(d) { return d.x; }).attr("cy", function(d) { return d.y; });
 					*/
+
+
 					link.attr("x1", function(d) { return d.source.x; }).attr("y1", function(d) { return d.source.y; }).attr("x2", function(d) { return d.target.x; }).attr("y2", function(d) { return d.target.y; });
 					var _size;
 					if (d.size) _size=d.size/10;
 					else _size = 1;
 					node.attr("transform",function(d){return "translate ("+d.x+","+d.y+") scale("+_size+")"});
+
+
+
+					/* multiforce
+					d3.selectAll()
+		      .each(gravity(.2 * e.alpha))
+		      .each(collide(.5))
+		      .attr("cx", function(d) { return d.x; })
+		      .attr("cy", function(d) { return d.y; });
+					*/
 				});
 			});
 		});
 	})
+
+
 
 	// Returns a list of all nodes under the root.
 	function flatten(root) {
@@ -129,4 +155,52 @@
 		}
 		recurse(root);
 		return nodes;
+	}
+
+	function dblclick(d) {
+  	console.log("doubleclick !");
+		d3.select(this).classed("fixed", d.fixed = false);
+	}
+
+	function dragstart(d) {
+	  console.log("dragstart !");
+		d3.select(this).classed("fixed", d.fixed = true);
+	}
+
+//------------ multi-force ------------
+
+	// Move nodes toward cluster focus.
+	function gravity(alpha) {
+	  return function(d) {
+	    d.y += (d.cy - d.y) * alpha;
+	    d.x += (d.cx - d.x) * alpha;
+	  };
+	}
+
+	// Resolve collisions between nodes.
+	function collide(alpha) {
+	  var quadtree = d3.geom.quadtree(nodes);
+	  return function(d) {
+	    var r = d.radius + maxRadius + padding,
+	        nx1 = d.x - r,
+	        nx2 = d.x + r,
+	        ny1 = d.y - r,
+	        ny2 = d.y + r;
+	    quadtree.visit(function(quad, x1, y1, x2, y2) {
+	      if (quad.point && (quad.point !== d)) {
+	        var x = d.x - quad.point.x,
+	            y = d.y - quad.point.y,
+	            l = Math.sqrt(x * x + y * y),
+	            r = d.radius + quad.point.radius + (d.color !== quad.point.color) * padding;
+	        if (l < r) {
+	          l = (l - r) / l * alpha;
+	          d.x -= x *= l;
+	          d.y -= y *= l;
+	          quad.point.x += x;
+	          quad.point.y += y;
+	        }
+	      }
+	      return x1 > nx2 || x2 < nx1 || y1 > ny2 || y2 < ny1;
+	    });
+	  };
 	}
