@@ -19,6 +19,8 @@ var spaceServices=require('space.services');
 var portfolioService =spaceServices.PortfolioService;
 var v1Service = spaceServices.V1Service;
 var syncService =spaceServices.SyncService;
+var orgService =spaceServices.OrganizationService;
+
 
 var boardService= require('../services/BoardService');
 
@@ -128,11 +130,21 @@ router.get('/planningbacklogdetail/:id', function(req, res) {
 	syncService.getLastSync("v1epics",function(err,sync){
 		v1Service.getPlanningBacklogs(_filter,function(err,result){
 			var _backlog = _.findWhere(result.backlogs,{ID:_backlogId});
-			res.locals.backlog = _backlog;
-			if (_backlog) res.locals.members = _backlog.Members;
-			res.locals.moment=moment;
-			res.locals.lastSync = sync.lastSync;
-			res.render('portfolio/planningbacklogdetail'), { title: 's p a c e - planning backlog detail' }
+
+			var _first = _backlog.Owner.split(" ")[0];
+			var _last = _backlog.Owner.split(" ")[1];
+
+
+			orgService.findEmployeeByFirstLastName(_first,_last,function(err,employee){
+					res.locals.backlog = _backlog;
+					if (_backlog) res.locals.members = _backlog.Members;
+					res.locals.moment=moment;
+					res.locals.owner=employee;
+					res.locals.lastSync = sync.lastSync;
+					res.render('portfolio/planningbacklogdetail'), { title: 's p a c e - planning backlog detail' }
+			})
+
+
 		});
 	});
 
