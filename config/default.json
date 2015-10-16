@@ -140,12 +140,11 @@
 		"kpis": {
 			"incidents":{
 				"states":["New","In progress","Awaiting","Resolved","Closed"],
-				"priorities": ["P01","P08","P16"],
+				"priorities": ["P01","P08"],
 				"baseline": {
 					"openedAt" : ["2014-10-01", "2015-01-01"],
 					"categoryExclude":["Request","Misplaced Call"],
 					"totalsOverride": {"P01":94,"P08":524}
-
 				},
 				"target": {
 					"openedAt" : ["2015-10-01", "2015-12-31"],
@@ -153,7 +152,18 @@
 					"businessServiceExclude":"hardcoded",
 					"labelExclude":"hardcoded"
 					}
-				}
+				},
+			"mobileShare":{
+				"lastSync": "2015-10-03"
+			},
+			"returnOnRoadmap":{
+				"lastSync": "2015-09-01"
+			},
+			"B2B":{
+				"lastSync": "2015-10-03"
+			}
+
+
 			},
 		"laneSorting": ["RUN","GROW","TRANSFORM"],
 		"laneColors": {"RUN":"#00b8e4","GROW":"#82cec1","TRANSFORM":"#f99d1c"}
@@ -188,7 +198,7 @@
 	},
 
 	"import":{
-		"plainTypes" : ["productportfolio","productcatalog","incidents","labels","customers","competitors","roadmaps","availability","v1teams","scrumteams","incidenttracker","content","incidenttrackeroldsnow","socservices","soclabel2customer","oldsnowincidents","socincident2revenueimpact","label2customer","datacenters","users","targets2015","targets2016","v1backlogscapacity"]
+		"plainTypes" : ["productportfolio","productcatalog","incidents","labels","customers","competitors","roadmaps","availability","v1teams","scrumteams","incidenttracker","content","incidenttrackeroldsnow","socservices","soclabel2customer","oldsnowincidents","socincident2revenueimpact","label2customer","datacenters","users","targets2015","targets2016","v1backlogscapacity","targetstracker2015K3"]
 	},
 
   "context" : "bpty.studios",

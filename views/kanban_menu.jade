@@ -47,6 +47,9 @@ block content
 					if !session.AUTH 
 						li
 							a( href="/targets/overview") targets overview
+					if !session.AUTH 
+						li
+							a( href="/dashboard") KPI tracker							
 					
 					if session.AUTH=="studios"
 						ul.nav.navbar-nav

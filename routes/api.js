@@ -45,6 +45,9 @@ var PATH = {
 						REST_TARGETS_L1 : BASE+'/space/rest/targets/L1/:period',
 						REST_TARGETSTREE : BASE+'/space/rest/targetstree',
 
+						REST_TARGETSTRACKER : BASE+'/space/rest/targetstracker/:period',
+
+
 						REST_TARGET2EMPLOYEE : BASE+'/space/rest/target2employee/:period',
 						REST_TARGET2EMPLOYEECLUSTERED : BASE+'/space/rest/target2employeeclustered/:period',
 						REST_EMPLOYEEBYTARGETS : BASE+'/space/rest/employeebytargets/:period',
@@ -178,7 +181,7 @@ router.get(PATH.REST_TARGET2EMPLOYEE, function(req, res, next) {findAllByName(re
 router.get(PATH.REST_TARGET2EMPLOYEECLUSTERED, function(req, res, next) {getTarget2EmployeeClustered(req,res,next);});
 router.get(PATH.REST_EMPLOYEEBYTARGETS, function(req, res, next) {getEmployeesByTarget(req,res,next);});
 router.get(PATH.REST_OUTCOMESFOREMPLOYEE, function(req, res, next) {getOutcomesForEmployee(req,res,next);});
-
+router.get(PATH.REST_TARGETSTRACKER, function(req, res, next) {getTargetsTracker(req,res,next);});
 
 router.get(PATH.REST_BOARDS, function(req, res, next) {findAllByName(req,res,next);});
 router.get(PATH.REST_BOARDS+'/:_id', function(req, res, next) {findBy_id(req,res,next);});
@@ -866,6 +869,21 @@ function findEmployeeById(req, res , next){
       return next(err);
     });
 }
+
+
+
+function getTargetsTracker(req, res , next){
+  var _period = req.params.period;
+	var _kpi = req.query.kpi;
+	var collection="targetstracker"+_period+_kpi;
+	db.collection(collection).find(function(err,tracker){
+			res.send(tracker);
+	});
+
+
+
+}
+
 
 function getTarget2EmployeeClustered(req, res , next){
   var period = req.params.period;

@@ -2,7 +2,7 @@ var availability;//={unplannedYTD:99.61,targetYTD:99.75};
 
 // do a ajax call
 $.get( "/api/space/rest/availability", function( data ) {
-  console.log("ajax call to get av data: "+JSON.stringify(data));
+  //console.log("ajax call to get av data: "+JSON.stringify(data));
   var av = data[0].avReport.getYTDDatapoint;
 
   // do another ajax call to get target values

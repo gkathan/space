@@ -28,6 +28,7 @@ router.get('/', function(req, res) {
 	res.locals.moment = require('moment');
 
 	res.render('index', { title: 's p a c e' });
+  //res.redirect("dashboard");
 	});
 });
 

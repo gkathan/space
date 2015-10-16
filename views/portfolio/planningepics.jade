@@ -22,38 +22,42 @@ block content
 			if roadmapBoardId
 				a(style="font-size:11px" href="/boards/kanban/#{roadmapBoardId}") roadmap board - initiatives - clustered by status|product(*experimental) 
 				br
-
-			table(style="text-align:right;font-size:12px;max-width:600px")
-				tr
-					td(style="text-align:left;width:200px")
-						|total number of initiatives: 
-					td
-						b
-							|#{initiatives.length}
-					td(style="text-align:left")
-						span(style="font-size:10px") &nbsp;(Understanding: #{grouped.Understanding.length} Conception: #{grouped.Conception.length} Implementation: #{grouped.Implementation.length})
-				tr
-					td(style="text-align:left;width:150px")
-						|total effort: 
-					td
-						b
-							|#{Math.round(statistics.totalSwag)} PD
-					td(style="text-align:left")
-						//|(average: #{statistics.averageSwag.toFixed(2)})
-				tr
-					td(style="text-align:left;width:150px")
-						|overall progess: 
-					td(style="font-size:16px")
-						b
-							|#{Math.round((1-(statistics.totalSwagRemaining/statistics.totalSwag))*100)}% 
-				tr
-					td(style="text-align:left;width:150px")
-						|total effort remaining: 
-					td
-						b
-							|#{Math.round(statistics.totalSwagRemaining)} PD
-					td(style="text-align:left")
-						//|(average: #{statistics.averageSwag.toFixed(2)})
+			br
+			
+			div(style="width:300px;margin:0px auto")
+				table(style="text-align:right;font-size:12px;width:300px")
+					tr
+						td(style="border-top:1px solid black" colspan="3") &nbsp;
+					tr
+						td(style="text-align:left;width:150px")
+							|total number of initiatives: 
+						td
+							b
+								|#{initiatives.length}
+						td(style="text-align:rigth")
+							span(style="font-size:9px") &nbsp; U: #{grouped.Understanding.length} C: #{grouped.Conception.length} I: #{grouped.Implementation.length}
+					tr
+						td(style="text-align:left;width:150px")
+							|total effort: 
+						td
+							b
+								|#{Math.round(statistics.totalSwag)} PD
+						td(style="text-align:left")
+							//|(average: #{statistics.averageSwag.toFixed(2)})
+					tr
+						td(style="text-align:left;width:150px")
+							|overall progess: 
+						td(style="font-size:16px")
+							b
+								|#{Math.round((1-(statistics.totalSwagRemaining/statistics.totalSwag))*100)}% 
+					tr
+						td(style="text-align:left;width:150px")
+							|total effort remaining: 
+						td
+							b
+								|#{Math.round(statistics.totalSwagRemaining)} PD
+						td(style="text-align:left")
+							//|(average: #{statistics.averageSwag.toFixed(2)})
 			
 			
 		.panel-body

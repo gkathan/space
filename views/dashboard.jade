@@ -5,22 +5,35 @@ script(src='/javascripts/components/c3/c3.min.js')
 // Load nv3d
 script(src='/javascripts/components/nvd3/build/nv.d3.min.js')
 
-
-
+style.
+	#c3_mobile_spline .c3-circles-Target {
+		display: none;
+	}
+	#c3_mobile_spline .c3-line-Target {
+		stroke-width: 1.2px;
+	}
+	
 block content
 	div.container-fluid
+	
+		div(style="margin:auto;max-width:1400px;text-align:center") 
+				h3 STUDIOS 2015 KPI TRACKER
+				br
+		
 		div.row(style="margin: auto;max-width:1150px")
 			if l1targets.length>0
 				each target in l1targets
 					div.col-md-3.col-sm-4.col-xs-9.col-lg2(style="width:210px")
 						.panel.panel-default(style="width:200px;margin:0px;height:340px;margin-bottom:10px")
 							.panel-heading(style="text-align:center;font-weight:bold;font-size:12px") 
-								if target.id=="K2"
+								if target.id=="K2" && session.AUTH
 									a(href="/dashboard/#{_.last(target.dashboardDetail.split('_'))}?period=q#{moment().quarter()}-#{moment().year()}") 
 										|#{target.id} - #{target.directTarget} 
-								else
+								else if session.AUTH
 									a(href="/dashboard/#{_.last(target.dashboardDetail.split('_'))}") 
 										|#{target.id} - #{target.directTarget} 
+								else 
+									|#{target.id} - #{target.directTarget} 
 							.panel-body
 							div(style="font-weight:normal;font-size:12px;text-align:center")
 								|target | #{target.directTime} 
@@ -34,8 +47,8 @@ block content
 							div(id="#{target.dashboardTop}")
 							div(style="font-size:12px;text-align:left;padding-left:20px")
 								if target.id=="K1"
-									br
 									if availability
+										span(style="font-size:9px;text-align:center;margin-left:25px") unplanned downtime in hours
 										table()
 											tr(style="font-size:9px;text-align:center;line-height:9px")
 												td target
@@ -55,7 +68,7 @@ block content
 												td(colspan="3" style="text-align:center;font-size:12px;font-weight:bold")
 													span(id="trendAV") 
 											tr
-												td(colspan="3" style="text-align:center;font-size:8px")
+												td(colspan="3" style="text-align:center;font-size:8px;color:grey")
 													br
 													|last update: #{moment(availability.createDate).format('YYYY-MM-DD HH:mm:ss')}
 									else
@@ -67,11 +80,34 @@ block content
 									br
 									span(id="target")
 									
+									div(style="text-align:center;font-size:8px;color:grey")
+										br
+										br
+										br
+										br
+										br
+										
+										|last update: #{moment(lastSyncIncidents).format('YYYY-MM-DD HH:mm:ss')}
+									
 								else if target.id =="K3"
-									a(href="" target="_blank") as per some source
+									div(style="text-align:center;font-size:8px;color:grey")
+										|last update: #{moment(lastSyncMobileShare).format('YYYY-MM-DD')}
 								else if target.id =="K4"
+									div(style="text-align:center;font-size:8px;color:grey")
+										|last update: #{moment(lastSyncReturnOnRoadmap).format('YYYY-MM-DD')}
 								else if target.id =="K5"
-
+									br(style="font-size:5px")
+									img(src="/images/targets/KPI5_tracker.png" height="140px" style="margin-left:20px")
+									div(style="text-align:center;font-size:8px;color:grey")
+										br
+										br
+										br
+										
+										|last update: #{moment(lastSyncB2B).format('YYYY-MM-DD')}
+		
+	
+		
+		
 //include the according external graph codes
 each target in l1targets
 	script(src='/javascripts/dashboards/#{target.dashboardTop}.js')

@@ -6,24 +6,23 @@ include ../kanban_menu
 -			return config.initiatives.health.colors[status];
 - }
 
-
+mixin renderEmployee(employee,size)
+	table(style="width:200px")
+		tr
+			td(rowspan="2" style="vertical-align:top")
+				img.img-circle(src='/images/employees/squared/#{employee["Employee Number"]}_square.png' height="30px") 
+			td(style="padding-left:5px;font-size:#{nameSize}px;text-align:left;vertical-align:bottom")
+				|#{employee["First Name"]} #{employee["Last Name"]}
+		tr
+			td(style="padding-left:5px;text-align:left")
+				span(style="font-size:9px;font-weight:normal;vertical-align:top") #{employee["Organization"]}
 
 
 block content
 	div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;background-color:white;;width:1400px;text-align: center;margin: 10px auto;")
 		.panel-heading
 			h3.panel-title(style="font-size:24px;font-weight:bold") Planning Backlogs Detail for: #{backlog.Name}
-			if owner
-				table
-					tr
-						td(rowspan="2")
-							img.img-circle(src='/images/employees/squared/#{owner["Employee Number"]}_square.png' height="25px") 
-						td(style="padding-left:5px;font-size:#{nameSize}px")
-							|#{owner["First Name"]} #{owner["Last Name"]}
-					tr
-						td(style="padding-left:5px")
-							span(style="font-size:10px;font-weight:normal;") #{owner["Organization"]}
-				
+			
 				
 			div(style="font-size:9px;color:grey") last V1 sync: #{moment.utc(lastSync).toDate()} 
 			//| refresh interval: #{config.sync.v1epics.intervalMinutes} minutes
@@ -31,48 +30,51 @@ block content
 			a(href="/portfolio/planningepics") view planning epics
 			br
 			a(href="/portfolio/planningbacklogs") view planning backlogs
-	
-			table(style="max-width:250px;font-size:12px")
-				tr
-					td(style="text-align:left;width:150px") 
-						|#initiatives:
-					td(style="text-align:right")
-						b
-							|#{backlog.Initiatives.length}
-				tr
-					td(style="text-align:left")
-						|#plannig epics:
-					td(style="text-align:right")
-						b
-							|#{backlog.TotalPlanningEpics}
-				tr
-					td(style="text-align:left") 
-						|total effort:
-					td(style="text-align:right")
-						b
-							|#{backlog.TotalSwag} PD
-				tr
-					td(style="text-align:left") 
-						|progress:
-					td(style="text-align:right")
-						b
-							|#{Math.round(backlog.TotalProgress)}%
-
-				tr
-					td(style="text-align:left") 
-						|total effort remaining:
-					td(style="text-align:right")
-						b
-							|#{Math.round(backlog.TotalSwagRemaining)} PD
-
-				tr
-					td(style="text-align:left") 
-						|team members:
-					td(style="text-align:right")
-						b
-							a(href="#" title="#{_.uniq(_.map(members,'Name')).join(', ')}")
-								|#{members.length}
-
+			br
+			br
+			div(style="width:200px;margin:0px auto")
+				+renderEmployee(owner,30)
+				table(style="width:200px;font-size:12px")
+					tr(style="border-top:1px solid black")
+						td(colspan="2") 
+					tr
+						td(style="text-align:left;width:150px") 
+							|#initiatives:
+						td(style="text-align:right")
+							b
+								|#{backlog.Initiatives.length}
+					tr
+						td(style="text-align:left")
+							|#plannig epics:
+						td(style="text-align:right")
+							b
+								|#{backlog.TotalPlanningEpics}
+					tr
+						td(style="text-align:left") 
+							|total effort:
+						td(style="text-align:right")
+							b
+								|#{backlog.TotalSwag} PD
+					tr
+						td(style="text-align:left") 
+							|progress:
+						td(style="text-align:right")
+							b
+								|#{Math.round(backlog.TotalProgress)}%
+					tr
+						td(style="text-align:left") 
+							|total effort remaining:
+						td(style="text-align:right")
+							b
+								|#{Math.round(backlog.TotalSwagRemaining)} PD
+					tr
+						td(style="text-align:left") 
+							|team members:
+						td(style="text-align:right")
+							b
+								a(href="#" title="#{_.uniq(_.map(members,'Name')).join(', ')}")
+									|#{members.length}
+							
 			
 							
 			
@@ -90,8 +92,8 @@ block content
 						th.rotate(style="min-width:20px;text-align:right;vertical-align:top") <div><span>progress %</span></div>  
 						th.rotate(style="min-width:20px;text-align:right;vertical-align:top") <div><span>remaining effort PD</span></div>  
 
-						th.rotate(style="min-width:60px;text-align:center;vertical-align:top") <div><span>start</span></div> 
-						th.rotate(style="min-width:60px;text-align:center;vertical-align:top") <div><span>end</span></div>  
+						th.rotate(style="min-width:70px;text-align:center;vertical-align:top") <div><span>start</span></div> 
+						th.rotate(style="min-width:70px;text-align:center;vertical-align:top") <div><span>end</span></div>  
 						th.rotate(style="min-width:600px;text-align:left;vertical-align:top") <div><span>planning epics</span></div> 
 
 				tbody
@@ -112,8 +114,8 @@ block content
 								div(style="margin:auto;width: 10px;height: 10px;-moz-border-radius: 50%; -webkit-border-radius: 50%; border-radius: 50%;background-color:#{getHealthColor(i.Health)};margin-top:2px")
 								span(style="font-size:0px") #{i.Health}
 							
-							td(style="vertical-align:top;text-align:right;font-size:10px;vertical-align:top") #{i.Value}
-							td(style="vertical-align:top;text-align:right;font-size:10px;vertical-align:top") #{i.Risk}
+							td(style="vertical-align:top;text-align:right;font-size:10px;vertical-align:top" title="Value: #{i.Value}") #{i.Value}
+							td(style="vertical-align:top;text-align:right;font-size:10px;vertical-align:top"  title="Risk: #{i.Risk}") #{i.Risk}
 							
 							td(style="vertical-align:top;text-align:right;font-size:10px;vertical-align:top" title="Total Effort: #{Math.round(i.SwagPlanned)} PD") #{i.SwagPlanned}
 							td(style="vertical-align:top;text-align:right;font-size:10px;vertical-align:top" title="Progress (accumulated from underlying Planning Epics): #{Math.round(i.ProgressPlanned)} %") #{Math.round(i.ProgressPlanned)}

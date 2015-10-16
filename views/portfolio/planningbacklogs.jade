@@ -28,46 +28,51 @@ block content
 				a(style="font-size:11px" href="/boards/kanban/#{roadmapBoardId}") roadmap board - initiatives - clustered by status|product(*experimental) 
 				br
 			
-			table(style="max-width:400px;font-size:12px")
-				tr
-					td(style="text-align:left;width:200px") 
-						|total number of planning backlogs:
-					td(style="text-align:right")
-						b
-							|#{backlogs.length}
-				tr
-					td(style="text-align:left;width:150px") 
-						|total number of people:
-					td(style="text-align:right")
-						|<b>#{statistics.totalMembers}</b>
-				tr
-					td(style="text-align:left;width:150px") 
-						|total capacity for initiatives/month
-					td(style="text-align:right")
-						b
-							|#{statistics.totalPDforInitiativesPerMonth.toFixed(0)} PD
-				tr
-					td
-						|&nbsp;
-					td
-				tr
-					td(style="text-align:left;width:150px") 
-						|total effort:
-					td(style="text-align:right")
-						b
-							|#{statistics.totalSwag} PD
-				tr
-					td(style="text-align:left;width:150px")
-						|overall progess: 
-					td(style="font-size:16px;text-align:right")
-						b
-							|#{Math.round((1-(statistics.totalSwagRemaining/statistics.totalSwag))*100)}% 
-				tr
-					td(style="text-align:left;width:150px") 
-						|total effort remaining:
-					td(style="text-align:right")
-						b
-							|#{statistics.totalSwagRemaining.toFixed(0)} PD
+			br
+			
+			div(style="width:300px;margin:0px auto")
+				table(style="width:300px;font-size:12px")
+					tr
+						td(style="border-top:1px solid black" colspan="2") &nbsp;
+					tr
+						td(style="text-align:left;width:200px") 
+							|total number of planning backlogs:
+						td(style="text-align:right")
+							b
+								|#{backlogs.length}
+					tr
+						td(style="text-align:left;width:150px") 
+							|total number of people:
+						td(style="text-align:right")
+							|<b>#{statistics.totalMembers}</b>
+					tr
+						td(style="text-align:left;width:150px") 
+							|total capacity for initiatives/month
+						td(style="text-align:right")
+							b
+								|#{statistics.totalPDforInitiativesPerMonth.toFixed(0)} PD
+					tr
+						td
+							|&nbsp;
+						td
+					tr
+						td(style="text-align:left;width:150px") 
+							|total effort:
+						td(style="text-align:right")
+							b
+								|#{statistics.totalSwag} PD
+					tr
+						td(style="text-align:left;width:150px")
+							|overall progess: 
+						td(style="font-size:16px;text-align:right")
+							b
+								|#{Math.round((1-(statistics.totalSwagRemaining/statistics.totalSwag))*100)}% 
+					tr
+						td(style="text-align:left;width:150px") 
+							|total effort remaining:
+						td(style="text-align:right")
+							b
+								|#{statistics.totalSwagRemaining.toFixed(0)} PD
 			
 				
 

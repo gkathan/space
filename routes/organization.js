@@ -31,7 +31,10 @@ router.get("/facebook", function(req, res, next) {
 	orgService.findStudiosEmployees(function(err,employees){
 		logger.debug("-------------------/facebook: employees: "+employees.length);
 		if (_filter && _value){
-			employees=_.where(employees,{_filter:_value});
+			logger.debug("filter: "+_filter+" - value: "+_value);
+			var _f = {};
+			_f[_filter]=_value;
+			employees=_.where(employees,_f);
 		}
 		res.locals.employees = employees;
 		res.render("organization/facebook");

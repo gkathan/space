@@ -14,6 +14,7 @@ var avCalculatorService = require('../services/AvailabilityCalculatorService');
 
 var targetService = spaceServices.TargetService;
 var incService=spaceServices.IncidentService;
+var syncService=spaceServices.SyncService;
 
 var winston=require('winston');
 var logger = winston.loggers.get('space_log');
@@ -32,38 +33,25 @@ router.get('/', function(req, res) {
 	var target_context;
 	if (_context=="gvc.studios") target_context = "bpty.studios";
 	else target_context = _context;
-
-
-	  //if (!req.session.AUTH){
-	if (!req.session.AUTH){
-			req.session.ORIGINAL_URL = req.originalUrl;
-			logger.debug("no req.session.AUTH found: ");
-			res.redirect("/login");
-	}
-	else{
 		avService.getLatest(function(av){
 			if (av){
 				res.locals.availability = av;
-
-
 			}
 			res.locals.moment = moment;
 			logger.debug("------------------------ ");
 			targetService.getL1(target_context,function(err,l1targets){
+				syncService.getLastSync("incidents",function(err,lastSyncIncidents){
 					res.locals.l1targets=l1targets;
-
-					/*
-					_targetAV = parseFloat(l1targets[0].directMetric);
-					_currentAV = parseFloat(av.avReport.getYTDDatapoint.unplanned);
-					logger.debug("XXXXXXXXXXXXXX av"+JSON.stringify(av));
-					res.locals.leftdowntime =  moment.duration(avCalculatorService.getTimeForAVPercentage(_currentAV,{value:365-moment().dayOfYear(),type:"days"})).format('HH:mm.ss');
-					res.locals.targetdowntime = moment.duration(avCalculatorService.getTimeForAVPercentage(_targetAV,{value:1,type:"year"})).format('HH:mm.ss');
-					*/
+					res.locals.lastSyncIncidents=lastSyncIncidents;
+					res.locals.lastSyncMobileShare=config.targets.kpis.mobileShare.lastSync;
+					res.locals.lastSyncReturnOnRoadmap=config.targets.kpis.returnOnRoadmap.lastSync;
+					res.locals.lastSyncB2B=config.targets.kpis.B2B.lastSync;
 					logger.debug("l1 targets: "+ l1targets);
 					res.render('dashboard', { title: 's p a c e - dashboards' });
+				})
 			})
-		});
-	}
+
+	});
 });
 
 router.get('/availability', function(req, res) {

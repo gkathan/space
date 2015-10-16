@@ -20,7 +20,8 @@ exports.detectType = _detectType;
 exports.convertToCirclePng = _convertToCirclePng;
 exports.syncEmployeeImages = _syncEmployeeImages;
 
-
+var spaceServices = require('space.services');
+var organizationService = spaceServices.OrganizationService;
 
 
 /**
