@@ -8,14 +8,22 @@ include ../kanban_menu
 
 
 
+
 block content
 	div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;background-color:white;;width:1400px;text-align: center;margin: 10px auto;")
 		.panel-heading
 			h3.panel-title(style="font-size:24px;font-weight:bold") Planning Backlogs Detail for: #{backlog.Name}
 			if owner
-				span(style="font-size:10px") owner: 
-				|#{backlog.Owner} 
-				img(src='/images/employees/circle/#{owner["Employee Number"]}.png' height="25px")
+				table
+					tr
+						td(rowspan="2")
+							img.img-circle(src='/images/employees/squared/#{owner["Employee Number"]}_square.png' height="25px") 
+						td(style="padding-left:5px;font-size:#{nameSize}px")
+							|#{owner["First Name"]} #{owner["Last Name"]}
+					tr
+						td(style="padding-left:5px")
+							span(style="font-size:10px;font-weight:normal;") #{owner["Organization"]}
+				
 				
 			div(style="font-size:9px;color:grey") last V1 sync: #{moment.utc(lastSync).toDate()} 
 			//| refresh interval: #{config.sync.v1epics.intervalMinutes} minutes

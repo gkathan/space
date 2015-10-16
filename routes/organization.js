@@ -24,8 +24,15 @@ router.get("/", function(req, res, next) {
 });
 
 router.get("/facebook", function(req, res, next) {
+	var _filter = req.query.filter;
+	var _value = req.query.value;
+
+
 	orgService.findStudiosEmployees(function(err,employees){
 		logger.debug("-------------------/facebook: employees: "+employees.length);
+		if (_filter && _value){
+			employees=_.where(employees,{_filter:_value});
+		}
 		res.locals.employees = employees;
 		res.render("organization/facebook");
 	});

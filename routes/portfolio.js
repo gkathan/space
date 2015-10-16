@@ -131,9 +131,12 @@ router.get('/planningbacklogdetail/:id', function(req, res) {
 		v1Service.getPlanningBacklogs(_filter,function(err,result){
 			var _backlog = _.findWhere(result.backlogs,{ID:_backlogId});
 
-			var _first = _backlog.Owner.split(" ")[0];
-			var _last = _backlog.Owner.split(" ")[1];
-
+			var _first;
+			var _last;
+			if (_backlog.Owner){
+				_first = _backlog.Owner.split(" ")[0];
+				_last = _backlog.Owner.split(" ")[1];
+			}
 
 			orgService.findEmployeeByFirstLastName(_first,_last,function(err,employee){
 					res.locals.backlog = _backlog;
