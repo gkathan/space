@@ -21,7 +21,7 @@ html(lang='en')
 
 	footer.footer
 		div(style="font-size:8px;color:grey;text-align:center;")
-			| s p a c e  
+			| s p a c e | strategy performance and change explorer  
 			| :: version: <b>#{config.version}</b> :: build: <b>#{config.build}</b> :: env: <b>#{config.env}</b>
 			span(style="font-size:8px;color:grey;") ::  s p a c e.syncer: 
 			if heartbeat.spacesyncer.status =="ERROR"
@@ -35,3 +35,6 @@ html(lang='en')
 			a(href="/pinboards/backlog") backlog kanban board ::
 			| :: 
 			a(href="/changelog") changelog ::
+			|brought to you by  
+			img(src="/images/cm_logo.png" width="15px")
+			|commercial management
