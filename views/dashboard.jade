@@ -76,17 +76,39 @@ block content
 									
 									
 								else if target.id =="K2"
-									span(id="baseline")
-									br
-									span(id="target")
-									
+									table.table.table-striped.table-hover.table-condensed(style="width:160px")
+										thead
+											tr
+												th(style="width:50px")
+												th(style="text-align:right;width:20px") 
+													img(src="/images/incidents/P01.png" width="25px")
+												th(style="text-align:right;width:20px") 
+													img(src="/images/incidents/P08.png" width="25px")
+										tbody
+											tr
+												td(id="k2_baseline" style="font-size:10px") 
+												td(id="k2_baseline_p01" style="text-align:right") 
+												td(id="k2_baseline_p08" style="text-align:right") 
+										
+											tr
+												td(id="k2_target" style="font-size:10px") 
+												td(id="k2_target_p01" style="text-align:right") 
+												td(id="k2_target_p08" style="text-align:right") 
+											tr
+												td(id="k2_current" style="font-size:10px;font-weight:bold") 
+												td(id="k2_current_p01" style="text-align:right;font-weight:bold") 
+												td(id="k2_current_p08" style="text-align:right;font-weight:bold") 
+											tr
+												td(id="k2_left" style="font-size:10px") 
+												td(id="k2_left_p01" style="text-align:right") 
+												td(id="k2_left_p08" style="text-align:right") 
+											tr
+												td(id="k2_trend" style="font-size:10px") 
+												td(id="k2_trend_p01" style="text-align:right") 
+												td(id="k2_trend_p08" style="text-align:right") 
+
 									div(style="text-align:center;font-size:8px;color:grey")
 										br
-										br
-										br
-										br
-										br
-										
 										|last update: #{moment(lastSyncIncidents).format('YYYY-MM-DD HH:mm:ss')}
 									
 								else if target.id =="K3"

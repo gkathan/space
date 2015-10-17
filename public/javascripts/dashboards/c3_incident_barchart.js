@@ -38,31 +38,37 @@ $.get( _url, function( data ) {
   var _targetPeriod = data.target.config.openedAt;
   var _trends = data.trends;
 
+  var _targetP01= (_baseline.P01.Total-(_baseline.P01.Total*0.2)).toFixed(0);
+  var _targetP08= (_baseline.P08.Total-(_baseline.P08.Total*0.2)).toFixed(0);
+  //var _targetP16= (_baseline.P16.Total-(_baseline.P16.Total*0.2)).toFixed(0);
+
+  var _trendP01= _.findWhere(_trends,{"prio":"P01",state:"Total"}).trend+"%";
+  var _trendP08= _.findWhere(_trends,{"prio":"P08",state:"Total"}).trend+"%";
+  //var _trendP16= _.findWhere(_trends,{"prio":"P16",state:"Total"}).trend+"%";
+
+
+    $('#k2_baseline').text("Q4-2014");
+    $('#k2_baseline_p01').text(_baseline.P01.Total);
+    $('#k2_baseline_p08').text(_baseline.P08.Total);
+
+    $('#k2_target').text("Q4-2015");
+    $('#k2_target_p01').text(_targetP01);
+    $('#k2_target_p08').text(_targetP08);
 
 
 
-    var _baselineString = "<br><span style='font-weight:normal;font-size:9px'>baseline: "+_baselinePeriod+"</span><br><img src='/images/incidents/P01.png' height='20px' style='padding-left:2px;padding-right:2px'><b style='font-size:12px'>"+_baseline.P01.Total+"</b> <img src='/images/incidents/P08.png' height='20px' style='padding-left:2px;padding-right:2px'><b style='font-size:12px'>"+_baseline.P08.Total+"</b>";
-    // <img src='/images/incidents/P16.png' height='20px' style='padding-left:2px;padding-right:2px'><b style='font-size:12px'>"+_baseline.P16.Total+"</b>";
-    $('#baseline').html(_baselineString);
+    $('#k2_current').text("current");
+    $('#k2_current_p01').text(_target.P01.Total);
+    $('#k2_current_p08').text(_target.P01.Total);
+
+    $('#k2_left').text("left");
+    $('#k2_left_p01').text(_targetP01-_target.P01.Total);
+    $('#k2_left_p08').text(_targetP08-_target.P08.Total);
 
 
-
-    var _targetString = "<span style='font-weight:normal;font-size:9px'>target: "+_targetPeriod+"</span><br><img src='/images/incidents/P01.png' height='20px' style='padding-left:2px;padding-right:2px'><b style='font-size:12px'>"+_target.P01.Total+"</b> <img src='/images/incidents/P08.png' height='20px' style='padding-left:2px;padding-right:2px'><b style='font-size:12px'>"+_target.P08.Total+"</b>";
-    //  <img src='/images/incidents/P16.png' height='20px' style='padding-left:2px;padding-right:2px'><b style='font-size:12px'>"+_target.P16.Total+"</b>";
-
-    _targetString+="<br><span style='font-weight:normal;font-size:9px'>trending</span><br><img src='/images/incidents/P01.png' height='15px' style='padding-left:2px;padding-right:2px'> <b  style='font-size:10px'>"+_.findWhere(_trends,{"prio":"P01",state:"Total"}).trend+"%</b> <img src='/images/incidents/P08.png' height='15px' style='padding-left:2px;padding-right:2px'> <b  style='font-size:10px'>"+_.findWhere(_trends,{"prio":"P08",state:"Total"}).trend+"%</b>";
-    // <img src='/images/incidents/P16.png' height='15px' style='padding-left:2px;padding-right:2px'> <b style='font-size:10px'>"+_.findWhere(_trends,{"prio":"P16",state:"Total"}).trend+"%</b>";
-
-
-
-
-    $('#target').html(_targetString);
-
-    var _targetP01= (_baseline.P01.Total-(_baseline.P01.Total*0.2)).toFixed(0);
-    var _targetP08= (_baseline.P08.Total-(_baseline.P08.Total*0.2)).toFixed(0);
-    //var _targetP16= (_baseline.P16.Total-(_baseline.P16.Total*0.2)).toFixed(0);
-
-    $('#targetIncidentAbsolut').html("P01 < "+_targetP01+" P08 < "+_targetP08);
+    $('#k2_trend').text("trend");
+    $('#k2_trend_p01').text(_trendP01);
+    $('#k2_trend_p08').text(_trendP08);
 
     /*
     var chart2 = c3.generate({
