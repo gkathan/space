@@ -17,7 +17,7 @@ block content
 	div.container-fluid
 	
 		div(style="margin:auto;max-width:1400px;text-align:center") 
-				h3 STUDIOS 2015 KPI TRACKER
+				h3 STUDIOS 2015 KPI TRACKER 
 				br
 		
 		div.row(style="margin: auto;max-width:1150px")
@@ -70,7 +70,7 @@ block content
 											tr
 												td(colspan="3" style="text-align:center;font-size:8px;color:grey")
 													br
-													|last update: #{moment(availability.createDate).format('YYYY-MM-DD HH:mm:ss')}
+													|last update: #{moment(availability.createDate).format('YYYY-MM-DD HH:mm:ss ZZ')}
 									else
 										span(style="font-size:8px;text-align:center") -- no data accessible --
 									
@@ -108,7 +108,7 @@ block content
 												td(id="k2_trend_p08" style="text-align:right") 
 
 									div(style="text-align:center;font-size:8px;color:grey")
-										|last update: #{moment(lastSyncIncidents).format('YYYY-MM-DD HH:mm:ss')}
+										|last update: #{moment(lastSyncIncidents.lastSync).format('YYYY-MM-DD HH:mm:ss ZZ')}
 									
 								else if target.id =="K3"
 									div(style="text-align:center;font-size:8px;color:grey")
