@@ -59,7 +59,7 @@ $.get( _url, function( data ) {
 
     $('#k2_current').text("current");
     $('#k2_current_p01').text(_target.P01.Total);
-    $('#k2_current_p08').text(_target.P01.Total);
+    $('#k2_current_p08').text(_target.P08.Total);
 
     $('#k2_left').text("left");
     $('#k2_left_p01').text(_targetP01-_target.P01.Total);
