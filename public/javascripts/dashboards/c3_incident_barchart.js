@@ -47,11 +47,11 @@ $.get( _url, function( data ) {
   //var _trendP16= _.findWhere(_trends,{"prio":"P16",state:"Total"}).trend+"%";
 
 
-    $('#k2_baseline').text("Q4-2014");
+    $('#k2_baseline').text("baseline");
     $('#k2_baseline_p01').text(_baseline.P01.Total);
     $('#k2_baseline_p08').text(_baseline.P08.Total);
 
-    $('#k2_target').text("Q4-2015");
+    $('#k2_target').text("target");
     $('#k2_target_p01').text(_targetP01);
     $('#k2_target_p08').text(_targetP08);
 

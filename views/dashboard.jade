@@ -76,14 +76,17 @@ block content
 									
 									
 								else if target.id =="K2"
-									table.table.table-striped.table-hover.table-condensed(style="width:160px")
+									table.table.table-striped.table-hover.table-condensed(style="width:100px")
 										thead
 											tr
-												th(style="width:50px")
-												th(style="text-align:right;width:20px") 
-													img(src="/images/incidents/P01.png" width="25px")
-												th(style="text-align:right;width:20px") 
-													img(src="/images/incidents/P08.png" width="25px")
+												th(style="min-width:50px")
+													&nbsp;
+												th(style="text-align:right;min-width:30px") 
+													img(src="/images/incidents/P01.png" width="22px")
+												th(style="text-align:right;min-width:30px") 
+													img(src="/images/incidents/P08.png" width="22px")
+												//th(style="text-align:right;min-width:30px") 
+												//	img(src="/images/incidents/P16.png" width="22px")
 										tbody
 											tr
 												td(id="k2_baseline" style="font-size:10px") 
@@ -99,16 +102,17 @@ block content
 												td(id="k2_current_p01" style="text-align:right;font-weight:bold") 
 												td(id="k2_current_p08" style="text-align:right;font-weight:bold") 
 											tr
-												td(id="k2_left" style="font-size:10px") 
-												td(id="k2_left_p01" style="text-align:right") 
-												td(id="k2_left_p08" style="text-align:right") 
+												td(id="k2_left" style="font-size:9px") 
+												td(id="k2_left_p01" style="text-align:right;font-size:9px") 
+												td(id="k2_left_p08" style="text-align:right;font-size:9px") 
 											tr
-												td(id="k2_trend" style="font-size:10px") 
-												td(id="k2_trend_p01" style="text-align:right") 
-												td(id="k2_trend_p08" style="text-align:right") 
+												td(id="k2_trend" style="font-size:9px") 
+												td(id="k2_trend_p01" style="text-align:right;font-size:9px") 
+												td(id="k2_trend_p08" style="text-align:right;font-size:9px") 
 
 									div(style="text-align:center;font-size:8px;color:grey")
-										|last update: #{moment(lastSyncIncidents.lastSync).format('YYYY-MM-DD HH:mm:ss ZZ')}
+										if lastSyncIncidents
+											|last update: #{moment(lastSyncIncidents.lastSync).format('YYYY-MM-DD HH:mm:ss ZZ')}
 									
 								else if target.id =="K3"
 									div(style="text-align:center;font-size:8px;color:grey")
