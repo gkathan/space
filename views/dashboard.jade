@@ -112,6 +112,7 @@ block content
 
 									div(style="text-align:center;font-size:8px;color:grey")
 										if lastSyncIncidents
+											br
 											|last update: #{moment(lastSyncIncidents.lastSync).format('YYYY-MM-DD HH:mm:ss ZZ')}
 									
 								else if target.id =="K3"
