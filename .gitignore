@@ -6,6 +6,7 @@ doc
 log
 node_modules
 temp
+utils
 .git
 *.build
 config/secret.json

@@ -47,7 +47,8 @@
   "private": true,
   "resolutions": {
     "bootstrap-multiselect": "~0.9.10",
-    "jquery": "~2.1.1"
+    "jquery": "~2.1.1",
+    "d3": "~3.5.5"
   },
   "devDependencies": {
     "nvd3": "~1.7.1",

@@ -74,6 +74,7 @@ var REMOTE_START = ['./space/scripts/space_start.sh'];
 var REMOTE_MONGODUMP = ['./space/scripts/space_mongodump.sh'];
 var REMOTE_FILESDUMP = ['./space/scripts/space_filesdump.sh'];
 var REMOTE_MONGORESTORE = ['./space/scripts/space_mongorestore.sh'];
+var REMOTE_ROLLBACK = ['./space/scripts/space_rollback.sh'];
 
 var MONGODUMP = 'mongodump_space'+SERVER.env+".zip";
 var FILESDUMP = 'filesdump_space.zip';
@@ -158,9 +159,15 @@ gulp.task('transfer', function () {
 
 gulp.task('remotedeploy', function () {
    gutil.log("[s p a c e - remotedeploy] remote deploy - execute: "+REMOTE_DEPLOY.join(','));
-
    return gulpSSH
     .exec(REMOTE_DEPLOY, {filePath: 'space_remotedeploy.log'})
+    .pipe(gulp.dest('logs'));
+});
+
+gulp.task('remoterollback', function () {
+   gutil.log("[s p a c e - remoterollback] remote rollback - execute: "+REMOTE_ROLLBACK.join(','));
+   return gulpSSH
+    .exec(REMOTE_ROLLBACK, {filePath: 'space_remoterollback.log'})
     .pipe(gulp.dest('logs'));
 });
 
@@ -201,6 +208,18 @@ gulp.task('deploy',function(callback){
     gutil.log("[s p a c e -deploy] ****** going to deploy to: "+SERVER.host+" -> "+SERVER.env);
 	runSequence('changelog','setup','buildfile','package','copy','transfer','remotedeploy','remotestart','done',callback);
 });
+
+/**
+ * deploys a space version
+ */
+gulp.task('rollback',function(callback){
+    gutil.beep();
+    gutil.log("[s p a c e -deploy] ************************************************************");
+    gutil.log("[s p a c e -deploy] ****** going to rollback to previous version : "+SERVER.host+" -> "+SERVER.env);
+	runSequence('remoterollback','remotestart','done',callback);
+});
+
+
 
 /**
  * deploys a space version
