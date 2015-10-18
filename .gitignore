@@ -12,11 +12,6 @@ config/secret.json
 config/sslcert
 Dockerfile
 public/files
-public/images
+public.*
 change.log
 !.gitignore
-caspertest.js
-getSnowIncidents.js
-syncIncidents.js
-syncTracker.js
-udplistener.js

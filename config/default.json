@@ -1,6 +1,8 @@
 {
 	"env" : "default",
 
+	"context" : "bpty.studios",
+
     "debug": true,
 
     "url": "http://localhost",
@@ -201,7 +203,6 @@
 		"plainTypes" : ["productportfolio","productcatalog","incidents","labels","customers","competitors","roadmaps","availability","v1teams","scrumteams","incidenttracker","content","incidenttrackeroldsnow","socservices","soclabel2customer","oldsnowincidents","socincident2revenueimpact","label2customer","datacenters","users","targets2015","targets2016","v1backlogscapacity","targetstracker2015K3"]
 	},
 
-  "context" : "bpty.studios",
 
   "v1" : {
 		"url" : "http://v1.bwinparty.corp/V1-Production/",

@@ -1191,7 +1191,7 @@ function message(req,res,next){
 		var _message=req.body;
 		_message.desktop={
 			desktop:true,
-			icon:"/images/messages/msg_"+_message.type+".png"
+			icon:"/images/icons/msg_"+_message.type+".png"
 		};
 		_message.history={menu:true};
 

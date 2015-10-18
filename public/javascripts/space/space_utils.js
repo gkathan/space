@@ -65,7 +65,7 @@ function ajaxCall(verb,action,itemList,_type,afterHandlerCallback){
 						type: "success",
 						desktop:  {
 							desktop: true,
-							icon:"/images/messages/msg_success.png"
+							icon:"/images/icons/msg_success.png"
 						}
 					});
 				});
@@ -83,7 +83,7 @@ function ajaxCall(verb,action,itemList,_type,afterHandlerCallback){
 						type: "error",
 						desktop:  {
 							desktop: true,
-							icon:"/images/messages/msg_error.png"
+							icon:"/images/icons/msg_error.png"
 						}
 					});
 				});
