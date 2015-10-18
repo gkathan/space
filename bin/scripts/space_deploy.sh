@@ -31,8 +31,15 @@ if [ -a $PACKAGE ]; then
 		cp -r $SPACE_HOME/app_rollback/public/files/howto/* $SPACE_HOME/app/public/files/howto/
 	fi
 
+
 	cd $SPACE_HOME/app
 	unzip ./$PACKAGE
+
+	#and merge the client specific stuff
+	cp $SPACE_HOME/app/public.bpty/* $SPACE_HOME/app/public/ -R
+	rm -Rf $SPACE_HOME/app/public.bpty
+	rm $SPACE_HOME/app/space.zip
+
 
 	mkdir $SPACE_HOME/app/logs -p
 
