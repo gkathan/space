@@ -12,6 +12,6 @@ config/secret.json
 config/sslcert
 Dockerfile
 public/files
-public.*
+public.bpty
 change.log
 !.gitignore
