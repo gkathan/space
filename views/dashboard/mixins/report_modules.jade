@@ -46,9 +46,10 @@ mixin renderAV(title,av,downtime,revenueImpact)
 		td(style="width:100px")
 			b(style="font-size:14px")
 				|#{formatAVTime(downtime.all)}
-		td(style="width:150px")
-			b(style="font-size:14px;color:red")
-				|-#{formatMoney(revenueImpact)}
+		if showRevenueImpact
+			td(style="width:150px")
+				b(style="font-size:14px;color:red")
+					|-#{formatMoney(revenueImpact)}
 
 	tr(style="line-height:32px;text-align:right")
 		td(style="width:150px")
@@ -59,9 +60,10 @@ mixin renderAV(title,av,downtime,revenueImpact)
 		td(style="width:100px")
 			div(style="font-size:14px")
 				|#{formatAVTime(downtime.core)}
-		td
-			div(style="font-size:10px")
-				| 
+		if showRevenueImpact
+			td
+				div(style="font-size:10px")
+					| 
 	tr(style="line-height:32px;text-align:right")
 		td(style="width:150px;text-align:right")
 			|NON-CORE:&nbsp;&nbsp;&nbsp; 
@@ -71,9 +73,10 @@ mixin renderAV(title,av,downtime,revenueImpact)
 		td(style="width:100px")
 			div(style="font-size:14px")
 				|#{formatAVTime(downtime.nonCore)}
-		td
-			div(style="font-size:10px")
-				| 
+		if showRevenueImpact
+			td
+				div(style="font-size:10px")
+					| 
 
 mixin renderAVDowntime(title,downtime)
 	tr(style="line-height:24px;text-align:right")
@@ -106,8 +109,9 @@ mixin renderAVServicesList(title,av)
 						|&sup1;
 					th(style="width:100px;text-align:right;font-size:14px") DOWNTIME
 						|&sup2;
-					th(style="width:150px;text-align:right;font-size:14px;color:red") REVENUE IMPACT 
-						|&sup3;
+					if showRevenueImpact
+						th(style="width:150px;text-align:right;font-size:14px;color:red") REVENUE IMPACT 
+							|&sup3;
 			tbody
 				+renderAV("PLANNED",av.av.planned,av.downtime.planned,av.revenueImpact.planned)
 				+renderAV("UNPLANNED",av.av.unplanned,av.downtime.unplanned,av.revenueImpact.unplanned)

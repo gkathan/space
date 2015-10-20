@@ -139,6 +139,9 @@ router.get('/itservicereport', function(req, res) {
 						res.locals.moment = moment;
 						res.locals.from = _from;
 						res.locals.to = _to;
+						res.locals.showRevenueImpact = false;
+						if (req.session.AUTH=="admin" || req.session.AUTH=="exec" || req.session.AUTH=="studios")
+							res.locals.showRevenueImpact = true;
 						res.locals.filter = _filter;
 						res.locals.sla_incidents = config.customers.sla.incidents;
 						res.locals.accounting=accounting;
