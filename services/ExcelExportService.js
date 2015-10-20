@@ -746,6 +746,10 @@ function _generateAndSendExcel(collection,conf,req,res,next){
 		var success;
 		success=data[0];
 */
+var _period = req.query.period;
+if (_period){
+	collection+=_period;
+}
 	db.collection(collection).find().sort({_id : 1} , function(err , success){
 		if(success){
 			logger.debug("excelExport: data rows: "+success.length);

@@ -1,16 +1,19 @@
 var chart4;
+var _url = "/api/space/rest/targetstracker?period=2015&kpi=K4";
+var _tracker;
+var _target;
 
-var _tracker = ["RoR (Q1+Q2)",103];
+var _ticks=["test","test"];
+$.get(_url,function(data){
+  console.log("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX data: "+JSON.stringify(data));
+  var _current = _.last(_.sortByOrder(data,"lastUpdate","desc"));
+  _tracker = ["RoR "+_current.scope,_current.RoR];
+  _target = ["Target",_current.target]
+  $("#lastUpdate_K4").text(moment(_current.lastUpdate).format('YYYY-MM-DD'));
+  _drawChart4(_tracker,_target,parseInt(_current.minRange),_ticks);
+});
 
-var _target = ["Target",100];
-
-var _ticks=[""];
-
-_drawChart4(_tracker,_target,_ticks);
-
-
-function _drawChart4(tracker,target,ticks){
-  console.log("--------------------------------- draw chaert4 !!!!!!")
+function _drawChart4(tracker,target,minRange,ticks){
   chart4 = c3.generate({
       bindto : '#c3_returnonroadmap_bar',
       size: {
@@ -32,11 +35,11 @@ function _drawChart4(tracker,target,ticks){
       axis: {
           x: {
               type: 'category',
-              categories: ticks
+              categories: ["RoR"]
           },
           y: {
-            max: 110,
-            min: 80,
+            max: parseInt(tracker[1]),
+            min: minRange,
             // Range includes padding, set 0 if no padding needed
             // padding: {top:0, bottom:0}
             tick: {

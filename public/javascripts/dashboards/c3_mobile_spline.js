@@ -1,4 +1,4 @@
-var _url = "/api/space/rest/targetstracker/2015?kpi=K3";
+var _url = "/api/space/rest/targetstracker?period=2015&kpi=K3";
 var chart3;
 
 $.get(_url,function(data){
@@ -15,6 +15,7 @@ $.get(_url,function(data){
     _target[t]=parseFloat(_target[t]).toFixed(2)*100;
   }
 
+  $("#lastUpdate_K3").text(moment(data[0].lastUpdate).format('YYYY-MM-DD'));
 
   _mobileshare.splice(0,0,"Mobile Share")
   _target.splice(0,0,"Target")

@@ -398,7 +398,7 @@ div.container-fluid(style="max-width:1600px")
 
 	if session.AUTH=="admin" 
 		div(style="text-align:right")
-			a(href="/api/space/export/xlsx/targets" title="export targets as xlsx")
+			a(href="/api/space/export/xlsx/targets?period=#{period}" title="export targets as xlsx")
 				span(style="font-size:10px;text-align:right") >> export targets xlsx &nbsp;
 				img(src="/images/space/logo_msexcel.png" height="30px")
 
@@ -508,10 +508,10 @@ script.
 		$(".modal-body #targetTarget").text(_directMetric+" "+_directMetricScale);
 		
 		$(".modal-body #targetContributorTree").html("&rarr; show outcome2employee 'broccoli'");
-		$(".modal-body #targetContributorTree").attr("href","/targets/employee2target/"+_period+"?pickL2="+_id+"&showEmployeeTree=costCenter");
+		$(".modal-body #targetContributorTree").attr("href","/targets/employee2target?period="+_period+"&pickL2="+_id+"&showEmployeeTree=costCenter");
 		
 		$(".modal-body #targetContributorList").html("&rarr; show target2employee list");
-		$(".modal-body #targetContributorList").attr("href","/targets/target2outcomes/"+_period+"/"+_id);
+		$(".modal-body #targetContributorList").attr("href","/targets/target2outcomes/"+_id+"?period="+_period);
 		
 		$(".modal-body #targetTime").text(_time);
 		$(".modal-body #targetRAGComment").text(_ragcomment);

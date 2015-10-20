@@ -6,7 +6,7 @@ $.get( "/api/space/rest/availability", function( data ) {
   var av = data[0].avReport.getYTDDatapoint;
 
   // do another ajax call to get target values
-  $.get( "/api/space/rest/targets/L1/2015", function( l1targets ) {
+  $.get( "/api/space/rest/targets/L1?period=2015", function( l1targets ) {
     //console.log("ajax call to get L1target data: "+JSON.stringify(l1targets));
     var _s1 = _.findWhere(l1targets,{id:'K1'});
 

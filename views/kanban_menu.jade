@@ -105,23 +105,23 @@ block content
 									span.caret
 								ul.dropdown-menu(role="menu" aria-labelledby="admin")
 									li(role="presentation")
-										a(role="menuitem" tabindex="-1" href="/targets/overview/2015") targets-2015 overview
+										a(role="menuitem" tabindex="-1" href="/targets/overview?period=2015") targets-2015 overview
 									li(role="presentation")
-										a(role="menuitem" tabindex="-1" href="/targets/overview/2016") targets-2016 draft
+										a(role="menuitem" tabindex="-1" href="/targets/overview?period=2016") targets-2016 draft
 									li(role="presentation")
-										a(role="menuitem" tabindex="-1" href="/targets/rollup") targets corporate rollup
+										a(role="menuitem" tabindex="-1" href="/targets/rollup?period=2015") targets corporate rollup
 									li(role="presentation")
-										a(role="menuitem" tabindex="-1" href="/targets/employee2targetall/2015?showEmployeeTree=organization") employee2target-2015 ALL
+										a(role="menuitem" tabindex="-1" href="/targets/employee2targetall?period=2015&showEmployeeTree=organization") employee2target-2015 ALL
 									li(role="presentation")
-										a(role="menuitem" tabindex="-1" href="/targets/employeeoutcomes/2015/E2988") employee outcomes (example cactus)
+										a(role="menuitem" tabindex="-1" href="/targets/employeeoutcomes/E2988?period=2015") employee outcomes (example cactus)
 									li(role="presentation")
-										a(role="menuitem" tabindex="-1" href="/targets/target2outcomes/2015/R1.1") target2outcomes (example R1.1)
+										a(role="menuitem" tabindex="-1" href="/targets/target2outcomes/R1.1?period=2015") target2outcomes (example R1.1)
 									li(role="presentation")
 										a(role="menuitem" tabindex="-1" href="/targets/sunburst") targets sunburst
 									li(role="presentation")
-										a(role="menuitem" tabindex="-1" href="/organization/circlecontain/targets") targets circle contain map
+										a(role="menuitem" tabindex="-1" href="/organization/circlecontain/targets?period=2015") targets circle contain map
 									li(role="presentation")
-										a(role="menuitem" tabindex="-1" href="/organization/partition/targets") targets partition
+										a(role="menuitem" tabindex="-1" href="/organization/partition/targets?period=2015") targets partition
 					if session.AUTH=="admin" 
 						ul.nav.navbar-nav
 							li.dropdown(id="fat-menu")

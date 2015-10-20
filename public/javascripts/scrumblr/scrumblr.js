@@ -62,7 +62,7 @@ function blockUI(message) {
 
 //respond to an action event
 function getMessage(m) {
-    var message = m; //JSON.parse(m);
+    var message = m; 
     var action = message.action;
     var data = message.data;
     //console.log('<-- ' + action);

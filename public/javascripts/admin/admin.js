@@ -21,16 +21,26 @@ if (_filter){
 var _id =getUrlVars()["_id"];
 
 //set link for excel download
-document.getElementById("lexcel").href=_excelExportURL+_type;
-$("#admintype").text(_type);
+var _exportUrl = _excelExportURL+_type;
+if (_period){
+	_exportUrl+="?period="+_period;
+}
+document.getElementById("lexcel").href=_exportUrl;
+
+var _admintype = _type;
+if (_period){
+	_admintype+=" - "+_period;
+}
+$("#admintype").text(_admintype);
 
 initShortcuts();
 refresh(_type);
 
 function refresh(collection){
+	console.log("refresh called for collection: "+collection);
 	var _url = dataSourceFor(collection);
-	if (_period ) _url+="/"+_period;
-	console.log("---------------------- dataSourceFor(collection): "+_url);
+	if (_period ) _url+="?period="+_period;
+	console.log("---------------------- _url: "+_url);
 	$.ajax({
 		type: "GET",
 		url: _url ,
@@ -246,7 +256,7 @@ $("#bremove").click(function(){
 				deleteList.push(admingrid.getData().getItem(_sel[s])["_id"]);
 		}
 		//kanban_utils.js
-		ajaxCall("DELETE","remove",deleteList,_type,refresh);
+		ajaxCall("DELETE","remove",deleteList,_type,_period,refresh);
 	});
 
 $("#bsave").click(function(){
@@ -257,7 +267,9 @@ $("#bsave").click(function(){
 				saveList.push(admingrid.getData().getItem(_sel[s]));
 		}
 		//kanban_utils.js
-		ajaxCall("POST","save",saveList,_type,refresh);
+		ajaxCall("POST","save",saveList,_type,_period,function(err,result){
+			console.log("SAVE DONE");
+		});
 	});
 
   function requiredFieldValidator(value) {

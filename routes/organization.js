@@ -99,6 +99,7 @@ router.get("/history/circlecontain/:date", function(req, res, next) {
 
 
 router.get("/circlecontain", function(req, res, next) {
+	var _period = req.query.period;
 	if (ensureAuthenticated(req,res)){
 		res.locals.collection="organization";
 		res.render("organization/circlecontain", { title: 's p a c e - circlecontain chart - current' });
@@ -106,6 +107,7 @@ router.get("/circlecontain", function(req, res, next) {
 });
 
 router.get("/partition", function(req, res, next) {
+	var _period = req.query.period;
 	if (ensureAuthenticated(req,res)){
 		res.locals.collection="organization";
 		res.render("organization/partition", { title: 's p a c e - partition chart - current' });

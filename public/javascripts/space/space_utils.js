@@ -34,11 +34,15 @@ function getUrlVars()
 *
 * referenced from admin.php
 */
-function ajaxCall(verb,action,itemList,_type,afterHandlerCallback){
+function ajaxCall(verb,action,itemList,_type,_period,afterHandlerCallback){
+	var _url = dataSourceFor(_type);
+	if (_period){
+		_url+="?period="+_period;
+	}
 		console.log("++ verb: "+verb);
 		console.log("++ action: "+action);
 		console.log("++ _type: "+_type);
-		console.log("++ _url: "+dataSourceFor(_type));
+		console.log("++ _url: "+_url);
 		var _json = JSON.stringify(itemList);
 
 
@@ -47,7 +51,7 @@ function ajaxCall(verb,action,itemList,_type,afterHandlerCallback){
 		// and send to backend ! :-)
 		$.ajax({
 		type: verb,
-		url: dataSourceFor(_type),
+		url: _url,
 		data: { 'itemJson': _json, 'action':action },
 		cache: false,
 		dataType:"json",

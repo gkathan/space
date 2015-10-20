@@ -41,17 +41,17 @@ var PATH = {
 
 
 						REST_METRICS : BASE+'/space/rest/metrics',
-						REST_TARGETS : BASE+'/space/rest/targets/:period',
-						REST_TARGETS_L1 : BASE+'/space/rest/targets/L1/:period',
+						REST_TARGETS : BASE+'/space/rest/targets',///:period',
+						REST_TARGETS_L1 : BASE+'/space/rest/targets/L1',///:period',
 						REST_TARGETSTREE : BASE+'/space/rest/targetstree',
 
-						REST_TARGETSTRACKER : BASE+'/space/rest/targetstracker/:period',
+						REST_TARGETSTRACKER : BASE+'/space/rest/targetstracker',///:period',
 
 
-						REST_TARGET2EMPLOYEE : BASE+'/space/rest/target2employee/:period',
-						REST_TARGET2EMPLOYEECLUSTERED : BASE+'/space/rest/target2employeeclustered/:period',
-						REST_EMPLOYEEBYTARGETS : BASE+'/space/rest/employeebytargets/:period',
-						REST_OUTCOMESFOREMPLOYEE : BASE+'/space/rest/outcomesforemployee/:period/:employeeId',
+						REST_TARGET2EMPLOYEE : BASE+'/space/rest/target2employee',///:period',
+						REST_TARGET2EMPLOYEECLUSTERED : BASE+'/space/rest/target2employeeclustered',///:period',
+						REST_EMPLOYEEBYTARGETS : BASE+'/space/rest/employeebytargets',///:period',
+						REST_OUTCOMESFOREMPLOYEE : BASE+'/space/rest/outcomesforemployee',//:period/:employeeId',
 
 						REST_BOARDS : BASE+'/space/rest/boards',
 						REST_CREATEBOARD : BASE+'/space/rest/board',
@@ -661,20 +661,16 @@ function findIncidentCommTrail(req,res,next){
 */
 function findIncidentChangeLog(req,res,next){
 	  var _id = req.params.id;
-
 		logger.debug("findIncidentChangeLog() called: id = "+_id);
-
 		var incService =spaceServices.IncidentService;
 		incService.findChangeLog(_id,function(err,data){
 				if (err){
 					logger.error("[error] findincidents says: "+err)
 					res.send(err);
 				}
-
 				res.send(data);
 				return;
 		});
-
 }
 
 /**
@@ -689,34 +685,28 @@ function findDomains(req,res,next){
             return next(err);
         }
     });
-
 }
 
 
 function _transformDomains(data){
 		var _domains = [];
-
 		for (var d in data){
 			var _d = {};
 			_d._id = data[d]._id;
 			_d.domainName = data[d].domainName;
-
 			if (data[d].httpLog !== undefined) _d.httpLogStatus = data[d].httpLog.statusCode;
 			if (data[d].httpLog !== undefined) _d.httpLogRedirect = data[d].httpLog.redirectTarget;
 			if (data[d].httpsLog !== undefined) _d.httpsLogStatus = data[d].httpsLog.statusCode;
 			_d.aRecords = data[d].aRecords;
-
 			_domains.push(_d);
 		}
 		return _domains;
-
 }
 
 
 function getRoadmapInitiatives(req,res,next){
 	var v1Service = spaceServices.V1Service;
 	var _start = req.params.start;
-
 	if (_start) _start = new Date(_start);
 	else _start = null;
 	v1Service.getRoadmapInitiatives(new Date(_start),function(err,roadmap){
@@ -746,7 +736,7 @@ function findTargetsByType(type,req,res,next){
 	var context = config.context;
 	if (req.query.context) context=req.query.context;
 	var _period;
-	if (req.params.period) _period = req.params.period;
+	if (req.query.period) _period = req.query.period;
 	else _period = targetService.getPeriod();
 
 	var _function;
@@ -771,7 +761,7 @@ function findTargets(req,res,next){
 	var context = config.context;
 	if (req.query.context) context=req.query.context;
 	var _period;
-	if (req.params.period) _period = req.params.period;
+	if (req.query.period) _period = req.query.period;
 	else _period = targetService.getPeriod();
 
 	targetService.getAllByPeriod(context,_period,function(err,targets){
@@ -873,7 +863,7 @@ function findEmployeeById(req, res , next){
 
 
 function getTargetsTracker(req, res , next){
-  var _period = req.params.period;
+  var _period = req.query.period;
 	var _kpi = req.query.kpi;
 	var collection="targetstracker"+_period+_kpi;
 	db.collection(collection).find(function(err,tracker){
@@ -886,7 +876,7 @@ function getTargetsTracker(req, res , next){
 
 
 function getTarget2EmployeeClustered(req, res , next){
-  var period = req.params.period;
+  var period = req.query.period;
 	var orgService = spaceServices.OrganizationService;
 	orgService.findTarget2EmployeeMappingClusteredByPeriod(period,function(err,result){
 		res.send(result);
@@ -895,7 +885,7 @@ function getTarget2EmployeeClustered(req, res , next){
 
 function getOutcomesForEmployee(req,res,next){
 	var orgService = spaceServices.OrganizationService;
-	var period = req.params.period;
+	var period = req.query.period;
 	var _employeeId = req.params.employeeId;
 	orgService.findOutcomesForEmployeeByPeriod(_employeeId,period,function(err,result){
 
@@ -906,7 +896,7 @@ function getOutcomesForEmployee(req,res,next){
 
 function getEmployeesByTarget(req, res , next){
   var orgService = spaceServices.OrganizationService;
-	var period = req.params.period;
+	var period = req.query.period;
 
 	// to just pick a specific L2 target pass it via query
 	var pickL2 = req.query.pickL2;
@@ -1057,9 +1047,8 @@ function _generateBoardThumbnail(boardId,baseUrl,callback){
  * generic save handler
  */
 function save(req, res , next){
-
 		logger.debug("*********************** save.... "+config.context);
-
+		var _period = req.query.period;
     var context;
 		if (req.session.CONTEXT) context = req.session.CONTEXT;
 		else context = config.context;
@@ -1067,6 +1056,12 @@ function save(req, res , next){
 		var jsondiffpatch=require('jsondiffpatch');
     var path = req.path.split("/");
 		var _collection = _.last(path);
+
+		var _periodizedCollections=["targets"];
+		if (_period && _periodizedCollections.indexOf(_collection) >-1){
+			_collection+=_period;
+		}
+
 		logger.debug("*********************** save POST _collection: "+_collection);
     var items = JSON.parse(req.body.itemJson);
     var _timestamp = new Date();

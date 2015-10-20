@@ -10,12 +10,9 @@ script(src="/javascripts/organization/org.js")
 
 block content
 	script(type="text/javascript").
-		$(document).ready(function() {
-			$('#kanban_menu').sidr({speed:300});
-		});
+	
 	
 	div.notifications.top-left
-	div.sidr(style="margin-left:10px;margin-top:10px")
 		
 	//span(id="admintype" style="font-family:arial;font-weight:bold;font-size:50px;color:lightgrey") #{collection}
 
@@ -29,10 +26,7 @@ block content
 		.panel-body
 			div(id="d3container")
 
-	div.btn-group-xs
-		button.btn.btn-primary.btn-xs(id="kanban_menu" type="button") 
-			span.glyphicon.glyphicon-off  
-			span  admin
+		
 
 	form(id="svgform" method="post" action="http://tomcat.ea.bwinparty.corp/transcode/")
 		input(type="hidden" id="format" name="format" value="")

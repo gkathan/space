@@ -133,9 +133,10 @@ router.get('/planningbacklogdetail/:id', function(req, res) {
 
 			var _first;
 			var _last;
+			var _split = _backlog.Owner.split(" ");
 			if (_backlog.Owner){
-				_first = _backlog.Owner.split(" ")[0];
-				_last = _backlog.Owner.split(" ")[1];
+				_first = _.initial(_split).join(" ");
+				_last = _.last(_split)
 			}
 
 			orgService.findEmployeeByFirstLastName(_first,_last,function(err,employee){
@@ -143,6 +144,7 @@ router.get('/planningbacklogdetail/:id', function(req, res) {
 					if (_backlog) res.locals.members = _backlog.Members;
 					res.locals.moment=moment;
 					res.locals.owner=employee;
+
 					res.locals.lastSync = sync.lastSync;
 					res.render('portfolio/planningbacklogdetail'), { title: 's p a c e - planning backlog detail' }
 			})

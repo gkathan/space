@@ -61,16 +61,8 @@ router.get('/traffic/:period', function(req, res) {
 			_month=_period.split("-")[1];
 		}
 
-		var Client = require('node-rest-client').Client;
-		var _options = {};
+		var fetch = require('node-fetch');
 
-		/*
-		if (config.proxy){
-			_options.proxy = config.proxy;
-			_options.proxy.tunnel=false;
-		}
-		*/
-		client = new Client();// direct way
 
 		var _protocol="http";
 
@@ -83,13 +75,10 @@ router.get('/traffic/:period', function(req, res) {
 
 		var traffic=[];
 
-		client.get(_url, function(data, response,done){
-			try{
-				data=JSON.parse(data);
-			}
-			catch(e){
-				logger.error("error: "+e.message);
-			}
+		fetch(_url)
+		  .then(function(res) {
+		       return res.json();
+		  }).then(function(data) {
 			var _totalHits = 0;
 			for (var d in data){
 				var _d = data[d];
@@ -153,17 +142,11 @@ router.get('/sync', function(req, res) {
 						res.render('admin/sync', { title: 's p a c e - admin.sync' });
 						return;
 				})
-
 			}).on('error',function(err){
 				logger.error("something went wrong: "+err.message);
 				res.locals.error=err.message;
 				res.render('admin/sync', { title: 's p a c e - admin.sync' });
-
-
 			})
-
-
-
   }
 });
 

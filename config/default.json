@@ -200,7 +200,7 @@
 	},
 
 	"import":{
-		"plainTypes" : ["productportfolio","productcatalog","incidents","labels","customers","competitors","roadmaps","availability","v1teams","scrumteams","incidenttracker","content","incidenttrackeroldsnow","socservices","soclabel2customer","oldsnowincidents","socincident2revenueimpact","label2customer","datacenters","users","targets2015","targets2016","v1backlogscapacity","targetstracker2015K3"]
+		"plainTypes" : ["productportfolio","productcatalog","incidents","labels","customers","competitors","roadmaps","availability","v1teams","scrumteams","incidenttracker","content","incidenttrackeroldsnow","socservices","soclabel2customer","oldsnowincidents","socincident2revenueimpact","label2customer","datacenters","users","targets2015","targets2016","v1backlogscapacity","targetstracker2015K3","targetstracker2015K4"]
 	},
 
 

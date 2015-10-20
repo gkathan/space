@@ -28,7 +28,7 @@ block content
 				tr
 					td(style="text-align:right") Manager: 
 					td(style="text-align:left;font-weight:bold;padding-left:10px") 
-						a(href='/targets/employeeoutcomes/#{period}/#{employee["Supervisor Employee Number"]}') #{employee["Supervisor Full Name"]}
+						a(href='/targets/employeeoutcomes/#{employee["Supervisor Employee Number"]}?period=#{period}') #{employee["Supervisor Full Name"]}
 				if employee.unit
 					tr
 						td(style="text-align:right") Unit: 
@@ -61,7 +61,7 @@ block content
 					tr
 						td(style="text-align:left;vertical-align:middle") 
 							each t in o.L2Targets
-								a(href='/targets/target2outcomes/#{period}/#{t}') #{t}
+								a(href='/targets/target2outcomes/#{t}?period=#{period}') #{t}
 								|&nbsp;
 						td(style="vertical-align:top;text-align:left;font-size:11px;vertical-align:middle") #{o.title} 
 						td(style="vertical-align:top;text-align:left;font-size:11px;vertical-align:middle") #{o.description} 

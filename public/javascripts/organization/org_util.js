@@ -5,7 +5,7 @@
  */
 function getSize(data,tresholdMax,tresholdMin,maxDepth){
 	if (!tresholdMax) tresholdMax = 20;
-	if (!tresholdMin) tresholdMin = 5;
+	if (!tresholdMin) tresholdMin = 6;
 	if (!maxDepth) maxDepth = 3;
 
 	var _level =data.level;
@@ -17,7 +17,8 @@ function getSize(data,tresholdMax,tresholdMin,maxDepth){
 		  if (_size<tresholdMin) _size = tresholdMin;
 
 	//if (data.depth &&data.depth<=4 && data.depth>=3) _size = _size*((4-data.depth));
-	//if (!data.children)
+	if (!data.children)
+		_size=tresholdMin;
 	return _size;
 }
 

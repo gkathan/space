@@ -33,5 +33,7 @@ var countries = topojson.feature(world, world.objects.countries).features,
     .enter().insert("path", ".graticule")
       .attr("class", "country")
       .attr("d", path)
-      .style("fill", function(d, i) { return color(d.color = d3.max(neighbors[i], function(n) { return countries[n].color; }) + 1 | 0); });
+      .style("fill", function(d, i) { return color(d.color = d3.max(neighbors[i], function(n) { return countries[n].color; }) + 1 | 0); })
+      .on("click",function(d){console.log("clicked country: "+JSON.stringify(d));})
+      .on("mouseover",function(d){console.log("hover country: ");});
 });

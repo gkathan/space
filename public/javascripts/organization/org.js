@@ -149,7 +149,7 @@ function render(collection,date){
 
 		depth = nestLevels.length //number of nest levels
 
-		count (root,0);
+		//count (root,0);
 
 		treeData = root;
 

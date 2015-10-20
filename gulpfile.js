@@ -210,7 +210,7 @@ gulp.task('deploy',function(callback){
     gutil.beep();
     gutil.log("[s p a c e -deploy] ************************************************************");
     gutil.log("[s p a c e -deploy] ****** going to deploy to: "+SERVER.host+" -> "+SERVER.env);
-	runSequence('changelog','setup','buildfile','package','copy','transfer','remotedeploy','remotestart','done',callback);
+	runSequence('changelog','setup','buildfile','jadegen','package','copy','transfer','remotedeploy','remotestart','done',callback);
 });
 
 /**

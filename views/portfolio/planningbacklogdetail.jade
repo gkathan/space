@@ -7,15 +7,16 @@ include ../kanban_menu
 - }
 
 mixin renderEmployee(employee,size)
-	table(style="width:200px")
-		tr
-			td(rowspan="2" style="vertical-align:top")
-				img.img-circle(src='/images/employees/squared/#{employee["Employee Number"]}_square.png' height="30px") 
-			td(style="padding-left:5px;font-size:#{nameSize}px;text-align:left;vertical-align:bottom")
-				|#{employee["First Name"]} #{employee["Last Name"]}
-		tr
-			td(style="padding-left:5px;text-align:left")
-				span(style="font-size:9px;font-weight:normal;vertical-align:top") #{employee["Organization"]}
+	if employee
+		table(style="width:200px")
+			tr
+				td(rowspan="2" style="vertical-align:top")
+					img.img-circle(src='/images/employees/squared/#{employee["Employee Number"]}_square.png' height="30px") 
+				td(style="padding-left:5px;font-size:#{nameSize}px;text-align:left;vertical-align:bottom")
+					|#{employee["First Name"]} #{employee["Last Name"]}
+			tr
+				td(style="padding-left:5px;text-align:left")
+					span(style="font-size:9px;font-weight:normal;vertical-align:top") #{employee["Organization"]}
 
 
 block content
@@ -33,7 +34,10 @@ block content
 			br
 			br
 			div(style="width:200px;margin:0px auto")
-				+renderEmployee(owner,30)
+				if owner
+					+renderEmployee(owner,30)
+				else
+					|#{backlog.Owner}
 				table(style="width:200px;font-size:12px")
 					tr(style="border-top:1px solid black")
 						td(colspan="2") 

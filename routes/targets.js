@@ -28,22 +28,18 @@ var _targets;
 _ = require('underscore');
 _.nst = require('underscore.nest');
 
-/* GET targets . */
+
+
 router.get('/overview', function(req, res, next) {
-	var _period = targetService.getPeriod();
-	_handleTargetOverview(req,res,next,"./targets/overview",_period);
-});
-
-
-router.get('/overview/:period', function(req, res, next) {
-	var _period = req.params.period;
+	var _period = req.query.period;
+	if (!_period) _period = targetService.getPeriod();
 	if (_period != targetService.getPeriod()) ensureAuthenticated(req,res);
 	_handleTargetOverview(req,res,next,"./targets/overview",_period);
 });
 
 /* GET targets . */
-router.get('/rollup/:period', function(req, res, next) {
-	var _period = req.params.period;
+router.get('/rollup', function(req, res, next) {
+	var _period = req.query.period;
 	_handleTargetRollup(req,res,next,"./targets/rollup","bpty",_period);
 });
 
@@ -53,8 +49,8 @@ router.get('/sunburst', function(req, res, next) {
 });
 
 /* GET targets by targetID . */
-router.get('/employee2target/:period', function(req, res, next) {
-	var period =req.params.period;
+router.get('/employee2target', function(req, res, next) {
+	var period =req.query.period;
 	var pickL2 = req.query.pickL2;
 	var showTargetTree = req.query.showTargetTree;
 	var showEmployeeTree = req.query.showEmployeeTree;
@@ -80,9 +76,9 @@ router.get('/employee2target/:period', function(req, res, next) {
 });
 
 /* GET ALL full broccoli targets by targetID . */
-router.get('/employee2targetall/:period', function(req, res, next) {
+router.get('/employee2targetall', function(req, res, next) {
 	var pickL2 = req.query.pickL2;
-	var period =req.params.period;
+	var period =req.query.period;
 	var showTargetTree = req.query.showTargetTree;
 	var showEmployeeTree = req.query.showEmployeeTree;
 
@@ -98,9 +94,9 @@ router.get('/employee2targetall/:period', function(req, res, next) {
 });
 
 
-router.get('/target2outcomes/:period/:L2TargetId', function(req, res, next) {
+router.get('/target2outcomes/:L2TargetId', function(req, res, next) {
 	var L2TargetId = req.params.L2TargetId;
-	var period =req.params.period;
+	var period =req.query.period;
 
 	if (period != targetService.getPeriod()) ensureAuthenticated(req,res);
 
@@ -147,9 +143,9 @@ router.get('/target2outcomes/:period/:L2TargetId', function(req, res, next) {
 	})
 });
 
-router.get('/employeeoutcomes/:period/:employeeId', function(req, res, next) {
+router.get('/employeeoutcomes/:employeeId', function(req, res, next) {
 	var employeeId = req.params.employeeId;
-	var period =req.params.period;
+	var period =req.query.period;
 	var _employee;
 
 	if (period != targetService.getPeriod()) ensureAuthenticated(req,res);
