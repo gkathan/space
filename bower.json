@@ -37,7 +37,9 @@
     "Sortable": "~1.1.0",
     "tablesorter": "*",
     "underscore": "~1.8.2",
-    "underscore.nest": "latest"
+    "underscore.nest": "latest",
+    "topojson": "~1.6.19",
+    "d3-geo-projection": "~0.2.15"
   },
   "authors": [
     "cactus <gerold.kathan@gmail.com>"
@@ -48,7 +50,8 @@
   "resolutions": {
     "bootstrap-multiselect": "~0.9.10",
     "jquery": "~2.1.1",
-    "d3": "~3.5.5"
+    "d3": "~3.5.5",
+    "topojson": "~1.6.19"
   },
   "devDependencies": {
     "nvd3": "~1.7.1",

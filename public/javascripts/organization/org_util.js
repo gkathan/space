@@ -3,15 +3,21 @@
  * used by org.html, org_tree.html, org_radial.html
  *
  */
-function getSize(data,tresholdMax,tresholdMin){
+function getSize(data,tresholdMax,tresholdMin,maxDepth){
 	if (!tresholdMax) tresholdMax = 20;
 	if (!tresholdMin) tresholdMin = 5;
+	if (!maxDepth) maxDepth = 3;
 
-	var _size=data.overallReports?(Math.sqrt(data.overallReports)):tresholdMin;
+	var _level =data.level;
+
+
+	//var _size=data.overallReports?(Math.sqrt(data.overallReports)):tresholdMin;
+	var _size=10-data.depth
 		  if (_size>tresholdMax) _size = tresholdMax;
 		  if (_size<tresholdMin) _size = tresholdMin;
 
 	//if (data.depth &&data.depth<=4 && data.depth>=3) _size = _size*((4-data.depth));
+	//if (!data.children)
 	return _size;
 }
 

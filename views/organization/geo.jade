@@ -1,0 +1,34 @@
+include ../kanban_menu
+script(src="/javascripts/components/d3-geo-projection/d3.geo.projection.min.js")
+
+script(src="/javascripts/components/topojson/topojson.js")
+script(src="/javascripts/organization/org_geo.js")
+
+style.
+	stroke: white;
+	stroke-width: 0.25px;
+	fill: grey;
+
+	.country {
+		fill: #ccc;
+		stroke: #fff;
+		stroke-width: .5px;
+		stroke-linejoin: round;
+	}
+
+	.graticule {
+		fill: none;
+		stroke: #000;
+		stroke-opacity: .3;
+		stroke-width: .5px;
+	}
+
+	.graticule.outline {
+		stroke: #333;
+		stroke-opacity: 1;
+		stroke-width: 1.5px;
+	}
+
+
+block 
+	|geo

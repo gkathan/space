@@ -99,8 +99,6 @@ function render(baseRoot,date){
 			$('#orgRootDetails').text(root.job+" - "+root.location+" - "+root.costcenter);
 			$('#orgRootImage').attr("src","/images/employees/circle/"+root.name+".png");
 
-
-
 			// keep the full tree as global
 			if (!orgTree) orgTree = root;
 			MAX_COUNT=data.stats.total;//count(root,0);
@@ -221,14 +219,14 @@ function _render(source){
 		})
 	  .attr("text-anchor", function(d) {
 		  return d.children || d._children ? "end" : "start"; })
-	  .text(function(d) { if (d.children) return d[ROLE_TYPE]; else {if (!LEAF_NAMES) return ""; else return "";} })
+	  .text(function(d) { if (d.children) return d.costcenter+" - "+d.location; else {if (!LEAF_NAMES) return ""; else return "";} })
 	  .style("fill-opacity", 1)
 	  .style("font-weight", function(d){
 			if (d.children) return "bold";
 			else return "normal";
 		  })
 	  .style("font-size",function(d){
-		   return getSize(d,14,5)+"px";
+		   return getSize(d,14,5,MAX_DEPTH)+"px";
 		})
  	  .style("fill",function(d){
 		   var _color ="black";
@@ -247,7 +245,7 @@ function _render(source){
 	  .style("fill-opacity", 1)
 	  .style("font-weight", "normal")
 	  .style("font-size",function(d){
-		   return getSize(d,16,5)/1.2+"px";
+		   return getSize(d,16,5,MAX_DEPTH)/1.2+"px";
 		})
 	  .style("fill",function(d){
 		   var _color ="black";

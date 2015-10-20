@@ -64,6 +64,9 @@ var INSTALL = "./bin/scripts/*.sh";
 var TARGET = './space.zip';
 var SCRIPT_TARGET = './space_scripts.zip';
 
+var TEMP_MERGEDPUBLICDIR ="./public.merged/";
+
+
 var TRANSFERCONFIG = "./config/production.json";
 var TARGETCONFIG = "./space/app/config/production.json";
 
@@ -123,6 +126,7 @@ gulp.task('buildfile', function () {
 	gutil.log(gutil.colors.magenta('[s p a c e -deploy] create space.build file - '), 'build: '+timestamp);
     return fs.writeFile('./space.build', '{"build":"'+timestamp+'"}');
 });
+
 
 
 gulp.task('package', function () {

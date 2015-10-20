@@ -23,6 +23,11 @@ router.get("/", function(req, res, next) {
 	res.send("org base page");
 });
 
+router.get("/geo", function(req, res, next) {
+	res.render("organization/geo");
+});
+
+
 router.get("/facebook", function(req, res, next) {
 	var _filter = req.query.filter;
 	var _value = req.query.value;
