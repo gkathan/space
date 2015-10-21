@@ -38,7 +38,7 @@ div.container-fluid
 
 
 script.
-    var width = 840,
+    var width = 800,
         height = width,
         radius = width / 2,
         x = d3.scale.linear().range([0, 2 * Math.PI]),
@@ -100,11 +100,25 @@ script.
           .on("click", click);
       textEnter.append("tspan")
           .attr("x", 0)
-          .text(function(d) { if (d.name) {return d.depth ? d.name.split(" ")[0] : ""; }});
+          .text(function(d) { 
+            if (d.name){
+              return d.depth ? d.name.split(" ")[0] : ""; 
+            }
+            else if(d.target){
+              return d.depth ? d.id : ""; 
+            }
+          });
       textEnter.append("tspan")
           .attr("x", 0)
           .attr("dy", "1em")
-          .text(function(d) { if (d.name) {return d.depth ? d.name.split(" ")[1] || "" : ""; }});
+          .text(function(d) { 
+            if (d.name){
+              return d.depth ? d.name.split(" ")[1] || "" : ""; 
+            }
+            else if(d.target){
+              return d.depth ? d.target || "" : ""; 
+            }
+          });
   
       function click(d) {
         path.transition()
