@@ -45,6 +45,23 @@ router.get('/rollup', function(req, res, next) {
 
 /* GET targets . */
 router.get('/sunburst', function(req, res, next) {
+		var _context;
+		if (req.session.CONTEXT){
+			_context = req.session.CONTEXT;
+		}
+		else
+		{
+			_context = config.context;
+		}
+		var _colors = _.findWhere(config.entities,{'name':_context}).skin.colors;
+
+		//;-) hardcoded for now....
+		res.locals.color_PARENT = "#174D75";
+		res.locals.color_PL = _colors.primary;
+		res.locals.color_RUN = _colors.secondary;
+		res.locals.color_GROW= _colors.secondary2;
+		res.locals.color_TRANSFORM = _colors.secondary3;
+
 	res.render('targets/sunburst')
 });
 

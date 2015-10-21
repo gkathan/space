@@ -20,21 +20,24 @@ $.get( "/api/space/rest/availability", function( data ) {
     var _currentAV = parseFloat(availability.unplannedYTD);
 
     var _targetdowntimems = _getTimeForAVPercentage(_targetAV,{value:1,type:"year"});
-    var _leftdowntimems = _getTimeForAVPercentage(_currentAV,{value:365-moment().dayOfYear(),type:"days"});
-    var _spentdowntimems = _targetdowntimems-_leftdowntimems;
+    var _spentdowntimems = _getTimeForAVPercentage(_currentAV,{value:moment().dayOfYear(),type:"days"});
+
+
+
+    var _leftdowntimems = _targetdowntimems-_spentdowntimems;
 
     var _projectedAV = _getAVPercentageforDowntime(_spentdowntimems,{value:1,type:"year"});
 
     var _targetdowntime = moment.duration(_targetdowntimems).format('HH:mm.ss');
-    var _leftdowntime =  moment.duration(_leftdowntimems).format('HH:mm.ss');
-    var _spentdowntime =  moment.duration(_spentdowntimems).format('HH:mm.ss');
+    var _leftdowntime =  moment.duration(_leftdowntimems).format('HH:mm.ss',{trim: false});
+    var _spentdowntime =  moment.duration(_spentdowntimems).format('HH:mm.ss',{trim: false});
 
     console.log("--------------av projected: "+_projectedAV);
     $('#targetdowntime').text(_targetdowntime);
     $('#leftdowntime').text(_leftdowntime);
     $('#spentdowntime').text(_spentdowntime);
     $('#trendAV').text(_projectedAV+"%");
-    trendAV
+
 
 
     var chart1 = c3.generate({
@@ -65,7 +68,7 @@ $.get( "/api/space/rest/availability", function( data ) {
             threshold: {
     //            unit: 'value', // percentage is default
     //            max: 200, // 100 is default
-                values: [99.60,  _s1.directMetric,99.99]
+                values: [99.70,  _s1.directMetric,99.99]
             }
         },
         size: {
@@ -109,9 +112,17 @@ $.get( "/api/space/rest/availability", function( data ) {
 
 function _getTimeForAVPercentage(percentage,period){
 	//ms
+
 	var _totalTime = moment.duration(period.value,period.type);
-	var _offtime = (1-(percentage/100))*_totalTime;
-	return _offtime;
+
+
+
+  var _offtime = (1-(percentage/100))*_totalTime;
+
+  console.log("_getTimeForAVPercentage: percentage= "+percentage+ "period: "+JSON.stringify(period)+" offtime: "+_offtime);
+
+
+  return _offtime;
 }
 
 function _getAVPercentageforDowntime(downtime,period){

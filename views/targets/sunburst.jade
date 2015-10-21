@@ -33,7 +33,7 @@ block content
 
 div.container-fluid
   div.row
-    |sunburst test
+    |sunburst test #{color_RUN} #{color_GROW} #{color_TRANSFORM}
     div(id="vis" style="text-align:center")
 
 
@@ -91,10 +91,15 @@ script.
             return x(d.x + d.dx / 2) > Math.PI ? "end" : "start";
           })
           .attr("dy", ".2em")
+          
           .attr("transform", function(d) {
             var multiline = (d.name || "").split(" ").length > 1,
                 angle = x(d.x + d.dx / 2) * 180 / Math.PI - 90,
                 rotate = angle + (multiline ? -.5 : 0);
+            console.log("angle: "+angle);
+          
+            if (rotate==90) rotate=360;
+              
             return "rotate(" + rotate + ")translate(" + (y(d.y) + padding) + ")rotate(" + (angle > 90 ? -180 : 0) + ")";
           })
           .on("click", click);
@@ -141,6 +146,9 @@ script.
               return function() {
                 var angle = x(d.x + d.dx / 2) * 180 / Math.PI - 90,
                     rotate = angle + (multiline ? -.5 : 0);
+                if (rotate==90) rotate=360;
+                if (rotate==270) rotate=360;
+                
                 return "rotate(" + rotate + ")translate(" + (y(d.y) + padding) + ")rotate(" + (angle > 90 ? -180 : 0) + ")";
               };
             })
@@ -164,11 +172,19 @@ script.
     function colour(d) {
       if (d.children) {
         // There is a maximum of two children!
+        /*
         var colours = d.children.map(colour),
             a = d3.hsl(colours[0]),
             b = d3.hsl(colours[1]);
         // L*a*b* might be better here...
         return d3.hsl((a.h + b.h) / 2, a.s * 1.2, a.l / 1.2);
+        */
+        
+        if (d.children[0].theme=="RUN") return "#{color_RUN}";
+        else if (d.children[0].theme=="GROW") return "#{color_GROW}";
+        else if (d.children[0].theme=="TRANSFORM") return "#{color_TRANSFORM}";
+        
+        
       }
       return d.colour || "#fff";
     }
