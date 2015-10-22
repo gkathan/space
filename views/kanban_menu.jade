@@ -61,7 +61,7 @@ block content
 					if !session.AUTH  || session.AUTH=="bpty"
 						li
 							a( href="/dashboard") KPI tracker							
-					if session.AUTH
+					if session.AUTH && session.AUTH!="customer"
 						li
 							a( href="/myspace") my  s p a c e 							
 					

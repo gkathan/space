@@ -365,6 +365,7 @@ function _handleTargetRollup(req,res,next,view,context,period){
 
 module.exports = router;
 
+// => TODO refactor to AuthService
 function ensureAuthenticated(req, res) {
 	logger.debug("[CHECK AUTHENTICATED]");
   if (!req.session.AUTH || req.session.AUTH=="bpty"){
