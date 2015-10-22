@@ -17,6 +17,8 @@ var avService = spaceServices.AvailabilityService;
 var targetService = spaceServices.TargetService;
 var orgService = spaceServices.OrganizationService;
 
+var authService = require('../services/AuthService');
+
 var moment = require('moment');
 var config = require('config');
 
@@ -33,8 +35,16 @@ _.nst = require('underscore.nest');
 router.get('/overview', function(req, res, next) {
 	var _period = req.query.period;
 	if (!_period) _period = targetService.getPeriod();
-	if (_period != targetService.getPeriod()) ensureAuthenticated(req,res);
-	_handleTargetOverview(req,res,next,"./targets/overview",_period);
+	if (_period == targetService.getPeriod() ){
+			_handleTargetOverview(req,res,next,"./targets/overview",_period);
+	}
+	else if(_period != targetService.getPeriod() && authService.ensureAuthenticated(req,res,["admin","studios","exec"])){
+			_handleTargetOverview(req,res,next,"./targets/overview",_period);
+	}
+	else {
+		res.redirect("/login");
+	}
+
 });
 
 /* GET targets . */
@@ -221,71 +231,80 @@ function _handleTargetOverview(req,res,next,view,period){
 	if (_context=="gvc.studios") target_context = "bpty.studios";
 	else target_context = _context;
 
+
 	targetService.getAllByPeriod(target_context,period,function(err,data){
 		var _L2targets = [];
 		var _L1targets = [];
 
-		if (data.length>0){
-			for (var i in data){
-				if (data[i].type=="L2") _L2targets.push(data[i]);
-				if (data[i].type=="L1") _L1targets.push(data[i]);
+		var _employeeId;
+		if (req.session.USERID){
+			_employeeId = req.session.USERID;
+		}
+		var period="2015";
+		orgService.findOutcomesForEmployeeByPeriod(_employeeId,period,function(err,outcomes){
+			if (data.length>0){
+				for (var i in data){
+					if (data[i].type=="L2") _L2targets.push(data[i]);
+					if (data[i].type=="L1") _L1targets.push(data[i]);
+				}
+				var L2targetsClustered = _.nst.nest(_L2targets,["theme","cluster","group"]);
+				//logger.debug("****L2targetsClustered: "+JSON.stringify(L2targetsClustered));
+
+				// the lanes like RUN GROW TRANSFORM
+				//["RUN","GROW","TRANSFORM"]
+				var _sortOrder= config.targets.laneSorting;
+
+				res.locals.targetsForEmployee=_.pluck(outcomes,"L2Targets");
+
+				res.locals.targets=_.sortBy(L2targetsClustered.children,function(lane){
+						return _sortOrder.indexOf(lane.name);
+				});
+				res.locals.L1targets=_.sortBy(_L1targets,"id");
+				logger.debug("L1targets: "+_L1targets.length);
+				logger.debug("L2targets: "+L2targetsClustered.children.length);
+				// take the first for the globals...
+				var _target;
+				if (L2targetsClustered.children.length>0){
+					 _target= L2targetsClustered.children[0].children[0].children[0].children[0];
+					res.locals.vision=_target.vision;
+					res.locals.start=moment(_target.start).format();
+					res.locals.end=moment(_target.end).format();
+					res.locals.period = new moment(_target.end).format('YYYY').toLowerCase();
+					res.locals.lastUpdate = moment(_target.lastUpdate).format('MMMM Do YYYY');
+					res.locals.state = _target.state;
+				}
+				var _colors = _.findWhere(config.entities,{'name':_context}).skin.colors;
+				logger.debug("colors: "+_colors.secondary);
+				res.locals.colors= _colors;
+
+				//;-) hardcoded for now....
+				res.locals.color_PARENT = "#174D75";
+				res.locals.color_PL = _colors.primary;
+				res.locals.color_RUN = _colors.secondary;
+				res.locals.color_GROW= _colors.secondary2;
+				res.locals.color_TRANSFORM = _colors.secondary3;
+				res.locals.context=_context;
+
+				avService.getLatest(function(av){
+					res.locals.availability = av;
+					res.render(view, { title: 's p a c e - targets overview' });
+				});
 			}
-			var L2targetsClustered = _.nst.nest(_L2targets,["theme","cluster","group"]);
-			//logger.debug("****L2targetsClustered: "+JSON.stringify(L2targetsClustered));
-
-			// the lanes like RUN GROW TRANSFORM
-			//["RUN","GROW","TRANSFORM"]
-			var _sortOrder= config.targets.laneSorting;
-
-			res.locals.targets=_.sortBy(L2targetsClustered.children,function(lane){
-					return _sortOrder.indexOf(lane.name);
-			});
-			res.locals.L1targets=_.sortBy(_L1targets,"id");
-			logger.debug("L1targets: "+_L1targets.length);
-			logger.debug("L2targets: "+L2targetsClustered.children.length);
-			// take the first for the globals...
-			var _target;
-			if (L2targetsClustered.children.length>0){
-				 _target= L2targetsClustered.children[0].children[0].children[0].children[0];
-				res.locals.vision=_target.vision;
-				res.locals.start=moment(_target.start).format();
-				res.locals.end=moment(_target.end).format();
-				res.locals.period = new moment(_target.end).format('YYYY').toLowerCase();
-				res.locals.lastUpdate = moment(_target.lastUpdate).format('MMMM Do YYYY');
-				res.locals.state = _target.state;
-			}
-			var _colors = _.findWhere(config.entities,{'name':_context}).skin.colors;
-			logger.debug("colors: "+_colors.secondary);
-			res.locals.colors= _colors;
-
-			//;-) hardcoded for now....
-			res.locals.color_PARENT = "#174D75";
-			res.locals.color_PL = _colors.primary;
-			res.locals.color_RUN = _colors.secondary;
-			res.locals.color_GROW= _colors.secondary2;
-			res.locals.color_TRANSFORM = _colors.secondary3;
-			res.locals.context=_context;
-
-			avService.getLatest(function(av){
-				res.locals.availability = av;
+			else{
+				res.locals.targets=[];
+				res.locals.L1targets=[];
+				res.locals.L2targets=[];
+				res.locals.vision="undefined";
+				res.locals.start="undefined";
+				res.locals.end="undefined";
+				res.locals.period = "undefined";
+				res.locals.context=_context;
+				res.locals.availability = {};
 				res.render(view, { title: 's p a c e - targets overview' });
-			});
-		}
-		else{
-			res.locals.targets=[];
-			res.locals.L1targets=[];
-			res.locals.L2targets=[];
-			res.locals.vision="undefined";
-			res.locals.start="undefined";
-			res.locals.end="undefined";
-			res.locals.period = "undefined";
-			res.locals.context=_context;
-			res.locals.availability = {};
-			res.render(view, { title: 's p a c e - targets overview' });
-		}
+			}
+		});
 	});
 }
-
 
 function _handleTargetRollup(req,res,next,view,context,period){
 	res.locals._=require('lodash');
@@ -348,7 +367,7 @@ module.exports = router;
 
 function ensureAuthenticated(req, res) {
 	logger.debug("[CHECK AUTHENTICATED]");
-  if (!req.session.AUTH){
+  if (!req.session.AUTH || req.session.AUTH=="bpty"){
 		  logger.debug("[*** NOT AUTHENTICATED **]");
       req.session.ORIGINAL_URL = req.originalUrl;
 		  res.redirect("/login");

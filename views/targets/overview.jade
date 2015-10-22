@@ -157,8 +157,8 @@ mixin renderL2Target(target,width)
 						each line in _.sortBy(target.children,"id")
 							tr(style="line-height:15px")
 								td(style="font-size:10px;text-align:left;vertical-align:top")
-									table(style="width:#{width-20}px")
-										tr(style="line-height:15px;border-bottom: 1px solid lightgrey")
+									table(id="target_#{line.id.replace('.','_')}" style="width:#{width-20}px")
+										tr( style="line-height:15px;border-bottom: 1px solid lightgrey")
 											td(style="width:10px;font-size:10px;text-align:left")
 												|-
 											td(style="width:#{width-85}px;font-size:11px;font-weight:bold")
@@ -369,6 +369,11 @@ div.container-fluid(style="max-width:1600px")
 		div(style="font-weight:normal;font-size:12px;color:#{color_PL};text-align:center") status: <b>#{state}</b>
 		
 		br
+		if targetsForEmployee.length>0
+			div(style="text-align:center;")
+				a(id="highlightContribution" style="text-align:center;font-weight:normal;font-size:10px" onmouseover="highlight()" onmouseout="normal()" title="my target contribution: #{targetsForEmployee}") - highlight my contribution - 
+		br
+		
 		div(style=";color:white;background-color:#{color_PL};text-align:center;font-size:16px;font-weight:normal;margin-left:10px;margin-right:10px;line-height:32px") 
 			span(style="line-height:28px;font-size:16px;font-weight:normal;color:white") #{_.capitalize(_.last(context.split(".")))} P&L
 				//a(href="/targets/rollup" style="line-height:28px;font-size:16px;font-weight:normal;color:white") #{context} group
@@ -406,6 +411,8 @@ div.container-fluid(style="max-width:1600px")
 
 script.
 	var _period ="#{period}";
+	var _targetsForEmployee = '#{targetsForEmployee.join(",")}'.split(",");
+	
 	$(document).ready(function(){
 		// set up flip form link
 		$('.fliptarget .turnback').click(function(e){
@@ -589,5 +596,20 @@ script.
 				callback(c.skin.colors);
 			});
 	}	
+	
+	function highlight(){
+		console.log("....highlight");
+		$("[id^=target_]").css("opacity","0.1");
+		for (var i in _targetsForEmployee){
+			console.log("-----"+_targetsForEmployee[i]);
+			$("#target_"+_targetsForEmployee[i].replace(".","_")).css("opacity","1")
+		}
+		
+	}
+	
+	function normal(){
+		console.log("....normal");
+		$("[id^=target_]").css("opacity","1");
+	}
 	
 	

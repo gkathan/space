@@ -16,6 +16,8 @@ var targetService = spaceServices.TargetService;
 var incService=spaceServices.IncidentService;
 var syncService=spaceServices.SyncService;
 
+var authService = require('../services/AuthService');
+
 var winston=require('winston');
 var logger = winston.loggers.get('space_log');
 
@@ -161,74 +163,76 @@ router.get('/itservicereport', function(req, res) {
 */
 router.get('/opsreport', function(req, res) {
 		var _customer = req.session.USER;
-		ensureAuthenticated(req, res);
-		var avc = require ('../services/AvailabilityCalculatorService');
-		var inc = spaceServices.IncidentService;
-		var prob = spaceServices.ProblemService;
+		if (authService.ensureAuthenticated(req, res,["customer","admin"])){
+			var avc = require ('../services/AvailabilityCalculatorService');
+			var inc = spaceServices.IncidentService;
+			var prob = spaceServices.ProblemService;
 
-		//sess.AUTH = user.role;
+			//sess.AUTH = user.role;
 
-		//default is in config
-		var _from = moment().startOf('month').format("YYYY-MM-DD");
-		var _to = moment().add(1,"days").format("YYYY-MM-DD");
+			//default is in config
+			var _from = moment().startOf('month').format("YYYY-MM-DD");
+			var _to = moment().add(1,"days").format("YYYY-MM-DD");
 
-		var _filter = {customer:_customer};;
+			var _filter = {customer:_customer};;
 
-		// 0 ... do NOT exclude "No Labels"
-		// 1 ... do exclude "No Labels"
-		// 2 ... just show "No Labels"
-		var _excludeNOLABEL = 0;
-		var _prio = "P01";
+			// 0 ... do NOT exclude "No Labels"
+			// 1 ... do exclude "No Labels"
+			// 2 ... just show "No Labels"
+			var _excludeNOLABEL = 0;
+			var _prio = "P01";
 
-		if (req.query.prio && (req.query.prio=="P01"||req.query.prio=="P08"||req.query.prio=="P16"||req.query.prio=="P120")){
-			_prio = req.query.prio;
-		}
-		if (req.query.from)	 _from = req.query.from;//"2015-01-01";
-		// add one day to include the last day
-		if (req.query.to) _to = moment(req.query.to).add(1,"days").format("YYYY-MM-DD");//"2015-01-10";
+			if (req.query.prio && (req.query.prio=="P01"||req.query.prio=="P08"||req.query.prio=="P16"||req.query.prio=="P120")){
+				_prio = req.query.prio;
+			}
+			if (req.query.from)	 _from = req.query.from;//"2015-01-01";
+			// add one day to include the last day
+			if (req.query.to) _to = moment(req.query.to).add(1,"days").format("YYYY-MM-DD");//"2015-01-10";
 
 
 
-		if (req.query.excludeNOLABEL) _excludeNOLABEL = req.query.excludeNOLABEL;
+			if (req.query.excludeNOLABEL) _excludeNOLABEL = req.query.excludeNOLABEL;
 
-		var labelService = spaceServices.LabelService;
+			var labelService = spaceServices.LabelService;
 
-		prob.find({},function(err,problems){
-			avc.calculateOverall(_from,_to,_filter,function(avDataOverall){
-				avc.calculateExternal(_from,_to,_filter,function(avDataExternal){
-					var _incfilter={
-								P01:{openedAt:{$gte:new Date(_from),$lte:new Date(_to)},priority:"P01 - Critical",category:{$nin:config.incidents.customerImpact.categoryExclude}},
-								P08:{openedAt:{$gte:new Date(_from),$lte:new Date(_to)},priority:"P08 - High",category:{$nin:config.incidents.customerImpact.categoryExclude}},
-								P16:{openedAt:{$gte:new Date(_from),$lte:new Date(_to)},priority:"P16 - Moderate",category:{$nin:config.incidents.customerImpact.categoryExclude}}
-					};
-					inc.findFiltered(_incfilter[_prio],{openedAt:-1},function(err,snowIncidents){
-						logger.debug("++++++++++++++++++++++++++ all snow incidents.length: "+snowIncidents.length);
-						labelService.filterIncidents(snowIncidents,_customer,_excludeNOLABEL,function(err,filteredIncidents){
-							logger.debug("++++++++++++++++++++++++++ filtered snow incidents.length: "+filteredIncidents.length);
-							res.locals.slaMetrics=_enrichIncidents(filteredIncidents,problems);
-							res.locals.av = avDataOverall;
-							res.locals.labelService = labelService;
-							res.locals.customer = _customer;
-							res.locals.prio = _prio;
-							res.locals.avExternal = avDataExternal;
-							res.locals.snowIncidents = filteredIncidents;
-							res.locals.coreDef = config.availability.coreTime
-							res.locals.moment = moment;
-							res.locals.from = _from;
-							res.locals.to = _to;
-							res.locals.problems = problems;
-							res.locals.sla_incidents = config.customers.sla.incidents;
-							res.locals.excludeNOLABEL = _excludeNOLABEL;
-							res.locals.filter = _filter;
-							res.locals.accounting=accounting;
-							logger.debug("*****customer: "+_customer);
+			prob.find({},function(err,problems){
+				avc.calculateOverall(_from,_to,_filter,function(avDataOverall){
+					avc.calculateExternal(_from,_to,_filter,function(avDataExternal){
+						var _incfilter={
+									P01:{openedAt:{$gte:new Date(_from),$lte:new Date(_to)},priority:"P01 - Critical",category:{$nin:config.incidents.customerImpact.categoryExclude}},
+									P08:{openedAt:{$gte:new Date(_from),$lte:new Date(_to)},priority:"P08 - High",category:{$nin:config.incidents.customerImpact.categoryExclude}},
+									P16:{openedAt:{$gte:new Date(_from),$lte:new Date(_to)},priority:"P16 - Moderate",category:{$nin:config.incidents.customerImpact.categoryExclude}}
+						};
+						inc.findFiltered(_incfilter[_prio],{openedAt:-1},function(err,snowIncidents){
+							logger.debug("++++++++++++++++++++++++++ all snow incidents.length: "+snowIncidents.length);
+							labelService.filterIncidents(snowIncidents,_customer,_excludeNOLABEL,function(err,filteredIncidents){
+								logger.debug("++++++++++++++++++++++++++ filtered snow incidents.length: "+filteredIncidents.length);
+								res.locals.slaMetrics=_enrichIncidents(filteredIncidents,problems);
+								res.locals.av = avDataOverall;
+								res.locals.labelService = labelService;
+								res.locals.customer = _customer;
+								res.locals.prio = _prio;
+								res.locals.avExternal = avDataExternal;
+								res.locals.snowIncidents = filteredIncidents;
+								res.locals.coreDef = config.availability.coreTime
+								res.locals.moment = moment;
+								res.locals.from = _from;
+								res.locals.to = _to;
+								res.locals.problems = problems;
+								res.locals.sla_incidents = config.customers.sla.incidents;
+								res.locals.excludeNOLABEL = _excludeNOLABEL;
+								res.locals.filter = _filter;
+								res.locals.accounting=accounting;
+								logger.debug("*****customer: "+_customer);
 
-							res.render('dashboard/opsreport', { title: 's p a c e - '+_customer+' opsreport' });
-						})
+								res.render('dashboard/opsreport', { title: 's p a c e - '+_customer+' opsreport' });
+							})
+						});
 					});
 				});
 			});
-		});
+		}
+		else res.redirect("/login");
 	});
 
 /**
@@ -281,14 +285,3 @@ router.get('/corpIT', function(req, res) {
 
 
 module.exports = router;
-
-function ensureAuthenticated(req, res) {
-	logger.debug("[CHECK AUTHENTICATED]");
-  if (!req.session.AUTH){
-		  logger.debug("[*** NOT AUTHENTICATED **]");
-      req.session.ORIGINAL_URL = req.originalUrl;
-		  res.redirect("/login");
-      return false
-	}
-  return true;
-}

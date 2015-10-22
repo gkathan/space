@@ -22,11 +22,12 @@ var v1Service =  spaceServices.V1Service;
 
 var boardService =  require('../services/BoardService');
 
+var authService = require('../services/AuthService');
+
 module.exports = router;
 
 router.get('/', function(req, res) {
-  if (ensureAuthenticated(req,res)){
-
+  if (authService.ensureAuthenticated(req,res,["admin","exec","studios"])){
   	boardService.find({}, function (err, docs){
   		res.locals.boards=docs;
       res.locals.formBoardTitle="CREATE NEW BOARD"
@@ -37,6 +38,7 @@ router.get('/', function(req, res) {
   		res.render('board/boards', { title: 's p a c e - kanbanboards' });
   	});
   }
+  else res.redirect("/login");
 });
 
 
@@ -150,16 +152,3 @@ router.get('/kanban/:id', function(req, res) {
 
 		return _board;
 	}
-
-
-
-function ensureAuthenticated(req, res) {
-	logger.debug("[CHECK AUTHENTICATED]");
-  if (!req.session.AUTH){
-		  logger.debug("[*** NOT AUTHENTICATED **]");
-      req.session.ORIGINAL_URL = req.originalUrl;
-		  res.redirect("/login");
-      return false
-	}
-  return true;
-}

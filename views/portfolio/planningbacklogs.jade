@@ -27,9 +27,7 @@ block content
 			if roadmapBoardId
 				a(style="font-size:11px" href="/boards/kanban/#{roadmapBoardId}") roadmap board - initiatives - clustered by status|product(*experimental) 
 				br
-			
 			br
-			
 			div(style="width:300px;margin:0px auto")
 				table(style="width:300px;font-size:12px")
 					tr
@@ -66,7 +64,10 @@ block content
 							|overall progess: 
 						td(style="font-size:16px;text-align:right")
 							b
-								|#{Math.round((1-(statistics.totalSwagRemaining/statistics.totalSwag))*100)}% 
+								if statistics.totalSwag
+									|#{Math.round((1-(statistics.totalSwagRemaining/statistics.totalSwag))*100)}% 
+								else
+									| -
 					tr
 						td(style="text-align:left;width:150px") 
 							|total effort remaining:
@@ -92,85 +93,75 @@ block content
 					th.rotate(style="max-width:30px;text-align:left;vertical-align:top")<div><span>remaining effort PD</span></div>
 					th.rotate(style="max-width:30px;text-align:left;vertical-align:top")<div><span>occupation in months</span></div>
 					th.rotate(style="text-align:left;vertical-align:top;max-width:600px")<div><span>initiatives</span></div>
-						//
-							div(style="font-weight:normal;font-size:10px;")
-								span(style="margin-left:270px;text-align:left") status
-								span(style="margin-left:50px;text-align:left") h
-								span(style="margin-left:10px;text-align:left") value
-								span(style="margin-left:10px;text-align:left") risk
-								span(style="margin-left:10px;text-align:left") remaining effort
-								span(style="margin-left:30px;text-align:left") start
-								span(style="margin-left:50px;text-align:left") end
-								span(style="margin-left:40px;text-align:left") %prog
+	
 			tbody
-				each b in backlogs
+				if backlogs.length>0
+					each b in backlogs
+						tr
+							td(style="vertical-align:top;font-size:11px;text-align:left;font-weight:normal") 
+								b
+									a(href="/portfolio/planningbacklogdetail/"+b.ID title="show detailed backlog view")
+										|#{b.Name} 
+							td(style="vertical-align:top;text-right:left;font-size:10px" title="Number of People: #{b.Members.length}")
+								b
+									a(href="#"  title="#{_.uniq(_.map(b.Members,'Name')).join(', ')}")
+										|#{b.Members.length}
+							td(style="vertical-align:top;text-align:right;font-size:10px" title="available PD per month: #{Math.round(b.Capacity.AvailablePDperMonth)} ")
+								|#{Math.round(b.Capacity.AvailablePDperMonth)} 
+							td(style="vertical-align:top;text-align:right;font-size:10px" title="available percentage of capacity for Initiatives: #{Math.round(b.Capacity.availablePercentageForInitiatives*100)}%")
+								|#{Math.round(b.Capacity.availablePercentageForInitiatives*100)}
+							td(style="vertical-align:top;text-align:right;font-size:10px" title="capacity per month: #{Math.round(b.Capacity.AvailablePDperMonthForInitiatives)} days")
+								|#{Math.round(b.Capacity.AvailablePDperMonthForInitiatives)} 
+							td(style="vertical-align:top;text-right:left;font-size:10px" title="Total Effort: #{Math.round(b.TotalSwag)} PD ")
+								|#{Math.round(b.TotalSwag)}
+							td(style="vertical-align:top;text-right:left;font-size:10px" title="Progress: #{Math.round(b.TotalProgress)}%")
+								|#{Math.round(b.TotalProgress)}
+							td(style="vertical-align:top;text-right:left;font-size:10px" title="Effort remaining: #{Math.round(b.TotalSwagRemaining)} PD")
+								b
+									|#{Math.round(b.TotalSwagRemaining)}
+							td(style="vertical-align:top;text-right:left;font-size:10px" title="Occupation to finish: #{(b.TotalSwagRemaining/b.Capacity.AvailablePDperMonthForInitiatives).toFixed(1)} month")
+								b
+									|#{(b.TotalSwagRemaining/b.Capacity.AvailablePDperMonthForInitiatives).toFixed(1)}
+							td(style="vertical-align:top;text-align:left;font-size:10px")
+								if b.Initiatives
+									table.table-responsive.table-striped(style="max-width:650px")
+										- var _sum = 0; 
+										- var _sumPlanningEpics = 0;
+										each i in b.Initiatives
+											- _sum+=i.SwagPlanned
+											- _sumPlanningEpics+=i.PlanningEpics.length;
+											tr
+												td(style="vertical-align:top;text-align:left;font-size:10px;width:40px") 
+													a(href="http://v1.bwinparty.corp/V1-Production/Epic.mvc/Summary?oidToken=Epic%3A"+i.ID.split(":")[1] target="_new"  title="show #{i.Number} - #{i.Name} in V1 Epic Details")
+														|#{i.Number} 
+												td(style="vertical-align:top;text-align:left;font-size:10px;min-width:200px;max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis")
+													a(href="http://v1.bwinparty.corp/V1-Production/Epic.mvc/Scorecard?oidToken=Epic%3A"+i.ID.split(":")[1] target="_new" title="show #{i.Number} - #{i.Name} in V1 Scorecard") 
+														|#{i.Name}
+												td(style="vertical-align:top;text-align:left;font-size:10px;width:90px") 
+													|#{i.Status} 
+												td(style="vertical-align:top;text-align:left;font-size:10px;max-width:20px" title="#{i.HealthComment}") 
+													div(style="margin:auto;width:8px;height:8px;-moz-border-radius: 50%; -webkit-border-radius: 50%; border-radius: 50%;background-color:#{getHealthColor(i.Health)};margin-top:2px")
+												td(style="vertical-align:top;text-align:right;font-size:10px;width:30px" title="value:  #{i.Value} ") #{i.Value}
+												td(style="vertical-align:top;text-align:right;font-size:10px;width:30px" title="risk:  #{i.Risk}") #{i.Risk}
+												
+												td(style="vertical-align:top;text-align:right;font-size:10px;width:30px" title="Total Effort: #{Math.round(i.SwagPlanned)} PD") #{Math.round(i.SwagPlanned)}
+												td(style="vertical-align:top;text-align:right;font-size:10px;width:30px" title="Progress (accumulated from underlying Planning Epics): #{Math.round(i.ProgressPlanned)} %") #{Math.round(i.ProgressPlanned)}
+												
+												td(style="vertical-align:top;text-align:right;font-size:10px;width:30px" title="Effort remaining: #{Math.round(i.SwagRemaining)} PD") #{Math.round(i.SwagRemaining)}
+												td(style="vertical-align:top;text-align:center;font-size:10px;width:70px" title="Planned Start") 
+													if i.PlannedStart
+														|#{moment(i.PlannedStart).format('YYYY-MM-DD')}
+													else
+														|-
+												td(style="vertical-align:top;text-align:center;font-size:10px;width:70px" title="Planned End")
+													if i.PlannedEnd
+														|#{moment(i.PlannedEnd).format('YYYY-MM-DD')}
+													else 
+														|-
+												td(style="vertical-align:top;text-align:center;font-size:10px;width:20px" title="#{i.PlanningEpics.length} Planning Epics associated to #{i.Number} - #{i.Name}") 
+													|#{i.PlanningEpics.length}
+				else
 					tr
-						td(style="vertical-align:top;font-size:11px;text-align:left;font-weight:normal") 
-							b
-								a(href="/portfolio/planningbacklogdetail/"+b.ID title="show detailed backlog view")
-									|#{b.Name} 
-						td(style="vertical-align:top;text-right:left;font-size:10px" title="Number of People: #{b.Members.length}")
-							b
-								a(href="#"  title="#{_.uniq(_.map(b.Members,'Name')).join(', ')}")
-									|#{b.Members.length}
-						td(style="vertical-align:top;text-align:right;font-size:10px" title="available PD per month: #{Math.round(b.Capacity.AvailablePDperMonth)} ")
-							|#{Math.round(b.Capacity.AvailablePDperMonth)} 
-						td(style="vertical-align:top;text-align:right;font-size:10px" title="available percentage of capacity for Initiatives: #{Math.round(b.Capacity.availablePercentageForInitiatives*100)}%")
-							|#{Math.round(b.Capacity.availablePercentageForInitiatives*100)}
-						td(style="vertical-align:top;text-align:right;font-size:10px" title="capacity per month: #{Math.round(b.Capacity.AvailablePDperMonthForInitiatives)} days")
-							|#{Math.round(b.Capacity.AvailablePDperMonthForInitiatives)} 
-						//td(style="vertical-align:top;text-align:right;font-size:10px;width:50px")
-							//|#{b.TotalSwagRemaining} 
-
-						td(style="vertical-align:top;text-right:left;font-size:10px" title="Total Effort: #{Math.round(b.TotalSwag)} PD ")
-							|#{Math.round(b.TotalSwag)}
-						td(style="vertical-align:top;text-right:left;font-size:10px" title="Progress: #{Math.round(b.TotalProgress)}%")
-							|#{Math.round(b.TotalProgress)}
-
-						td(style="vertical-align:top;text-right:left;font-size:10px" title="Effort remaining: #{Math.round(b.TotalSwagRemaining)} PD")
-							b
-								|#{Math.round(b.TotalSwagRemaining)}
-						td(style="vertical-align:top;text-right:left;font-size:10px" title="Occupation to finish: #{(b.TotalSwagRemaining/b.Capacity.AvailablePDperMonthForInitiatives).toFixed(1)} month")
-							b
-								|#{(b.TotalSwagRemaining/b.Capacity.AvailablePDperMonthForInitiatives).toFixed(1)}
-						td(style="vertical-align:top;text-align:left;font-size:10px")
-							if b.Initiatives
-								table.table-responsive.table-striped(style="max-width:650px")
-									- var _sum = 0; 
-									- var _sumPlanningEpics = 0;
-									each i in b.Initiatives
-										- _sum+=i.SwagPlanned
-										- _sumPlanningEpics+=i.PlanningEpics.length;
-										tr
-											td(style="vertical-align:top;text-align:left;font-size:10px;width:40px") 
-												a(href="http://v1.bwinparty.corp/V1-Production/Epic.mvc/Summary?oidToken=Epic%3A"+i.ID.split(":")[1] target="_new"  title="show #{i.Number} - #{i.Name} in V1 Epic Details")
-													|#{i.Number} 
-											td(style="vertical-align:top;text-align:left;font-size:10px;min-width:200px;max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis")
-												a(href="http://v1.bwinparty.corp/V1-Production/Epic.mvc/Scorecard?oidToken=Epic%3A"+i.ID.split(":")[1] target="_new" title="show #{i.Number} - #{i.Name} in V1 Scorecard") 
-													|#{i.Name}
-											td(style="vertical-align:top;text-align:left;font-size:10px;width:90px") 
-												|#{i.Status} 
-											td(style="vertical-align:top;text-align:left;font-size:10px;max-width:20px" title="#{i.HealthComment}") 
-												div(style="margin:auto;width:8px;height:8px;-moz-border-radius: 50%; -webkit-border-radius: 50%; border-radius: 50%;background-color:#{getHealthColor(i.Health)};margin-top:2px")
-											td(style="vertical-align:top;text-align:right;font-size:10px;width:30px" title="value:  #{i.Value} ") #{i.Value}
-											td(style="vertical-align:top;text-align:right;font-size:10px;width:30px" title="risk:  #{i.Risk}") #{i.Risk}
-											
-											td(style="vertical-align:top;text-align:right;font-size:10px;width:30px" title="Total Effort: #{Math.round(i.SwagPlanned)} PD") #{Math.round(i.SwagPlanned)}
-											td(style="vertical-align:top;text-align:right;font-size:10px;width:30px" title="Progress (accumulated from underlying Planning Epics): #{Math.round(i.ProgressPlanned)} %") #{Math.round(i.ProgressPlanned)}
-											
-											td(style="vertical-align:top;text-align:right;font-size:10px;width:30px" title="Effort remaining: #{Math.round(i.SwagRemaining)} PD") #{Math.round(i.SwagRemaining)}
-											td(style="vertical-align:top;text-align:center;font-size:10px;width:70px" title="Planned Start") 
-												if i.PlannedStart
-													|#{moment(i.PlannedStart).format('YYYY-MM-DD')}
-												else
-													|-
-											td(style="vertical-align:top;text-align:center;font-size:10px;width:70px" title="Planned End")
-												if i.PlannedEnd
-													|#{moment(i.PlannedEnd).format('YYYY-MM-DD')}
-												else 
-													|-
-											td(style="vertical-align:top;text-align:center;font-size:10px;width:20px" title="#{i.PlanningEpics.length} Planning Epics associated to #{i.Number} - #{i.Name}") 
-												|#{i.PlanningEpics.length}
-											
+						td(colspan="15" style="color:red;font-size:10px") - no data available at the moment - please try to refresh your browser by hitting F5 - 
 
 			script $("#planningbacklogs").tablesorter();

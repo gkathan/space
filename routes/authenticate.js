@@ -1,14 +1,22 @@
 var express = require('express');
 var router = express.Router();
 
+// logger
+var winston = require('winston');
+var logger = winston.loggers.get('space_log');
 
 //underscore
 var _ = require('lodash');
 
+var spaceServices=require('space.services');
+
 var config = require('config');
+var _secret = require("../config/secret.json");
+
 
 var passport = require('passport')
-  , LocalStrategy = require('passport-local').Strategy;
+  , LocalStrategy = require('passport-local').Strategy
+  , WindowsStrategy = require('passport-windowsauth');
 
 
 var user = require('../services/UserService');
@@ -31,9 +39,48 @@ passport.use('local-signin', new LocalStrategy(
 			console.log("...[OK]");
 			return done(null, user);
 		});
-
   }
 ));
+
+
+
+passport.use('bptyAD-signin',new WindowsStrategy({
+  ldap: {
+    url:             _secret.ldap.url,
+    base:            _secret.ldap.base,
+    bindDN:          _secret.ldap.bindDN,
+    bindCredentials: _secret.ldap.bindCredentials
+  },
+  integrated:false
+}, function(profile, done){
+  if (profile){
+    //console.log("waId.profile.id: "+profile.id);
+    //console.log(JSON.stringify(profile));
+
+    //extract user from AD profile !
+    var user = {};
+
+    user.id=profile.id;
+    user.username=profile.displayName;
+    user.emails = profile.emails;
+    user.title=profile._json.title;
+    user.location= profile._json.physicalDeliveryOfficeName;
+    user.tel=profile._json.telephoneNumber;
+    user.role="bpty";
+
+    logger.debug("profile.memberOf: "+profile._json.memberOf);
+    logger.debug("user: "+JSON.stringify(user));
+
+    if (profile._json.memberOf.indexOf("CN=pap.space.admin,OU=PermApp,OU=Groups,OU=ADM01,OU=AT,OU=CORP,DC=icepor,DC=com")>-1){
+      //user.role="admin";
+    }
+    user.context="bpty.studios";
+  }
+  else{
+    console.log("sorry no profile found");
+  }
+  done (null,user);
+}));
 
 // Passport session setup.
 passport.serializeUser(function(user, done) {
@@ -47,18 +94,18 @@ passport.deserializeUser(function(obj, done) {
 });
 
 
-
-
-
-
 /** passport authetication
  */
 router.post('/', function(req,res,next){
 	debugger;
-	passport.authenticate('local-signin', function(err,user,info){
+	//chained authentication providers
+  passport.authenticate(['local-signin','bptyAD-signin'], function(err,user,info){
 		if (err) { return next(err); }
-			if (!user) { //return res.render('login');
-				return;}
+      logger.debug("..... in authenticate....."+user+" "+info);
+      if (!user) { //return res.render('login');
+        logger.debug("....... no user - return")
+        return;
+      }
 			req.logIn(user, function(err) {
 				if (err) { return next(err); }
 				console.log("[we are very close :-), req.session.ORIGINAL_URL: "+req.session.ORIGINAL_URL);
@@ -68,8 +115,20 @@ router.post('/', function(req,res,next){
 				sess.AUTH = user.role;
 				sess.USER = user.username;
 				sess.CONTEXT = user.context;
-				//return res.json({detail: info});
-				res.send({AUTH:user.role,ORIGINAL_URL:req.session.ORIGINAL_URL,REDIRECT_URL:_redirect});
+
+        var orgService = spaceServices.OrganizationService;
+        var _username = req.session.USER;
+        var _first = _username.split(" ")[0];
+        var _last = _.last(_username.split(" "));
+
+        orgService.findEmployeeByFirstLastName(_first,_last,function(err,employee){
+
+          if (employee)
+            sess.USERID=employee["Employee Number"];
+
+
+  				res.send({AUTH:user.role,ORIGINAL_URL:req.session.ORIGINAL_URL,REDIRECT_URL:_redirect});
+        });
 			});
 		})(req, res, next);
 });

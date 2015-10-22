@@ -51,7 +51,7 @@ var PATH = {
 						REST_TARGET2EMPLOYEE : BASE+'/space/rest/target2employee',///:period',
 						REST_TARGET2EMPLOYEECLUSTERED : BASE+'/space/rest/target2employeeclustered',///:period',
 						REST_EMPLOYEEBYTARGETS : BASE+'/space/rest/employeebytargets',///:period',
-						REST_OUTCOMESFOREMPLOYEE : BASE+'/space/rest/outcomesforemployee',//:period/:employeeId',
+						REST_OUTCOMESFOREMPLOYEE : BASE+'/space/rest/outcomesforemployee/:employeeId',//:period',
 
 						REST_BOARDS : BASE+'/space/rest/boards',
 						REST_CREATEBOARD : BASE+'/space/rest/board',
@@ -888,7 +888,6 @@ function getOutcomesForEmployee(req,res,next){
 	var period = req.query.period;
 	var _employeeId = req.params.employeeId;
 	orgService.findOutcomesForEmployeeByPeriod(_employeeId,period,function(err,result){
-
 		res.send(result);
 	})
 

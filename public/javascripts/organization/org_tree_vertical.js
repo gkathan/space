@@ -8,14 +8,12 @@ var i = 0;
 var tree = d3.layout.tree()
 	.size([height, width]);
 
+var svg;
+
 var diagonal = d3.svg.diagonal()
 	.projection(function(d) { return [d.x, d.y]; });
 
-var svg = d3.select("#d3container").append("svg")
-	.attr("width", width + margin.right + margin.left)
-	.attr("height", height + margin.top + margin.bottom)
-  .append("g")
-	.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
 
 var treeData;
 
@@ -37,12 +35,26 @@ if (baseRoot){
 
 d3.json(_url, function(root) {
   treeData=root;
-  update(root.tree);
+  update(root.tree,root.stats);
 })
 
-function update(root) {
-  // Compute the new tree layout.
-  var nodes = tree.nodes(root).reverse(),
+function update(root,stats) {
+	var _height = 100 + margin.top + margin.bottom+(stats.levels.length*70);
+	console.log("_height: "+_height);
+	console.log("levels: "+(stats.levels.length*20));
+
+	svg = d3.select("#d3container").append("svg")
+	.attr("width", width + margin.right + margin.left)
+	.attr("height", _height)
+  .append("g")
+	.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+	// Compute the new tree layout.
+
+
+
+	//svg.attr("height", _height);
+
+	var nodes = tree.nodes(root).reverse(),
 	  links = tree.links(nodes);
   // Normalize for fixed-depth.
   nodes.forEach(function(d) { d.y = d.depth * 100; });

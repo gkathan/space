@@ -34,9 +34,18 @@ $.get( "/api/space/rest/availability", function( data ) {
 
     console.log("--------------av projected: "+_projectedAV);
     $('#targetdowntime').text(_targetdowntime);
-    $('#leftdowntime').text(_leftdowntime);
     $('#spentdowntime').text(_spentdowntime);
+    $('#leftdowntime').text(_leftdowntime);
     $('#trendAV').text(_projectedAV+"%");
+
+    if (_leftdowntimems<0){
+      $('#leftdowntime').css("color","red");
+      $('#leftdowntimeTitle').text("left");
+      $('#happyPath').text("target out of reach !");
+      $('#happyPath').css("color","red");
+      $('#trendAV').text("");
+    }
+
 
 
 

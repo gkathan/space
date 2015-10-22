@@ -18,27 +18,30 @@ var winston=require('winston');
 var logger = winston.loggers.get('space_log');
 
 var spaceServices=require('space.services');
+var authService = require('../services/AuthService');
 
 /* GET the admin page. */
 router.get('/', function(req, res) {
-	if (ensureAuthenticated(req,res)){
+	if (authService.ensureAuthenticated(req,res,["admin"])){
 	   res.render('admin/admin', { title: 's p a c e - admin' });
   }
+	else res.redirect("/login");
 });
 
 /* GET the admin page. */
 router.get('/message', function(req, res) {
-	if (ensureAuthenticated(req,res)){
+	if (authService.ensureAuthenticated(req,res,["admin"])){
 	   res.render('admin/message', { title: 's p a c e - admin.message' });
   }
+	else res.redirect("/login");
 });
 
 /* GET the admin page. */
 router.get('/content', function(req, res) {
-	if (ensureAuthenticated(req,res)){
-
+	if (authService.ensureAuthenticated(req,res,["admin"])){
 		res.render('admin/content', { title: 's p a c e - admin.content' });
   }
+	else res.redirect("/login");
 });
 
 
@@ -53,7 +56,7 @@ router.get('/traffic', function(req, res) {
 
 /* GET the traffic page. */
 router.get('/traffic/:period', function(req, res) {
-	if (ensureAuthenticated(req,res)){
+	if (authService.ensureAuthenticated(req,res,["admin"])){
 		var _period = req.params.period;
 
 		if (_period){
@@ -96,11 +99,12 @@ router.get('/traffic/:period', function(req, res) {
 			res.render('admin/traffic', { title: 's p a c e - admin.traffic' });
 		});
   }
+	else res.redirect("/login");
 });
 
 /* GET the admin page. */
 router.get('/sync', function(req, res) {
-	if (ensureAuthenticated(req,res)){
+	if (authService.ensureAuthenticated(req,res,["admin"])){
 		var syncService = spaceServices.SyncService;
 
 		var _syncServer=config.syncUpdate.url;
@@ -148,10 +152,11 @@ router.get('/sync', function(req, res) {
 				res.render('admin/sync', { title: 's p a c e - admin.sync' });
 			})
   }
+	else res.redirect("/login");
 });
 
 router.get('/config', function(req, res) {
-	if (ensureAuthenticated(req,res)){
+	if (authService.ensureAuthenticated(req,res,["admin"])){
     var os = require('os');
     var json2html = require('node-json2html');
     var configHtml = json2html.transform(JSON.stringify(config));
@@ -165,19 +170,8 @@ router.get('/config', function(req, res) {
 
 		res.render('admin/config');
   }
+	else res.redirect("/login");
 });
 
 
 module.exports = router;
-
-
-function ensureAuthenticated(req, res) {
-	logger.debug("[CHECK AUTHENTICATED]");
-  if (!req.session.AUTH){
-		  logger.debug("[*** NOT AUTHENTICATED **]");
-      req.session.ORIGINAL_URL = req.originalUrl;
-		  res.redirect("/login");
-      return false
-	}
-  return true;
-}

@@ -10,7 +10,16 @@ block content
 				img(src='/images/#{config.context}_logo.png'  height='25px')
 
 			if session.AUTH
-				span(style="font-size:10px;margin-left:20px;color:grey")  logged in as: <b> #{session.AUTH}/#{session.USER} </b>
+				span(style="font-size:10px;margin-left:20px;color:grey")  logged in as: 
+				if session.USERID
+					a(href="/myspace")
+						img(src="/images/employees/circle/#{session.USERID}.png" width="20px")
+						b(style="font-size:10px;margin-left:5px;color:grey")
+							|#{session.AUTH}/#{session.USER}
+				else
+					b(style="font-size:10px;margin-left:5px;color:grey")
+						|#{session.AUTH}/#{session.USER}
+				
 			// span(id="space_syncerstatus" style="font-size:9px;font-weight:bold;margin-left:3px;color:grey")
 				
 			.div(class='notifications top-left')
@@ -33,23 +42,28 @@ block content
 						
 			.collapse.navbar-collapse
 				ul.nav.navbar-nav
-					if !session.AUTH
+					if !session.AUTH 
 						li
 							a(href='/login') login
-						li
-							a(role="menuitem" tabindex="-1" href="/itservicereports") IT service reports
 					if session.AUTH
 						li.active
 							a(href='/logout') logout
-					if !session.AUTH || session.AUTH=="admin"
+					if !session.AUTH || session.AUTH=="bpty"
+						li
+							a(role="menuitem" tabindex="-1" href="/itservicereports") IT service reports
+				
+					if !session.AUTH || session.AUTH=="admin" || session.AUTH=="bpty"
 						li
 							a(href="/portfolio") portfolio
-					if !session.AUTH 
+					if !session.AUTH || session.AUTH=="bpty"
 						li
 							a( href="/targets/overview") targets overview
-					if !session.AUTH 
+					if !session.AUTH  || session.AUTH=="bpty"
 						li
 							a( href="/dashboard") KPI tracker							
+					if session.AUTH
+						li
+							a( href="/myspace") my  s p a c e 							
 					
 					if session.AUTH=="studios"
 						ul.nav.navbar-nav

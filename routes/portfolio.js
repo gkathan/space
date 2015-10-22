@@ -78,7 +78,13 @@ router.get('/planningepics', function(req, res) {
 				var _valueSum=0;;
 				var _riskSum=0;;
 				var epics = result.initiatives;
-				var _grouped = _.groupBy(epics,'Status');
+
+
+				var _grouped;
+				if (epics.length>0){
+					_.groupBy(epics,'Status');
+				}
+
 
 				res.locals.planningEpicsBoardId = _planningEpicsBoardId;
 				res.locals.roadmapBoardId = _roadmapBoardId;

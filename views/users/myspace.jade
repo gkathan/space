@@ -1,0 +1,49 @@
+include ../kanban_menu
+block content
+
+mixin renderEmployee(employee,size)
+	if employee
+		table(style="width:300px")
+			tr
+				td(rowspan="2" style="vertical-align:top;width:#{size}px")
+					img.img-circle(src='/images/employees/squared/#{employee["Employee Number"]}_square.png' height="#{size}px") 
+				td(style="padding-left:5px;font-size:#{nameSize}px;text-align:left;vertical-align:bottom;font-weight:bold")
+					|#{employee["First Name"]} #{employee["Last Name"]}
+			tr
+				td(style="padding-left:5px;text-align:left")
+					div(style="font-size:9px;font-weight:normal;vertical-align:top") #{employee["Job"]}
+					div(style="font-size:9px;font-weight:normal;vertical-align:top") #{employee["Organization"]}
+					
+
+div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;background-color:white;;width:400px;text-align: left;margin: 10px auto;")
+	div(style="margin: 10px auto;")
+		if employee
+			h3 hej #{employee["First Name"]}
+			br
+			hr
+			|my employee data
+			br
+			br
+			+renderEmployee(employee,50)
+
+			hr
+			
+			br
+			a(href='targets/employeeoutcomes/#{employee["Employee Number"]}?period=2015')
+				img(src="/images/iconexp/graph_from.png" width="25px")
+				span(style="font-size:12px") [my outcomes]
+				
+			br
+			a(href='/organization/tree_vertical?employeeId=#{employee["Employee Number"]}')
+				img(src="/images/iconexp/graph_from.png" width="25px")
+				span(style="font-size:12px") [my orgchart]
+				
+			br
+			a(href='#{profileUrl}' target='_new')
+				img(src="/images/iconexp/graph_from.png" width="25px")
+				span(style="font-size:12px") [my corporate profile]	
+		else
+			| -- no employee data found --
+				
+		
+include ../includes/material

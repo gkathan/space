@@ -6,21 +6,23 @@ var app=require('../app');
 var winston=require('winston');
 var logger = winston.loggers.get('space_log');
 
+var authService = require('../services/AuthService');
+
 router.get('/', function(req, res) {
-	ensureAuthenticated(req,res);
-	//console.log(req.header('host'));
-	url = req.header('host') + req.baseUrl;
-
-	var scrumblrService = require('../services/scrumblr/ScrumblrService');
-
-	/*
-	var connected = app.io.sockets.connected;
-	clientsCount = Object.keys(connected).length;
-*/
-	res.render('scrumblr/home.jade', {
-		url: url,
-		connected: scrumblrService.getConnections()
-	});
+	if (authService.ensureAuthenticated(req,res,["admin","studios"])){
+		//console.log(req.header('host'));
+		url = req.header('host') + req.baseUrl;
+		var scrumblrService = require('../services/scrumblr/ScrumblrService');
+		/*
+		var connected = app.io.sockets.connected;
+		clientsCount = Object.keys(connected).length;
+	*/
+		res.render('scrumblr/home.jade', {
+			url: url,
+			connected: scrumblrService.getConnections()
+		});
+	}
+	else res.redirect("/loign");
 
 });
 
@@ -41,15 +43,3 @@ router.get('/:id', function(req, res){
 });
 
 module.exports = router;
-
-
-function ensureAuthenticated(req, res) {
-	logger.debug("[CHECK AUTHENTICATED]");
-  if (!req.session.AUTH){
-		  logger.debug("[*** NOT AUTHENTICATED **]");
-      req.session.ORIGINAL_URL = req.originalUrl;
-		  res.redirect("/login");
-      return false
-	}
-  return true;
-}
