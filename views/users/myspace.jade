@@ -32,7 +32,13 @@ div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;back
 			a(href='targets/employeeoutcomes/#{employee["Employee Number"]}?period=2015')
 				img(src="/images/iconexp/graph_from.png" width="25px")
 				span(style="font-size:12px") [my outcomes]
-				
+			
+			
+			br
+			a(href='/targets/overview?highlight=true')
+				img(src="/images/iconexp/graph_from.png" width="25px")
+				span(style="font-size:12px") [my target contribution]
+					
 			br
 			a(href='/organization/tree_vertical?employeeId=#{employee["Employee Number"]}')
 				img(src="/images/iconexp/graph_from.png" width="25px")

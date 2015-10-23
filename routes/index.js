@@ -71,14 +71,17 @@ router.get('/chromeonly', function(req, res) {
 router.get('/myspace', function(req, res) {
   if (authService.ensureAuthenticated(req,res,["bpty","admin","studios","exec"])){
     var orgService = spaceServices.OrganizationService;
-    var _username = req.session.USER;
-    var _first = _username.split(" ")[0];
-    var _last = _.last(_username.split(" "));
+    var _displayname = req.session.DISPLAYNAME;
+    var _first = _displayname.split(" ")[0];
+    var _last = _.last(_displayname.split(" "));
     orgService.findEmployeeByFirstLastName(_first,_last,function(err,employee){
-      res.locals.employee= employee;
-      https://my.bwinparty.com/People/K/GeroldKathanE2988.aspx
-      var _profileUrl = "https://my.bwinparty.com/People/"+_.first(employee["Last Name"])+"/"+employee["First Name"]+employee["Last Name"]+employee["Employee Number"]+".aspx";
-      res.locals.profileUrl = _profileUrl;
+      if (employee){
+        res.locals.employee= employee;
+        https://my.bwinparty.com/People/K/GeroldKathanE2988.aspx
+
+        var _profileUrl = "https://my.bwinparty.com/People/"+_.first(employee["Last Name"])+"/"+employee["First Name"]+employee["Last Name"]+employee["Employee Number"]+".aspx";
+        res.locals.profileUrl = _profileUrl;
+      }
       res.render('users/myspace', { title: 's p a c e - home' })
     })
 	}

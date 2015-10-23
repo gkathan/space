@@ -38,12 +38,13 @@ $.get( "/api/space/rest/availability", function( data ) {
     $('#leftdowntime').text(_leftdowntime);
     $('#trendAV').text(_projectedAV+"%");
 
-    if (_leftdowntimems<0){
+    if (_leftdowntimems<0 && _projectedAV<=_targetAV ){
       $('#leftdowntime').css("color","red");
       $('#leftdowntimeTitle').text("left");
-      $('#happyPath').text("target out of reach !");
+      $('#happyPath').text("happy path without further downtime");
       $('#happyPath').css("color","red");
-      $('#trendAV').text("");
+      $('#trendAV').text(_projectedAV+"%");
+      $('#trendAV').css("color","red");
     }
 
 

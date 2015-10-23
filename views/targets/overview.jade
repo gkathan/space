@@ -138,7 +138,7 @@ mixin renderL2Target(target,width)
 		div.front
 			div.panel(style="margin-left:0px;background-color:white;width:#{width}px;text-align: left;height:270px")
 				.panel-heading(class="panel-#{target.children[0].theme.toLowerCase()}")
-					table(style="width:#{width-15}px;margin-left:-12px")
+					table(id="target_#{target.children[0].id.split('.')[0]}" style="width:#{width-15}px;margin-left:-12px")
 						tr(style="line-height:14px")
 							td(style="width:30px;text-align:left")
 								//i.glyphicon.glyphicon-record(style="font-size:13px")
@@ -338,7 +338,9 @@ mixin renderL2TargetDetail(target)
 // ------------------ main target template ----------------------------
 // -----------------------------------------------------------------------
 block content
-	
+
+
+		
 // ------------------------------ target detail modal -------------------------------
 
 
@@ -371,7 +373,12 @@ div.container-fluid(style="max-width:1600px")
 		br
 		if targetsForEmployee.length>0
 			div(style="text-align:center;")
-				a(id="highlightContribution" style="text-align:center;font-weight:normal;font-size:10px" onmouseover="highlight()" onmouseout="normal()" title="my target contribution: #{targetsForEmployee}") - highlight my contribution - 
+				.togglebutton
+					label 
+						input(id="highlightToggle" type="checkbox")
+						a(style="font-size:10px;margin-left:5px" title="my targets: #{targetsForEmployee} contribution profile: #{JSON.stringify(profile)}") - highlight my contribution -
+						
+			
 		br
 		
 		div(style=";color:white;background-color:#{color_PL};text-align:center;font-size:16px;font-weight:normal;margin-left:10px;margin-right:10px;line-height:32px") 
@@ -407,13 +414,29 @@ div.container-fluid(style="max-width:1600px")
 				span(style="font-size:10px;text-align:right") >> export targets xlsx &nbsp;
 				img(src="/images/space/logo_msexcel.png" height="30px")
 
-
+include ../includes/material	
 
 script.
 	var _period ="#{period}";
 	var _targetsForEmployee = '#{targetsForEmployee.join(",")}'.split(",");
+	var _highlight = '#{highlight}';
+	
+	
+	
+	if (_highlight && _targetsForEmployee.length>0 && _targetsForEmployee[0]!=""){
+		console.log("*******"+_targetsForEmployee);
+		$('#highlightToggle').prop('checked', true);
+		highlight();
+	}
 	
 	$(document).ready(function(){
+		
+			$('#highlightToggle').click(function(e){
+				
+				 if (e.target.checked) highlight();
+				 else normal();
+			});
+		
 		// set up flip form link
 		$('.fliptarget .turnback').click(function(e){
 			var _id = e.target.toString().split('#')[1];
@@ -433,7 +456,7 @@ script.
 		});
 	});
 
-
+	
 
 
 	/**
@@ -599,10 +622,14 @@ script.
 	
 	function highlight(){
 		console.log("....highlight");
-		$("[id^=target_]").css("opacity","0.1");
+		$("[id^=target_]").css("opacity","0.2");
 		for (var i in _targetsForEmployee){
-			console.log("-----"+_targetsForEmployee[i]);
-			$("#target_"+_targetsForEmployee[i].replace(".","_")).css("opacity","1")
+			var _t = _targetsForEmployee[i];
+			// target group e.g. G1
+			var _tg = _t.split(".")[0];
+			console.log("-----"+_t);
+			$("#target_"+_t.replace(".","_")).css("opacity","1")
+			$("#target_"+_tg).css("opacity","1")
 		}
 		
 	}

@@ -11,17 +11,15 @@ block content
 
 			if session.AUTH
 				span(style="font-size:10px;margin-left:20px;color:grey")  logged in as: 
-				if session.USERID
+				if session.EMPLOYEEID
 					a(href="/myspace")
-						img(src="/images/employees/circle/#{session.USERID}.png" width="20px")
+						img(src="/images/employees/circle/#{session.EMPLOYEEID}.png" width="20px")
 						b(style="font-size:10px;margin-left:5px;color:grey")
-							|#{session.AUTH}/#{session.USER}
+							|#{session.AUTH}/#{session.USER} 
 				else
 					b(style="font-size:10px;margin-left:5px;color:grey")
 						|#{session.AUTH}/#{session.USER}
-				
-			// span(id="space_syncerstatus" style="font-size:9px;font-weight:bold;margin-left:3px;color:grey")
-				
+
 			.div(class='notifications top-left')
 
 		div.navbar.navbar-default
@@ -61,7 +59,7 @@ block content
 					if !session.AUTH  || session.AUTH=="bpty"
 						li
 							a( href="/dashboard") KPI tracker							
-					if session.AUTH && session.AUTH!="customer"
+					if session.AUTH && session.AUTH=="bpty"
 						li
 							a( href="/myspace") my  s p a c e 							
 					
@@ -75,8 +73,6 @@ block content
 										a(role="menuitem" tabindex="-1" href="/portfolio") show list
 									li(role="presentation")
 										a(role="menuitem" tabindex="-1" href="/upload/xlsx/portfolio") upload snapshot
-								
-						
 					if session.AUTH=="exec" || session.AUTH=="admin" || session.AUTH=="studios"
 						ul.nav.navbar-nav
 							li.dropdown(id="fat-menu")
@@ -150,8 +146,6 @@ block content
 										a(role="menuitem" tabindex="-1" href="/pinboards/studios2015") studios 2015 achievements
 									li(role="presentation")
 										a(role="menuitem" tabindex="-1" href="/pinboards/spacebacklog") space backlog
-										
-
 									li(role="presentation")
 										a(role="menuitem" tabindex="-1" href="/dashboard/corpIT") corpIT dashboard (prototype)
 						ul.nav.navbar-nav
@@ -180,7 +174,6 @@ block content
 										a(role="menuitem" tabindex="-1" href="/organization/tree_vertical") vertical tree (experimental)
 									li(role="presentation")
 										a(role="menuitem" tabindex="-1" href="/organization/partition") partition
-
 									li(role="presentation")
 										a(role="menuitem" tabindex="-1" href="/organization/radial") radial
 									li(role="presentation")
@@ -243,7 +236,6 @@ block content
 										a(role="menuitem" tabindex="-1" href="/admin?type=v1epics&setfilter=portfolioApproval^Yes,categoryName^Initiative") v1 epics (portfolioApproved + Initiative)
 									li(role="presentation")
 										a(role="menuitem" tabindex="-1" href="/admin?type=roadmapinitiatives") roadmap initiatives
-
 									li(role="presentation")
 										a(role="menuitem" tabindex="-1" href="/admin?type=v1teams") v1 teams
 									li(role="presentation")

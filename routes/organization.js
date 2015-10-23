@@ -66,26 +66,36 @@ router.get("/history/tree/:date", function(req, res, next) {
 		res.locals.orgdate=req.params.date;
 		res.render("organization/org_tree", { title: 's p a c e - organizationchart - history: '+req.params.date });
 	}
+	else res.redirect("/login");
 });
 
 router.get("/tree", function(req, res, next) {
 	if (authService.ensureAuthenticated(req,res,["admin","exec","studios"])){
 		var _employee=req.query.employee;
+		var _hierarchy=req.query.hierarchy;
+		if (!_hierarchy) _hierarchy = "bp";
+
+		res.locals.hierarchy=_hierarchy;
+
 		if (_employee){
 			var _split = _employee.split(" ");
 			var _first = _split[0];
-			var _last = _split[1];
+			var _last = _.last(_split);
 			orgService.findEmployeeByFirstLastName(_first,_last,function(err,employee){
-				res.locals.root=employee["Employee Number"];
-				logger.debug("YYYYYYYYYYYYYYYYYYYY"+employee["Employee Number"]);
+
+				if (employee){
+					res.locals.employeeId=employee["Employee Number"];
+					res.locals.employee=employee["First Name"]+" "+employee["Last Name"];
+
+				}
 				res.render("organization/org_tree", { title: 's p a c e - organizationchart - current' });
 			})
 		}
 		else {
 			res.render("organization/org_tree", { title: 's p a c e - organizationchart - current' });
 		}
-
 	}
+	else res.redirect("/login");
 });
 
 
@@ -96,6 +106,8 @@ router.get("/history/circlecontain/:date", function(req, res, next) {
 		res.locals.collection="organization";
 		res.render("organization/circlecontain", { title: 's p a c e - organizationchart - history: '+req.params.date });
 	}
+	else res.redirect("/login");
+
 });
 
 
@@ -105,6 +117,7 @@ router.get("/circlecontain", function(req, res, next) {
 		res.locals.collection="organization";
 		res.render("organization/circlecontain", { title: 's p a c e - circlecontain chart - current' });
 	}
+	else res.redirect("/login");
 });
 
 router.get("/partition", function(req, res, next) {
@@ -113,6 +126,7 @@ router.get("/partition", function(req, res, next) {
 		res.locals.collection="organization";
 		res.render("organization/partition", { title: 's p a c e - partition chart - current' });
 	}
+	else res.redirect("/login");
 });
 
 router.get("/tree_vertical", function(req, res, next) {
@@ -138,6 +152,7 @@ router.get("/tree_vertical", function(req, res, next) {
 			res.render("organization/tree_vertical", { title: 's p a c e - vertical tree orgchart - current' });
 		}
 	}
+	else res.redirect("/login");
 });
 
 function _render(employee,req,res){
@@ -162,6 +177,7 @@ router.get("/circlecontain/:collection", function(req, res, next) {
 		res.locals.collection=req.params.collection;
 		res.render("organization/circlecontain",{ title: "s p a c e - "+req.params.collection });
 	}
+	else res.redirect("/login");
 });
 
 // for the other partitions....
@@ -170,6 +186,7 @@ router.get("/partition/:collection", function(req, res, next) {
 		res.locals.collection=req.params.collection;
 		res.render("organization/partition",{ title: "s p a c e - partition -"+req.params.collection });
 	}
+	else res.redirect("/login");
 });
 
 
@@ -177,19 +194,21 @@ router.get("/radial", function(req, res, next) {
 	if (authService.ensureAuthenticated(req,res,["admin","exec","studios"])){
 		res.render("organization/org_radial", { title: 's p a c e - organizationchart - current' });
 	}
+	else res.redirect("/login");
 });
 
 router.get("/force", function(req, res, next) {
 	if (authService.ensureAuthenticated(req,res,["admin","exec","studios"])){
 		res.render("organization/force");
 	}
+	else res.redirect("/login");
 });
 
 router.get("/simple", function(req, res, next) {
 	if (authService.ensureAuthenticated(req,res,["admin","exec","studios"])){
 		res.render("organization/simple");
 	}
-	//res.sendfile("org.html");
+	else res.redirect("/login");
 });
 
 router.get("/trend", function(req, res, next) {
@@ -198,8 +217,8 @@ router.get("/trend", function(req, res, next) {
 			res.locals.trend = trend;
 				res.render("organization/trend");
 		})
-
 	}
+	else res.redirect("/login");
 });
 
 

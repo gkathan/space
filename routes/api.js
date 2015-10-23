@@ -1246,15 +1246,23 @@ function getOrganizationTrend(req,res,next){
 }
 
 function getOrganizationTree(req,res,next){
-	var _employee =req.query.employee;
+	var _employee = req.query.employee;
+	
+	var _hierarchyType = req.query.hierarchy;
+
+
+	if (!_hierarchyType) _hierarchyType ="bp";
+
+
+
 	if (_employee){
-			organizationService.getTreeBelow(_employee,function(err,data){
+			organizationService.getTreeBelow(_employee,_hierarchyType,function(err,data){
 			if (err) res.send(err.message);
 			else if (data) res.send(data)
 		});
 	}
 	else{
-		organizationService.getTree(function(err,data){
+		organizationService.getTree(_hierarchyType,function(err,data){
 			if (err) res.send(err.message);
 			else if (data) res.send(data)
 		});
@@ -1265,14 +1273,17 @@ function getOrganizationTree(req,res,next){
 function getOrganizationTreeHistory(req,res,next){
 	var _date = req.params.date;
 	var _employee =req.query.employee;
+	var _hierarchyType = req.query.hierarchy;
+	if (!_hierarchyType) _hierarchyType ="bp";
+
 	if (_employee){
-		organizationService.getTreeHistoryBelow(_date,_employee,function(err,data){
+		organizationService.getTreeHistoryBelow(_date,_employee,_hierarchyType,function(err,data){
 			if (err) res.send(err.message);
 			else if (data) res.send(data);
 		});
 	}
 	else{
-		organizationService.getTreeHistory(_date,function(err,data){
+		organizationService.getTreeHistory(_date,_hierarchyType,function(err,data){
 			if (err) res.send(err.message);
 			else if (data) res.send(data);
 		});

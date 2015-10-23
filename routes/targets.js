@@ -33,13 +33,16 @@ _.nst = require('underscore.nest');
 
 
 router.get('/overview', function(req, res, next) {
+	req.session.ORIGINAL_URL = req.originalUrl;
 	var _period = req.query.period;
+	var _highlight=req.query.highlight;
+
 	if (!_period) _period = targetService.getPeriod();
 	if (_period == targetService.getPeriod() ){
-			_handleTargetOverview(req,res,next,"./targets/overview",_period);
+			_handleTargetOverview(req,res,next,"./targets/overview",_period,_highlight);
 	}
 	else if(_period != targetService.getPeriod() && authService.ensureAuthenticated(req,res,["admin","studios","exec"])){
-			_handleTargetOverview(req,res,next,"./targets/overview",_period);
+			_handleTargetOverview(req,res,next,"./targets/overview",_period,_highlightForEmployee);
 	}
 	else {
 		res.redirect("/login");
@@ -210,9 +213,10 @@ router.get('/employeeoutcomes/:employeeId', function(req, res, next) {
 });
 
 
-
-
-function _handleTargetOverview(req,res,next,view,period){
+/**
+param highlight: boolean if set to true => view tries to highlight the employee supported targets
+*/
+function _handleTargetOverview(req,res,next,view,period,highlight){
 	res.locals._=require('lodash');
 	var _context;
 	if (req.session.CONTEXT){
@@ -237,8 +241,8 @@ function _handleTargetOverview(req,res,next,view,period){
 		var _L1targets = [];
 
 		var _employeeId;
-		if (req.session.USERID){
-			_employeeId = req.session.USERID;
+		if (req.session.EMPLOYEEID){
+			_employeeId = req.session.EMPLOYEEID;
 		}
 		var period="2015";
 		orgService.findOutcomesForEmployeeByPeriod(_employeeId,period,function(err,outcomes){
@@ -255,6 +259,43 @@ function _handleTargetOverview(req,res,next,view,period){
 				var _sortOrder= config.targets.laneSorting;
 
 				res.locals.targetsForEmployee=_.pluck(outcomes,"L2Targets");
+				res.locals.highlight = highlight;
+
+				// calculate employee target contribution profile
+				var _profile={rag:{red:0,amber:0,green:0,undefined:0},theme:{RUN:0,GROW:0,TRANSFORM:0,OTHER:0},total:0};
+				if (outcomes){
+					var _targetsUniqCheck=[];
+					for (var i in outcomes){
+						var _o = outcomes[i];
+						var _targets = _o.L2Targets;
+						for (var t in _targets){
+							var _t = _targets[t];
+							var _tt = _.findWhere(_L2targets,{"id":_t});
+							//prevent double counting if multiple outcomes exist to the same target ...
+							if (_targetsUniqCheck.indexOf(_t)<0){
+								//logger.debug("* _target: "+_t);
+								if (!_tt)  _profile.rag.undefined++
+								else if (_tt.rag=="green") _profile.rag.green++;
+								else if (_tt.rag=="amber") _profile.rag.amber++;
+								else if (_tt.rag=="red") _profile.rag.red++;
+
+								if (!_tt)  _profile.theme.OTHER++
+								else if (_tt.theme=="RUN") _profile.theme.RUN++;
+								else if (_tt.theme=="GROW") _profile.theme.GROW++;
+								else if (_tt.theme=="TRANSFORM") _profile.theme.TRANSFORM++;
+
+								_profile.total++;
+								_targetsUniqCheck.push(_t);
+							}
+						}
+					}
+					_profile.rag.redPercentage=Math.round((_profile.rag.red/_profile.total)*100)+"%";
+					_profile.rag.amberPercentage=Math.round((_profile.rag.amber/_profile.total)*100)+"%";
+					_profile.rag.greenPercentage=Math.round((_profile.rag.green/_profile.total)*100)+"%";
+					_profile.rag.undefinedPercentage=Math.round((_profile.rag.undefined/_profile.total)*100)+"%";
+				}
+
+				res.locals.profile = _profile;
 
 				res.locals.targets=_.sortBy(L2targetsClustered.children,function(lane){
 						return _sortOrder.indexOf(lane.name);

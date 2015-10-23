@@ -29,6 +29,7 @@ module.exports = router;
 
 
 router.get('/', function(req, res) {
+	req.session.ORIGINAL_URL = req.originalUrl;
 	// join pgates with epics
 	var _type = "current";
 	portfolioService.getPortfolioMeetings(_type,function(err,result){

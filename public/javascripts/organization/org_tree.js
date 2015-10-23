@@ -71,21 +71,34 @@ function _init(){
 
 /** main entry
 * called from .jade views
+* TODO: refactor => this is quite ugly ununderstandable code ;-) 
 */
-function render(baseRoot,date){
+function render(baseRoot,date,hierarchy){
 
-	console.log("..............render(): baseRoot: "+baseRoot)
+	console.log("..............render(): baseRoot: "+baseRoot+ " hierarchy: "+hierarchy)
 	this.baseRoot=baseRoot;
 	var _url="/api/space/rest/";
 	if (date){
 		 _url+="organizationtree/history/"+date;
 		ORG_DATE=date;
 	}
+
 	else{
 		 _url+="organizationtree";
 	}
+
+	_url+="?true=true";
+
 	if (baseRoot){
-		_url+="?employee="+baseRoot.employee;
+		if (baseRoot.employee)
+			_url+="&employee="+baseRoot.employee;
+		else
+			_url+="&employee="+baseRoot;
+	}
+
+	if (hierarchy){
+		_url+="&hierarchy="+hierarchy;
+		$('#hierarchyType').text(hierarchy);
 	}
 	console.log("** render(): date = "+date+" - root: "+baseRoot+" -- url: "+_url);
 

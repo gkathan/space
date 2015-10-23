@@ -33,7 +33,7 @@ passport.use('local-signin', new LocalStrategy(
 				return done(err);
 			}
 			if (!user) {
-				console.log("...invalid user / or wrong password");
+				console.log("[local-signin] says ...invalid user / or wrong password");
 				return done(null, false, { message: 'Unknown user ' + username });
 			}
 			console.log("...[OK]");
@@ -61,8 +61,11 @@ passport.use('bptyAD-signin',new WindowsStrategy({
     var user = {};
 
     user.id=profile.id;
-    user.username=profile.displayName;
+    user.username=profile._json.sAMAccountName;
     user.emails = profile.emails;
+    user.division=profile._json.division;
+    user.department=profile._json.department;
+    user.displayname = profile.displayName;
     user.title=profile._json.title;
     user.location= profile._json.physicalDeliveryOfficeName;
     user.tel=profile._json.telephoneNumber;
@@ -109,26 +112,34 @@ router.post('/', function(req,res,next){
 			req.logIn(user, function(err) {
 				if (err) { return next(err); }
 				console.log("[we are very close :-), req.session.ORIGINAL_URL: "+req.session.ORIGINAL_URL);
+        console.log("[we are very close :-), req.originalUrl: "+req.originalUrl);
+
 				var sess = req.session;
         var _redirect;
         if (user.role=="customer") _redirect ="/dashboard/opsreport";
+
 				sess.AUTH = user.role;
-				sess.USER = user.username;
+        sess.USER = user.username;
 				sess.CONTEXT = user.context;
 
-        var orgService = spaceServices.OrganizationService;
-        var _username = req.session.USER;
-        var _first = _username.split(" ")[0];
-        var _last = _.last(_username.split(" "));
+        if (user.displayname){
+          sess.DISPLAYNAME = user.displayname;
+          sess.DIVISION = user.division;
 
-        orgService.findEmployeeByFirstLastName(_first,_last,function(err,employee){
+          var orgService = spaceServices.OrganizationService;
+          var _displayname = user.displayname;
+          var _first = _displayname.split(" ")[0];
+          var _last = _.last(_displayname.split(" "));
 
-          if (employee)
-            sess.USERID=employee["Employee Number"];
-
-
-  				res.send({AUTH:user.role,ORIGINAL_URL:req.session.ORIGINAL_URL,REDIRECT_URL:_redirect});
-        });
+          orgService.findEmployeeByFirstLastName(_first,_last,function(err,employee){
+            if (employee)
+              sess.EMPLOYEEID=employee["Employee Number"];
+    				res.send({AUTH:user.role,ORIGINAL_URL:req.session.ORIGINAL_URL,REDIRECT_URL:_redirect});
+            return;
+          });
+        }
+        else
+				    res.send({AUTH:user.role,ORIGINAL_URL:req.session.ORIGINAL_URL,REDIRECT_URL:_redirect});
 			});
 		})(req, res, next);
 });

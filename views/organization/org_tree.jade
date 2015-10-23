@@ -26,6 +26,10 @@ block content
 					br
 					img(id="orgRootImage" src="" width="50px" height="50px")
 				br
+				span(style="font-size:9px") employee: #{employeeId}
+				br
+				span(style="font-size:9px") hierarchy: 
+				span(id="hierarchyType" style="font-size:9px;font-weight:bold") #{hierarchy}
 			.panel-body
 				div.row(style="margin-left:10px;margin-bottom:10px")
 					div(id="orgTreeChart")
@@ -50,26 +54,24 @@ block content
 	include ../includes/material	
 	
 	script.
-		var _date = '#{orgdate}'
-		var _root;// = '#{root}'
+		var _date = '#{orgdate}';
+		var _hierarchy = '#{hierarchy}';
+		var _employeeId = '#{employeeId}'
+		var _employee = '#{employee}'
+		
 		
 		CONTEXT="orgtree";
-		// in public/javascripts/organization/org_tree.js
-		
-		/*
-		if (_root){
-			_root = searchTreeBy(orgTree,"name",_root) 
-		}
-		*/
-		render(_root,_date);
+	
+		render(_employee,_date,_hierarchy);
 		
 		$('#upToParent').on('click', function () {
 			console.log("up2parent request called..."+baseRoot.parent);
 			
 			var _up = searchTreeBy(orgTree,"name",baseRoot.parent.name) 
 			
-			
-			render(_up,_date);
+			render(_up,_date,_hierarchy);
+			// switch to other hierarchy via javascript e.g. 
+			// render(null,null,"hr")
 			
 		});
 						
