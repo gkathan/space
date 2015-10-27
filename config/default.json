@@ -150,9 +150,17 @@
 				},
 				"target": {
 					"openedAt" : ["2015-10-01", "2015-12-31"],
-					"categoryExclude":["Request","Misplaced Call"],
-					"businessServiceExclude":"hardcoded",
-					"labelExclude":"hardcoded"
+					"categoryExclude":["Request","Misplaced Call","Failure"],
+					"businessServiceExclude":["Workplace"],
+					"labelExclude":["Kalixa Accept","Kalixa Pay","Kalixa Pro","Kalixa rePower","No Labels"],
+					"assignmnetGroupExclude":["corpIT","IT Service Desk"]
+				},
+				"compare": {
+					"openedAt" : ["NOW-90"],
+					"categoryExclude":["Request","Misplaced Call","Failure"],
+					"businessServiceExclude":["Workplace"],
+					"labelExclude":["Kalixa Accept","Kalixa Pay","Kalixa Pro","Kalixa rePower","No Labels"],
+					"assignmnetGroupExclude":["corpIT","IT Service Desk"]
 					}
 				},
 			"mobileShare":{

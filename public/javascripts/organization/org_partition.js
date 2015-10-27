@@ -14,10 +14,11 @@ var vis = d3.select("#d3container").append("div")
 var partition = d3.layout.partition()
     .value(function(d) { return d.companyYears; });
     //.value(function(d) { if (d.children) return d.children.length; else return 1;});
+var root;
 
 d3.json("/api/space/rest/organizationtree", function(data) {
 //d3.json("flare.json", function(root) {
-  var root =data.tree;
+   root =data.tree;
 	var stats = data.stats;
 	$("#stats").text(JSON.stringify(stats));
 	var g = vis.selectAll("g")

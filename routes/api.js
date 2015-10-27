@@ -715,6 +715,9 @@ function getRoadmapInitiatives(req,res,next){
 
 }
 
+/**
+db.incidents.count({priority:"P01 - Critical",openedAt:{$gte:new ISODate("2015-10-01"),$lt:new ISODate("2015-10-27")},category:{$nin:["Failure","Request","Misplaced Call"]},businessService:{$not:/^Workplace/},label:{$nin:["Kalixa Accept","Kalixa Pay","Kalixa Pro","Kalixa rePower"]},assignmentGroup:{$nin:["corpIT","IT Service Desk","No Labels"]}})
+*/
 function getIncidentKPIs(req,res,next){
   logger.debug("getIncidentKPIs ------------");
 
