@@ -3,6 +3,9 @@ include ../kanban_menu
 script(src="/javascripts/kanban/kanban_config.js")
 script(src="/javascripts/organization/org_util.js")
 
+script(src='/javascripts/components/jade-runtime.js/runtime.js')
+script(src='/javascripts/_jade/organization/_employeeNode.js')
+
 style.
 	.node circle {
 		fill: #fff;
@@ -18,22 +21,22 @@ style.
 		stroke-width: 2px;
 	}
 
+
 block content
-	div.notifications.top-left
-	div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;background-color:white;width:800px;text-align: left;margin: 10px auto;")
-		.panel-heading
-			i.glyphicon.glyphicon-book(style="font-size:15px")
-			span(style="font-size:20px")&nbsp; #{collection.toUpperCase()} 
-			if orgdate
-				span(style="font-size:20px")&nbsp; #{orgdate.toUpperCase()} 
-			span(style="font-size:20px")&nbsp; - TREE VERTICAL 
-			if baseRoot
-				div(style="font-size:12px") #{baseRoot["Employee Number"]} - #{baseRoot["First Name"]} #{baseRoot["Last Name"]} 
-			div(id="stats" style="font-size:10px")
+	div.container-fluid
+	
+		div.panel(id="orgpanel" style=" position: relative;padding: 20px 40px 40px;display: block;background-color:white;width:800px;text-align: left;margin: 10px auto;")
+			.panel-heading
+				i.glyphicon.glyphicon-book(style="font-size:15px")
+				span(style="font-size:20px")&nbsp; #{collection.toUpperCase()} 
+				if orgdate
+					span(style="font-size:20px")&nbsp; #{orgdate.toUpperCase()} 
+				span(style="font-size:20px")&nbsp; - TREE VERTICAL 
 			div(style="font-size:8px")
-				|-- this is a alpha version of an orgchart browser --
-		.panel-body
-			div(id="d3container")
+					|-- this is a alpha version of an orgchart browser --
+			.panel-body
+				
+				div(id="d3container")
 
 	script(type="text/javascript").
 		var date = '#{orgdate}'

@@ -1,0 +1,22 @@
+// example of a client side jade template
+block content
+	div.panel(style=" position: relative;display: block;background-color:white;;width:300px;text-align: center;margin: 5px auto;")
+		.panel-body
+			table(style="width:300px")
+				tr
+					td(rowspan="2" style="vertical-align:top;width:#{size}px")
+						img.img-circle(src='/images/employees/circle/#{employee.name}.png' height="#{sizeImage}px") 
+					td(style="padding-left:5px;font-size:#{sizeName}px;text-align:left;vertical-align:bottom;font-weight:bold")
+						|#{employee.employee}
+				tr
+					td(style="padding-left:5px;text-align:left")
+						div(style="font-size:9px;font-weight:normal;vertical-align:top") #{employee.name} #{employee.job} - #{employee.contract}
+						div(style="font-size:9px;font-weight:normal;vertical-align:top") #{employee.jobTitleLocal}
+						div(style="font-size:9px;font-weight:normal;vertical-align:top") #{employee.costcenter}
+						div(style="font-size:9px;font-weight:normal;vertical-align:top") #{employee.location}
+						div(style="font-size:9px;font-weight:normal;vertical-align:top") #{employee.legalentity}
+						if employee.children 
+							div(style="font-size:9px;font-weight:normal;vertical-align:top") #{employee.children.length} direct reports
+						div(style="font-size:9px;font-weight:normal;vertical-align:top") #{employee.companyYears} years
+						
+						

@@ -98,7 +98,7 @@ gutil.log("knownoptions: "+JSON.stringify(knownOptions));
 
 gulp.task("jadegen",function(){
   gutil.log("generating client side jade functions.... ");
-  gulp.src('./views/_*.jade')
+  gulp.src('./views/**/_*.jade')
     .pipe(jade({
       client: true
     }))

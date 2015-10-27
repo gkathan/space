@@ -1247,16 +1247,20 @@ function getOrganizationTrend(req,res,next){
 
 function getOrganizationTree(req,res,next){
 	var _employee = req.query.employee;
-	
+	var _employeeId = req.query.employeeId;
 	var _hierarchyType = req.query.hierarchy;
-
 
 	if (!_hierarchyType) _hierarchyType ="bp";
 
 
+	var _below;
+	if (_employee) _below={name:"employee",value:_employee};
+	else if (_employeeId) _below={name:"name",value:_employeeId};
 
-	if (_employee){
-			organizationService.getTreeBelow(_employee,_hierarchyType,function(err,data){
+
+
+	if (_below){
+			organizationService.getTreeBelow(_below,_hierarchyType,function(err,data){
 			if (err) res.send(err.message);
 			else if (data) res.send(data)
 		});
@@ -1273,11 +1277,17 @@ function getOrganizationTree(req,res,next){
 function getOrganizationTreeHistory(req,res,next){
 	var _date = req.params.date;
 	var _employee =req.query.employee;
+	var _employeeId =req.query.employeeId;
 	var _hierarchyType = req.query.hierarchy;
 	if (!_hierarchyType) _hierarchyType ="bp";
 
-	if (_employee){
-		organizationService.getTreeHistoryBelow(_date,_employee,_hierarchyType,function(err,data){
+	var _below;
+	if (_employee) _below={name:"employee",value:_employee};
+	else if (_employeeId) _below={name:"name",value:_employeeId};
+
+
+	if (_below){
+		organizationService.getTreeHistoryBelow(_date,_below,_hierarchyType,function(err,data){
 			if (err) res.send(err.message);
 			else if (data) res.send(data);
 		});

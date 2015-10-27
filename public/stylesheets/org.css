@@ -4,13 +4,11 @@
 
 .node:hover {
   stroke: #ffcd03;
-  stroke-width: 5px;
-  
-  
+  stroke-width: 2px;
 }
 
 .node--root {
-  
+
 }
 
 .node--leaf {
@@ -21,9 +19,9 @@
   font: 12px "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-weight:bold;
   text-anchor: middle;
-  
+
   fill: black;
-  
+
 }
 
 .label,

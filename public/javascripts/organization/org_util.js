@@ -31,3 +31,40 @@ function show(data){
 		console.log(_text);
 	}
 }
+
+
+/**
+ * recursive search by name and value
+ * and returns the match as new root
+ */
+function searchTreeBy(node,searchName,searchValue){
+  	var children = node.children;
+  	if (children){
+  		for (var i in children){
+        if (children[i][searchName] == searchValue){
+          return children[i];
+        }
+        else{
+          var found = searchTreeBy(children[i],searchName,searchValue);
+          if (found){
+             //console.log("xxxxxx");
+             return found;
+          }
+        }
+  		}
+  	}
+    else{
+      return;
+    }
+}
+
+/**
+checks whether parameter is a name (first name, last name) or an E1234 id
+*/
+function checkId(name){
+	var _split = name.split("E");
+	if (_split.length>1){
+		if (_.isNumber(parseInt(_split[1]))) return true;
+	}
+	return false;
+}

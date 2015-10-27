@@ -71,7 +71,7 @@ function _init(){
 
 /** main entry
 * called from .jade views
-* TODO: refactor => this is quite ugly ununderstandable code ;-) 
+* TODO: refactor => this is quite ugly ununderstandable code ;-)
 */
 function render(baseRoot,date,hierarchy){
 
@@ -339,31 +339,4 @@ function expandAll(items){
 			items[i].children =null;
 		}
 	}
-}
-
-
-
-/**
- * recursive search by name and value
- * and returns the match as new root
- */
-function searchTreeBy(node,searchName,searchValue){
-  	var children = node.children;
-  	if (children){
-  		for (var i in children){
-        if (children[i][searchName] == searchValue){
-          return children[i];
-        }
-        else{
-          var found = searchTreeBy(children[i],searchName,searchValue);
-          if (found){
-             //console.log("xxxxxx");
-             return found;
-          }
-        }
-  		}
-  	}
-    else{
-      return;
-    }
 }
