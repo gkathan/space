@@ -50,7 +50,10 @@ router.get('/', function(req, res) {
 					res.locals.lastSyncReturnOnRoadmap=config.targets.kpis.returnOnRoadmap.lastSync;
 					res.locals.lastSyncB2B=config.targets.kpis.B2B.lastSync;
 					logger.debug("l1 targets: "+ l1targets);
-					res.render('dashboard', { title: 's p a c e - dashboards' });
+					if (req.session.AUTH=="customer")
+						res.redirect("/login");
+					else
+						res.render('dashboard', { title: 's p a c e - dashboards' });
 				})
 			})
 
