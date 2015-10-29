@@ -32,6 +32,8 @@ var assert = require("assert")
 
 var avCalculatorService = require('../services/AvailabilityCalculatorService');
 
+var spaceServices = require('space.services');
+
 describe('AvailabilityCalculatorService', function(){
 //_processServices(type,services,injectedServices,from,to,filter,endUserAffected,callback,testMapping,testIncidents){
 
@@ -341,7 +343,7 @@ describe('AvailabilityCalculatorService', function(){
 
 			var _filter = {customer:"bwin"};//["bwin.com","bwin.it","bwin.fr","bwin.es","gamebookers.com"];
 
-			var socService=require('../services/SOCService');
+			var socService=spaceServices.SOCService;
 			socService.findServicesMain(function(err,services){
 				//logger.debug("SOC services: "+JSON.stringify(services));
 

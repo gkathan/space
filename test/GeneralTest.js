@@ -74,7 +74,7 @@ describe('General stuff', function(){
 	})
 })
 
-
+/*
   describe('#updating mongodb records', function(){
     it('test how to update existing records', function(done){
 
@@ -97,7 +97,7 @@ describe('General stuff', function(){
 
 		})
 	})
-
+*/
 
 
 })

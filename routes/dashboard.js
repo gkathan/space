@@ -4,6 +4,7 @@ var _ = require('lodash');
 
 var config = require('config');
 var moment = require('moment');
+require('moment-duration-format');
 var accounting = require('accounting');
 
 
@@ -264,7 +265,7 @@ function _enrichIncidents(incidents,problems){
 
 
 function _createTTR(time,sla){
- 	var d = moment.duration(time);
+	var d = moment.duration(time);
    var _ttrString =  d.format("h:mm:ss", { trim: false })
 		if (d>=86400000) _ttrString = d.format("d[d] h:mm:ss", { trim: false });
 		var _return ={ttrHours:d/60000/60,ttrString:_ttrString,slaBreach:false};

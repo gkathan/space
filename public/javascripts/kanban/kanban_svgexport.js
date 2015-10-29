@@ -28,6 +28,37 @@ function submit_download_form(output_format,css)
 
     if (!css) css="/stylesheets/space.css";
 
+    var _cssLink = "http://localhost:3000/stylesheets/space.css";
+
+
+
+
+    //var declaration ="<?xml-stylesheet href=\""+document.styleSheets[i].href+"\" type=\"text/css\"?>";
+
+    // lets serach and pick the space.css
+    var _spaceCSSLink;
+    var _orgCSSLink;
+
+    for (var i in document.styleSheets){
+      var _href = document.styleSheets[i].href;
+      console.log("space css: "+_href);
+
+
+      if (_href && _href.indexOf('space.css')>-1){
+       _spaceCSSLink = _href;
+       console.log("**************** FOUND space css: "+_spaceCSSLink);
+      }
+        if (_href && _href.indexOf('org.css')>-1){
+         _orgCSSLink = _href;
+         console.log("**************** FOUND org css: "+_orgCSSLink);
+        }
+
+    }
+    var declaration ="<?xml-stylesheet href='"+_spaceCSSLink+"' type=\"text/css\"?>";
+    declaration+="<?xml-stylesheet href='"+_orgCSSLink+"' type=\"text/css\"?>";
+
+
+
 	// 1) load css
 	$.ajax({
 		'url': css,
@@ -36,7 +67,7 @@ function submit_download_form(output_format,css)
 		'success':function(data){
 
 		// 2) wrap into CDATA
-		var _injectCSS ='<style type="text/css"> <![CDATA['+data+']]> </style>';
+		var _injectCSS = "";//'<style type="text/css"> <![CDATA['+data+']]> </style>';
 		//console.log("_injectCSS = "+_injectCSS);
 
 		// 3) and inject via jquery
@@ -63,7 +94,8 @@ function submit_download_form(output_format,css)
 
 		// Extract the data as SVG text string
 		var svg_xml = (new XMLSerializer).serializeToString(svg);
-		svg_xml = svg_xml.replace('&lt;!', '<!', 'gm').replace(']&gt;', ']>', 'gm');
+
+    //svg_xml = svg_xml.replace('&lt;!', '<!', 'gm').replace(']&gt;', ']>', 'gm');
     //svg_xml = svg_xml.replace('&lt;', '<', 'gm').replace('&gt;', '>', 'gm');
   //  console.log("**********"+svg_xml);
 
@@ -74,9 +106,9 @@ function submit_download_form(output_format,css)
 
 		$.ajax({
 			type: 'POST',
-			data: {svg:svg_xml},
-			dataType: "json",
-      //contentType: 'text/plain',
+			data: declaration+svg_xml,
+			contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+      dataType: "xml",
 			//crossDomain:true,
 			url: TRANSCODE_URL+"?context="+CONTEXT+"&format="+output_format+"&width=1000&height=1000&scale=1",
       success: function(data){
@@ -84,7 +116,7 @@ function submit_download_form(output_format,css)
       },
       error: function(err){
         console.log("ERROR:"+JSON.stringify(err));
-        window.location = err.responseText;
+        //window.location = err.responseText;
       }
 		});
 

@@ -30,7 +30,7 @@ var assert = require("assert")
 describe('Kanban stuff', function(){
   describe('#testing client stuff()', function(){
     it('should return a formatted string from a given object', function(done){
-
+				done();
 		})
 	})
 })

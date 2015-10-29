@@ -48,7 +48,9 @@ style.
 -	}
 
 -	function formatTime(time){
-- 	var d = moment.duration(time);
+- 	console.log("...in formatTime()");
+-		var d = moment.duration(time);
+- 	console.log("format time says: "+d.format());
 -		if (d>=86400000) return d.format("d[d] h:mm:ss", { trim: false });
 -		return d.format("h:mm:ss", { trim: false });
 -	}
@@ -94,6 +96,7 @@ div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;back
 								a(href="#{sync.sync.url}" target="_new")|#{sync.name}
 							td 
 								|#{formatTime(sync.sync.intervalMinutes*60*1000)}
+								//|#{sync.sync.intervalMinutes*60*1000}
 							td(style="font-size:10px")
 								span(id="#{sync.name}_timestamp")  
 									if sync.syncInfo

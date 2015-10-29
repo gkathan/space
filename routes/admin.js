@@ -6,6 +6,7 @@ var express = require('express');
 var router = express.Router();
 var _ = require('lodash');
 var moment = require('moment');
+require('moment-duration-format');
 
 var config = require('config');
 var DB=config.database.db;
