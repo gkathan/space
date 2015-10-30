@@ -75,9 +75,9 @@ var PATH = {
 						REST_INCIDENTTRACKER_CUSTOMER : BASE+'/space/rest/incidenttracker/:customer',
 						REST_PROBLEMS : BASE+'/space/rest/problems',
 
-						REST_SOCOUTAGES : BASE+'/space/rest/soc_outages',
+						REST_SOCOUTAGES : BASE+'/space/rest/socoutages',
 						REST_SOCINCIDENT2REVENUEIMPACT : BASE+'/space/rest/socincident2revenueimpact',
-						REST_SOCSERVICES : BASE+'/space/rest/soc_services',
+						REST_SOCSERVICES : BASE+'/space/rest/socservices',
 
 
 
@@ -100,8 +100,8 @@ var PATH = {
 /*
 						REST_SYNCAVAILABILITY : BASE+'/space/rest/sync/availability',
 						REST_SYNCINCIDENTS : BASE+'/space/rest/sync/incidents',
-						REST_SYNCSOCOUTAGES : BASE+'/space/rest/sync/soc_outages',
-						REST_SYNCSOCSERVICES : BASE+'/space/rest/sync/soc_services',
+						REST_SYNCSOCOUTAGES : BASE+'/space/rest/sync/socoutages',
+						REST_SYNCSOCSERVICES : BASE+'/space/rest/sync/socservices',
 						REST_SYNCPROBLEMS : BASE+'/space/rest/sync/problems',
 						REST_SYNCAPM_LOGIN : BASE+'/space/rest/sync/apm/login',
 						REST_SYNCV1EPICS : BASE+'/space/rest/sync/v1epics',
@@ -143,8 +143,8 @@ var PATH = {
 						EXPORT_AVAILABILITY : BASE+'/space/export/xlsx/availability',
 						EXPORT_FIREREPORT : BASE+'/space/export/xlsx/firereport',
 						EXPORT_CONTENT : BASE+'/space/export/xlsx/content',
-						EXPORT_SOCOUTAGES : BASE+'/space/export/xlsx/soc_outages',
-						EXPORT_SOCSERVICES : BASE+'/space/export/xlsx/soc_services',
+						EXPORT_SOCOUTAGES : BASE+'/space/export/xlsx/socoutages',
+						EXPORT_SOCSERVICES : BASE+'/space/export/xlsx/socservices',
 						EXPORT_INCIDENTS : BASE+'/space/export/xlsx/incidents',
 						EXPORT_INCIDENTSOLDSNOW : BASE+'/space/export/xlsx/incidentsoldsnow',
 						EXPORT_PROBLEMS : BASE+'/space/export/xlsx/problems',

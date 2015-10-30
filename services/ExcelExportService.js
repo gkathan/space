@@ -587,7 +587,7 @@ function excelSOCOutages(req, res , next){
 		{caption:'highlight',type:'string',width:20,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'url',type:'string',width:40,captionStyleIndex:2,beforeCellWrite:_formatCell}
 	];
-    _generateAndSendExcel("soc_outages",conf,req,res,next);
+    _generateAndSendExcel("socoutages",conf,req,res,next);
 }
 
 
@@ -607,7 +607,7 @@ function excelSOCServices(req, res , next){
 		{caption:'Highlight',type:'string',width:12,captionStyleIndex:2,beforeCellWrite:_formatCell},
 		{caption:'ext_service',type:'string',width:12,captionStyleIndex:2,beforeCellWrite:_formatCell},
 	];
-    _generateAndSendExcel("soc_services",conf,req,res,next);
+    _generateAndSendExcel("socservices",conf,req,res,next);
 }
 
 

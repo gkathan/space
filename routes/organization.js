@@ -24,9 +24,6 @@ router.get("/", function(req, res, next) {
 	res.send("org base page");
 });
 
-router.get("/geo", function(req, res, next) {
-	res.render("organization/geo");
-});
 
 
 router.get("/facebook", function(req, res, next) {

@@ -30,8 +30,12 @@ router.get('/', function(req, res) {
 	res.locals.spaceNews = content;
 	res.locals.moment = require('moment');
 
-	res.render('index', { title: 's p a c e' });
-  //res.redirect("dashboard");
+  if (req.session.AUTH=="customer"){
+      res.redirect("/globe")
+  }
+  else
+	 res.render('index', { title: 's p a c e' });
+  
 	});
 });
 
@@ -50,6 +54,10 @@ router.get('/test/elements', function(req, res) {
 
 router.get('/test/partition', function(req, res) {
 	res.sendfile('public/partition.html');
+});
+
+router.get("/globe", function(req, res, next) {
+	res.render("stuff/globe");
 });
 
 

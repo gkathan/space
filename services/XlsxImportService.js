@@ -55,6 +55,9 @@ exports.convertXlsx2Json = function convertXlsx2Json (filename,req,done) {
 			else if (_collection=="organization"){
 				_handlers = [_handleOrganization];
 			}
+			else if (_collection=="socservices"){
+				_handlers = [_handleSOCServices];
+			}
 			else if (_collection.indexOf("target2employee")>-1){
 				_handlers = [_handleTarget2Employee];
 			}
@@ -82,7 +85,7 @@ exports.convertXlsx2Json = function convertXlsx2Json (filename,req,done) {
 								logger.debug("+++++++ _handler: "+_getFunctionName(_handler));
 								logger.debug("****async.series: 1) check if we should drop...");
 								// ok - this is also not beautiful ;-)
-								if (_getFunctionName(_handler) == "_handleOrganization" ||_getFunctionName(_handler) == "_handleTarget2Employee") {
+								if (_getFunctionName(_handler) == "_handleOrganization" ||_getFunctionName(_handler) == "_handleTarget2Employee" ||_getFunctionName(_handler) == "_handleSOCServices") {
 									_dropBeforeInsert=true;
 								}
 								if (_dropBeforeInsert){
@@ -247,6 +250,31 @@ function _handleOrganization(json,date,fillblanks,callback){
 	callback(json);
 	return;
 }
+
+/**
+ * pre-process SOCSErvices data
+ */
+function _handleSOCServices(json,date,fillblanks,callback){
+		// 1) overwrite latest into organization
+		// 2) add the same with date to organizationhistory
+	logger.debug("######################## _handleSOCServices called with date: "+date);
+	logger.debug("++++++++++++++++++++++++++++++++ length of json: "+json.length);
+
+	for (var j in json){
+		// and check if we find some "true" or "flase" string values and convert them to bool
+		var _keys = _.keys(json[j]);
+		for (var i in _keys){
+			var _key = _keys[i];
+			if (json[j][_key]=="TRUE" ||json[j][_key]=="true") json[j][_key]=true;
+			if (json[j][_key]=="FALSE" ||json[j][_key]=="false") json[j][_key]=false;
+			if (_key=="ServiceGroupID") json[j][_key] = parseInt(json[j][_key]);
+		}
+	}
+
+	callback(json);
+	return;
+}
+
 
 /**
  * pre-process target2employee mapping
