@@ -38,6 +38,9 @@ $.get( "/api/space/rest/availability", function( data ) {
     $('#leftdowntime').text(_leftdowntime);
     $('#trendAV').text(_projectedAV+"%");
 
+    var _avColorRange = [99.70,  _s1.directMetric,99.99];
+    var _avColor = ['red', 'gold', 'limegreen']; // the three color levels for the percentage values.
+
     if (_leftdowntimems<0 && _projectedAV<=_targetAV ){
       $('#leftdowntime').css("color","red");
       $('#leftdowntimeTitle').text("left");
@@ -45,6 +48,8 @@ $.get( "/api/space/rest/availability", function( data ) {
       $('#happyPath').css("color","red");
       $('#trendAV').text(_projectedAV+"%");
       $('#trendAV').css("color","red");
+      //it is in any case red....
+      _avColor=['red','red','red'];
     }
 
 
@@ -74,11 +79,11 @@ $.get( "/api/space/rest/availability", function( data ) {
         width: 39 // for adjusting arc thickness
         },
         color: {
-            pattern: ['red', 'gold', 'limegreen'], // the three color levels for the percentage values.
+            pattern: _avColor,
             threshold: {
     //            unit: 'value', // percentage is default
     //            max: 200, // 100 is default
-                values: [99.70,  _s1.directMetric,99.99]
+                values: _avColorRange
             }
         },
         size: {
@@ -94,13 +99,13 @@ $.get( "/api/space/rest/availability", function( data ) {
 
     setTimeout(function () {
         chart1.load({
-            columns: [['data', 99.50]]
+            columns: [['data', 99.78]]
         });
     }, 600);
 
     setTimeout(function () {
         chart1.load({
-            columns: [['data', 99.90]]
+            columns: [['data', 99.73]]
         });
     }, 900);
 
