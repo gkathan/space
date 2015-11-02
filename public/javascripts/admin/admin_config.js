@@ -21,8 +21,8 @@ function getConfig(collection){
 		case "content":  return getContentConfig();
     case "incidenttracker":  return getIncidenttrackerConfig();
 		case "domains":  return getDomainsConfig();
-		case "soc_outages" : return getSOCOutagesConfig();
-		case "soc_services" : return getSOCServicesConfig();
+		case "socoutages" : return getSOCOutagesConfig();
+		case "socservices" : return getSOCServicesConfig();
 		case "socincident2revenueimpact" : return getSOCIncident2RevenueImpactConfig();
 		case "roadmapinitiatives" : return getRoadmapInitiativesConfig();
 
@@ -334,7 +334,7 @@ function getSOCOutagesConfig(){
 
 
 function getSOCServicesConfig(){
-	var _soc_services =[
+	var _socservices =[
     { id: "id", name: "id", field: "_id",sortable:true,width:20,cssClass:"onKanbanImmutable"},
     { id: "context", name: "context", field: "context",sortable:true,width:80,cssClass:"onKanbanImmutable"},
 		{ id: "ServiceName", name: "ServiceName",  field: "ServiceName",width:250, editor: Slick.Editors.Text , cssClass: "cell-standard"},
@@ -347,7 +347,7 @@ function getSOCServicesConfig(){
 	var _config ={};
 	_config.mode="editable";
   _config.addRow="disabled";
-	_config.fields = _soc_services;
+	_config.fields = _socservices;
 	return _config;
 }
 

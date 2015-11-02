@@ -150,14 +150,14 @@ script.
 		spaceSyncerSocket.emit("forceSync",{syncer:"incidents"});
 	});
 	
-	$('#sync_soc_outages').on('click', function () {
+	$('#sync_socoutages').on('click', function () {
 		console.log("soc outagessync request called...");
-		spaceSyncerSocket.emit("forceSync",{syncer:"soc_outages"});
+		spaceSyncerSocket.emit("forceSync",{syncer:"socoutages"});
 	});
 	
-	$('#sync_soc_services').on('click', function () {
+	$('#sync_socservices').on('click', function () {
 		console.log("soc servicessync request called...");
-		spaceSyncerSocket.emit("forceSync",{syncer:"soc_services"});
+		spaceSyncerSocket.emit("forceSync",{syncer:"socservices"});
 	});
 
 

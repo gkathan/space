@@ -1,4 +1,4 @@
-var width = 800;
+var width = 700;
 var height = 500;
 
 /*
@@ -26,7 +26,7 @@ svg.append("path")
 */
 
 var projection = d3.geo.orthographic()
-    .scale(250)
+    .scale(200)
     .clipAngle(90);
 
 var canvas = d3.select("body").append("canvas")
@@ -60,9 +60,12 @@ var globe = {type: "Sphere"},
     return a.name.localeCompare(b.name);
   });
 
+  countries = shuffle(countries);
+
+
   (function transition() {
     d3.transition()
-        .duration(1000)
+        .duration(2000)
         .each("start", function() {
           $('#country').text(countries[i = (i + 1) % n].name);
         })
@@ -98,3 +101,25 @@ var globe = {type: "Sphere"},
     */
   });
 });
+
+
+// http://stackoverflow.com/questions/6274339/how-can-i-shuffle-an-array-in-javascript
+function shuffle(array) {
+    var counter = array.length, temp, index;
+
+    // While there are elements in the array
+    while (counter > 0) {
+        // Pick a random index
+        index = Math.floor(Math.random() * counter);
+
+        // Decrease counter by 1
+        counter--;
+
+        // And swap the last element with it
+        temp = array[counter];
+        array[counter] = array[index];
+        array[index] = temp;
+    }
+
+    return array;
+}

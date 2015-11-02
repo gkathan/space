@@ -2,7 +2,7 @@ include ../kanban_menu
 script(src="/javascripts/components/d3-geo-projection/d3.geo.projection.min.js")
 
 script(src="/javascripts/components/topojson/topojson.js")
-script(src="/javascripts/organization/org_geo.js")
+script(src="/javascripts/stuff/globe.js")
 
 style.
 	stroke: white;
@@ -36,7 +36,10 @@ style.
 		font-size: 18px;
 		text-align: center;
 		width: 960px;
+		
 	}
 
 block 
+	div(id="globe")
 	h1(id="country")
+	
