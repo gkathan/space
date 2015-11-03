@@ -41,12 +41,16 @@ $.get( "/api/space/rest/availability", function( data ) {
     var _avColorRange = [99.70,  _s1.directMetric,99.99];
     var _avColor = ['red', 'gold', 'limegreen']; // the three color levels for the percentage values.
 
+    $('#trendAV').text(_projectedAV+"%");
+    $('#happyPath').text("happy path without further downtime");
+
     if (_leftdowntimems<0 && _projectedAV<=_targetAV ){
       $('#leftdowntime').css("color","red");
       $('#leftdowntimeTitle').text("left");
-      $('#happyPath').text("happy path without further downtime");
+      $('#trendAV').text("");
+
       $('#happyPath').css("color","red");
-      $('#trendAV').text(_projectedAV+"%");
+      $('#happyPath').text("target out of reach...")
       $('#trendAV').css("color","red");
       //it is in any case red....
       _avColor=['red','red','red'];
