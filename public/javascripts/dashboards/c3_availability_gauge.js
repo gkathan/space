@@ -69,12 +69,12 @@ $.get( "/api/space/rest/availability", function( data ) {
         gauge: {
             label: {
                 format: function(value, ratio) {
-                    return value;
+                    return parseFloat(value).toFixed(2);
                 },
                 show: true // to turn off the min/max labels.
             },
-        min: 99, // 0 is default, //can handle negative min e.g. vacuum / voltage / current flow / rate of change
-        max: 99.9, // 100 is default
+        min: 99.00, // 0 is default, //can handle negative min e.g. vacuum / voltage / current flow / rate of change
+        max: 99.90, // 100 is default
         units: '%',
         width: 39 // for adjusting arc thickness
         },
@@ -111,15 +111,21 @@ $.get( "/api/space/rest/availability", function( data ) {
 
     setTimeout(function () {
         chart1.load({
-            columns: [['data', 99.40]]
+            columns: [['data', 99.45]]
         });
     }, 1200);
 
     setTimeout(function () {
         chart1.load({
-            columns: [['data', availability.unplannedYTD]]
+            columns: [['data', 99.75]]
         });
     }, 1500);
+
+    setTimeout(function () {
+        chart1.load({
+            columns: [['data', parseFloat(availability.unplannedYTD).toFixed(2)]]
+        });
+    }, 1800);
 
   });
 });

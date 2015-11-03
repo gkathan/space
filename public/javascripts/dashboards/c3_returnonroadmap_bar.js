@@ -24,14 +24,12 @@ function _drawChart4(tracker,target,minRange,ticks){
           columns: [
               tracker,
               target
-
           ],
           type: 'bar',
           types:{
             "return on roadmap":'bar'
           }
       },
-
       axis: {
           x: {
               type: 'category',
@@ -43,12 +41,10 @@ function _drawChart4(tracker,target,minRange,ticks){
             // Range includes padding, set 0 if no padding needed
             // padding: {top:0, bottom:0}
             tick: {
-
               format: function (d) { return d+'%'; }
             }
         }
     }
-
   });
 
 }
