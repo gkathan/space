@@ -62,7 +62,7 @@ router.get('/history', function(req, res) {
 });
 
 
-router.get('/planningepics', function(req, res) {
+router.get('/initiativeepics', function(req, res) {
 	var _filter = {};
 	syncService.getLastSync("v1epics",function(err,sync){
 		v1Service.getPlanningInitiatives(_filter,function(err,result){
@@ -94,7 +94,7 @@ router.get('/planningepics', function(req, res) {
 				res.locals.initiatives = epics;
 				res.locals.moment=moment;
 				res.locals.lastSync = sync.lastSync;
-				res.render('portfolio/planningepics'), { title: 's p a c e - planning epics overview ' }
+				res.render('portfolio/initiativeepics'), { title: 's p a c e - initiative epics overview ' }
 			});
 		});
 	});

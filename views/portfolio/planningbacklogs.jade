@@ -16,13 +16,13 @@ block content
 			//| refresh interval: #{config.sync.v1epics.intervalMinutes} minutes
 			br
 			
-			a(href="/portfolio/planningepics") view planning epics
+			a(href="/portfolio/initiativeepics") view initiative epics
 			br
 			if initiativesBoardId
 				a(style="font-size:11px" href="/boards/kanban/#{initiativesBoardId}") level-1 timeline board - backlogs initiatives(*experimental) 
 				br
 			if planningEpicsBoardId
-				a(style="font-size:11px" href="/boards/kanban/#{planningEpicsBoardId}") level-2 timeline board - backlogs planningepics(*experimental) 
+				a(style="font-size:11px" href="/boards/kanban/#{planningEpicsBoardId}") level-2 timeline board - backlogs initiative epics(*experimental) 
 				br
 			if roadmapBoardId
 				a(style="font-size:11px" href="/boards/kanban/#{roadmapBoardId}") roadmap board - initiatives - clustered by status|product(*experimental) 
