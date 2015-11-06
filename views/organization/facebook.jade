@@ -3,7 +3,7 @@ include ../kanban_menu
 
 block content
 	
-div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;background-color:white;width:1200px;text-align: center;margin: 10px auto;")
+div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;background-color:white;max-width:1200;text-align: center;margin: 10px auto;")
 	.panel-heading
 		if costcenter
 			span(style="font-family:arial;font-weight:normal;font-size:20px;color:lightgrey") #{costcenter} FACEBOOK 
@@ -26,7 +26,7 @@ div.panel(style=" position: relative;padding: 20px 40px 40px;display: block;back
 		
 		
 		each employee in employees
-			img.img-circle(src='/images/employees/circle/#{employee["Employee Number"]}.png' height="#{size}px" width="#{size}px")
+			img(src='/images/employees/circle/#{employee["Employee Number"]}.png' height="#{size}px" width="#{size}px" onerror="this.src = '/images/employee.png';")
 			a(href='https://my.bwinparty.com/People/#{_.first(employee["Last Name"])}/#{employee["First Name"]}#{employee["Last Name"]}#{employee["Employee Number"]}.aspx' target="_blank") 
 				span(style="font-size:9px") #{employee["First Name"]} | 
 							

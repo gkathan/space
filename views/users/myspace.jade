@@ -6,7 +6,7 @@ mixin renderEmployee(employee,size)
 		table(style="width:300px")
 			tr
 				td(rowspan="2" style="vertical-align:top;width:#{size}px")
-					img.img-circle(src='/images/employees/squared/#{employee["Employee Number"]}_square.png' height="#{size}px") 
+					img(src='/images/employees/circle/#{employee["Employee Number"]}.png' height="#{size}px") 
 				td(style="padding-left:5px;font-size:#{nameSize}px;text-align:left;vertical-align:bottom;font-weight:bold")
 					|#{employee["First Name"]} #{employee["Last Name"]}
 			tr

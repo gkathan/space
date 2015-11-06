@@ -287,7 +287,7 @@ mixin renderL2TargetDetail(target)
 					td(style="width:70px;text-align:right;font-style:italic;color:grey;font-size:10px;vertical-align:middle")
 						|Sponsor
 					td(style="width:350px;vertical-align:middle")
-						img.img-circle(id ="modal_sponsor_icon" src="" height="30" width="30")
+						img(id ="modal_sponsor_icon" src="" height="30" width="30")
 						span(id="targetSponsor" style="font-weight:normal;vertical-align:middle;margin-left:10px;font-size:12px")
 				tr(style="vertical-align:top")
 					td(style="text-align:right;font-style:italic;color:grey;font-size:10px;vertical-align:middle")
@@ -571,7 +571,7 @@ script.
 				//$( ".result" ).html( data );
 				console.log("**** IMAGE employee: "+data["Employee Number"]);
 				if (data) {
-					var _url = "http://my.bwinparty.com/api/people/images/"+data["Employee Number"];
+					var _url = "/images/employees/circle/"+data["Employee Number"]+".png";
 					console.log("url: "+_url);
 					$("#modal_sponsor_icon").attr("src",_url);
 				}

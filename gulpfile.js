@@ -12,6 +12,7 @@ var mocha = require('gulp-mocha');
 var git = require('gulp-git');
 var mongojs = require('mongojs');
 var jade = require('gulp-jade');
+var exec = require('child_process').exec;
 
 var jshint = require('gulp-jshint');
 var stylish = require('jshint-stylish');
@@ -51,6 +52,10 @@ var version = config.version;
 var timestamp = moment(new Date()).format("YYYYMMDD_HHmmss");
 
 var VERSION = require('./package.json').version;
+
+var TENANT = "bpty";
+
+
 var BASE = config.gulp.baseDir;
 var REMOTE_BASE = config.gulp.remoteBaseDir;
 var DIST = BASE+"dist/package/";
@@ -59,20 +64,28 @@ var DROPBOX = "Dropbox/_work/space/";
 var RESTORE = "./";
 var PACKAGE = "space_v"+version+"_build_"+timestamp;
 var PACKAGE_EXTENSION = ".zip";
+
 var TRANSFER = DIST+"space.zip";
+
+var TENANT_BUNDLE = 'public.'+TENANT+PACKAGE_EXTENSION;
+var TRANSFER_TENANTBUNDLE = DIST+"public."+TENANT+".zip";
+
 var INSTALL = "./bin/scripts/*.sh";
 var TARGET = './space.zip';
+var TARGET_BUNDLE = './'+TENANT_BUNDLE;
+
 var SCRIPT_TARGET = './space_scripts.zip';
 
 var TEMP_MERGEDPUBLICDIR ="./public.merged/";
 
+var TENANT_BPTY = "./public.bpty/";
 
 var TRANSFERCONFIG = "./config/production.json";
 var TARGETCONFIG = "./space/app/config/production.json";
 
-
 var REMOTE_SETUP = ['./space_setup.sh'];
 var REMOTE_DEPLOY = ['./space/scripts/space_deploy.sh'];
+var TENANTBUNDLEREMOTE_DEPLOY = ['./space/scripts/space_tenantbundledeploy.sh'];
 var REMOTE_START = ['./space/scripts/space_start.sh'];
 var REMOTE_MONGODUMP = ['./space/scripts/space_mongodump.sh'];
 var REMOTE_FILESDUMP = ['./space/scripts/space_filesdump.sh'];
@@ -84,8 +97,6 @@ var FILESDUMP = 'filesdump_space.zip';
 
 var MONGORESTORE = DUMP + 'mongodump_space'+SERVER.env+".zip";
 var MONGORESTORE_TARGET = './mongorestore_space'+SERVER.env+".zip";
-
-
 
 var knownOptions = {
   string: 'target',
@@ -143,12 +154,9 @@ gulp.task('package', function () {
 gulp.task('copy',function(){
 	 gutil.log("[s p a c e - copy] copy and rename - source: "+DIST+PACKAGE+PACKAGE_EXTENSION);
 	 gutil.log("[s p a c e - copy] target: "+TRANSFER);
-
-
 	 return gulp.src(DIST+PACKAGE+PACKAGE_EXTENSION)
         .pipe(rename(TARGET))
         .pipe(gulp.dest(DIST));
-
 });
 
 
@@ -318,8 +326,6 @@ gulp.task('remotemongorestore', function () {
     .pipe(gulp.dest('logs'));
 });
 
-
-
 /**
  * uploads and restores db data
  */
@@ -342,9 +348,6 @@ gulp.task('remote_untar_mongorestore', function () {
     .pipe(gulp.dest('logs'));
 });
 
-
-
-
 gulp.task('remotemongorestore', function () {
    gutil.log("[s p a c e -restore] remote monorestore - execute: "+REMOTE_MONGORESTORE.join(','));
 
@@ -362,8 +365,7 @@ gulp.task('remotemongorestore', function () {
  *  copies s p a c e  scripts to REMOTE
  */
 gulp.task('setup',function(callback){
-    gutil.log("[s p a c e -setup] ****** going to install latest shell scripts "+SERVER.host+" -> "+SERVER.env);
-
+  gutil.log("[s p a c e -setup] ****** going to install latest shell scripts "+SERVER.host+" -> "+SERVER.env);
 	runSequence('transferscripts','transfersetup','remoteunpackscripts',callback);
 });
 
@@ -388,6 +390,80 @@ gulp.task('remoteunpackscripts', function () {
     .exec(REMOTE_SETUP,{filePath: 'logs/space_remotesetup.log'})
     .pipe(gulp.dest('logs'));
 });
+
+
+
+
+gulp.task('employeeimages',function(callback){
+  gutil.log("[s p a c e - employeeimages] ****** ");
+	runSequence('employeeimagessync','employeeimagesenrich','employeeimagescopy',callback);
+});
+
+gulp.task('employeeimagessync', function(callback) {
+    gutil.log("[s p a c e - employeeimagessync] extracting and circlecropping all employees images from intranet ");
+     exec('node utils/syncImages.js', {maxBuffer: 1024 * 100000}, function (err, stdout, stderr) {
+       callback();
+      });
+});
+
+// needs to be run manually as last hangs
+gulp.task('employeeimagesenrich', function(callback) {
+  gutil.log("[s p a c e - employeeimagesenrich] *****executing");
+  exec('node utils/enrichImages.js', {maxBuffer: 1024 * 50000}, function (err, stdout, stderr) {
+    callback();
+  });
+});
+
+
+// needs to be run manually as last hangs
+gulp.task('employeeimagescopy',function(){
+	 gutil.log("[s p a c e - employeeimagescopy] copy employees to space DEV: "+TENANT_BPTY+"images/employees/circle/");
+		 return gulp.src("./temp/imagesync/*")
+        //.pipe(rename(TARGET))
+        .pipe(gulp.dest(TENANT_BPTY+"images/employees/circle/"));
+});
+
+
+/**
+* full task to create copy and deploy an update bundle
+*/
+gulp.task('tenantbundle',function(callback){
+  gutil.log("[s p a c e - employeeimages] ****** ");
+	runSequence('tenantbundlecreate','tenantbundletransfer','tenantbundleremotedeploy',callback);
+});
+
+/**
+* creates a bundle of tenant specific static resources / images
+*/
+gulp.task('tenantbundlecreate', function () {
+    var _src = ['./public.'+TENANT+'/**'];
+
+    gutil.log('[s p a c e - tenantbundle] package tenant specific resources - ', '_src:'+_src.join(","));
+    gutil.log('[s p a c e - package] package name: ', TENANT_BUNDLE);
+    gutil.log('[s p a c e - package] destination: ', DIST);
+    return gulp.src(_src)
+    .pipe(zip(TENANT_BUNDLE))
+    .pipe(gulp.dest(DIST));
+});
+
+gulp.task('tenantbundletransfer', function () {
+  gutil.log("[s p a c e - tenantbundletransfer] scp stuff - source: "+TRANSFER_TENANTBUNDLE,"target: "+TARGET);
+  gutil.log("[s p a c e - tenantbundletransfer] ssh config: host: "+SERVER.host+" ,port: "+SERVER.port+" ,username: "+SERVER.username+" , password : "+SERVER.password);
+  return gulp.src(TRANSFER_TENANTBUNDLE)
+    .pipe(gulpSSH.sftp('write', TARGET_BUNDLE));
+});
+
+gulp.task('tenantbundleremotedeploy', function () {
+   gutil.log("[s p a c e - tenantbundleremotedeploy] remote deploy - execute: "+REMOTE_DEPLOY.join(','));
+   return gulpSSH
+    .exec(TENANTBUNDLEREMOTE_DEPLOY, {filePath: 'space_tenantbundleremotedeploy.log'})
+    .pipe(gulp.dest('logs'));
+});
+
+
+
+
+
 
 
 gulp.task('lint', function() {

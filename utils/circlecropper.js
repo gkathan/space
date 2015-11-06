@@ -29,7 +29,6 @@ function convertToCircle(){
   console.log("_dir: "+_dir);
   //var _dir = "./temp/testimages/";
   fs.readdir(_dir,function(err,files){
-
   	async.eachSeries(files,
       function(f, done){
         console.log("file: "+f);
@@ -52,5 +51,4 @@ function convertToCircle(){
         }
       });
     })
-
 }

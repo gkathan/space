@@ -2,6 +2,7 @@ var treeData;
 var i = 0;
 var svg;
 var margin;
+var width;
 var tree;
 var diagonal;
 
@@ -68,7 +69,7 @@ function init(stats){
 	$('#orgpanel').css("width",_width+200+"px");
 	console.log("_height: "+_height+" _widht: "+_width);
 	margin = {top: 40, right: 50, bottom: 20, left: 50},
-		width = _width - margin.right - margin.left,
+		width = 200+_width - margin.right - margin.left,
 		height = _height - margin.top - margin.bottom;
 	// https://github.com/mbostock/d3/wiki/Tree-Layout
 	//http://www.d3noob.org/2014/01/tree-diagrams-in-d3js_11.html
@@ -77,6 +78,12 @@ function init(stats){
 		.sort(function(a,b){return a.position<b.position})
 	diagonal = d3.svg.diagonal()
 		.projection(function(d) { return [d.x, d.y]; });
+
+	// Define the div for the tooltip
+	tooltip = d3.select("body")
+		.append("div")
+    .attr("style","position:absolute;z-index:10")
+    .attr("id","tooltip");
 }
 
 
@@ -85,17 +92,14 @@ function update(root,stats) {
 	console.log("_height: "+_height);
 	console.log("levels: "+(stats.levels.length*20));
 
+
+
 	svg = d3.select("#d3container").append("svg").style("opacity",0)
-	.attr("width", width + margin.right + margin.left+2000)
+	.attr("width", width)
 	.attr("height", _height)
   .append("g")
 	.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-	// Define the div for the tooltip
-	var div = d3.select("body").append("div")
-    .attr("class", "tooltip")
-		.attr("id", "tooltip")
-    .style("opacity", 0);
 
 
 	// Compute the new tree layout.
@@ -122,14 +126,22 @@ function update(root,stats) {
 
 ;
 
+
+  nodeEnter.append("circle")
+    .attr("id",function(d){return "circle_"+d.name})
+    .attr("r",function(d){if (d.children||d.level!=stats.levels.length) return "11px"; else return "6px";})
+	  .style("stroke", "red")
+    .style("stroke-width", "2px")
+    .style("fill","transparent")
+		.style("opacity", 0);
+
   nodeEnter.append("circle")
 	  .attr("r",function(d){if (d.children||d.level!=stats.levels.length) return "11px"; else return "6px";})
-	  .style("fill", "red")
-		.style("opacity", 0)
+    .style("opacity", 0)
+
 		.on("mouseover", function(d){_mouseOver(d);})
 		.on("mouseout", function(d){_mouseOut(d);})
 		.on("click",function(d){refresh(d.employee)})
-
 
   nodeEnter.append("text")
 	  .attr("y", function(d) {
@@ -171,8 +183,7 @@ function update(root,stats) {
   link.enter().insert("path", "g")
 	  .attr("class", "link")
 	  .attr("d", diagonal);
-
-	_root =root;
+   _root =root;
 
 
   svg.append("polygon")
@@ -185,6 +196,8 @@ function update(root,stats) {
 		.on("click",function(d){refresh(_currentRootParent)})
 
 	d3.select("svg").transition().duration(500).style("opacity",1)
+
+    window.scroll((root.x-$(window).width()/2)+200,0);
 }
 
 
@@ -200,7 +213,10 @@ function _mouseOver(d){
 	.style("top", (d3.event.pageY - 60) + "px")
 	//.transition()
 	//.duration(100)
-	.style("opacity",1)
+	.style("visibility","visible")
+
+  d3.select("#circle_"+d.name)
+  .style("opacity","1")
 }
 
 function _mouseOut(d){
@@ -208,6 +224,9 @@ function _mouseOut(d){
 	d3.select("#tooltip")
 	//.transition()
 	//.duration(200)
-	.style("opacity",0)
+	.style("visibility","hidden")
+
+  d3.select("#circle_"+d.name)
+  .style("opacity","0")
 }
 ;

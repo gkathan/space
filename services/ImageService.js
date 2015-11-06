@@ -65,9 +65,11 @@ function _syncEmployeeImages(filter,callback) {
 			    },
 			    function(err){
 			        if(err){
-			            console.log('Got an error')
+			            callback(null,"syncEmployeeImages says: [ERROR] "+err.message);
+									console.log('Got an error')
 			        }else{
 			            console.log('All tasks are done now...');
+									callback(null,"syncEmployeeImages says: [OK]");
 			        }
 			    });
 				}
