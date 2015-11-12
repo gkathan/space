@@ -25,22 +25,22 @@ convertToCircle();
 
 
 function convertToCircle(){
-  var _dir = "./temp/imagesync/";
+  var _dir = "./temp/pix/";
   console.log("_dir: "+_dir);
   //var _dir = "./temp/testimages/";
   fs.readdir(_dir,function(err,files){
   	async.eachSeries(files,
       function(f, done){
         console.log("file: "+f);
-        if (_.startsWith(f,"E")||_.startsWith(f,"C")){
+        //if (_.startsWith(f,"E")||_.startsWith(f,"C")){
           imgservice.convertToCirclePng(_dir+f,100,function(err,result){
             console.log("done: "+result);
             done();
           })
-        }
+        /*}
         else{
           done();
-        }
+        }*/
       },
       function(err){
         if(err){

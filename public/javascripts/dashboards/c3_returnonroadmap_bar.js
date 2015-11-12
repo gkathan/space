@@ -5,8 +5,10 @@ var _target;
 
 var _ticks=["test","test"];
 $.get(_url,function(data){
-  console.log("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX data: "+JSON.stringify(data));
-  var _current = _.last(_.sortByOrder(data,"lastUpdate","desc"));
+
+  var _current = _.last(_.sortByOrder(data,"_id","asc"));
+
+  console.log("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX data: "+JSON.stringify(_current));
   _tracker = ["RoR "+_current.scope,_current.RoR];
   _target = ["Target",_current.target]
   $("#lastUpdate_K4").text(moment(_current.lastUpdate).format('YYYY-MM-DD'));
