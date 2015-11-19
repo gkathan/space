@@ -79,14 +79,10 @@ router.get('/initiativeepics', function(req, res) {
 				var _valueSum=0;;
 				var _riskSum=0;;
 				var epics = result.initiatives;
-
-
 				var _grouped;
 				if (epics.length>0){
 					_.groupBy(epics,'Status');
 				}
-
-
 				res.locals.planningEpicsBoardId = _planningEpicsBoardId;
 				res.locals.roadmapBoardId = _roadmapBoardId;
 				res.locals.grouped = _grouped;
@@ -121,11 +117,7 @@ router.get('/planningbacklogs', function(req, res) {
 				res.locals.initiativesBoardId = _initiativesBoardId;
 				res.locals.roadmapBoardId = _roadmapBoardId;
 				res.locals.lastSync = sync.lastSync;
-
-
-
 				res.render('portfolio/planningbacklogs'), { title: 's p a c e - planning backlogs overview ' }
-
 			})
 		})
 	})
@@ -137,7 +129,6 @@ router.get('/planningbacklogdetail/:id', function(req, res) {
 	syncService.getLastSync("v1epics",function(err,sync){
 		v1Service.getPlanningBacklogs(_filter,function(err,result){
 			var _backlog = _.findWhere(result.backlogs,{ID:_backlogId});
-
 			var _first;
 			var _last;
 			var _split = _backlog.Owner.split(" ");
@@ -145,19 +136,14 @@ router.get('/planningbacklogdetail/:id', function(req, res) {
 				_first = _.initial(_split).join(" ");
 				_last = _.last(_split)
 			}
-
 			orgService.findEmployeeByFirstLastName(_first,_last,function(err,employee){
 					res.locals.backlog = _backlog;
 					if (_backlog) res.locals.members = _backlog.Members;
 					res.locals.moment=moment;
 					res.locals.owner=employee;
-
 					res.locals.lastSync = sync.lastSync;
 					res.render('portfolio/planningbacklogdetail'), { title: 's p a c e - planning backlog detail' }
 			})
-
-
 		});
 	});
-
 });

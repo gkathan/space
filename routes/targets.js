@@ -42,7 +42,7 @@ router.get('/overview', function(req, res, next) {
 			_handleTargetOverview(req,res,next,"./targets/overview",_period,_highlight);
 	}
 	else if(_period != targetService.getPeriod() && authService.ensureAuthenticated(req,res,["admin","studios","exec"])){
-			_handleTargetOverview(req,res,next,"./targets/overview",_period,_highlightForEmployee);
+			_handleTargetOverview(req,res,next,"./targets/overview",_period,_highlight);
 	}
 	else {
 		res.redirect("/login");
