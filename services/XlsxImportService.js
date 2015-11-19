@@ -247,6 +247,13 @@ function _handleOrganization(json,date,fillblanks,callback){
 		// 2) add the same with date to organizationhistory
 	logger.debug("######################## _handleOrganization called with date: "+date);
 	logger.debug("++++++++++++++++++++++++++++++++ length of json: "+json.length);
+
+	for (var j in json){
+		var _employee=json[j];
+		_employee["Email Address"]= _employee["Email Address"].toLowerCase();
+	}
+
+
 	callback(json);
 	return;
 }

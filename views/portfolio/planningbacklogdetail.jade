@@ -76,7 +76,9 @@ block content
 							|team members:
 						td(style="text-align:right")
 							b
-								a(href="#" title="#{_.uniq(_.map(members,'Name')).join(', ')}")
+								- var _members="";
+								- for (var m in backlog.Members){_members+=backlog.Members[m].Name+" ["+backlog.Members[m].JobFamily+"] ";}
+								a(href="#"  title="#{_members}")
 									|#{members.length}
 							
 			

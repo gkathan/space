@@ -185,6 +185,13 @@
 			}
 	},
 
+	"backlogs":{
+		"filter":{
+			"includeJobFamily":["Software Developer","Test Engineer","Software Archietect"]
+		}
+	},
+
+
 	"backlogscapacity":{
 		"defaultAverageAvailablePDperMonth":16.8,
 		"defaultAvailablePercentageForInitiatives":0.6,

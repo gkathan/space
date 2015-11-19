@@ -97,9 +97,16 @@ router.get('/initiativeepics', function(req, res) {
 });
 
 router.get('/planningbacklogs', function(req, res) {
-	var _filter = {};
+
+	//var _jobfamilies=["Software Developer","Test Engineer"];
+	var _jobfamilies=config.backlogs.filter.includeJobFamily;
+
+
+	var _filter = {includeOnlyJobfamily:_jobfamilies};
+	//var _filter={};
+
 	syncService.getLastSync("v1epics",function(err,sync){
-		v1Service.getPlanningBacklogs(_filter,function(err,result){
+		v1Service.getPlanningBacklogs(_filter,function(err,backlogs){
 			boardService.find({},function(err,boards){
 				logger.debug("looking for boards: ....................."+boards.length);
 				var _planningEpicsBoardId;
@@ -110,8 +117,29 @@ router.get('/planningbacklogs', function(req, res) {
 					if (_.findWhere(boards,{ref:"bi"})) _initiativesBoardId = _.findWhere(boards,{ref:"bi"})._id;
 					if (_.findWhere(boards,{ref:"rcs"})) _roadmapBoardId = _.findWhere(boards,{ref:"rcs"})._id;
 				}
-				res.locals.backlogs = _.sortBy(result.backlogs,'Name');
-				res.locals.statistics = result.statistics;
+
+				var _members =[];
+
+				for (var b in backlogs.backlogs){
+					var _backlog = backlogs.backlogs[b];
+
+					_members = _.union(_members,_backlog.Members);
+				}
+
+				var _jf = _.groupBy(_members,"JobFamily");
+
+				var _jobfamilystat="";
+				for (var k in _.keys(_jf)){
+					var _family = _.keys(_jf)[k];
+					logger.debug("_family: "+_family);
+					_jobfamilystat+=_family+" ["+_jf[_family].length+"] ";
+				}
+
+				res.locals.jobfamilies = _jobfamilystat;
+
+
+				res.locals.backlogs = _.sortBy(backlogs.backlogs,'Name');
+				res.locals.statistics = backlogs.statistics;
 				res.locals.moment=moment;
 				res.locals.planningEpicsBoardId = _planningEpicsBoardId;
 				res.locals.initiativesBoardId = _initiativesBoardId;
@@ -125,14 +153,19 @@ router.get('/planningbacklogs', function(req, res) {
 
 router.get('/planningbacklogdetail/:id', function(req, res) {
 	var _backlogId = req.params.id;
-	var _filter = {};
+
+	var _jobfamilies=config.backlogs.filter.includeJobFamily;
+	//var _jobfamilies=["Test Engineer"];
+	var _filter = {includeOnlyJobfamily:_jobfamilies};
+
 	syncService.getLastSync("v1epics",function(err,sync){
 		v1Service.getPlanningBacklogs(_filter,function(err,result){
 			var _backlog = _.findWhere(result.backlogs,{ID:_backlogId});
 			var _first;
 			var _last;
-			var _split = _backlog.Owner.split(" ");
-			if (_backlog.Owner){
+			var _split;
+			if (_backlog && _backlog.Owner){
+				_split = _backlog.Owner.split(" ");
 				_first = _.initial(_split).join(" ");
 				_last = _.last(_split)
 			}

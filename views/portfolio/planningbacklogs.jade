@@ -41,7 +41,7 @@ block content
 					tr
 						td(style="text-align:left;width:150px") 
 							|total number of people:
-						td(style="text-align:right")
+						td(style="text-align:right" title="#{jobfamilies}")
 							|<b>#{statistics.totalMembers}</b>
 					tr
 						td(style="text-align:left;width:150px") 
@@ -104,7 +104,11 @@ block content
 										|#{b.Name} 
 							td(style="vertical-align:top;text-right:left;font-size:10px")
 								b
-									a(href="#"  title="#{_.uniq(_.map(b.Members,'Name')).join(', ')}")
+									- var _members="";
+									- for (var m in b.Members){_members+=b.Members[m].Name+" ["+b.Members[m].JobFamily+"] ";}
+									
+									a(href="#"  title="#{_members}")
+									
 										|#{_.uniq(_.pluck(b.Members,'ID')).length}
 							td(style="vertical-align:top;text-align:right;font-size:10px" title="available PD per month: #{Math.round(b.Capacity.AvailablePDperMonth)} ")
 								|#{Math.round(b.Capacity.AvailablePDperMonth)} 
