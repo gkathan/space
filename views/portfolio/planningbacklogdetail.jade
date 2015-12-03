@@ -133,7 +133,7 @@ block content
 										|#{moment(i.PlannedStart).format('YYYY-MM-DD')}
 									else
 										|-
-								td(style="vertical-align:top;text-align:center;font-size:10px;vertical-align:top;width:80px" title="Planned End")
+								td(style="vertical-align:top;text-align:center;font-size:10px;vertical-align:top;width:80px" title="Planned End: cumulated from underlying epics: #{moment(i.PlannedEnd).format('YYYY-MM-DD')} | tagged as in Initiative: #{moment(i.PlannedEndInitiative).format('YYYY-MM-DD')}")
 									if i.PlannedEnd
 										|#{moment(i.PlannedEnd).format('YYYY-MM-DD')}
 									else 
