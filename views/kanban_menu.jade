@@ -57,16 +57,9 @@ block content
 					if !session.AUTH || session.AUTH=="admin" || session.AUTH=="bpty"
 						li
 							a(href="/portfolio") portfolio
-					if !session.AUTH || session.AUTH=="bpty"
-						li
-							a( href="/targets/overview") targets overview
-					if !session.AUTH  || session.AUTH=="bpty"
-						li
-							a( href="/dashboard") KPI tracker							
 					if session.AUTH && session.AUTH=="bpty"
 						li
 							a( href="/myspace") my  s p a c e 							
-					
 					if session.AUTH=="studios"
 						ul.nav.navbar-nav
 							li.dropdown(id="fat-menu")
