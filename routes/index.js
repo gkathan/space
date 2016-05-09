@@ -34,8 +34,8 @@ router.get('/', function(req, res) {
       res.redirect("/globe")
   }
   else
-	 res.render('index', { title: 's p a c e' });
-  
+	 //res.render('index', { title: 's p a c e' });
+  res.redirect("/portfolio");
 	});
 });
 

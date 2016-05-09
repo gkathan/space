@@ -190,9 +190,9 @@ function drawItems(board){
 		_drawStartDateIndicator(_start,d,{x1:_startX1,x1Beyond:_x1Beyond,x2:_startX2,x2Beyond:_x2Beyond,y:_itemY},_size,_color,board);
 
 		if (d.state =="done" || d.state =="planned"){
-			if (d.actualDate>d.planDate) _drawItemDelayLine(d3.select(this),_lineX1,_lineX2,_itemY);
+			//if (d.actualDate>d.planDate) _drawItemDelayLine(d3.select(this),_lineX1,_lineX2,_itemY);
 			// ------------  line if before plan--------------
-			else if (d.actualDate<d.planDate) _drawItemDelayLine(d3.select(this),_itemX,(_itemXPlanned-_size-(_size/2)),_itemY);
+			//else if (d.actualDate<d.planDate) _drawItemDelayLine(d3.select(this),_itemX,(_itemXPlanned-_size-(_size/2)),_itemY);
 
 			d3.select(this).style("opacity",d.accuracy/10);
 			// ------------  circles --------------
@@ -206,10 +206,14 @@ function drawItems(board){
 							.attr("cy",_itemY)
 							.attr("r",_size)
 							.style("visibility","visible")//_getVisibility("itemIcon"))
+							.style("fill",function(d){return mapHealth2Color(d.health);})
+
+						/*
 							.attr("class",function(d){
 							if (d.actualDate>d.planDate &&d.state=="planned") {return "delayed"}
 							else if (moment(d.actualDate).toDate()>WIP_END) {return "future";}
 							else {return d.state}})
+						*/
 					// ----------- circle icons -------------
 					// only append icon if we have declared on in external.svg
 					if (document.getElementById("icon_"+d.theme+"."+d.lane+"."+d.sublane)){
@@ -371,11 +375,14 @@ function _drawItemName(svg,d,x,y,scale,color,visibility,context,anchor){
 	   //google font
 	   .style("font-family","arial, sans-serif")
 	   .style("fill",function(d){
-				if ((d.actualDate>d.planDate && d.state!="done" &&d.state!="killed"&&d.state!="onhold")) return "red";
+				/*if ((d.actualDate>d.planDate && d.state!="done" &&d.state!="killed"&&d.state!="onhold")) return "red";
 				else if (d.state=="done") return "green";
 				else if (d.state=="todo" || d.state=="killed" || d.state=="onhold") return "#aaaaaa";
 				else if (d.Type=="target") return COLOR_TARGET;
-				return"black";})
+				return"black";
+				*/
+				return "black";
+				})
 	   .attr("x",x)
 	   .attr("y",y)
 	   //.text(d.name);
@@ -454,12 +461,15 @@ function _drawStartDateIndicator(svg,item,position,size,color,board){
 		.style("fill",_color)
 		.style("opacity",1);
 	}
-	/*
+
+	// symbol test
+/*
 	svg.append("path").
-	attr("transform","translate("+(position.x1+1)+","+position.y+") rotate(90) scale(0.5)")
-	.attr("d",d3.svg.symbol().type("triangle-up"))
-	.style("fill","white");
-	*/
+	attr("transform","translate("+(position.x1+1)+","+position.y+")  scale(.7)")
+	.attr("d",d3.svg.symbol().type("diamond"))
+	.style("fill","black");
+*/
+
 	var _textX=position.x1+((position.x2-position.x1)/2);
 	var _anchor="middle";
 	if (position.x1Beyond){
@@ -580,10 +590,7 @@ function _itemTooltipHTML(d){
 	else if (d.state=="done") _indicator ="green";
 	else if (d.state=="planned") _indicator ="gold";
 
-	var _health;
-	if (d.health=="green") _health="green";
-	else if (d.health=="amber") _health ="gold";
-	else if (d.health=="red") _health ="red";
+	var _health=mapHealth2Color(d.health);
 
 	var _v1Link = V1_PROD_URL+"Epic.mvc/Summary?oidToken=Epic%3A";
 	var _v1SyncLink= "v1sync.php?_id="+d._id;
@@ -593,19 +600,19 @@ function _itemTooltipHTML(d){
 
 	var _htmlBase ="<table><col width=\"30\"/><col width=\"185\"/><tr><td style=\"font-size:4px;text-align:left\"><a href=\""+_v1SyncLink+"\" target=\"new\">[v1synch]</a> <a href=\""+_adminLink+"\" target=\"new\">[admin]</a></td><td style=\"font-size:4px;text-align:right\">";
 	if (d.ExtId)
-		_htmlBase+=" <a href=\""+_v1Link+d.ExtId+"\" target=\"new\">[v1: "+d.ExtId+"]</a>";
+		_htmlBase+=" <a href=\""+_v1Link+d.ExtId.split("Epic:")[1]+"\" target=\"new\">[v1: "+d.ExtId+"]</a>";
 	_htmlBase+="</td></tr>";
-	_htmlBase+="<tr class=\"header\" style=\"height:4px\"/><td colspan=\"2\"><div class=\"indicator\" style=\"background-color:"+_indicator+"\">&nbsp;</div><b style=\"padding-left:4px;font-size:7px\">"+d.name +"</b></td></tr>"+(d.name2 ? "<tr><td class=\"tiny\">title2:</td><td  style=\"font-weight:bold\">"+d.name2+"</td></tr>" :"");
-	_htmlBase+="<tr><td class=\"tiny\"style=\"width:20%\">lane:</td><td><b>"+_lanepath+"</b></td></tr>";
-	_htmlBase+="<tr><td class=\"tiny\">owner:</td><td><b>"+d.owner+"</b></td></tr>";
+	_htmlBase+="<tr class=\"header\" style=\"height:4px\"/><td colspan=\"2\"><div class=\"indicator\" style=\"background-color:"+_health+"\">&nbsp;</div><b style=\"padding-left:4px;font-size:8px\">"+d.name +"</b></td></tr>"+(d.name2 ? "<tr><td class=\"tiny\">title2:</td><td  style=\"font-weight:bold\">"+d.name2+"</td></tr>" :"");
+	//_htmlBase+="<tr><td class=\"tiny\"style=\"width:20%\">lane:</td><td><b>"+_lanepath+"</b></td></tr>";
+	_htmlBase+="<tr><td class=\"tiny\">Epic ID:</td><td><b>"+d.Number+"</b></td></tr>";
 	_htmlBase+="<tr><td class=\"tiny\">Swag:</td><td><b>"+d.Swag+" PD</b></td></tr>";
-	_htmlBase+="<tr><td class=\"tiny\">value:</td><td><b>"+d.Value+"</b></td></tr>";
 
-	_htmlBase+="<tr><td class=\"tiny\">started:</td><td><b>"+moment(d.startDate).format("YYYY-MM-DD")+"</b></td></tr>";
-	_htmlBase+="<tr><td class=\"tiny\">planned:</td><td><b>"+moment(d.planDate).format("YYYY-MM-DD")+"</b></td></tr>";
-	_htmlBase+="<tr><td class=\"tiny\">v1.status:</td><td class=\"bold\">"+d.status+"</td></tr>";
-	_htmlBase+="<tr><td class=\"tiny\">k.state:</td><td class=\"bold\">"+d.state+"</td></tr>";
+	_htmlBase+="<tr><td class=\"tiny\">PlannedEnds:</td><td><b>"+moment(d.planDate).format("YYYY-MM-DD")+"</b></td></tr>";
+	_htmlBase+="<tr><td class=\"tiny\">LaunchDate:</td><td><b>"+moment(d.LaunchDate).format("YYYY-MM-DD")+"</b></td></tr>";
 
+	_htmlBase+="<tr><td class=\"tiny\">Stage:</td><td class=\"bold\">"+d.status+"</td></tr>";
+
+	/*
 	if (d.actualDate>d.planDate &&d.state!="done"){
 		_htmlBase=_htmlBase+"<tr><td class=\"tiny\">delayed:</td><td><b>"+diffDays(d.planDate,d.actualDate)+" days</b></td></tr>";
 	}
@@ -619,10 +626,12 @@ function _itemTooltipHTML(d){
 		_htmlBase=_htmlBase+"<tr><td class=\"tiny\">DoR:</td><td class=\"small\" style=\"text-align:left\">"+d.DoR+"</td></tr>";
 
 	}
+
 	if (d.health!=""){
 		_htmlBase=_htmlBase+"<tr><td class=\"tiny\">health:</td><td><div class=\"health\" style=\"background-color:"+_health+"\">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></td></tr>";
 	}
-	_htmlBase=_htmlBase+"<tr><td class=\"tiny\">description:</td><td class=\"small\" style=\"text-align:left\">"+d.DoD+"</td></tr>";
+	*/
+	_htmlBase=_htmlBase+"<tr><td class=\"tiny\">comment:</td><td style=\"text-align:left\">"+d.healthComment+"</td></tr>";
 	_htmlBase = _htmlBase+"<tr> <td colspan=\"2\"  style=\"text-align:right\"><a id=\"flip\" class=\"small\" style=\"text-align:right\" >[flip it]</a></td></table>";
 
 	return _htmlBase;
@@ -646,7 +655,9 @@ function onTooltipDoubleClickHandler(tooltip,svg,d,board){
 		d3.selectAll("#items,#targets").selectAll("g").selectAll("circle").on("mouseout",null);
 		d3.selectAll("#items,#targets").selectAll("g").selectAll("circle").on("mouseover",null);
 
-		d3.selectAll("#metrics,#queues,#lanes,#version,#axes").style("opacity", .5);
+		//d3.selectAll("#metrics,#queues,#lanes,#version,#axes").style("opacity", .5);
+		d3.selectAll("#metrics,#lanes,#version,#axes").style("opacity", .5);
+
 
 		ITEM_ISOLATION_MODE=true;
 		console.log("...in ITEM_ISOLATION mode...");
@@ -699,7 +710,8 @@ function onTooltipDoubleClickHandler(tooltip,svg,d,board){
 
 		console.log("...EXIT ITEM_ISOLATION mode...");
 		ITEM_ISOLATION_MODE=false;
-		d3.selectAll("#metrics,#queues,#lanes,#version,#axes").style("opacity",1);
+		//d3.selectAll("#metrics,#queues,#lanes,#version,#axes").style("opacity",1);
+		d3.selectAll("#metrics,#lanes,#version,#axes").style("opacity",1);
 		d3.select("#isolationtext").remove();
 		d3.selectAll("#highlightlane").remove();
 	}
@@ -952,4 +964,14 @@ function _registerDragDrop(board){
 		return drag_item;
 		//test end
 
+}
+
+function mapHealth2Color(health){
+		var _color;
+		if (health){
+			if (health.toLowerCase()=="green") _color="green";
+			else if (health.toLowerCase()=="amber") _color ="gold";
+			else if (health.toLowerCase()=="red") _color ="red";
+		}
+		return _color;
 }

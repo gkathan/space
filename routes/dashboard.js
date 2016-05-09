@@ -36,6 +36,8 @@ router.get('/', function(req, res) {
 	var target_context;
 	if (_context=="gvc.studios") target_context = "bpty.studios";
 	else target_context = _context;
+
+	if (authService.ensureAuthenticated(req,res,["admin","exec","studios"])){
 		avService.getLatest(function(av){
 			if (av){
 				res.locals.availability = av;
@@ -50,14 +52,12 @@ router.get('/', function(req, res) {
 					res.locals.lastSyncReturnOnRoadmap=config.targets.kpis.returnOnRoadmap.lastSync;
 					res.locals.lastSyncB2B=config.targets.kpis.B2B.lastSync;
 					logger.debug("l1 targets: "+ l1targets);
-					if (req.session.AUTH=="customer")
-						res.redirect("/login");
-					else
-						res.render('dashboard', { title: 's p a c e - dashboards' });
+					res.render('dashboard', { title: 's p a c e - dashboards' });
 				})
 			})
-
-	});
+		});
+	}
+		else res.redirect("/login");
 });
 
 router.get('/availability', function(req, res) {

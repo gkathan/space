@@ -41,7 +41,7 @@ block content
 						span board config
 					// Button trigger modal
 					button.btn.btn-success.btn-xs(type="button" data-toggle="modal" data-target="#v1EpicsModal")
-						span items (Swag and Value filled)
+						span items (details list)
 					// Button trigger whiteboard
 					button.btn.btn-warning.btn-xs(type="button" onclick="renderWhiteboard()")
 						span show backboard
@@ -74,7 +74,7 @@ block content
 		//v1EpicSelect Modal
 		div.modal.fade(id="v1EpicsModal" tabindex="-1" role="dialog" aria-labelledby="v1EpicsModal" aria-hidden="true" )
 			div.modal-dialog
-				div.modal-content(style="opacity:1")
+				div.modal-content(style="opacity:1;width:800px")
 					div.modal-header
 						button.close(type="button" data-dismiss="modal" aria-label="Close")
 							span(aria-hidden="true") &times
@@ -86,29 +86,35 @@ block content
 							table.table.table-striped.table-hover.table-condensed.tablsesorter(id="table_roadmapitems")
 								thead
 									tr
-										th(style="width:80px") V1
-										th name
-										th product
-										th(style="width:80px") start
-										th(style="width:80px") end
-										th value
-										th(style="width:80px")  swag
-										th(style="width:80px")  risk
+										th(style="width:60px;font-size:10px") V1
+										th(style="width:150px;font-size:10px") name
+										th(style="width:60px;font-size:10px") status
+										
+										th(style="width:60px;font-size:10px") launch
+										
+										th(style="width:50px;font-size:10px") value
+										th(style="width:50px;font-size:10px")  swag
+										th(style="width:50px;font-size:10px")  progress
+										th(style="width:300px;font-size:10px")  health comment
 								tbody
 									each e in epics
 										tr.draggable
-											td(style="text-align:left;vertical-align:middle;font-size:10px") 
-												img(src="/images/icons/epic.gif" height="10px")
-												a(href="http://v1.bwinparty.corp/V1-Production/Epic.mvc/Summary?oidToken=Epic%3A"+e.ID.split(":")[1] target="_new" )
-													|&nbsp;#{e.Number}
-											td(style="vertical-align:top;text-align:left;vertical-align:middle;font-size:10px") 
+											if e.Health=="Amber"
+												td(style="text-align:left;vertical-align:middle;font-size:8px;background-color:gold ") 
+													a(href="http://v1.bwinparty.corp/V1-Production/Epic.mvc/Summary?oidToken=Epic%3A"+e.ID.split(":")[1] target="_new" )
+														|&nbsp;#{e.Number}
+											else
+												td(style="text-align:left;vertical-align:middle;font-size:8px;background-color:#{e.Health} ") 
+													a(href="http://v1.bwinparty.corp/V1-Production/Epic.mvc/Summary?oidToken=Epic%3A"+e.ID.split(":")[1] target="_new" )
+														|&nbsp;#{e.Number}
+											td(style="vertical-align:top;text-align:left;vertical-align:middle;font-size:8px") 
 												|#{e.Name}
-											td(style="vertical-align:top;text-align:left;font-size:11px;vertical-align:middle") #{e.Product} 
-											td(style="vertical-align:top;text-align:left;font-size:11px;vertical-align:middle") #{moment(e.PlannedStart).format('YYYY-MM-DD')} 
-											td(style="vertical-align:top;text-align:left;font-size:11px;vertical-align:middle") #{moment(e.PlannedEnd).format('YYYY-MM-DD')} 
-											td(style="vertical-align:top;text-align:left;font-size:11px;vertical-align:middle") #{e.Value} 
-											td(style="vertical-align:top;text-align:left;vertical-align:middle;font-size:11px") #{e.Swag} 
-											td(style="vertical-align:top;text-align:left;font-size:11px;vertical-align:middle") #{e.Risk} 
+											td(style="vertical-align:top;text-align:left;font-size:8px;vertical-align:middle") #{e.Status} 
+											td(style="vertical-align:top;text-align:left;font-size:8px;vertical-align:middle") #{moment(e.LaunchDate).format('YYYY-MM-DD')} 
+											td(style="vertical-align:top;text-align:left;font-size:8px;vertical-align:middle") #{e.Value} 
+											td(style="vertical-align:top;text-align:left;vertical-align:middle;font-size:8px") #{e.Swag} 
+											td(style="vertical-align:top;text-align:left;font-size:8px;vertical-align:middle") #{e.Progress}% 
+											td(style="vertical-align:top;text-align:left;font-size:8px;vertical-align:middle;width:250px") #{e.HealthComment}
 						script $("#table_roadmapitems").tablesorter();				
 		
 		//Modal
@@ -144,12 +150,15 @@ include ../includes/material
 		$("#boardrefresh").click(function() {console.log("board REFRESH pressed"); refresh(BOARD); });
 		
 		render("/images/svg/external.svg");
+		
+		
+		
 		// target elements with the "draggable" class
 		interact('.draggable')
 		  .draggable({
 		    // enable inertial throwing
 		    inertia: true,
-		    // keep the element within the area of its parent
+		    //keep the element within the area of its parent
 		    restrict: {
 		      restriction: "parent",
 		      endOnly: true,
@@ -211,12 +220,16 @@ include ../includes/material
 			if (BOARD.filter.Product){
 				initiativeData=_.where(initiativeData,{Product:BOARD.filter.Product})
 			}
+			if (BOARD.filter.Health){
+				initiativeData=_.where(initiativeData,{Health:BOARD.filter.Health})
+			}
 			if (BOARD.filter.Status){
 				initiativeData=_.where(initiativeData,{Status:BOARD.filter.Status})
 			}
 			if (BOARD.filter.Value){
 				initiativeData=_.filter(initiativeData,function(d){return d.Value>=BOARD.filter.Value});
 			}
+			console.log("--------- BOARD.HEIGHT: "+BOARD.height);
 			renderBoard(BOARD,initiativeData);
 		}
 
@@ -283,8 +296,10 @@ include ../includes/material
 			BOARD.startDate=_form.startdate.value;
 			BOARD.endDate=_form.enddate.value;
 			BOARD.width=_form.width.value;
-			_form.height.value=BOARD.height;
+			BOARD.height=_form.height.value;
 			BOARD.groupby=_form.groupby.value;
+			
+			BOARD.WIPWindowDays=_form.wip.value;
 			
 			BOARD.itemScale=_form.itemscale.value;
 			BOARD.itemFontScale=_form.itemfontscale.value;
@@ -294,7 +309,10 @@ include ../includes/material
 			BOARD.filter.Markets=_form.filter_Markets.value;
 			BOARD.filter.Status=_form.filter_Status.value;
 			BOARD.filter.Product=_form.filter_Product.value;
+			BOARD.filter.Health=_form.filter_Health.value;
+			
 			BOARD.filter.Value=_form.filter_Value.value;
+			
 			
 			
 			BOARD.viewConfig.initiatives = _form.view_items.value;

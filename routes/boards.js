@@ -61,15 +61,26 @@ router.get('/kanban/:id', function(req, res) {
 
 
         if (board.dataLink=="roadmapinitiatives"){
-          var _filter={};
+          var _filter={IsInLatestApprovedPortfolio:true};
+
           v1Service.getRoadmapInitiatives(_filter,function (err, docs){
+
+            var _items = docs;
+            if (board.filter.Product) _items = _.where(docs,{Product:board.filter.Product});
+            if (board.filter.Health) _items = _.where(docs,{Health:board.filter.Health});
+            if (board.filter.Customers) _items = _.filter(_items,function(i){if (_.findIndex(i.Customers,function(t){if (t.match(new RegExp(board.filter.Customers))) return true;})>-1) return true; });
+            if (board.filter.Markets) _items = _.filter(_items,function(i){if (_.findIndex(i.Markets,function(t){if (t.match(new RegExp(board.filter.Markets))) return true;})>-1) return true; });
+
+
+            /*
             var _items = [];
             for (var i in docs){
               var _r = docs[i];
-              if (_r.Value && _r.Swag && (_r.Status=="New" || _r.Status=="Understanding" || _r.Status=="Conception" || _r.Status=="Implementation")){
+              //if (_r.Value && _r.Swag && (_r.Status=="New" || _r.Status=="Understanding" || _r.Status=="Conception" || _r.Status=="Implementation")){
                 _items.push(_r);
-              }
+              //}
             }
+            */
         		res.locals.epics = _items;
         		res.render('board/kanban', { title: 's p a c e - initiative roadmap board' })
     	    });

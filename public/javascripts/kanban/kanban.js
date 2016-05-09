@@ -208,20 +208,84 @@ function render(svgFile){
 			$.getJSON(_urlItems,function(items){
 				console.log("items loaded...from: "+_urlItems);
 				//the original loaded items
-				initiativeData=items;
-				// keep as a backup if we filter the initiativeData
-				initiativeDataBase=items;
 
+				//if (board.itemsInLatestApprovedPortfolio==true) initiativeData=_.where(items,{IsInLatestApprovedPortfolio:true});
+				//else initiativeData=items;
+
+				//initiativeData=items;
+				initiativeData=_.where(items,{IsInLatestApprovedPortfolio:true});
+
+
+				// keep as a backup if we filter the initiativeData
+				initiativeDataBase=initiativeData;
 				renderBoard(board,initiativeData);
 			})
 		})
 	}); // end xml load anonymous
 }
 
+
+
+/**generic render method for NG board handling
+ */
+function renderBoard(board,items){
+		ITEM_SCALE = parseFloat(board.itemScale);
+		ITEM_FONTSCALE = parseFloat(board.itemFontScale);
+		setWIP(parseInt(board.WIPWindowDays));
+		if (board.viewConfig.laneboxRightWidth) LANE_LABELBOX_RIGHT_WIDTH = parseInt(board.viewConfig.laneboxRightWidth);
+		if (board.viewConfig.offsetTop) BOARD_OFFSET_TOP = parseInt(board.viewConfig.offsetTop);
+		KANBAN_START= new Date(board.startDate);
+		KANBAN_END= new Date(board.endDate);
+
+		// dynamic height
+		board.height=300+(board.itemScale*board.itemFontScale*4)*items.length;
+
+		CONTEXT = board.name;
+		/*
+		initiativeData = _.filter(initiativeData,function(item){
+			if(!item.Status || item.Status=="On hold" || item.Status=="Cancelled") return false;
+			return true;
+		})
+		*/
+		// we have to now join boardData and initiative Data
+		var _items=[];
+
+		// 20160503 - just found out what the intentaion of this code was ;-) the orginal idea was that a board can hold
+		// just a list of items with only a reference ID - but this was never really implemented => instead we built on top of
+		// a not wll thought idea something else ;-)
+		for (var i in items){
+			var _i = items[i];
+			//console.log("+ _item before createItem: "+JSON.stringify(_i));
+			var _item = _createItem(_i,board.groupby.split(","),board.name);
+			//console.log("* _createItem: "+JSON.stringify(_item));
+			_items.push(_item);
+		}
+		// simulated EpicRef and EpicView item structure
+		board.items =_items
+
+		// repopulating and mapping to internal kanban domain
+		board.items =joinBoard2Items(board,items);
+
+
+
+		// with drawAll() refresh without postback possible ;-)
+		disableAllMetrics();
+		console.log("---- lets draw ALL");
+		//q1_2014_reviewMetrics();
+		console.log("======= initiatives.length: "+items.length);
+
+		drawAll(board);
+
+		//drawCustomPostits();
+		//initHandlers();
+		if (AUTH=="bpty") hideNGR();
+		BOARD = board;
+}
+
 /** maps external items to internal kanban domain model
 */
 function joinBoard2Items(board,items){
-	console.log("join: "+items.length+" board: "+board.items.length);
+	console.log("joinBoard2Items: "+items.length+" board: "+board.items.length);
 	var _items = board.items;
 	var _join = [];
 	for (var i in _items){
@@ -254,14 +318,16 @@ function joinBoard2Items(board,items){
 			_joinedItem.planDate=_item.PlannedEnd;
 			_joinedItem.Product= _item.Product;
 			_joinedItem.Targets= _item.Targets;
-			_joinedItem.Customers= _item.Markets;
-			_joinedItem.Markets= _item.Products;
-
-
+			_joinedItem.Customers= _item.Customers;
+			_joinedItem.Markets= _item.Markets;
+			_joinedItem.LaunchDate= _item.LaunchDate;
 			if (_item.LaunchDate)
 				_joinedItem.actualDate=_item.LaunchDate;
 			else
 				_joinedItem.actualDate=_item.PlannedEnd;
+
+			_joinedItem.Project= _item.Project;
+			_joinedItem.Sort= _item.Sort;
 
 			for (_key in _i.itemView){
 				var _view = _items[i].itemView[_key];
@@ -276,50 +342,6 @@ function joinBoard2Items(board,items){
 	//initiativeData = _join;
 	return _join;
 }
-
-/**generic render method for NG board handling
- */
-function renderBoard(board,items){
-		ITEM_SCALE = parseFloat(board.itemScale);
-		ITEM_FONTSCALE = parseFloat(board.itemFontScale);
-		setWIP(parseInt(board.WIPWindowDays));
-		if (board.viewConfig.laneboxRightWidth) LANE_LABELBOX_RIGHT_WIDTH = parseInt(board.viewConfig.laneboxRightWidth);
-		if (board.viewConfig.offsetTop) BOARD_OFFSET_TOP = parseInt(board.viewConfig.offsetTop);
-		KANBAN_START= new Date(board.startDate);
-		KANBAN_END= new Date(board.endDate);
-
-		// dymaic height
-		board.height=300+(board.itemScale*board.itemFontScale*4)*items.length;
-
-		CONTEXT = board.name;
-		/*
-		initiativeData = _.filter(initiativeData,function(item){
-			if(!item.Status || item.Status=="On hold" || item.Status=="Cancelled") return false;
-			return true;
-		})
-		*/
-		// we have to now join boardData and initiative Data
-		var _items=[];
-
-		for (var i in items){
-			var _i = items[i];
-			_items.push(_createItem(_i,board.groupby.split(","),board.name));
-		}
-		board.items =_items
-
-		board.items =joinBoard2Items(board,items);
-		// with drawAll() refresh without postback possible ;-)
-		disableAllMetrics();
-		console.log("---- lets draw ALL");
-		//q1_2014_reviewMetrics();
-		console.log("======= initiatives.length: "+items.length);
-		drawAll(board);
-		//drawCustomPostits();
-		//initHandlers();
-		if (AUTH=="bpty") hideNGR();
-		BOARD = board;
-}
-
 
 /**
  * renders the custom postits which can be created manually
@@ -364,16 +386,18 @@ function drawAll(board){
 	console.log("======= boardItems.length: "+boardItems.length);
 	init(board);
 	// 1) draw static stuff
-	if (board.viewConfig.queues!="off") drawGuides(board);
+	if (board.viewConfig.guides!="off") drawGuides(board);
 	drawAxes(board);
 	if (board.viewConfig.queues!="off") drawQueues(board);
 	if (board.viewConfig.vision!="off") drawVision(board);
-	drawVersion(board);
-	drawLegend(board);
+	//drawVersion(board);
+	//drawLegend(board);
 
 	// 2) check if board empty
 	console.log("======= boardItems.length: "+boardItems.length);
 	if (boardItems.length>0){
+
+		/*
 		// multi column sort https://github.com/Teun/thenBy.js
 		var firstBy=(function(){function e(f){f.thenBy=t;return f}function t(y,x){x=this;return e(function(a,b){return x(a,b)||y(a,b)})}return e})();
 		joinInitiatives2LanesSort(boardItems);
@@ -383,6 +407,10 @@ function drawAll(board){
 				.thenBy(function (v1, v2) { return v1.sublaneSort - v2.sublaneSort });
 		boardItems.sort(s);
 		boardItems.sort(s);
+		*/
+
+		board.items = _.sortByAll(board.items,['Sort']);
+
 		// ------------------------------------------------------------------------------------------------
 		var _context = {"yMin":Y_MIN,"yMax":Y_MAX,"name":CONTEXT};
 		itemTree = createLaneHierarchy(board,ITEMDATA_FILTER,board.groupby.split(","),_context);
@@ -418,6 +446,9 @@ function _createFilterQueryString(board){
 	}
 	if (board.filter.Product){
 		_filter+="&filter_Product="+board.filter.Product;
+	}
+	if (board.filter.Health){
+		_filter+="&filter_Health="+board.filter.Health;
 	}
 	return _filter;
 }

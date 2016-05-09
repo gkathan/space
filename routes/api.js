@@ -588,7 +588,7 @@ function _extractFilter(types,req){
 function getItemsRoadmapInitiatives(req,res,next){
 	var context = config.context;
 
-	var _filterTypes=["Targets","Customers","Markets","Status","Product"];
+	var _filterTypes=["Targets","Customers","Markets","Status","Product","Health"];
 	var _filter=_extractFilter(_filterTypes,req);
 
 	logger.debug("------ api.getItemsRoadmapInitiatives called: filter: "+_filter);

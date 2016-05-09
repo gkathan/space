@@ -146,34 +146,34 @@ ul
 			stroke:goldenrod;
 			stroke-width:0.5px;
 			fill:goldenrod;
-			opacity:0.5;
+			opacity:1;
 		}
 
 .delayed{
 			stroke:red;
 			stroke-width:0.5px;
 			fill:red;
-			opacity:0.5;
+			opacity:1;
 		}
 
 .future{
 			stroke:grey;
 			stroke-width:0.5px;
 			fill:grey;
-			opacity:0.5;
+			opacity:1;
 		}
 
 .done{
 			stroke:green;
 			stroke-width:0.5px;
 			fill:green;
-			opacity:0.5;
+			opacity:1;
 		}
 .todo{
 			stroke:grey;
 			stroke-width:0.5px;
 			fill:grey;
-			opacity:0.5;
+			opacity:1;
 		}
 
 
@@ -181,7 +181,7 @@ ul
 			stroke:grey;
 			stroke-width:0.5px;
 			fill:grey;
-			opacity:0.5;
+			opacity:1;
 		}
 
 .doneQueue{
@@ -263,10 +263,10 @@ ul
 }
 
 .themeLine {
-	stroke: #eeeeee;
-	stroke-width: 2;
-	stroke-dasharray: 5,5;
-	stroke-opacity:1;
+	stroke: #999999;
+	stroke-width: 0.2;
+	stroke-dasharray: 4,2;
+	stroke-opacity:0.5;
 }
 
 .metaphorDemarcationLine {

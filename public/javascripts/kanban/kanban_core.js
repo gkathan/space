@@ -25,11 +25,15 @@ function createLaneHierarchy(board,dataFilter,groupby,context){
 	var items = boardItems.map(function(d) { return d.lanePath.split('/'); });
 	// emulate legacy behavior to get the first level below the "bm"="b2c gaming" node ...
 	var _hierarchy = buildTreeFromPathArray(items)[0];
+
+	/*
 	//sort !!! the children arrays
 	_hierarchy.children = _sort(_hierarchy.children,groupby[0]);
 	for (var i in _hierarchy.children){
 		_hierarchy.children[i].children = _sort(_hierarchy.children[i].children,groupby[1]);
 	}
+	*/
+	
 	_hierarchy = createRelativeCoordinates(_hierarchy,0,_level,context);
 	_hierarchy = transposeCoordinates(_hierarchy,_level);
 
@@ -38,6 +42,7 @@ function createLaneHierarchy(board,dataFilter,groupby,context){
 
 
 function _sort(list,type){
+	console.log("..... calling sort in core");
 	list =_.sortBy(list,function(element){
 			if (CONFIG.initiatives.sorting[type]){
 				var _index = CONFIG.initiatives.sorting[type].indexOf(_.last(element.name.split("/")));

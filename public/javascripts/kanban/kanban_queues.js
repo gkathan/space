@@ -142,8 +142,8 @@ function drawQueues(board){
 		 *
 		 */
 		function _drawQueueMarker(svg,date,css,x,y){
-			_drawText(svg,moment(date).format("d-MMM-YYYY"),(x+5),(y+3),{"css":css+"Text","anchor":"start"});
-			_drawText(svg,moment(date).format("d-MMM-YYYY"),(x+5),(height-y+3),{"weight":"bold","css":css+"Text","anchor":"start"});
+			_drawText(svg,moment(date).format("Do-MMM-YYYY"),(x+5),(y+3),{"css":css+"Text","anchor":"start"});
+			_drawText(svg,moment(date).format("Do-MMM-YYYY"),(x+5),(height-y+3),{"weight":"bold","css":css+"Text","anchor":"start"});
 
 			_drawLine(svg,(x+0.5),y,(x+0.5),(height-y),css+"Line",[{"start":"rect_red"},{"end":"rect_red"}]);
 		}
